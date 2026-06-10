@@ -7789,40 +7789,36 @@ document.addEventListener('touchend', function(e){
   document.querySelectorAll('.tip-box').forEach(b => b.style.display='none');
 }, {passive:false});
 
-window.addEventListener('load', async ()=>{
+window.addEventListener('load', ()=>{
   const splash = document.getElementById('splash');
   const bar    = document.getElementById('splash_bar');
   // animate bar quickly then hide
   bar.style.width = '60%';
   setTimeout(()=>{ bar.style.width = '100%'; }, 80);
 
-  // ── ProfitLens SaaS: Auth Gate + Cloud Sync ──
-  try {
-    const _authDone = (async () => {
-      const cfg = await Promise.race([
-        fetch('/api/config').then(r=>r.json()),
-        new Promise(r => setTimeout(()=>r({}), 4000))
-      ]).catch(()=>({}));
+  // ── ProfitLens SaaS: Auth Gate + Cloud Sync (non-blocking) ──
+  (async () => {
+    try {
+      const cfg = await fetch('/api/config').then(r=>r.json()).catch(()=>({}));
       if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) return;
 
       const { createClient } = supabase;
       window.__sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
-
-      const { data: { session } } = await Promise.race([
-        window.__sb.auth.getSession(),
-        new Promise((_,rej) => setTimeout(()=>rej(new Error('timeout')), 5000))
-      ]);
+      const { data: { session } } = await window.__sb.auth.getSession();
       if (!session) { window.location.replace('/'); return; }
       window.__sbUser = session.user;
 
-      // Pre-load cloud data into localStorage
+      // Pre-load cloud data into localStorage then re-init
       const { data: row } = await window.__sb.from('user_data')
         .select('data').eq('user_id', session.user.id).maybeSingle();
-      if (row?.data) localStorage.setItem(LS_KEY, JSON.stringify(row.data));
+      if (row?.data) {
+        localStorage.setItem(LS_KEY, JSON.stringify(row.data));
+        initProducts();
+      }
 
       // User bar in nav
       const navRight = document.querySelector('.nav-right');
-      if (navRight) {
+      if (navRight && !document.getElementById('__user_bar')) {
         const ubar = document.createElement('div');
         ubar.id = '__user_bar';
         ubar.style.cssText = 'display:flex;align-items:center;gap:8px;border-left:1px solid var(--bdr2);padding-left:8px;margin-left:4px';
@@ -7850,10 +7846,8 @@ window.addEventListener('load', async ()=>{
           );
         } catch(e){}
       }, 3000);
-    })();
-
-    await Promise.race([_authDone, new Promise(r => setTimeout(r, 6000))]);
-  } catch(e) {}
+    } catch(e) {}
+  })();
 
   // ── CDN health check — warns user if Chart.js/XLSX failed to load ──
   (function checkCDN(){
