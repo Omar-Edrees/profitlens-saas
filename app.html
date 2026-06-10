@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProfitLens Pro</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:    #0d0f14;
+      --bg2:   #13161e;
+      --bg3:   #1a1e28;
+      --bg4:   #1f2435;
+      --bdr:   #2a2f3d;
+      --bdr2:  #3a4055;
+      --txt:   #e8eaf0;
+      --txt2:  #8890a6;
+      --txt3:  #555e78;
+      --acc:   #5b6af5;
+      --acc2:  #4a58e8;
+      --grn:   #22c55e;
+      --grn2:  #16a34a;
+      --red:   #ef4444;
+      --red2:  #dc2626;
+      --ylw:   #f59e0b;
+      --pur:   #8b5cf6;
+      --mono:  'JetBrains Mono', 'Fira Code', monospace;
+      --body:  'Inter', system-ui, sans-serif;
+      --r:     10px;
+    }
+
+    body { background: var(--bg); color: var(--txt); font-family: var(--body); min-height: 100vh; }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13,15,20,.9); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--bdr);
+      height: 54px; display: flex; align-items: center;
+      padding: 0 20px; gap: 12px;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; }
+    .nav-logo-icon {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--acc), var(--pur));
+      border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px;
+    }
+    .nav-logo span { color: var(--acc); }
+    .nav-spacer { flex: 1; }
+    .nav-right { display: flex; align-items: center; gap: 8px; }
+    .nav-btn {
+      height: 30px; padding: 0 12px; border-radius: 7px;
+      border: 1px solid var(--bdr2); background: transparent;
+      color: var(--txt2); font-size: 12px; cursor: pointer; font-family: var(--body);
+      transition: all .15s; white-space: nowrap;
+    }
+    .nav-btn:hover { border-color: var(--acc); color: var(--txt); }
+    .nav-btn.primary { background: var(--acc); border-color: var(--acc); color: #fff; }
+    .nav-btn.primary:hover { background: var(--acc2); }
+    .sync-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--txt3); flex-shrink: 0; transition: background .3s;
+    }
+    .sync-dot.synced  { background: var(--grn); }
+    .sync-dot.syncing { background: var(--ylw); animation: pulse .8s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* ─── LAYOUT ─── */
+    .layout { display: flex; min-height: calc(100vh - 54px); }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      width: 260px; flex-shrink: 0;
+      background: var(--bg2); border-right: 1px solid var(--bdr);
+      padding: 16px; display: flex; flex-direction: column; gap: 8px;
+      position: sticky; top: 54px; height: calc(100vh - 54px); overflow-y: auto;
+    }
+    .sidebar-label {
+      font-size: 10px; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--txt3); padding: 4px 8px; margin-top: 8px;
+    }
+    .product-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 10px; border-radius: var(--r); cursor: pointer;
+      border: 1px solid transparent; transition: all .15s;
+    }
+    .product-item:hover { background: var(--bg3); }
+    .product-item.active { background: rgba(91,106,245,.12); border-color: rgba(91,106,245,.3); }
+    .product-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .product-name { font-size: 13px; font-weight: 500; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .product-profit {
+      font-size: 11px; font-family: var(--mono);
+      padding: 2px 6px; border-radius: 5px;
+    }
+    .product-profit.pos { background: rgba(34,197,94,.12); color: var(--grn); }
+    .product-profit.neg { background: rgba(239,68,68,.12); color: var(--red); }
+
+    .add-product-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 10px; border-radius: var(--r); cursor: pointer;
+      border: 1px dashed var(--bdr2); color: var(--txt3); font-size: 13px;
+      background: transparent; font-family: var(--body); width: 100%;
+      transition: all .15s; margin-top: 4px;
+    }
+    .add-product-btn:hover { border-color: var(--acc); color: var(--acc); }
+
+    /* ─── MAIN ─── */
+    main { flex: 1; min-width: 0; padding: 24px; }
+
+    /* ─── KPI CARDS ─── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 14px; margin-bottom: 24px; }
+    .kpi-card {
+      background: var(--bg2); border: 1px solid var(--bdr);
+      border-radius: var(--r); padding: 18px 20px;
+    }
+    .kpi-label { font-size: 11px; color: var(--txt2); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+    .kpi-value { font-size: 26px; font-weight: 700; font-family: var(--mono); line-height: 1; }
+    .kpi-sub { font-size: 11px; color: var(--txt3); margin-top: 4px; font-family: var(--mono); }
+    .kpi-card.green .kpi-value { color: var(--grn); }
+    .kpi-card.red   .kpi-value { color: var(--red); }
+    .kpi-card.blue  .kpi-value { color: var(--acc); }
+    .kpi-card.gold  .kpi-value { color: var(--ylw); }
+
+    /* ─── CHARTS ROW ─── */
+    .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 24px; }
+    .chart-card {
+      background: var(--bg2); border: 1px solid var(--bdr);
+      border-radius: var(--r); padding: 20px;
+    }
+    .chart-title { font-size: 13px; font-weight: 600; margin-bottom: 16px; color: var(--txt2); }
+    .chart-wrap { position: relative; }
+
+    /* ─── PRODUCT EDITOR ─── */
+    .editor-card {
+      background: var(--bg2); border: 1px solid var(--bdr);
+      border-radius: var(--r); padding: 24px; margin-bottom: 24px;
+    }
+    .editor-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+    }
+    .editor-title { font-size: 17px; font-weight: 700; flex: 1; }
+    .editor-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 14px; }
+
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+    .field-label { font-size: 11px; color: var(--txt2); font-weight: 500; }
+    .field-input {
+      background: var(--bg3); border: 1px solid var(--bdr);
+      border-radius: 8px; padding: 9px 12px;
+      color: var(--txt); font-size: 13px; font-family: var(--mono);
+      outline: none; transition: border-color .15s; width: 100%;
+    }
+    .field-input:focus { border-color: var(--acc); }
+    .field-input[type=color] {
+      padding: 4px 6px; height: 36px; cursor: pointer;
+    }
+
+    /* ─── COSTS TABLE ─── */
+    .table-card {
+      background: var(--bg2); border: 1px solid var(--bdr);
+      border-radius: var(--r); overflow: hidden; margin-bottom: 24px;
+    }
+    .table-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 16px 20px; border-bottom: 1px solid var(--bdr);
+    }
+    .table-title { font-size: 14px; font-weight: 600; flex: 1; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 11px 20px; text-align: left; font-size: 13px; }
+    th { background: var(--bg3); color: var(--txt2); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+    td { border-top: 1px solid var(--bdr); }
+    tr:hover td { background: rgba(255,255,255,.02); }
+    td input {
+      background: transparent; border: none; color: var(--txt);
+      font-size: 13px; font-family: var(--mono); width: 100%; outline: none;
+      padding: 2px 0;
+    }
+    td input:focus { color: var(--acc); }
+    .del-btn {
+      background: transparent; border: none; cursor: pointer;
+      color: var(--txt3); font-size: 15px; padding: 2px 6px;
+      border-radius: 5px; transition: all .15s;
+    }
+    .del-btn:hover { color: var(--red); background: rgba(239,68,68,.1); }
+    .add-row-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 10px 20px; color: var(--txt3); font-size: 13px;
+      cursor: pointer; border: none; background: transparent;
+      font-family: var(--body); width: 100%; transition: color .15s;
+      border-top: 1px solid var(--bdr);
+    }
+    .add-row-btn:hover { color: var(--acc); }
+
+    /* ─── BUTTONS ─── */
+    .btn {
+      padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+      cursor: pointer; font-family: var(--body); border: none; transition: all .15s;
+    }
+    .btn-primary { background: var(--acc); color: #fff; }
+    .btn-primary:hover { background: var(--acc2); }
+    .btn-danger  { background: rgba(239,68,68,.12); color: var(--red); border: 1px solid rgba(239,68,68,.2); }
+    .btn-danger:hover  { background: rgba(239,68,68,.2); }
+    .btn-ghost   { background: transparent; color: var(--txt2); border: 1px solid var(--bdr2); }
+    .btn-ghost:hover   { border-color: var(--acc); color: var(--txt); }
+
+    /* ─── MODAL ─── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal {
+      background: var(--bg2); border: 1px solid var(--bdr);
+      border-radius: 14px; padding: 28px; width: 100%; max-width: 400px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.5);
+    }
+    .modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+    .modal .field-group { margin-bottom: 14px; }
+    .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+    .hidden { display: none !important; }
+
+    /* ─── SPLASH ─── */
+    #splash {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--bg); display: flex;
+      flex-direction: column; align-items: center; justify-content: center; gap: 24px;
+    }
+    #splash .s-logo { font-size: 28px; font-weight: 800; letter-spacing: -.5px; }
+    #splash .s-logo span { color: var(--acc); }
+    .splash-bar-wrap { width: 240px; height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+    #splash_bar { height: 100%; width: 0; background: var(--acc); border-radius: 2px; transition: width .4s ease; }
+
+    /* ─── MONTH TABS ─── */
+    .period-tabs {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 24px;
+    }
+    .period-tab {
+      padding: 6px 14px; border-radius: 7px;
+      font-size: 12px; font-weight: 500; cursor: pointer;
+      border: 1px solid var(--bdr); background: transparent;
+      color: var(--txt2); font-family: var(--body); transition: all .15s;
+    }
+    .period-tab.active { background: var(--acc); border-color: var(--acc); color: #fff; }
+    .period-tab:hover:not(.active) { border-color: var(--bdr2); color: var(--txt); }
+
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .charts-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Splash -->
+<div id="splash">
+  <div class="s-logo">Profit<span>Lens</span> Pro</div>
+  <div class="splash-bar-wrap"><div id="splash_bar"></div></div>
+</div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">📊</div>
+    <div>Profit<span>Lens</span> Pro</div>
+  </div>
+  <div class="nav-spacer"></div>
+  <div class="nav-right" id="nav-right">
+    <div class="sync-dot" id="sync-dot" title="Sync status"></div>
+  </div>
+</nav>
+
+<!-- Layout -->
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-label">Products</div>
+    <div id="product-list"></div>
+    <button class="add-product-btn" onclick="openAddProduct()">
+      <span>+</span> Add Product
+    </button>
+  </aside>
+
+  <!-- Main -->
+  <main id="main-content">
+    <!-- Period Tabs -->
+    <div class="period-tabs" id="period-tabs"></div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid" id="kpi-grid"></div>
+
+    <!-- Charts -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-title">Revenue · Cost · Profit — Monthly Trend</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="chart-trend"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Cost Breakdown</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="chart-pie"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Product Editor -->
+    <div class="editor-card" id="editor-card">
+      <div class="editor-header">
+        <div class="product-dot" id="editor-dot" style="width:12px;height:12px;background:#5b6af5"></div>
+        <div class="editor-title" id="editor-title">Select a product</div>
+        <button class="btn btn-ghost" onclick="openEditProduct()">Rename</button>
+        <button class="btn btn-danger" onclick="deleteProduct()">Delete</button>
+      </div>
+      <div class="editor-grid" id="editor-fields"></div>
+    </div>
+
+    <!-- Costs Table -->
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-title">Cost Items</div>
+        <button class="btn btn-primary" onclick="addCostRow()">+ Add Cost</button>
+      </div>
+      <table id="cost-table">
+        <thead>
+          <tr><th>Description</th><th>Category</th><th>Amount ($)</th><th></th></tr>
+        </thead>
+        <tbody id="cost-body"></tbody>
+      </table>
+      <button class="add-row-btn" onclick="addCostRow()">+ Add row</button>
+    </div>
+  </main>
+</div>
+
+<!-- Add/Edit Product Modal -->
+<div class="modal-overlay hidden" id="product-modal">
+  <div class="modal">
+    <h3 id="modal-title">Add Product</h3>
+    <div class="field-group">
+      <label class="field-label">Product Name</label>
+      <input class="field-input" id="modal-name" type="text" placeholder="e.g. SaaS Starter Plan">
+    </div>
+    <div class="field-group">
+      <label class="field-label">Color</label>
+      <input class="field-input" id="modal-color" type="color" value="#5b6af5">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" id="modal-save" onclick="saveProduct()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LS_KEY = 'profitlens_v2';
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const COLORS  = ['#5b6af5','#22c55e','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#f97316','#ec4899'];
+
+let state = null;
+let activeProduct = null;
+let activePeriod  = null;
+let editingProduct = null; // null=add, id=edit
+let trendChart = null;
+let pieChart   = null;
+
+// ─── Default state factory ───
+function defaultState() {
+  const now = new Date();
+  const periodId = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const product = { id: uid(), name: 'Product 1', color: COLORS[0] };
+  return {
+    periods: [periodId],
+    products: [product],
+    data: {
+      [periodId]: {
+        [product.id]: { revenue: 0, unitsSold: 0, unitCost: 0, costs: [] }
+      }
+    }
+  };
+}
+
+function uid() { return Math.random().toString(36).slice(2,10); }
+
+function periodLabel(p) {
+  const [y, m] = p.split('-');
+  return MONTHS[parseInt(m)-1] + ' ' + y;
+}
+
+// ─── State helpers ───
+function getProductData(pid, periodId) {
+  periodId = periodId || activePeriod;
+  const p = state.data[periodId];
+  if (!p[pid]) p[pid] = { revenue: 0, unitsSold: 0, unitCost: 0, costs: [] };
+  return p[pid];
+}
+
+function ensurePeriodData(periodId) {
+  if (!state.data[periodId]) {
+    state.data[periodId] = {};
+    state.products.forEach(p => {
+      state.data[periodId][p.id] = { revenue: 0, unitsSold: 0, unitCost: 0, costs: [] };
+    });
+  }
+}
+
+function calcProduct(pid, periodId) {
+  const d = getProductData(pid, periodId);
+  const totalCosts = (d.costs || []).reduce((s, c) => s + (parseFloat(c.amount) || 0), 0);
+  const varCost = (parseFloat(d.unitCost) || 0) * (parseFloat(d.unitsSold) || 0);
+  const totalCost = totalCosts + varCost;
+  const revenue = parseFloat(d.revenue) || 0;
+  const profit = revenue - totalCost;
+  const margin = revenue > 0 ? (profit / revenue * 100) : 0;
+  return { revenue, totalCost, profit, margin, totalCosts, varCost };
+}
+
+// ─── Persist / load ───
+function save() {
+  localStorage.setItem(LS_KEY, JSON.stringify(state));
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) state = JSON.parse(raw);
+    else state = defaultState();
+  } catch(e) { state = defaultState(); }
+  if (!state.periods || !state.periods.length) state = defaultState();
+}
+
+// ─── Render ───
+function render() {
+  renderPeriodTabs();
+  renderSidebar();
+  renderKPIs();
+  renderEditor();
+  renderCostTable();
+  renderCharts();
+}
+
+function renderPeriodTabs() {
+  const el = document.getElementById('period-tabs');
+  el.innerHTML = state.periods.map(p =>
+    `<button class="period-tab${p===activePeriod?' active':''}" onclick="selectPeriod('${p}')">${periodLabel(p)}</button>`
+  ).join('') +
+  `<button class="period-tab" onclick="addPeriod()" style="border-style:dashed;color:var(--txt3)">+ Period</button>`;
+}
+
+function renderSidebar() {
+  const el = document.getElementById('product-list');
+  el.innerHTML = state.products.map(p => {
+    const { profit } = calcProduct(p.id);
+    const cls = profit >= 0 ? 'pos' : 'neg';
+    const sign = profit >= 0 ? '+' : '';
+    return `<div class="product-item${p.id===activeProduct?' active':''}" onclick="selectProduct('${p.id}')">
+      <div class="product-dot" style="background:${p.color}"></div>
+      <div class="product-name">${esc(p.name)}</div>
+      <div class="product-profit ${cls}">${sign}${fmt(profit)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderKPIs() {
+  let totRevenue=0, totCost=0, totProfit=0;
+  state.products.forEach(p => {
+    const c = calcProduct(p.id);
+    totRevenue += c.revenue; totCost += c.totalCost; totProfit += c.profit;
+  });
+  const margin = totRevenue > 0 ? (totProfit/totRevenue*100) : 0;
+  const roi    = totCost   > 0 ? (totProfit/totCost*100)    : 0;
+
+  document.getElementById('kpi-grid').innerHTML = [
+    { label:'Total Revenue',  val:fmtDollar(totRevenue), sub: state.products.length+' products', cls:'blue' },
+    { label:'Total Cost',     val:fmtDollar(totCost),    sub:'Fixed + Variable',           cls:'red'  },
+    { label:'Net Profit',     val:fmtDollar(totProfit),  sub:`Margin ${margin.toFixed(1)}%`,cls: totProfit>=0?'green':'red' },
+    { label:'ROI',            val:roi.toFixed(1)+'%',    sub:'Return on Investment',       cls: roi>=0?'gold':'red' },
+  ].map(k => `<div class="kpi-card ${k.cls}">
+    <div class="kpi-label">${k.label}</div>
+    <div class="kpi-value">${k.val}</div>
+    <div class="kpi-sub">${k.sub}</div>
+  </div>`).join('');
+}
+
+function renderEditor() {
+  if (!activeProduct) return;
+  const p = state.products.find(x => x.id === activeProduct);
+  if (!p) return;
+  const d = getProductData(activeProduct);
+  const { revenue, totalCost, profit, margin } = calcProduct(activeProduct);
+
+  document.getElementById('editor-dot').style.background = p.color;
+  document.getElementById('editor-title').textContent = p.name;
+
+  const fields = [
+    { label:'Revenue ($)',   key:'revenue',   val: d.revenue,   type:'number', placeholder:'0.00' },
+    { label:'Units Sold',    key:'unitsSold', val: d.unitsSold, type:'number', placeholder:'0' },
+    { label:'Unit Cost ($)', key:'unitCost',  val: d.unitCost,  type:'number', placeholder:'0.00' },
+    { label:'Gross Profit',  key:null,        val: fmtDollar(profit),  type:'text', ro:true, color: profit>=0?'var(--grn)':'var(--red)' },
+    { label:'Margin',        key:null,        val: margin.toFixed(1)+'%', type:'text', ro:true },
+    { label:'Total Cost',    key:null,        val: fmtDollar(totalCost), type:'text', ro:true },
+  ];
+
+  document.getElementById('editor-fields').innerHTML = fields.map(f =>
+    `<div class="field-group">
+      <label class="field-label">${f.label}</label>
+      <input class="field-input" type="${f.type}"
+        value="${f.val}"
+        ${f.ro ? 'readonly style="color:'+(f.color||'var(--txt2)')+';"' : `oninput="updateField('${f.key}',this.value)"`}
+        placeholder="${f.placeholder||''}">
+    </div>`
+  ).join('');
+}
+
+function renderCostTable() {
+  if (!activeProduct) return;
+  const d = getProductData(activeProduct);
+  const tbody = document.getElementById('cost-body');
+  tbody.innerHTML = (d.costs || []).map((c, i) =>
+    `<tr>
+      <td><input value="${esc(c.desc||'')}" oninput="updateCost(${i},'desc',this.value)" placeholder="e.g. Server hosting"></td>
+      <td><input value="${esc(c.cat||'')}"  oninput="updateCost(${i},'cat',this.value)"  placeholder="e.g. Infrastructure"></td>
+      <td><input type="number" value="${c.amount||0}" oninput="updateCost(${i},'amount',this.value)" style="width:100px"></td>
+      <td><button class="del-btn" onclick="deleteCost(${i})">✕</button></td>
+    </tr>`
+  ).join('');
+}
+
+function renderCharts() {
+  renderTrendChart();
+  renderPieChart();
+}
+
+function renderTrendChart() {
+  const ctx = document.getElementById('chart-trend').getContext('2d');
+  const labels = state.periods.map(periodLabel);
+
+  const datasets = [];
+  const totals = { revenue:[], cost:[], profit:[] };
+  state.periods.forEach(period => {
+    let r=0,c=0;
+    state.products.forEach(p => { const x=calcProduct(p.id,period); r+=x.revenue; c+=x.totalCost; });
+    totals.revenue.push(r); totals.cost.push(c); totals.profit.push(r-c);
+  });
+
+  const chartData = {
+    labels,
+    datasets: [
+      { label:'Revenue', data: totals.revenue, borderColor:'#5b6af5', backgroundColor:'rgba(91,106,245,.08)', tension:.3, fill:true, pointRadius:4 },
+      { label:'Cost',    data: totals.cost,    borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,.05)',  tension:.3, fill:true, pointRadius:4 },
+      { label:'Profit',  data: totals.profit,  borderColor:'#22c55e', backgroundColor:'rgba(34,197,94,.05)', tension:.3, fill:true, pointRadius:4 },
+    ]
+  };
+
+  if (trendChart) { trendChart.data = chartData; trendChart.update(); return; }
+
+  trendChart = new Chart(ctx, {
+    type: 'line',
+    data: chartData,
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color:'#8890a6', font:{size:11} } } },
+      scales: {
+        x: { ticks:{color:'#555e78'}, grid:{color:'#1f2435'} },
+        y: { ticks:{color:'#555e78', callback: v => '$'+fmtShort(v)}, grid:{color:'#1f2435'} }
+      }
+    }
+  });
+}
+
+function renderPieChart() {
+  if (!activeProduct) return;
+  const d = getProductData(activeProduct);
+  const { varCost, totalCosts } = calcProduct(activeProduct);
+
+  const costsByCategory = {};
+  (d.costs || []).forEach(c => {
+    const cat = c.cat || 'Other';
+    costsByCategory[cat] = (costsByCategory[cat] || 0) + (parseFloat(c.amount) || 0);
+  });
+  if (varCost > 0) costsByCategory['Variable'] = (costsByCategory['Variable']||0) + varCost;
+
+  const labels = Object.keys(costsByCategory);
+  const data   = Object.values(costsByCategory);
+
+  const pieColors = ['#5b6af5','#22c55e','#f59e0b','#8b5cf6','#ef4444','#06b6d4','#f97316','#ec4899'];
+
+  const chartData = {
+    labels,
+    datasets: [{ data, backgroundColor: pieColors.slice(0,labels.length), borderWidth:0 }]
+  };
+
+  if (pieChart) { pieChart.data = chartData; pieChart.update(); return; }
+
+  const ctx = document.getElementById('chart-pie').getContext('2d');
+  pieChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: chartData,
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position:'right', labels:{color:'#8890a6',font:{size:11},boxWidth:10} }
+      },
+      cutout: '60%'
+    }
+  });
+}
+
+// ─── Actions ───
+function selectProduct(id) {
+  activeProduct = id;
+  if (pieChart) { pieChart.destroy(); pieChart = null; }
+  render();
+}
+
+function selectPeriod(p) {
+  activePeriod = p;
+  render();
+}
+
+function addPeriod() {
+  // Add a new month period
+  const periods = state.periods.slice().sort();
+  const last = periods[periods.length - 1];
+  const [y, m] = last.split('-').map(Number);
+  const next = m === 12
+    ? `${y+1}-01`
+    : `${y}-${String(m+1).padStart(2,'0')}`;
+  if (state.periods.includes(next)) return;
+  state.periods.push(next);
+  state.periods.sort();
+  ensurePeriodData(next);
+  activePeriod = next;
+  save(); render();
+}
+
+function updateField(key, val) {
+  if (!activeProduct) return;
+  const d = getProductData(activeProduct);
+  d[key] = parseFloat(val) || 0;
+  save(); renderSidebar(); renderKPIs(); renderCharts();
+  // Re-render editor computed fields without full re-render (avoids losing focus)
+  const { revenue, totalCost, profit, margin } = calcProduct(activeProduct);
+  const inputs = document.querySelectorAll('#editor-fields input[readonly]');
+  if (inputs[0]) inputs[0].value = fmtDollar(profit), inputs[0].style.color = profit>=0?'var(--grn)':'var(--red)';
+  if (inputs[1]) inputs[1].value = margin.toFixed(1)+'%';
+  if (inputs[2]) inputs[2].value = fmtDollar(totalCost);
+}
+
+function updateCost(i, key, val) {
+  if (!activeProduct) return;
+  const d = getProductData(activeProduct);
+  d.costs[i][key] = key === 'amount' ? (parseFloat(val)||0) : val;
+  save(); renderSidebar(); renderKPIs(); renderCharts();
+}
+
+function addCostRow() {
+  if (!activeProduct) return;
+  const d = getProductData(activeProduct);
+  d.costs.push({ desc:'', cat:'', amount: 0 });
+  save(); renderCostTable();
+}
+
+function deleteCost(i) {
+  if (!activeProduct) return;
+  const d = getProductData(activeProduct);
+  d.costs.splice(i, 1);
+  save(); renderCostTable(); renderKPIs(); renderCharts();
+}
+
+// ─── Product modal ───
+function openAddProduct() {
+  editingProduct = null;
+  document.getElementById('modal-title').textContent = 'Add Product';
+  document.getElementById('modal-name').value = '';
+  document.getElementById('modal-color').value = COLORS[state.products.length % COLORS.length];
+  document.getElementById('modal-save').textContent = 'Add';
+  document.getElementById('product-modal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('modal-name').focus(), 50);
+}
+
+function openEditProduct() {
+  if (!activeProduct) return;
+  const p = state.products.find(x => x.id === activeProduct);
+  editingProduct = p.id;
+  document.getElementById('modal-title').textContent = 'Rename Product';
+  document.getElementById('modal-name').value = p.name;
+  document.getElementById('modal-color').value = p.color;
+  document.getElementById('modal-save').textContent = 'Save';
+  document.getElementById('product-modal').classList.remove('hidden');
+  setTimeout(() => document.getElementById('modal-name').focus(), 50);
+}
+
+function closeModal() { document.getElementById('product-modal').classList.add('hidden'); }
+
+function saveProduct() {
+  const name  = document.getElementById('modal-name').value.trim();
+  const color = document.getElementById('modal-color').value;
+  if (!name) return;
+
+  if (editingProduct) {
+    const p = state.products.find(x => x.id === editingProduct);
+    p.name = name; p.color = color;
+  } else {
+    const p = { id: uid(), name, color };
+    state.products.push(p);
+    state.periods.forEach(period => {
+      if (!state.data[period]) state.data[period] = {};
+      state.data[period][p.id] = { revenue:0, unitsSold:0, unitCost:0, costs:[] };
+    });
+    activeProduct = p.id;
+  }
+  closeModal(); save(); render();
+}
+
+function deleteProduct() {
+  if (!activeProduct || state.products.length <= 1) return;
+  if (!confirm('Delete this product?')) return;
+  state.products = state.products.filter(p => p.id !== activeProduct);
+  state.periods.forEach(period => {
+    if (state.data[period]) delete state.data[period][activeProduct];
+  });
+  activeProduct = state.products[0]?.id || null;
+  save(); render();
+}
+
+// ─── Formatting ───
+function fmt(n)  { return Math.abs(n) >= 1000 ? fmtShort(n) : n.toFixed(0); }
+function fmtDollar(n) { return (n<0?'-$':'$') + Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtShort(n) {
+  const a = Math.abs(n);
+  if (a >= 1e6) return (n/1e6).toFixed(1)+'M';
+  if (a >= 1e3) return (n/1e3).toFixed(1)+'K';
+  return n.toFixed(0);
+}
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ─── Modal keyboard ───
+document.getElementById('product-modal').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveProduct();
+  if (e.key === 'Escape') closeModal();
+});
+
+// ─── BOOT ───
+window.addEventListener('load', async () => {
+  const splash = document.getElementById('splash');
+  const bar    = document.getElementById('splash_bar');
+  bar.style.width = '40%';
+
+  // ─── Auth Gate + Cloud Sync ───
+  try {
+    const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
+    if (cfg.supabaseUrl && cfg.supabaseAnonKey) {
+      const { createClient } = supabase;
+      window.__sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+      const { data: { session } } = await window.__sb.auth.getSession();
+      if (!session) { window.location.replace('/'); return; }
+      window.__sbUser = session.user;
+
+      bar.style.width = '70%';
+
+      // Pre-load cloud data
+      const { data: row } = await window.__sb.from('user_data')
+        .select('data').eq('user_id', session.user.id).maybeSingle();
+      if (row?.data) localStorage.setItem(LS_KEY, JSON.stringify(row.data));
+
+      // User bar in nav
+      const navRight = document.getElementById('nav-right');
+      const ubar = document.createElement('div');
+      ubar.style.cssText = 'display:flex;align-items:center;gap:8px;border-left:1px solid var(--bdr);padding-left:12px;margin-left:4px';
+      ubar.innerHTML =
+        `<span style="font-size:11px;font-family:var(--mono);color:var(--txt2);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${esc(session.user.email)}">${esc(session.user.email)}</span>` +
+        `<button class="nav-btn" onclick="window.__plLogout()">Sign out</button>`;
+      navRight.prepend(ubar);
+
+      window.__plLogout = async () => {
+        await window.__sb.auth.signOut();
+        window.location.replace('/');
+      };
+
+      // Cloud sync every 3s
+      let __lastSynced = localStorage.getItem(LS_KEY);
+      const syncDot = document.getElementById('sync-dot');
+      setInterval(async () => {
+        const cur = localStorage.getItem(LS_KEY);
+        if (!cur || cur === __lastSynced) return;
+        syncDot.className = 'sync-dot syncing';
+        __lastSynced = cur;
+        try {
+          await window.__sb.from('user_data').upsert(
+            { user_id: session.user.id, data: JSON.parse(cur), updated_at: new Date().toISOString() },
+            { onConflict: 'user_id' }
+          );
+          syncDot.className = 'sync-dot synced';
+          setTimeout(() => { syncDot.className = 'sync-dot'; }, 2000);
+        } catch(e) { syncDot.className = 'sync-dot'; }
+      }, 3000);
+    }
+  } catch(e) {}
+
+  bar.style.width = '100%';
+
+  // ─── Init app ───
+  load();
+  if (!activeProduct && state.products.length) activeProduct = state.products[0].id;
+  if (!activePeriod  && state.periods.length)  activePeriod  = state.periods[state.periods.length-1];
+
+  setTimeout(() => {
+    splash.style.opacity = '0';
+    splash.style.transition = 'opacity .3s';
+    setTimeout(() => splash.remove(), 300);
+    render();
+  }, 200);
+});
+</script>
+</body>
+</html>

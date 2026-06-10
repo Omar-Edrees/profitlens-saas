@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProfitLens Pro — Sign In</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:    #0d0f14;
+      --bg2:   #13161e;
+      --bg3:   #1a1e28;
+      --bdr:   #2a2f3d;
+      --bdr2:  #3a4055;
+      --txt:   #e8eaf0;
+      --txt2:  #8890a6;
+      --txt3:  #555e78;
+      --acc:   #5b6af5;
+      --acc2:  #4a58e8;
+      --grn:   #22c55e;
+      --red:   #ef4444;
+      --mono:  'JetBrains Mono', 'Fira Code', monospace;
+      --body:  'Inter', system-ui, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: var(--body);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(91,106,245,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(91,106,245,.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    .glow {
+      position: fixed; z-index: 0;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(91,106,245,.08) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -60%);
+      pointer-events: none;
+    }
+
+    .card {
+      position: relative; z-index: 1;
+      background: var(--bg2);
+      border: 1px solid var(--bdr);
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.5);
+    }
+
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 28px;
+    }
+    .logo-icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--acc), #8b5cf6);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .logo-text { font-size: 20px; font-weight: 700; letter-spacing: -.3px; }
+    .logo-text span { color: var(--acc); }
+
+    .tabs {
+      display: flex;
+      background: var(--bg3);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 28px;
+      gap: 4px;
+    }
+    .tab {
+      flex: 1; padding: 9px;
+      text-align: center; font-size: 13px; font-weight: 500;
+      border-radius: 7px; cursor: pointer;
+      border: none; background: transparent; color: var(--txt2);
+      transition: all .15s;
+    }
+    .tab.active { background: var(--bg2); color: var(--txt); box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+
+    label { display: block; font-size: 12px; color: var(--txt2); margin-bottom: 6px; font-weight: 500; }
+    .field { margin-bottom: 16px; }
+
+    input[type=email], input[type=password] {
+      width: 100%; padding: 10px 14px;
+      background: var(--bg3); border: 1px solid var(--bdr);
+      border-radius: 9px; color: var(--txt); font-size: 14px;
+      font-family: var(--body); outline: none;
+      transition: border-color .15s;
+    }
+    input:focus { border-color: var(--acc); }
+    input::placeholder { color: var(--txt3); }
+
+    .btn {
+      width: 100%; padding: 11px;
+      background: var(--acc); color: #fff;
+      border: none; border-radius: 9px;
+      font-size: 14px; font-weight: 600;
+      cursor: pointer; font-family: var(--body);
+      transition: background .15s, opacity .15s;
+      margin-top: 4px;
+    }
+    .btn:hover { background: var(--acc2); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 20px 0; color: var(--txt3); font-size: 12px;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--bdr);
+    }
+
+    .msg {
+      margin-top: 14px; padding: 10px 14px;
+      border-radius: 8px; font-size: 13px; display: none;
+    }
+    .msg.error { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); color: #fca5a5; }
+    .msg.success { background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.3); color: #86efac; }
+    .msg.show { display: block; }
+
+    .terms {
+      margin-top: 20px; font-size: 11px; color: var(--txt3);
+      text-align: center; line-height: 1.5;
+    }
+
+    #pane-signup { display: none; }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="glow"></div>
+
+  <div class="card">
+    <div class="logo">
+      <div class="logo-icon">📊</div>
+      <div class="logo-text">Profit<span>Lens</span> Pro</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
+      <button class="tab" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
+    </div>
+
+    <!-- Sign In -->
+    <div id="pane-signin">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="si-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="si-pass" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn" id="si-btn" onclick="doSignIn()">Sign In</button>
+      <div class="msg" id="si-msg"></div>
+    </div>
+
+    <!-- Sign Up -->
+    <div id="pane-signup">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="su-email" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="su-pass" placeholder="Min. 8 characters" autocomplete="new-password">
+      </div>
+      <div class="field">
+        <label>Confirm Password</label>
+        <input type="password" id="su-pass2" placeholder="••••••••" autocomplete="new-password">
+      </div>
+      <button class="btn" id="su-btn" onclick="doSignUp()">Create Account</button>
+      <div class="msg" id="su-msg"></div>
+    </div>
+
+    <div class="terms">
+      By continuing, you agree to our Terms of Service and Privacy Policy.
+    </div>
+  </div>
+
+  <script>
+    let __sb = null;
+
+    async function init() {
+      try {
+        const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
+        if (cfg.supabaseUrl && cfg.supabaseAnonKey) {
+          const { createClient } = supabase;
+          __sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+          const { data: { session } } = await __sb.auth.getSession();
+          if (session) window.location.replace('/app');
+        }
+      } catch(e) {}
+    }
+
+    function switchTab(tab) {
+      document.getElementById('pane-signin').style.display = tab === 'signin' ? '' : 'none';
+      document.getElementById('pane-signup').style.display = tab === 'signup' ? '' : 'none';
+      document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
+      document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+    }
+
+    function showMsg(id, text, type) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'msg ' + type + ' show';
+    }
+
+    async function doSignIn() {
+      if (!__sb) return showMsg('si-msg', 'Service unavailable — please try again later.', 'error');
+      const email = document.getElementById('si-email').value.trim();
+      const pass  = document.getElementById('si-pass').value;
+      if (!email || !pass) return showMsg('si-msg', 'Please fill in all fields.', 'error');
+
+      const btn = document.getElementById('si-btn');
+      btn.disabled = true; btn.textContent = 'Signing in…';
+
+      const { error } = await __sb.auth.signInWithPassword({ email, password: pass });
+      btn.disabled = false; btn.textContent = 'Sign In';
+
+      if (error) return showMsg('si-msg', error.message, 'error');
+      window.location.replace('/app');
+    }
+
+    async function doSignUp() {
+      if (!__sb) return showMsg('su-msg', 'Service unavailable — please try again later.', 'error');
+      const email = document.getElementById('su-email').value.trim();
+      const pass  = document.getElementById('su-pass').value;
+      const pass2 = document.getElementById('su-pass2').value;
+
+      if (!email || !pass || !pass2) return showMsg('su-msg', 'Please fill in all fields.', 'error');
+      if (pass.length < 8) return showMsg('su-msg', 'Password must be at least 8 characters.', 'error');
+      if (pass !== pass2) return showMsg('su-msg', 'Passwords do not match.', 'error');
+
+      const btn = document.getElementById('su-btn');
+      btn.disabled = true; btn.textContent = 'Creating account…';
+
+      const { error } = await __sb.auth.signUp({ email, password: pass });
+      btn.disabled = false; btn.textContent = 'Create Account';
+
+      if (error) return showMsg('su-msg', error.message, 'error');
+      showMsg('su-msg', 'Account created! Check your email to confirm, then sign in.', 'success');
+    }
+
+    // Enter key support
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Enter') return;
+      const active = document.getElementById('pane-signin').style.display !== 'none' ? 'signin' : 'signup';
+      if (active === 'signin') doSignIn();
+      else doSignUp();
+    });
+
+    init();
+  </script>
+</body>
+</html>
