@@ -6103,9 +6103,10 @@ function saveCurrentProduct(){
 function loadProduct(idx){
   const prod = PRODUCTS[idx];
   if(!prod) return;
+  const pdata = prod.data || (prod.data = {});
   INPUT_IDS.forEach(id => {
     const el = document.getElementById(id);
-    if(el) el.value = prod.data[id] !== undefined ? prod.data[id] : '';
+    if(el) el.value = pdata[id] !== undefined ? pdata[id] : '';
   });
   calc();
 }
@@ -6578,6 +6579,19 @@ function renameProduct(idx, name){
 // ── LOCALSTORAGE PERSISTENCE ────────────────
 const LS_KEY = 'profitlens_v6';
 
+// Validate a saved/cloud state matches the expected v6 schema.
+// Guards against data from older/incompatible app versions corrupting the app.
+function isValidState(state){
+  if(!state || typeof state !== 'object') return false;
+  if(!Array.isArray(state.products) || state.products.length === 0) return false;
+  // Every product must be an object with a plain-object `data` field.
+  return state.products.every(p =>
+    p && typeof p === 'object' &&
+    typeof p.name === 'string' &&
+    p.data && typeof p.data === 'object' && !Array.isArray(p.data)
+  );
+}
+
 function persistSave(){
   try{
     const state = {
@@ -6611,7 +6625,9 @@ function persistLoad(){
     const raw = localStorage.getItem(LS_KEY);
     if(!raw) return false;
     const state = JSON.parse(raw);
-    if(!state.products || !state.products.length) return false;
+    // Reject data that doesn't match the current schema (e.g. from an older
+    // version synced to the cloud). Clearing it lets the app boot with defaults.
+    if(!isValidState(state)){ localStorage.removeItem(LS_KEY); return false; }
 
     // restore products
     PRODUCTS.length = 0;
@@ -7792,9 +7808,16 @@ document.addEventListener('touchend', function(e){
 window.addEventListener('load', ()=>{
   const splash = document.getElementById('splash');
   const bar    = document.getElementById('splash_bar');
+  // Dismiss helper + failsafe: scheduled before any code that could throw, so
+  // the splash is ALWAYS removed even if initialization fails for any reason.
+  const __dismissSplash = ()=>{
+    if(!splash) return;
+    splash.style.opacity = '0';
+    setTimeout(()=>{ splash.style.display = 'none'; }, 300);
+  };
+  setTimeout(__dismissSplash, 3000);
   // animate bar quickly then hide
-  bar.style.width = '60%';
-  setTimeout(()=>{ bar.style.width = '100%'; }, 80);
+  if(bar){ bar.style.width = '60%'; setTimeout(()=>{ bar.style.width = '100%'; }, 80); }
 
   // ── ProfitLens SaaS: Auth Gate + Cloud Sync (non-blocking) ──
   (async () => {
@@ -7808,12 +7831,14 @@ window.addEventListener('load', ()=>{
       if (!session) { window.location.replace('/'); return; }
       window.__sbUser = session.user;
 
-      // Pre-load cloud data into localStorage then re-init
+      // Pre-load cloud data into localStorage then re-init.
+      // Only accept data that matches the current schema — stale/foreign data
+      // would otherwise corrupt localStorage and crash the app on next load.
       const { data: row } = await window.__sb.from('user_data')
         .select('data').eq('user_id', session.user.id).maybeSingle();
-      if (row?.data) {
+      if (row?.data && isValidState(row.data)) {
         localStorage.setItem(LS_KEY, JSON.stringify(row.data));
-        initProducts();
+        try { initProducts(); } catch(e){}
       }
 
       // User bar in nav
@@ -7939,10 +7964,7 @@ window.addEventListener('load', ()=>{
   _simUpdateUI();
   renderExportPreview();
 
-  setTimeout(()=>{
-    splash.style.opacity = '0';
-    setTimeout(()=>{ splash.style.display = 'none'; }, 300);
-  }, 200);
+  setTimeout(__dismissSplash, 200);
 });
 
 // ── Revenue Shipping Toggle ────────────────────────────────────────────────
