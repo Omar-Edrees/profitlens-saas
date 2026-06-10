@@ -7798,11 +7798,20 @@ window.addEventListener('load', async ()=>{
 
   // ── ProfitLens SaaS: Auth Gate + Cloud Sync ──
   try {
-    const cfg = await fetch('/api/config').then(r=>r.json()).catch(()=>({}));
-    if (cfg.supabaseUrl && cfg.supabaseAnonKey) {
+    const _authDone = (async () => {
+      const cfg = await Promise.race([
+        fetch('/api/config').then(r=>r.json()),
+        new Promise(r => setTimeout(()=>r({}), 4000))
+      ]).catch(()=>({}));
+      if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) return;
+
       const { createClient } = supabase;
       window.__sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
-      const { data: { session } } = await window.__sb.auth.getSession();
+
+      const { data: { session } } = await Promise.race([
+        window.__sb.auth.getSession(),
+        new Promise((_,rej) => setTimeout(()=>rej(new Error('timeout')), 5000))
+      ]);
       if (!session) { window.location.replace('/'); return; }
       window.__sbUser = session.user;
 
@@ -7841,7 +7850,9 @@ window.addEventListener('load', async ()=>{
           );
         } catch(e){}
       }, 3000);
-    }
+    })();
+
+    await Promise.race([_authDone, new Promise(r => setTimeout(r, 6000))]);
   } catch(e) {}
 
   // ── CDN health check — warns user if Chart.js/XLSX failed to load ──
