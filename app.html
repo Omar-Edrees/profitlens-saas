@@ -7880,6 +7880,14 @@ window.addEventListener('load', ()=>{
       if (!session) { window.location.replace('/'); return; }
       window.__sbUser = session.user;
 
+      // Plan gate — free users go to pricing page
+      const { data: profile } = await window.__sb.from('profiles')
+        .select('plan').eq('id', session.user.id).maybeSingle();
+      if (!profile?.plan || profile.plan === 'free') {
+        window.location.replace('/pricing');
+        return;
+      }
+
       // Pre-load cloud data into localStorage then re-init.
       // Only accept data that matches the current schema — stale/foreign data
       // would otherwise corrupt localStorage and crash the app on next load.

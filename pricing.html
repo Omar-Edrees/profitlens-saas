@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProfitLens Pro — Pricing</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:   #0d0f14;
+      --bg2:  #13161e;
+      --bg3:  #1a1e28;
+      --bdr:  #2a2f3d;
+      --bdr2: #3a4055;
+      --txt:  #e8eaf0;
+      --txt2: #8890a6;
+      --txt3: #555e78;
+      --acc:  #5b6af5;
+      --grn:  #22c55e;
+      --body: 'Inter', system-ui, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: var(--body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px 60px;
+    }
+
+    .bg-grid {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(91,106,245,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(91,106,245,.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .glow {
+      position: fixed; z-index: 0; pointer-events: none;
+      width: 700px; height: 700px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(91,106,245,.07) 0%, transparent 70%);
+      top: 0; left: 50%; transform: translateX(-50%);
+    }
+
+    .wrap { position: relative; z-index: 1; width: 100%; max-width: 520px; }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; max-width: 520px;
+      position: relative; z-index: 1;
+      margin-bottom: 48px;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-icon {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--acc), #8b5cf6);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .logo-text { font-size: 17px; font-weight: 700; color: var(--txt); }
+    .logo-text span { color: var(--acc); }
+    .sign-out-link {
+      font-size: 12px; color: var(--txt3); cursor: pointer;
+      background: none; border: none; font-family: var(--body);
+      transition: color .15s;
+    }
+    .sign-out-link:hover { color: var(--txt2); }
+
+    /* ── HERO ── */
+    .hero { text-align: center; margin-bottom: 40px; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(91,106,245,.12); border: 1px solid rgba(91,106,245,.25);
+      border-radius: 20px; padding: 5px 14px;
+      font-size: 11px; font-weight: 600; color: var(--acc);
+      letter-spacing: .04em; text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .hero-title {
+      font-size: 32px; font-weight: 800; letter-spacing: -.5px;
+      line-height: 1.2; margin-bottom: 12px;
+    }
+    .hero-title span { color: var(--acc); }
+    .hero-sub { font-size: 15px; color: var(--txt2); line-height: 1.6; }
+
+    /* ── PRICING CARD ── */
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--bdr);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--acc), #8b5cf6);
+    }
+
+    .price-row {
+      display: flex; align-items: flex-end; gap: 6px;
+      margin-bottom: 6px;
+    }
+    .price-amount {
+      font-size: 48px; font-weight: 800; letter-spacing: -1px;
+      color: var(--txt); font-family: var(--mono);
+      line-height: 1;
+    }
+    .price-currency {
+      font-size: 20px; font-weight: 700; color: var(--txt2);
+      margin-bottom: 6px;
+    }
+    .price-period {
+      font-size: 13px; color: var(--txt3); margin-bottom: 6px;
+    }
+    .price-desc { font-size: 13px; color: var(--txt2); margin-bottom: 28px; }
+
+    .features { list-style: none; margin-bottom: 28px; display: flex; flex-direction: column; gap: 12px; }
+    .feature {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 14px; color: var(--txt2);
+    }
+    .feature-check {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.25);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px;
+      color: var(--grn); font-size: 10px;
+    }
+    .feature strong { color: var(--txt); font-weight: 600; }
+
+    /* ── PAYMENT STEPS ── */
+    .pay-title {
+      font-size: 13px; font-weight: 600; color: var(--txt2);
+      text-transform: uppercase; letter-spacing: .06em;
+      margin-bottom: 16px;
+    }
+    .steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+    .step {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: var(--bg3); border: 1px solid var(--bdr);
+      border-radius: 12px; padding: 14px;
+    }
+    .step-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--acc); color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0;
+    }
+    .step-body { flex: 1; min-width: 0; }
+    .step-label { font-size: 13px; font-weight: 600; color: var(--txt); margin-bottom: 4px; }
+    .step-note { font-size: 12px; color: var(--txt2); line-height: 1.5; }
+
+    .copy-row {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg); border: 1px solid var(--bdr2);
+      border-radius: 8px; padding: 8px 12px; margin-top: 6px;
+    }
+    .copy-val {
+      flex: 1; font-family: var(--mono); font-size: 13px;
+      color: var(--txt); word-break: break-all;
+    }
+    .copy-btn {
+      background: var(--bg3); border: 1px solid var(--bdr2);
+      border-radius: 6px; padding: 4px 10px;
+      font-size: 11px; color: var(--txt2); cursor: pointer;
+      font-family: var(--body); transition: all .15s; white-space: nowrap;
+    }
+    .copy-btn:hover { background: var(--bdr2); color: var(--txt); }
+    .copy-btn.copied { background: rgba(34,197,94,.15); color: var(--grn); border-color: rgba(34,197,94,.3); }
+
+    /* ── CTA ── */
+    .btn-wa {
+      width: 100%; padding: 14px;
+      background: #25d366; color: #fff;
+      border: none; border-radius: 12px;
+      font-size: 15px; font-weight: 700;
+      cursor: pointer; font-family: var(--body);
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: opacity .15s, transform .1s;
+      text-decoration: none;
+    }
+    .btn-wa:hover { opacity: .9; transform: translateY(-1px); }
+    .btn-wa:active { transform: translateY(0); }
+
+    .note-box {
+      background: rgba(91,106,245,.07);
+      border: 1px solid rgba(91,106,245,.18);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 12px; color: var(--txt2);
+      line-height: 1.6;
+      margin-top: 0;
+    }
+    .note-box strong { color: var(--acc); }
+
+    /* ── TRUST ── */
+    .trust {
+      display: flex; justify-content: center; gap: 24px;
+      margin-top: 28px; flex-wrap: wrap;
+    }
+    .trust-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--txt3);
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 24px 16px 48px; }
+      .topbar { margin-bottom: 32px; }
+      .hero-title { font-size: 26px; }
+      .card { padding: 22px; }
+      .price-amount { font-size: 40px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="glow"></div>
+
+  <div class="topbar">
+    <a class="logo" href="/">
+      <div class="logo-icon">📊</div>
+      <div class="logo-text">Profit<span>Lens</span> Pro</div>
+    </a>
+    <button class="sign-out-link" id="sign-out-btn" style="display:none" onclick="doSignOut()">Sign out</button>
+  </div>
+
+  <div class="wrap">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-badge">💎 Full Access</div>
+      <h1 class="hero-title">One plan.<br><span>Everything included.</span></h1>
+      <p class="hero-sub">احسب أرباحك، شحنك، وإعلاناتك في مكان واحد<br>بدون قيود.</p>
+    </div>
+
+    <!-- PRICING CARD -->
+    <div class="card">
+      <div class="price-row">
+        <span class="price-currency">EGP</span>
+        <span class="price-amount" id="price-amount">XXX</span>
+        <span class="price-period">/ month</span>
+      </div>
+      <p class="price-desc">اشتراك شهري — ألغيه في أي وقت</p>
+
+      <ul class="features">
+        <li class="feature">
+          <div class="feature-check">✓</div>
+          <span><strong>منتجات غير محدودة</strong> — أضف قدر ما عايز</span>
+        </li>
+        <li class="feature">
+          <div class="feature-check">✓</div>
+          <span><strong>Cloud Sync</strong> — بياناتك محفوظة على الكلاود</span>
+        </li>
+        <li class="feature">
+          <div class="feature-check">✓</div>
+          <span><strong>تحليل الإعلانات والشحن</strong> — كل الأقسام متاحة</span>
+        </li>
+        <li class="feature">
+          <div class="feature-check">✓</div>
+          <span><strong>Overview شامل</strong> — صورة كاملة عن أرباحك</span>
+        </li>
+        <li class="feature">
+          <div class="feature-check">✓</div>
+          <span><strong>كل العملات</strong> — EGP, USD, EUR وأكتر</span>
+        </li>
+        <li class="feature">
+          <div class="feature-check">✓</div>
+          <span><strong>تحديثات مستمرة</strong> — كل الـ features الجديدة تلقائي</span>
+        </li>
+      </ul>
+
+      <!-- PAYMENT STEPS -->
+      <p class="pay-title">خطوات الاشتراك</p>
+      <div class="steps">
+
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-label">حوّل المبلغ عبر InstaPay أو Vodafone Cash</div>
+            <div class="step-note">حوّل المبلغ على الرقم ده:</div>
+            <div class="copy-row">
+              <span class="copy-val" id="payment-number">01X-XXXX-XXXX</span>
+              <button class="copy-btn" onclick="copyNumber()">Copy</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-label">ابعت صورة الإيصال على واتساب</div>
+            <div class="step-note">مع إيميلك اللي سجلت بيه في التطبيق عشان نفعّل حسابك بسرعة.</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-label">التفعيل في أقل من 24 ساعة ⚡</div>
+            <div class="step-note">بعد التأكيد، حسابك هيتفعل تلقائي وتقدر تدخل على التطبيق فوراً.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <a class="btn-wa" id="wa-btn" href="#" target="_blank" rel="noopener">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        ابعت إيصال الدفع على واتساب
+      </a>
+    </div>
+
+    <div class="note-box">
+      <strong>ملاحظة:</strong> بعد تحويل المبلغ، ابعت على واتساب <strong>صورة الإيصال</strong> + <strong>إيميلك</strong> اللي سجلت بيه في التطبيق. هيتم تفعيل حسابك في أقل من 24 ساعة.
+    </div>
+
+    <div class="trust">
+      <div class="trust-item">🔒 بياناتك محمية</div>
+      <div class="trust-item">⚡ تفعيل سريع</div>
+      <div class="trust-item">💬 دعم واتساب</div>
+    </div>
+
+  </div>
+
+  <script>
+    // ── CONFIG — عدّل الأرقام دي حسب بياناتك ──
+    const PRICE_EGP       = 'XXX';            // ← حط السعر هنا (مثلاً: 199)
+    const PAYMENT_NUMBER  = '01X-XXXX-XXXX';  // ← رقم InstaPay / Vodafone Cash
+    const WHATSAPP_NUMBER = '2010XXXXXXXX';    // ← رقمك على واتساب (بالكود الدولي بدون +)
+    // ────────────────────────────────────────
+
+    document.getElementById('price-amount').textContent  = PRICE_EGP;
+    document.getElementById('payment-number').textContent = PAYMENT_NUMBER;
+    document.getElementById('wa-btn').href =
+      'https://wa.me/' + WHATSAPP_NUMBER +
+      '?text=' + encodeURIComponent(
+        'مرحبا، عايز أشترك في ProfitLens Pro\n\nإيميلي: '
+      );
+
+    function copyNumber() {
+      navigator.clipboard.writeText(PAYMENT_NUMBER).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = 'Copied ✓';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+
+    // Auth check
+    let __sb = null;
+    async function init() {
+      try {
+        const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
+        if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) return;
+        const { createClient } = supabase;
+        __sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+        const { data: { session } } = await __sb.auth.getSession();
+        if (session) {
+          // If already paid, send to app
+          const { data: profile } = await __sb.from('profiles')
+            .select('plan').eq('id', session.user.id).maybeSingle();
+          if (profile?.plan && profile.plan !== 'free') {
+            window.location.replace('/app');
+            return;
+          }
+          document.getElementById('sign-out-btn').style.display = 'block';
+        }
+      } catch(e) {}
+    }
+
+    async function doSignOut() {
+      if (__sb) { try { await __sb.auth.signOut(); } catch(e){} }
+      window.location.replace('/');
+    }
+
+    init();
+  </script>
+</body>
+</html>
