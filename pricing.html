@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,6 +53,7 @@
     /* ── TOPBAR ── */
     .topbar {
       display: flex; align-items: center; justify-content: space-between;
+      flex-direction: row-reverse;
       width: 100%; max-width: 520px;
       position: relative; z-index: 1;
       margin-bottom: 48px;
@@ -109,7 +110,7 @@
 
     .price-row {
       display: flex; align-items: flex-end; gap: 6px;
-      margin-bottom: 6px;
+      margin-bottom: 6px; flex-direction: row-reverse; justify-content: flex-end;
     }
     .price-amount {
       font-size: 48px; font-weight: 800; letter-spacing: -1px;
@@ -148,6 +149,7 @@
     .steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
     .step {
       display: flex; align-items: flex-start; gap: 12px;
+      flex-direction: row-reverse;
       background: var(--bg3); border: 1px solid var(--bdr);
       border-radius: 12px; padding: 14px;
     }
@@ -157,7 +159,7 @@
       display: flex; align-items: center; justify-content: center;
       font-size: 11px; font-weight: 700; flex-shrink: 0;
     }
-    .step-body { flex: 1; min-width: 0; }
+    .step-body { flex: 1; min-width: 0; text-align: right; }
     .step-label { font-size: 13px; font-weight: 600; color: var(--txt); margin-bottom: 4px; }
     .step-note { font-size: 12px; color: var(--txt2); line-height: 1.5; }
 
@@ -165,10 +167,11 @@
       display: flex; align-items: center; gap: 8px;
       background: var(--bg); border: 1px solid var(--bdr2);
       border-radius: 8px; padding: 8px 12px; margin-top: 6px;
+      direction: ltr;
     }
     .copy-val {
       flex: 1; font-family: var(--mono); font-size: 13px;
-      color: var(--txt); word-break: break-all;
+      color: var(--txt); word-break: break-all; text-align: left;
     }
     .copy-btn {
       background: var(--bg3); border: 1px solid var(--bdr2);
