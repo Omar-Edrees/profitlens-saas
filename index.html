@@ -214,8 +214,8 @@
     }
 
     function switchTab(tab) {
-      document.getElementById('pane-signin').style.display = tab === 'signin' ? '' : 'none';
-      document.getElementById('pane-signup').style.display = tab === 'signup' ? '' : 'none';
+      document.getElementById('pane-signin').style.display = tab === 'signin' ? 'block' : 'none';
+      document.getElementById('pane-signup').style.display = tab === 'signup' ? 'block' : 'none';
       document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
       document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
     }
