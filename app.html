@@ -1444,7 +1444,7 @@ input[type=range]::-moz-range-thumb{
         <span class="curr-arrow">▾</span>
       </button>
       <div class="curr-menu" id="curr_menu">
-        <div class="curr-menu-title">Select Currency</div>
+        <div class="curr-menu-title" data-t="curr_menu_title">Select Currency</div>
         <div class="curr-options" id="curr_options"></div>
       </div>
     </div>
@@ -1464,7 +1464,7 @@ input[type=range]::-moz-range-thumb{
 <!-- ═══════ SECTION 0 — INPUTS ═══════ -->
 <section class="section s0 active" id="s0">
   <div class="section-header">
-    <div class="section-eyebrow"><span class="num">01</span data-t="sec0_eye">Configuration</div>
+    <div class="section-eyebrow"><span class="num">01</span><span data-t="sec0_eye">Configuration</span></div>
     <div class="section-title" data-t="sec0_title">Your product inputs</div>
     <div class="section-sub" data-t="sec0_sub">Fill in your numbers once — all sections update instantly.</div>
   </div>
@@ -1492,7 +1492,7 @@ input[type=range]::-moz-range-thumb{
   <div class="input-groups">
 
     <div class="input-card">
-      <div class="input-card-title"><span class="ic-dot" style="background:var(--c1)"></span data-t="card_pricing">Pricing</div>
+      <div class="input-card-title"><span class="ic-dot" style="background:var(--c1)"></span><span data-t="card_pricing">Pricing</span></div>
       <div class="field"><label data-t="lbl_sell_price">Selling price</label><div class="f-row"><input type="number" id="i_price" value="" oninput="dCalc();cfRecalc()"><span class="unit">EGP</span></div></div>
       <div class="field"><label data-t="lbl_prod_cost">Product cost</label><div class="f-row"><input type="number" id="i_cost" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
       <div class="field"><label data-t="lbl_avg_units">Avg units / order</label><div class="f-row"><input type="number" id="i_units" value="1" min="0.1" step="0.1" oninput="dCalc()"><span class="unit">units</span></div></div>
@@ -1500,7 +1500,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="input-card">
-      <div class="input-card-title"><span class="ic-dot" style="background:var(--c3)"></span data-t="card_fulfill">Shipping & Delivery costs</div>
+      <div class="input-card-title"><span class="ic-dot" style="background:var(--c3)"></span><span data-t="card_fulfill">Shipping & Delivery costs</span></div>
       <div class="field"><label data-t="lbl_ff_del">Fulfillment fee — delivered order</label><div class="f-row"><input type="number" id="i_fulfill_del" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
       <div class="field"><label data-t="lbl_ff_ret">Total return cost (all-in) <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_ff_ret">Total cost per returned order — includes courier return trip + return fulfillment fee + any other charges.<br>In Egypt, couriers charge for both legs (delivery + return) even if customer refused.<br>Example: 70 EGP courier + 35 EGP return fulfillment = 105 EGP</span></span></label><div class="f-row"><input type="number" id="i_fulfill_ret" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
       <div class="field"><label data-t="lbl_courier">Avg. shipping cost (your cost)</label><div class="f-row"><input type="number" id="i_courier" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
@@ -1518,7 +1518,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="input-card">
-      <div class="input-card-title"><span class="ic-dot" style="background:var(--c4)"></span>Commissions & Fees</div>
+      <div class="input-card-title"><span class="ic-dot" style="background:var(--c4)"></span><span data-t="card_fees">Commissions & Fees</span></div>
 
       <!-- 1. Commission on delivered orders -->
       <div class="field">
@@ -1530,7 +1530,7 @@ input[type=range]::-moz-range-thumb{
 
       <!-- 2. Payment gateway fee -->
       <div class="field">
-        <label>Payment gateway fee
+        <label data-t="lbl_gateway">Payment gateway fee
           <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_gateway">% taken by the payment gateway on every delivered order — e.g. Paymob, Stripe, PayTabs.</span></span>
         </label>
         <div class="f-row"><input type="number" id="i_gateway_fee" value="" min="0" max="100" placeholder="e.g. 2.5" oninput="dCalc();cfRecalc()"><span class="unit">%</span></div>
@@ -1558,7 +1558,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="input-card">
-      <div class="input-card-title"><span class="ic-dot" style="background:var(--c2)"></span>Media buying</div>
+      <div class="input-card-title"><span class="ic-dot" style="background:var(--c2)"></span><span data-t="card_media">Media buying & fixed costs</span></div>
 
       <!-- Total budget -->
       <div class="field">
@@ -1588,7 +1588,7 @@ input[type=range]::-moz-range-thumb{
           color:var(--txt3);font-size:11px;cursor:pointer;padding:6px 12px;
           font-family:inherit;width:100%;justify-content:center;transition:all .2s">
           <span id="mb_adv_arrow" style="transition:transform .25s;display:inline-block;font-size:9px">▶</span>
-          <span>Advanced options</span>
+          <span data-t="adv_title">Advanced options</span>
         </button>
       </div>
 
@@ -2226,7 +2226,7 @@ input[type=range]::-moz-range-thumb{
 
     <!-- ═══ FIXED COSTS BLOCK ═══ -->
     <div class="input-card" id="fc_card">
-      <div class="input-card-title"><span class="ic-dot" style="background:var(--c3)"></span>Fixed costs</div>
+      <div class="input-card-title"><span class="ic-dot" style="background:var(--c3)"></span><span data-t="card_fixed">Fixed costs</span></div>
 
       <!-- Single input -->
       <div class="field">
@@ -2529,7 +2529,7 @@ input[type=range]::-moz-range-thumb{
 <!-- ═══════ SECTION 1 — MARKETING ═══════ -->
 <section class="section s1" id="s1">
   <div class="section-header">
-    <div class="section-eyebrow"><span class="num">02</span data-t="sec1_eye">Marketing analytics</div>
+    <div class="section-eyebrow"><span class="num">02</span><span data-t="sec1_eye">Ad analytics</span></div>
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
       <div class="section-title" id="s1_title">Ad spend & CPA analysis</div>
       <div style="display:flex;align-items:center;gap:8px">
@@ -2551,26 +2551,26 @@ input[type=range]::-moz-range-thumb{
   <!-- ALL PRODUCTS — Marketing Summary -->
   <div id="ap_mkt_panel" style="display:none">
     <div class="kpi-row">
-      <div class="kpi" style="--kc:var(--c1)"><div class="kpi-lbl">Total Ad Budget</div><div class="kpi-val" id="ap_m_budget" style="color:var(--c1)">—</div><div class="kpi-hint">All products combined</div></div>
-      <div class="kpi" style="--kc:var(--c2)"><div class="kpi-lbl">Blended CPA</div><div class="kpi-val" id="ap_m_cpa" style="color:var(--c2)">—</div><div class="kpi-hint">Total budget ÷ total leads</div></div>
-      <div class="kpi" style="--kc:var(--c4)"><div class="kpi-lbl">Blended ROAS</div><div class="kpi-val" id="ap_m_roas" style="color:var(--c4)">—</div><div class="kpi-hint">Total revenue ÷ total ads</div></div>
-      <div class="kpi" style="--kc:var(--c3)"><div class="kpi-lbl">Weighted BE CPA</div><div class="kpi-val" id="ap_m_becpa" style="color:var(--c3)">—</div><div class="kpi-hint">Weighted break-even across products</div></div>
-      <div class="kpi" style="--kc:var(--txt2)"><div class="kpi-lbl">Total Leads</div><div class="kpi-val" id="ap_m_leads" style="color:var(--txt)">—</div><div class="kpi-hint">All incoming leads</div></div>
-      <div class="kpi" style="--kc:var(--c3)"><div class="kpi-lbl">Total Confirmed</div><div class="kpi-val" id="ap_m_conf" style="color:var(--c3)">—</div><div class="kpi-hint">After confirmation rates</div></div>
-      <div class="kpi" style="--kc:var(--c4)"><div class="kpi-lbl">Total Delivered</div><div class="kpi-val" id="ap_m_del" style="color:var(--c4)">—</div><div class="kpi-hint">After delivery rates</div></div>
+      <div class="kpi" style="--kc:var(--c1)"><div class="kpi-lbl" data-t="ap_total_budget">Total Ad Budget</div><div class="kpi-val" id="ap_m_budget" style="color:var(--c1)">—</div><div class="kpi-hint" data-t="ap_total_budget_hint">All products combined</div></div>
+      <div class="kpi" style="--kc:var(--c2)"><div class="kpi-lbl" data-t="ap_blended_cpa_lbl">Blended CPA</div><div class="kpi-val" id="ap_m_cpa" style="color:var(--c2)">—</div><div class="kpi-hint" data-t="ap_blended_cpa_hint">Total budget ÷ total leads</div></div>
+      <div class="kpi" style="--kc:var(--c4)"><div class="kpi-lbl" data-t="ap_blended_roas_lbl">Blended ROAS</div><div class="kpi-val" id="ap_m_roas" style="color:var(--c4)">—</div><div class="kpi-hint" data-t="ap_blended_roas_hint">Total revenue ÷ total ads</div></div>
+      <div class="kpi" style="--kc:var(--c3)"><div class="kpi-lbl" data-t="ap_weighted_be_lbl">Weighted BE CPA</div><div class="kpi-val" id="ap_m_becpa" style="color:var(--c3)">—</div><div class="kpi-hint" data-t="ap_weighted_be_hint">Weighted break-even across products</div></div>
+      <div class="kpi" style="--kc:var(--txt2)"><div class="kpi-lbl" data-t="ap_total_leads_lbl">Total Leads</div><div class="kpi-val" id="ap_m_leads" style="color:var(--txt)">—</div><div class="kpi-hint" data-t="hint_leads">All incoming leads</div></div>
+      <div class="kpi" style="--kc:var(--c3)"><div class="kpi-lbl" data-t="ap_total_conf_lbl">Total Confirmed</div><div class="kpi-val" id="ap_m_conf" style="color:var(--c3)">—</div><div class="kpi-hint" data-t="ap_after_conf_hint">After confirmation rates</div></div>
+      <div class="kpi" style="--kc:var(--c4)"><div class="kpi-lbl" data-t="ap_total_del_lbl">Total Delivered</div><div class="kpi-val" id="ap_m_del" style="color:var(--c4)">—</div><div class="kpi-hint" data-t="ap_after_del_hint">After delivery rates</div></div>
     </div>
     <!-- Per-product CPA comparison chart -->
     <div class="chart-card" style="margin-top:16px">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c2)"></span>CPA vs Break-even CPA — per product</div>
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c2)"></span><span data-t="ap_cpa_chart">CPA vs Break-even CPA — per product</span></div>
       <div class="ch-wrap"><canvas id="ap_ch_cpa"></canvas></div>
     </div>
     <div class="charts-2" style="margin-top:14px">
       <div class="chart-card">
-        <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span>Ad Budget — per product</div>
+        <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span><span data-t="ap_budget_chart">Ad Budget — per product</span></div>
         <div class="ch-wrap"><canvas id="ap_ch_budget"></canvas></div>
       </div>
       <div class="chart-card">
-        <div class="chart-lbl"><span class="cdot" style="background:var(--c4)"></span>Delivered Orders — per product</div>
+        <div class="chart-lbl"><span class="cdot" style="background:var(--c4)"></span><span data-t="ap_del_orders_chart">Delivered Orders — per product</span></div>
         <div class="ch-wrap"><canvas id="ap_ch_orders"></canvas></div>
       </div>
     </div>
@@ -2593,17 +2593,17 @@ input[type=range]::-moz-range-thumb{
     <div class="kpi" style="--kc:var(--c1)">
       <div class="kpi-lbl">Actual ROAS <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_actual_roas">Actual return on ad spend.<br>= (Selling price + customer shipping) × delivered orders ÷ ad budget<br>If below Break-even ROAS → business is losing.</span></span></div>
       <div class="kpi-val" id="m_actual_roas" style="color:var(--c1)">—</div>
-      <div class="kpi-hint">Revenue ÷ ad spend</div>
+      <div class="kpi-hint" data-t="hint_roas_rev">Revenue ÷ ad spend</div>
     </div>
     <div class="kpi" style="--kc:var(--c2)">
       <div class="kpi-lbl">Break-even CPA <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_be_cpa">Max CPA you can pay and still cover all business costs (product + shipping + ads + salary).<br>= (Profit/unit − Salary/unit) × Conf% × Del%<br>If Actual CPA exceeds this → you are losing on the whole business.</span></span></div>
       <div class="kpi-val" id="m_maxcpp" style="color:var(--c2)">—</div>
-      <div class="kpi-hint" data-t="hint_maxcpp">Full business break-even</div>
+      <div class="kpi-hint" data-t="hint_be_full">Full business break-even</div>
     </div>
     <div class="kpi" style="--kc:var(--c4)">
       <div class="kpi-lbl">Break-even ROAS <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_be_roas">Minimum ROAS needed to cover all business costs.<br>= (Price + ShipC) × Conf% × Del% ÷ Break-even CPA<br>If Actual ROAS is below this → business is losing.</span></span></div>
       <div class="kpi-val" id="m_be_roas" style="color:var(--c4)">—</div>
-      <div class="kpi-hint" id="m_roas_hint">Min to break even</div>
+      <div class="kpi-hint" id="m_roas_hint" data-t="hint_be_min">Min to break even</div>
     </div>
     <div class="kpi" style="--kc:var(--txt2)">
       <div class="kpi-lbl">Leads needed <span style="color:var(--txt3)">(ads)</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_leads_needed">Total leads needed from ads to sell all stock.<br>= Stock ÷ Del% ÷ Conf%</span></span></div>
@@ -2611,24 +2611,24 @@ input[type=range]::-moz-range-thumb{
       <div class="kpi-hint" data-t="hint_leads">All incoming leads</div>
     </div>
     <div class="kpi" style="--kc:var(--c3)">
-      <div class="kpi-lbl">Confirmed orders <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_confirmed">Confirmed orders from leads.<br>= Leads × Confirmation rate</span></span></div>
+      <div class="kpi-lbl"><span data-t="kpi_confirmed">Confirmed orders</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_confirmed">Confirmed orders from leads.<br>= Leads × Confirmation rate</span></span></div>
       <div class="kpi-val" id="m_confirmed" style="color:var(--c3)">—</div>
       <div class="kpi-hint" data-t="hint_confirmed">After confirmation rate</div>
     </div>
     <div class="kpi" style="--kc:var(--c4)">
-      <div class="kpi-lbl">Delivered orders <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_delivered">Actually delivered orders — your real sold units.<br>= Confirmed × Delivery rate</span></span></div>
+      <div class="kpi-lbl"><span data-t="kpi_delivered">Delivered orders</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_delivered">Actually delivered orders — your real sold units.<br>= Confirmed × Delivery rate</span></span></div>
       <div class="kpi-val" id="m_delivered" style="color:var(--c4)">—</div>
       <div class="kpi-hint" data-t="hint_delivered">After delivery rate</div>
     </div>
     <div class="kpi" style="--kc:var(--c1)">
       <div class="kpi-lbl">CPA Efficiency <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_cpa_eff">Current CPA efficiency vs max allowed.<br>= (BE CPA − Actual CPA) ÷ BE CPA × 100<br>Closer to 100% → safer.<br>Negative → CPA exceeded break-even, you are losing.</span></span></div>
       <div class="kpi-val" id="m_cpa_eff">—</div>
-      <div class="kpi-hint">vs break-even limit</div>
+      <div class="kpi-hint" data-t="hint_cpa_eff_s">vs break-even limit</div>
     </div>
     <div class="kpi" style="--kc:var(--c3)">
       <div class="kpi-lbl">Cost / Delivered Order <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_cost_del">Ad cost per actually delivered order.<br>= Ad budget ÷ Delivered Orders<br>This is the real commercial CPA — not per lead.</span></span></div>
       <div class="kpi-val" id="m_cost_per_del" style="color:var(--c3)">—</div>
-      <div class="kpi-hint">Ad budget ÷ delivered</div>
+      <div class="kpi-hint" data-t="hint_cost_del_s">Ad budget ÷ delivered</div>
     </div>
     <div class="kpi" style="--kc:var(--c2)">
       <div class="kpi-lbl">Lead → Order Rate <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_lead_order">Lead to delivered order conversion — funnel efficiency in one number.<br>= Delivered ÷ Leads × 100<br>= Conf% × Del%<br>Higher is better.</span></span></div>
@@ -2638,18 +2638,18 @@ input[type=range]::-moz-range-thumb{
     <div class="kpi" style="--kc:var(--red)">
       <div class="kpi-lbl">Wasted Ad Spend <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_wasted">Portion of ad budget spent on leads that did not convert to delivered orders.<br>= Budget × (1 − Conf% × Del%)<br>Not a total loss — confirmation cost is normal — but lower is better.</span></span></div>
       <div class="kpi-val" id="m_wasted_spend" style="color:var(--red)">—</div>
-      <div class="kpi-hint">Lost to undelivered leads</div>
+      <div class="kpi-hint" data-t="hint_wasted_s">Lost to undelivered leads</div>
     </div>
     <div class="kpi" style="--kc:var(--c1)">
       <div class="kpi-lbl">Spent on Delivered <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_spent_del">Portion of ad budget that produced actually delivered orders.<br>= Budget × (Conf% × Del%)<br>This is productive spend — higher is better.</span></span></div>
       <div class="kpi-val" id="m_spent_delivered" style="color:var(--c1)">—</div>
-      <div class="kpi-hint">Budget on real orders</div>
+      <div class="kpi-hint" data-t="hint_spent_s">Budget on real orders</div>
     </div>
   </div>
   <div id="m_net_delivered" style="display:none;font-size:12px;font-family:var(--mono);margin-top:-8px;margin-bottom:12px;padding:8px 12px;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);border-radius:var(--r);color:var(--red)">—</div>
 
   <div class="kpi-pool" id="kpi_pool">
-    <div class="kpi-pool-lbl">Hidden cards — click + to restore</div>
+    <div class="kpi-pool-lbl" data-t="kpi_pool_lbl">Hidden cards — click + to restore</div>
   </div>
 
   <!-- ── Ads Health Banner — moved below KPIs ── -->
@@ -2693,7 +2693,7 @@ input[type=range]::-moz-range-thumb{
 
     <!-- Chart 2: Budget Waterfall -->
     <div class="chart-card">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span>Where did your budget go?</div>
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span><span data-t="chart_budget_title">Where did your budget go?</span></div>
       <div class="ch-wrap"><canvas id="ch_budget_waterfall"></canvas></div>
       <div id="waterfall_summary" style="font-size:11px;color:var(--txt2);margin-top:8px;text-align:center"></div>
     </div>
@@ -2717,7 +2717,7 @@ input[type=range]::-moz-range-thumb{
   <!-- Target Profit Calculator -->
   <div class="target-profit-card">
     <div class="target-profit-title" onclick="toggleSection('tp_body','tp_toggle','tp_toggle_lbl')">
-      <div class="target-profit-title-left"><span>🎯</span> Target Profit Calculator</div>
+      <div class="target-profit-title-left"><span>🎯</span> <span data-t="tp_calc_title">Target Profit Calculator</span></div>
       <div class="scenario-toggle">
         <span id="tp_toggle_lbl">Show</span>
         <div class="toggle-track" id="tp_toggle"><div class="toggle-thumb"></div></div>
@@ -2848,13 +2848,13 @@ input[type=range]::-moz-range-thumb{
 
     <!-- Results -->
     <div class="target-profit-results">
-      <div class="tp-kpi"><div class="tp-kpi-lbl">Leads needed (ads)</div><div class="tp-kpi-val" id="roas_leads" style="color:var(--c3)">—</div><div class="tp-kpi-sub">total incoming</div></div>
-      <div class="tp-kpi"><div class="tp-kpi-lbl">Ad budget needed</div><div class="tp-kpi-val" id="roas_ad_budget" style="color:var(--c2)">—</div><div class="tp-kpi-sub">Revenue ÷ ROAS</div></div>
-      <div class="tp-kpi"><div class="tp-kpi-lbl">Net profit</div><div class="tp-kpi-val" id="roas_netprofit" style="color:var(--profit)">—</div><div class="tp-kpi-sub">after all costs</div></div>
-      <div class="tp-kpi"><div class="tp-kpi-lbl">Profit margin</div><div class="tp-kpi-val" id="roas_margin_pct" style="color:var(--c1)">—</div><div class="tp-kpi-sub">Net ÷ Revenue</div></div>
-      <div class="tp-kpi"><div class="tp-kpi-lbl">Break-even CPA</div><div class="tp-kpi-val" id="roas_becpp" style="color:var(--c1)">—</div><div class="tp-kpi-sub">max you can pay</div></div>
-      <div class="tp-kpi"><div class="tp-kpi-lbl">Break-even ROAS</div><div class="tp-kpi-val" id="roas_beroas" style="color:var(--c2)">—</div><div class="tp-kpi-sub">min to not lose</div></div>
-      <div class="tp-kpi"><div class="tp-kpi-lbl">Revenue expected</div><div class="tp-kpi-val" id="roas_rev" style="color:var(--c4)">—</div><div class="tp-kpi-sub">incl. shipping</div></div>
+      <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="roas_leads_lbl">Leads needed (ads)</div><div class="tp-kpi-val" id="roas_leads" style="color:var(--c3)">—</div><div class="tp-kpi-sub" data-t="hint_leads">All incoming leads</div></div>
+      <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="si_budget_lbl">Ad budget needed</div><div class="tp-kpi-val" id="roas_ad_budget" style="color:var(--c2)">—</div><div class="tp-kpi-sub">Revenue ÷ ROAS</div></div>
+      <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="roas_net_lbl">Net profit</div><div class="tp-kpi-val" id="roas_netprofit" style="color:var(--profit)">—</div><div class="tp-kpi-sub" data-t="roas_after_costs_lbl">after all costs</div></div>
+      <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="roas_margin_lbl">Profit margin</div><div class="tp-kpi-val" id="roas_margin_pct" style="color:var(--c1)">—</div><div class="tp-kpi-sub">Net ÷ Revenue</div></div>
+      <div class="tp-kpi"><div class="tp-kpi-lbl">Break-even CPA</div><div class="tp-kpi-val" id="roas_becpp" style="color:var(--c1)">—</div><div class="tp-kpi-sub" data-t="hint_be_full">Full business break-even</div></div>
+      <div class="tp-kpi"><div class="tp-kpi-lbl">Break-even ROAS</div><div class="tp-kpi-val" id="roas_beroas" style="color:var(--c2)">—</div><div class="tp-kpi-sub" data-t="hint_be_min">Min to break even</div></div>
+      <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="roas_rev_lbl">Expected revenue</div><div class="tp-kpi-val" id="roas_rev" style="color:var(--c4)">—</div><div class="tp-kpi-sub" data-t="hero_rev_sub">Total incl. shipping</div></div>
     </div>
 
     <!-- Verdict -->
@@ -2876,11 +2876,11 @@ input[type=range]::-moz-range-thumb{
     </div>
     <div class="collapsible-body" id="sl_body">
     <div style="margin-top:8px">
-    <button class="slider-sync-btn" id="sl_sync_btn" onclick="event.stopPropagation();syncSlidersFromInputs()" title="Reset sliders to current input values" style="margin-bottom:12px">↺ Sync from inputs</button>
+    <button class="slider-sync-btn" id="sl_sync_btn" onclick="event.stopPropagation();syncSlidersFromInputs()" data-t="sl_sync_btn" data-t-title="sl_sync_title" title="Reset sliders to current input values" style="margin-bottom:12px">↺ Sync from inputs</button>
     <!-- Slider: Selling price -->
     <div class="slider-row">
       <div class="slider-label">
-        <div class="slider-label-left"><span>Selling price</span><span class="sl-delta neu" id="sl_price_delta">base</span></div>
+        <div class="slider-label-left"><span data-t="lbl_sell_price">Selling price</span><span class="sl-delta neu" id="sl_price_delta" data-t="delta_base">base</span></div>
         <span class="sl-val" id="sl_price_val">600 EGP</span>
       </div>
       <input type="range" id="sl_price" min="100" max="3000" step="10" value="600" oninput="updateSlider('price')">
@@ -2888,7 +2888,7 @@ input[type=range]::-moz-range-thumb{
     <!-- Slider: Delivery rate -->
     <div class="slider-row">
       <div class="slider-label">
-        <div class="slider-label-left"><span>Delivery rate</span><span class="sl-delta neu" id="sl_del_delta">base</span></div>
+        <div class="slider-label-left"><span data-t="sl_del_lbl">Delivery rate</span><span class="sl-delta neu" id="sl_del_delta" data-t="delta_base">base</span></div>
         <span class="sl-val" id="sl_del_val">60%</span>
       </div>
       <input type="range" id="sl_del" min="10" max="100" step="1" value="60" oninput="updateSlider('del')">
@@ -2896,7 +2896,7 @@ input[type=range]::-moz-range-thumb{
     <!-- Slider: Confirmation rate -->
     <div class="slider-row">
       <div class="slider-label">
-        <div class="slider-label-left"><span>Confirmation rate</span><span class="sl-delta neu" id="sl_conf_delta">base</span></div>
+        <div class="slider-label-left"><span data-t="sl_conf_lbl">Confirmation rate</span><span class="sl-delta neu" id="sl_conf_delta" data-t="delta_base">base</span></div>
         <span class="sl-val" id="sl_conf_val">60%</span>
       </div>
       <input type="range" id="sl_conf" min="10" max="100" step="1" value="60" oninput="updateSlider('conf')">
@@ -2904,7 +2904,7 @@ input[type=range]::-moz-range-thumb{
     <!-- Slider: CPA (replaces Ad budget) -->
     <div class="slider-row">
       <div class="slider-label">
-        <div class="slider-label-left"><span>CPA</span><span class="sl-delta neu" id="sl_cpa_delta">base</span></div>
+        <div class="slider-label-left"><span>CPA</span><span class="sl-delta neu" id="sl_cpa_delta" data-t="delta_base">base</span></div>
         <span class="sl-val" id="sl_cpa_val">50 EGP</span>
       </div>
       <input type="range" id="sl_cpa" min="1" max="500" step="1" value="50" oninput="updateSlider('cpa')">
@@ -2912,12 +2912,12 @@ input[type=range]::-moz-range-thumb{
     <!-- Row 1: Leads needed + Revenue -->
     <div class="slider-impact-row2">
       <div class="si">
-        <div class="si-lbl">Leads needed</div>
+        <div class="si-lbl" data-t="si_leads_lbl">Leads needed</div>
         <div class="si-val" id="si_leads" style="color:var(--c3)">—</div>
         <div class="si-sub" id="si_leads_sub"></div>
       </div>
       <div class="si">
-        <div class="si-lbl">Revenue (all stock)</div>
+        <div class="si-lbl" data-t="si_rev_lbl">Revenue (all stock)</div>
         <div class="si-val" id="si_revenue" style="color:var(--txt)">—</div>
         <div class="si-sub" id="si_revenue_sub"></div>
       </div>
@@ -2925,7 +2925,7 @@ input[type=range]::-moz-range-thumb{
     <!-- Row 1b: Net profit (all stock) full width -->
     <div style="margin-top:8px">
       <div class="si si-highlight">
-        <div class="si-lbl">Net profit (all stock)</div>
+        <div class="si-lbl" data-t="si_net_lbl">Net profit (all stock)</div>
         <div class="si-val" id="si_netprofit">—</div>
         <div class="si-sub" id="si_netprofit_delta"></div>
       </div>
@@ -2933,12 +2933,12 @@ input[type=range]::-moz-range-thumb{
     <!-- Row 2: Margin profit/unit + Net profit/unit -->
     <div class="slider-impact-row2" style="margin-top:8px">
       <div class="si">
-        <div class="si-lbl">Margin profit / unit</div>
+        <div class="si-lbl" data-t="si_margin_pu_lbl">Margin profit / unit</div>
         <div class="si-val" id="si_profit" style="color:var(--profit)">—</div>
         <div class="si-sub" id="si_profit_delta"></div>
       </div>
       <div class="si">
-        <div class="si-lbl">Net profit / unit</div>
+        <div class="si-lbl" data-t="si_net_pu_lbl">Net profit / unit</div>
         <div class="si-val" id="si_margin_pu">—</div>
         <div class="si-sub" id="si_margin_pu_delta"></div>
       </div>
@@ -2951,7 +2951,7 @@ input[type=range]::-moz-range-thumb{
         <div class="si-sub" id="si_maxcpp_delta"></div>
       </div>
       <div class="si">
-        <div class="si-lbl">Ad budget needed</div>
+        <div class="si-lbl" data-t="si_budget_lbl">Ad budget needed</div>
         <div class="si-val" id="si_adbudget" style="color:var(--c3)">—</div>
         <div class="si-sub" id="si_adbudget_sub"></div>
       </div>
@@ -2959,12 +2959,12 @@ input[type=range]::-moz-range-thumb{
     <!-- Row 5: status pill full width -->
     <div style="margin-top:8px">
       <div class="si" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px">
-        <div class="si-lbl" style="margin-bottom:5px">Scenario status</div>
+        <div class="si-lbl" style="margin-bottom:5px" data-t="si_scenario_status">Scenario status</div>
         <div id="si_status_pill"><span class="si-status" style="background:var(--surf3);color:var(--txt3)">— —</span></div>
       </div>
     </div>
     <!-- Apply to inputs -->
-    <button class="slider-apply-btn" onclick="syncSliderToInputs()">⬆ Apply this scenario to inputs</button>
+    <button class="slider-apply-btn" onclick="syncSliderToInputs()" data-t="si_apply_btn">⬆ Apply this scenario to inputs</button>
     </div><!-- /sl_body inner -->
     </div><!-- /sl_body -->
   </div>
@@ -2976,7 +2976,7 @@ input[type=range]::-moz-range-thumb{
 <!-- ═══════ SECTION 2 — SHIPPING ═══════ -->
 <section class="section s2" id="s2">
   <div class="section-header">
-    <div class="section-eyebrow"><span class="num">03</span data-t="sec2_eye">Shipping analytics</div>
+    <div class="section-eyebrow"><span class="num">03</span><span data-t="sec2_eye">Shipping analytics</span></div>
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
       <div class="section-title" data-t="sec2_title">Fulfillment cost analysis</div>
       <div style="display:flex;align-items:center;gap:8px">
@@ -2998,13 +2998,13 @@ input[type=range]::-moz-range-thumb{
   <!-- ALL PRODUCTS — Shipping Summary -->
   <div id="ap_ship_panel" style="display:none">
     <div class="kpi-row">
-      <div class="kpi" style="--kc:var(--c3)"><div class="kpi-lbl">Avg Real Shipping / unit</div><div class="kpi-val" id="ap_sh_real" style="color:var(--c3)">—</div><div class="kpi-hint">Weighted across products</div></div>
-      <div class="kpi" style="--kc:var(--c1)"><div class="kpi-lbl">Avg Collected / unit</div><div class="kpi-val" id="ap_sh_collected" style="color:var(--c1)">—</div><div class="kpi-hint">Weighted across products</div></div>
-      <div class="kpi" style="--kc:var(--red)"><div class="kpi-lbl">Avg Net Shipping on you</div><div class="kpi-val" id="ap_sh_net" style="color:var(--red)">—</div><div class="kpi-hint">Real − Collected</div></div>
-      <div class="kpi" style="--kc:var(--c4)"><div class="kpi-lbl">Total Shipping Cost</div><div class="kpi-val" id="ap_sh_total" style="color:var(--c4)">—</div><div class="kpi-hint">All products combined</div></div>
+      <div class="kpi" style="--kc:var(--c3)"><div class="kpi-lbl" data-t="ap_sh_real_lbl">Avg Real Shipping / unit</div><div class="kpi-val" id="ap_sh_real" style="color:var(--c3)">—</div><div class="kpi-hint" data-t="ap_sh_weighted_hint">Weighted across products</div></div>
+      <div class="kpi" style="--kc:var(--c1)"><div class="kpi-lbl" data-t="ap_sh_collected_lbl">Avg Collected / unit</div><div class="kpi-val" id="ap_sh_collected" style="color:var(--c1)">—</div><div class="kpi-hint" data-t="ap_sh_weighted_hint">Weighted across products</div></div>
+      <div class="kpi" style="--kc:var(--red)"><div class="kpi-lbl" data-t="ap_sh_net_lbl">Avg Net Shipping on you</div><div class="kpi-val" id="ap_sh_net" style="color:var(--red)">—</div><div class="kpi-hint">Real − Collected</div></div>
+      <div class="kpi" style="--kc:var(--c4)"><div class="kpi-lbl" data-t="ap_sh_total_lbl">Total Shipping Cost</div><div class="kpi-val" id="ap_sh_total" style="color:var(--c4)">—</div><div class="kpi-hint" data-t="ap_sh_all_hint">All products combined</div></div>
     </div>
     <div class="chart-card" style="margin-top:16px">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c3)"></span>Real shipping cost vs collected — per product</div>
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c3)"></span><span data-t="ap_sh_chart">Real shipping cost vs collected — per product</span></div>
       <div class="ch-wrap"><canvas id="ap_ch_ship"></canvas></div>
     </div>
   </div>
@@ -3019,21 +3019,21 @@ input[type=range]::-moz-range-thumb{
         <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_real_ship">Real shipping cost per delivered unit after accounting for returns.<br>= (Del% × costDel + (1−Del%) × costRet) ÷ Del%</span></span>
       </div>
       <div class="kpi-val" id="sh_real" style="color:var(--c3)">—</div>
-      <div class="kpi-hint">True cost per delivery</div>
+      <div class="kpi-hint" data-t="hint_real_ship">Blended with returns</div>
     </div>
     <div class="kpi" style="--kc:var(--c1)">
       <div class="kpi-lbl"><span data-t="kpi_collected">Customer pays</span>
         <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_collected">Shipping amount collected from the customer per delivered unit.</span></span>
       </div>
       <div class="kpi-val" id="sh_collected" style="color:var(--c1)">—</div>
-      <div class="kpi-hint">Shipping fee collected</div>
+      <div class="kpi-hint" data-t="hint_collected">Per delivered unit</div>
     </div>
     <div class="kpi" style="--kc:var(--red)">
       <div class="kpi-lbl"><span data-t="kpi_net_ship">You absorb</span>
         <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_net_ship">Net shipping cost you bear after the customer pays.<br>= Real shipping − Customer pays</span></span>
       </div>
       <div class="kpi-val" id="sh_net" style="color:var(--red)">—</div>
-      <div class="kpi-hint">Net cost on you / unit</div>
+      <div class="kpi-hint" data-t="hint_net_ship">After customer payment</div>
     </div>
   </div>
 
@@ -3085,20 +3085,20 @@ input[type=range]::-moz-range-thumb{
 
   <!-- ── Totals row ── -->
   <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);padding:16px 20px;margin-bottom:14px">
-    <div style="font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--txt3);margin-bottom:14px">TOTALS — ALL STOCK</div>
+    <div style="font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--txt3);margin-bottom:14px" data-t="sh_totals_lbl">TOTALS — ALL STOCK</div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden">
       <div style="padding:14px 16px;border-right:1px solid var(--bdr)">
-        <div style="font-size:11px;color:var(--txt3);margin-bottom:6px">Total shipping cost</div>
+        <div style="font-size:11px;color:var(--txt3);margin-bottom:6px" data-t="ov_total_ship">Total shipping cost</div>
         <div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--c3)" id="sh_tot_real">—</div>
-        <div style="font-size:10px;color:var(--txt3);margin-top:4px">All delivered units</div>
+        <div style="font-size:10px;color:var(--txt3);margin-top:4px" data-t="ov_total_delivered_lbl">All delivered units</div>
       </div>
       <div style="padding:14px 16px;border-right:1px solid var(--bdr)">
-        <div style="font-size:11px;color:var(--txt3);margin-bottom:6px">Total return cost</div>
+        <div style="font-size:11px;color:var(--txt3);margin-bottom:6px" data-t="ov_total_returns">Total return costs</div>
         <div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--red)" id="sh_tot_ret">—</div>
         <div style="font-size:10px;color:var(--txt3);margin-top:4px" id="sh_tot_ret_hint">— returns expected</div>
       </div>
       <div style="padding:14px 16px">
-        <div style="font-size:11px;color:var(--txt3);margin-bottom:6px">Collected from customers</div>
+        <div style="font-size:11px;color:var(--txt3);margin-bottom:6px" data-t="kpi_collected">Collected from customer</div>
         <div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--c1)" id="sh_tot_collected">—</div>
         <div style="font-size:10px;margin-top:4px" id="sh_tot_net_hint">Net on you: —</div>
       </div>
@@ -3107,18 +3107,18 @@ input[type=range]::-moz-range-thumb{
 
   <!-- ── Charts ── -->
   <div class="chart-card" style="margin-bottom:14px">
-    <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span> If your delivery rate changes — how does net profit move?</div>
-    <div style="font-size:11px;color:var(--txt3);margin:-4px 0 10px 18px">Red line = break-even. Green = profit zone, red = loss zone.</div>
+    <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span><span data-t="chart_sh_sens">If your delivery rate changes — how does net profit move?</span></div>
+    <div style="font-size:11px;color:var(--txt3);margin:-4px 0 10px 18px" data-t="chart_sh_sens_sub">Red line = break-even. Green = profit zone, red = loss zone.</div>
     <div class="ch-wrap" style="height:220px"><canvas id="ch_sh_profit_sens" role="img" aria-label="Net profit at different delivery rates"></canvas></div>
   </div>
 
   <div class="charts-2">
     <div class="chart-card">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c3)"></span data-t="chart_sh_bar">Delivered vs returned — cost comparison</div>
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c3)"></span><span data-t="chart_sh_bar">Delivered vs returned — cost comparison</span></div>
       <div class="ch-wrap"><canvas id="ch_sh_bar" role="img" aria-label="Bar chart comparing cost of delivered vs returned orders"></canvas></div>
     </div>
     <div class="chart-card">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c4)"></span data-t="chart_sh_line">Shipping cost at different delivery rates</div>
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c4)"></span><span data-t="chart_sh_line">Shipping cost at different delivery rates</span></div>
       <div class="ch-wrap"><canvas id="ch_sh_line" role="img" aria-label="Line chart showing shipping cost at different delivery rates"></canvas></div>
     </div>
   </div>
@@ -3129,7 +3129,7 @@ input[type=range]::-moz-range-thumb{
 <!-- ═══════ SECTION 3 — OVERVIEW ═══════ -->
 <section class="section s3" id="s3">
   <div class="section-header">
-    <div class="section-eyebrow"><span class="num">04</span data-t="sec3_eye">Full overview</div>
+    <div class="section-eyebrow"><span class="num">04</span><span data-t="sec3_eye">Full overview</span></div>
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
       <div class="section-title" data-t="sec3_title">Complete financial picture</div>
       <div style="display:flex;align-items:center;gap:8px">
@@ -3160,25 +3160,25 @@ input[type=range]::-moz-range-thumb{
       </div>
       <div class="ov2-hero-stats">
         <div class="ov2-stat">
-          <div class="ov2-stat-lbl">Total Revenue</div>
+          <div class="ov2-stat-lbl" data-t="ov_total_rev_lbl">Total Revenue</div>
           <div class="ov2-stat-val" id="ap_ov_rev" style="color:var(--c4)">—</div>
           <div class="ov2-stat-sub" data-t="ov_all_products">All products</div>
         </div>
         <div class="ov2-stat-div"></div>
         <div class="ov2-stat">
-          <div class="ov2-stat-lbl">Portfolio Margin</div>
+          <div class="ov2-stat-lbl" data-t="ov_portfolio_margin_lbl">Portfolio Margin</div>
           <div class="ov2-stat-val" id="ap_ov_margin">—</div>
-          <div class="ov2-stat-sub">net profit ÷ revenue</div>
+          <div class="ov2-stat-sub" data-t="ov_portfolio_margin_sub">net profit ÷ revenue</div>
         </div>
         <div class="ov2-stat-div"></div>
         <div class="ov2-stat">
-          <div class="ov2-stat-lbl">Total Ad Budget</div>
+          <div class="ov2-stat-lbl" data-t="ap_total_budget">Total Ad Budget</div>
           <div class="ov2-stat-val" id="ap_ov_ads" style="color:var(--c3)">—</div>
           <div class="ov2-stat-sub" data-t="ov_all_campaigns">All campaigns</div>
         </div>
         <div class="ov2-stat-div"></div>
         <div class="ov2-stat">
-          <div class="ov2-stat-lbl">Total Margin Profit</div>
+          <div class="ov2-stat-lbl" data-t="ov_total_margin_lbl">Total Margin Profit</div>
           <div class="ov2-stat-val" id="ap_ov_total_margin">—</div>
           <div class="ov2-stat-sub" data-t="ov_before_fixed">Before Fixed Costs</div>
         </div>
@@ -3194,14 +3194,14 @@ input[type=range]::-moz-range-thumb{
           <span class="ov2-insight-icon" style="background:rgba(59,130,246,.12);color:var(--c2)">📢</span>
           <div>
             <div class="ov2-insight-title" data-t="ov_ads_blended">Ads — Blended</div>
-            <div class="ov2-insight-sub">weighted across all products</div>
+            <div class="ov2-insight-sub" data-t="ov_ship_panel_sub">weighted across all products</div>
           </div>
           <div id="ap_ads_verdict" class="ov2-badge">—</div>
         </div>
 
         <div class="ov2-metric-block">
           <div class="ov2-metric-row">
-            <span class="ov2-metric-lbl">Blended CPA</span>
+            <span class="ov2-metric-lbl" data-t="ap_blended_cpa_lbl">Blended CPA</span>
             <span class="ov2-metric-val" id="ap_ov_cpa">—</span>
           </div>
           <div class="ov2-gauge-wrap">
@@ -3215,7 +3215,7 @@ input[type=range]::-moz-range-thumb{
 
         <div class="ov2-metric-block">
           <div class="ov2-metric-row">
-            <span class="ov2-metric-lbl">Blended ROAS</span>
+            <span class="ov2-metric-lbl" data-t="ap_blended_roas_lbl">Blended ROAS</span>
             <span class="ov2-metric-val" id="ap_ov_roas">—</span>
           </div>
           <div class="ov2-gauge-wrap">
@@ -3229,10 +3229,10 @@ input[type=range]::-moz-range-thumb{
 
         <div class="ov2-divider"></div>
         <div class="ov2-2col">
-          <div><div class="ov2-metric-lbl">Total leads</div><div class="ov2-metric-val" id="ap_ov_leads">—</div></div>
-          <div><div class="ov2-metric-lbl">Total delivered</div><div class="ov2-metric-val" id="ap_ov_del">—</div></div>
-          <div><div class="ov2-metric-lbl">Ad cost / order</div><div class="ov2-metric-val" id="ap_ov_ad_per_order">—</div></div>
-          <div><div class="ov2-metric-lbl">Weighted BE CPA</div><div class="ov2-metric-val" style="color:var(--c2)" id="ap_ov_becpa">—</div></div>
+          <div><div class="ov2-metric-lbl" data-t="ov_total_leads_lbl">Total leads</div><div class="ov2-metric-val" id="ap_ov_leads">—</div></div>
+          <div><div class="ov2-metric-lbl" data-t="ov_total_delivered_lbl">Total delivered</div><div class="ov2-metric-val" id="ap_ov_del">—</div></div>
+          <div><div class="ov2-metric-lbl" data-t="ov_ad_cost_order">Ad cost / order</div><div class="ov2-metric-val" id="ap_ov_ad_per_order">—</div></div>
+          <div><div class="ov2-metric-lbl" data-t="ap_weighted_be_lbl">Weighted BE CPA</div><div class="ov2-metric-val" style="color:var(--c2)" id="ap_ov_becpa">—</div></div>
         </div>
       </div>
 
@@ -3242,7 +3242,7 @@ input[type=range]::-moz-range-thumb{
           <span class="ov2-insight-icon" style="background:rgba(245,158,11,.12);color:var(--c3)">🚚</span>
           <div>
             <div class="ov2-insight-title" data-t="ov_ship_blended">Shipping & Fulfillment — Blended</div>
-            <div class="ov2-insight-sub">weighted across all products</div>
+            <div class="ov2-insight-sub" data-t="ov_ship_panel_sub">weighted across all products</div>
           </div>
         </div>
 
@@ -3294,23 +3294,23 @@ input[type=range]::-moz-range-thumb{
 
     <!-- ══ P&L + Charts ══ -->
     <div class="chart-card" style="margin-bottom:14px">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c2)"></span>Net Profit per product</div>
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c2)"></span><span data-t="ap_net_profit_chart">Net Profit per product</span></div>
       <div class="ch-wrap"><canvas id="ap_ch_profit"></canvas></div>
     </div>
     <div class="charts-2" style="margin-bottom:14px">
       <div class="chart-card">
-        <div class="chart-lbl"><span class="cdot" style="background:var(--c4)"></span>Revenue breakdown</div>
+        <div class="chart-lbl"><span class="cdot" style="background:var(--c4)"></span><span data-t="ap_rev_breakdown_chart">Revenue breakdown</span></div>
         <div class="ch-wrap"><canvas id="ap_ch_rev"></canvas></div>
       </div>
       <div class="chart-card">
-        <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span>Profit margin % per product</div>
+        <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span><span data-t="ap_margin_chart">Profit margin % per product</span></div>
         <div class="ch-wrap"><canvas id="ap_ch_margin"></canvas></div>
       </div>
     </div>
 
     <!-- ══ P&L Table ══ -->
     <div class="chart-card" style="margin-bottom:14px">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c3)"></span>Full Business P&L Summary</div>
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c3)"></span><span data-t="ap_pl_summary_chart">Full Business P&L Summary</span></div>
       <div class="data-table-wrap">
         <table class="data-table" id="ap_pl_table">
           <thead><tr><th>Line item</th><th style="text-align:right">Total</th><th style="text-align:right">Status</th></tr></thead>
@@ -3322,7 +3322,7 @@ input[type=range]::-moz-range-thumb{
     <!-- ══ Ranking ══ -->
     <div class="master-ov" style="border-top:3px solid var(--c4)">
       <div class="rank-title" style="margin-bottom:12px">
-        <span>Products ranked by Total Net Profit</span>
+        <span data-t="ap_ranked_by">Products ranked by Total Net Profit</span>
         <span class="rank-sep"></span>
         <span id="ap_rank_count" class="master-ov-badge" style="background:rgba(167,139,250,.12);color:var(--c4)">— products</span>
       </div>
@@ -3347,17 +3347,17 @@ input[type=range]::-moz-range-thumb{
     <!-- 3 stat cards -->
     <div class="hkpi-row">
       <div class="hkpi-card">
-        <div class="ov2-stat-lbl">Total margin</div>
+        <div class="ov2-stat-lbl" data-t="ov_total_margin_lbl">Total margin</div>
         <div class="ov2-stat-val" id="ov_total_margin">—</div>
         <div class="ov2-stat-sub" data-t="ov_before_fixed">Before fixed costs</div>
       </div>
       <div class="hkpi-card">
-        <div class="ov2-stat-lbl">Margin / unit</div>
+        <div class="ov2-stat-lbl" data-t="ov_margin_pu_lbl">Margin / unit</div>
         <div class="ov2-stat-val" id="ov_pu">—</div>
         <div class="ov2-stat-sub" id="ov_margin">—</div>
       </div>
       <div class="hkpi-card">
-        <div class="ov2-stat-lbl">Net / unit</div>
+        <div class="ov2-stat-lbl" data-t="ov_net_pu_lbl">Net / unit</div>
         <div class="ov2-stat-val" id="ov_net_pu">—</div>
         <div class="ov2-stat-sub" data-t="ov_after_ads" id="ov_net_pu_sub">After ads &amp; salary</div>
       </div>
@@ -3388,10 +3388,10 @@ input[type=range]::-moz-range-thumb{
         <span class="ov-card-icon" style="background:rgba(59,130,246,.12);color:var(--c2)">📢</span>
         <div>
           <div class="ov-card-title-row">
-            <div class="ov-card-title">Advertising</div>
+            <div class="ov-card-title" data-t="ov_ads_title">Advertising</div>
             <div id="ov_ads_verdict" class="ov2-badge" style="flex-shrink:0">—</div>
           </div>
-          <div class="ov-card-sub">CPA &amp; ROAS vs break-even</div>
+          <div class="ov-card-sub" data-t="ov_ads_card_sub">CPA &amp; ROAS vs break-even</div>
         </div>
       </div>
 
@@ -3421,11 +3421,11 @@ input[type=range]::-moz-range-thumb{
 
       <div style="display:flex;gap:20px">
         <div>
-          <div class="ov-card-lbl">Total orders</div>
+          <div class="ov-card-lbl" data-t="ov_total_orders_lbl">Total orders</div>
           <div class="ov-card-val" style="margin-top:4px" id="ov_orders">—</div>
         </div>
         <div>
-          <div class="ov-card-lbl">Ad cost / order</div>
+          <div class="ov-card-lbl" data-t="ov_ad_cost_order">Ad cost / order</div>
           <div class="ov-card-val" style="margin-top:4px" id="ov_ad_per_order">—</div>
         </div>
       </div>
@@ -3438,13 +3438,13 @@ input[type=range]::-moz-range-thumb{
       <div class="ov-card-head">
         <span class="ov-card-icon" style="background:rgba(0,229,160,.1);color:var(--c1)">🚚</span>
         <div>
-          <div class="ov-card-title">Delivery</div>
-          <div class="ov-card-sub">Units distribution</div>
+          <div class="ov-card-title" data-t="ov_delivery_title">Delivery</div>
+          <div class="ov-card-sub" data-t="ov_delivery_sub">Units distribution</div>
         </div>
       </div>
 
       <div class="ov-card-metric">
-        <span class="ov-card-lbl">Delivered / Returned</span>
+        <span class="ov-card-lbl" data-t="ov_del_ret_lbl">Delivered / Returned</span>
         <span style="font-size:11px;color:var(--txt3);font-family:var(--mono)" id="ov_units_label">—</span>
       </div>
 
@@ -3474,8 +3474,8 @@ input[type=range]::-moz-range-thumb{
       <div class="ov-card-head">
         <span class="ov-card-icon" style="background:rgba(245,158,11,.12);color:var(--c3)">📦</span>
         <div>
-          <div class="ov-card-title">Shipping costs</div>
-          <div class="ov-card-sub">Per unit breakdown</div>
+          <div class="ov-card-title" data-t="ov_ship_title">Shipping costs</div>
+          <div class="ov-card-sub" data-t="ov_ship_sub">Per unit breakdown</div>
         </div>
       </div>
 
@@ -3520,20 +3520,20 @@ input[type=range]::-moz-range-thumb{
   <!-- ══ P&L TABLE ════════════════════════════════════════════════════ -->
   <div class="charts-2">
     <div class="chart-card span2">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c2)"></span>Full P&amp;L — all stock</div>
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c2)"></span><span data-t="chart_pl">Full P&L — all stock</span></div>
       <div class="data-table-wrap">
       <table class="data-table">
         <thead><tr><th data-t="th_line">Line item</th><th data-t="th_per_unit">Per unit</th><th data-t="th_total">Total (all stock)</th><th data-t="th_status">Status</th></tr></thead>
         <tbody>
-          <tr><td data-t="pl_rev_prod">Revenue from product</td><td id="pl_pu_price">—</td><td id="pl_tot_price">—</td><td><span class="tag tg">Income</span></td></tr>
-          <tr><td data-t="pl_rev_ship">Revenue from shipping</td><td id="pl_pu_sc">—</td><td id="pl_tot_sc">—</td><td><span class="tag tg">Income</span></td></tr>
-          <tr><td>Product cost</td><td id="pl_pu_cost">—</td><td id="pl_tot_cost">—</td><td><span class="tag tr">Variable</span></td></tr>
-          <tr><td data-t="pl_ship_cost">Real shipping cost</td><td id="pl_pu_ship">—</td><td id="pl_tot_ship">—</td><td><span class="tag tr">Variable</span></td></tr>
-          <tr id="pl_plat_row"><td>Platform fee / lead</td><td id="pl_pu_plat">—</td><td id="pl_tot_plat">—</td><td><span class="tag tr">Variable</span></td></tr>
+          <tr><td data-t="pl_rev_prod">Revenue from product</td><td id="pl_pu_price">—</td><td id="pl_tot_price">—</td><td><span class="tag tg" data-t="income_tag">Income</span></td></tr>
+          <tr><td data-t="pl_rev_ship">Revenue from shipping</td><td id="pl_pu_sc">—</td><td id="pl_tot_sc">—</td><td><span class="tag tg" data-t="income_tag">Income</span></td></tr>
+          <tr><td data-t="lbl_prod_cost">Product cost</td><td id="pl_pu_cost">—</td><td id="pl_tot_cost">—</td><td><span class="tag tr" data-t="variable_tag">Variable</span></td></tr>
+          <tr><td data-t="pl_ship_cost">Real shipping cost</td><td id="pl_pu_ship">—</td><td id="pl_tot_ship">—</td><td><span class="tag tr" data-t="variable_tag">Variable</span></td></tr>
+          <tr id="pl_plat_row"><td data-t="lbl_plat_lead">Platform fee / lead</td><td id="pl_pu_plat">—</td><td id="pl_tot_plat">—</td><td><span class="tag tr" data-t="variable_tag">Variable</span></td></tr>
           <tr id="pl_pdr_row" style="display:none"><td data-t="adv_pdr_lbl">Post-delivery return</td><td id="pl_pu_pdr">—</td><td id="pl_tot_pdr">—</td><td><span class="tag tr">Variable</span></td></tr>
-          <tr><td>Ad budget</td><td id="pl_pu_ads">—</td><td id="pl_tot_ads">—</td><td><span class="tag ta">Fixed</span></td></tr>
-          <tr><td>Salary</td><td id="pl_pu_sal">—</td><td id="pl_tot_sal">—</td><td><span class="tag ta">Fixed</span></td></tr>
-          <tr id="pl_vat_row" style="display:none"><td data-t="pl_vat">VAT payable (net)</td><td id="pl_pu_vat">—</td><td id="pl_tot_vat">—</td><td><span class="tag ta">Tax</span></td></tr>
+          <tr><td data-t="pl_ads">Ad budget</td><td id="pl_pu_ads">—</td><td id="pl_tot_ads">—</td><td><span class="tag ta" data-t="fixed_tag">Fixed</span></td></tr>
+          <tr><td data-t="pl_salary">Salary</td><td id="pl_pu_sal">—</td><td id="pl_tot_sal">—</td><td><span class="tag ta" data-t="fixed_tag">Fixed</span></td></tr>
+          <tr id="pl_vat_row" style="display:none"><td data-t="pl_vat">VAT payable (net)</td><td id="pl_pu_vat">—</td><td id="pl_tot_vat">—</td><td><span class="tag ta" data-t="tax_tag">Tax</span></td></tr>
         </tbody>
         <tfoot>
           <tr>
@@ -3554,7 +3554,7 @@ input[type=range]::-moz-range-thumb{
   <div class="export-section">
     <div class="export-title">
       <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 1v9M4 6l4 4 4-4M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
-      Export to Excel
+      <span data-t="export_title">Export to Excel</span>
     </div>
     <div class="export-sub" data-t="export_sub">All product analytics in one Excel sheet — Inputs, Marketing, Shipping, P&amp;L, and product comparison</div>
     <div id="export_prod_chips" class="export-prod-chips"></div>
@@ -3888,7 +3888,7 @@ function mbMORecalc(){
     if(verdEl){
       verdEl.className = 'mb-mo-verdict mb-verdict-badge';
       if(mktCpa <= 0){
-        verdEl.textContent = '?'; verdEl.classList.add('unknown'); verdEl.title = 'Enter Market CPA'; verdictCount.unknown++;
+        verdEl.textContent = '?'; verdEl.classList.add('unknown'); verdEl.title = T[LANG].enter_market_cpa; verdictCount.unknown++;
       } else if(mktCpa <= beCpa){
         verdEl.textContent = T[LANG].js_profit_badge; verdEl.classList.add('profit'); verdEl.title = T[LANG].js_profit_badge; verdictCount.profit++;
       } else {
@@ -4045,7 +4045,7 @@ function mbProRecalc(){
   // Show blended CPA hint only
   if(blendedCpa > 0){
     const hint = document.getElementById('mb_pro_cpa_hint');
-    if(hint){ hint.style.display='block'; hint.textContent='→ Blended CPA: '+blendedCpa.toFixed(1)+' '+CURRENCY; }
+    if(hint){ hint.style.display='block'; hint.textContent=T[LANG].blended_cpa_hint+blendedCpa.toFixed(1)+' '+CURRENCY; }
   }
   dCalc();
 }
@@ -4437,16 +4437,16 @@ function bundleAddRow(){
   const list = document.getElementById('adv_bundle_list'); if(!list) return;
   ++_bundleRowId;
   const row = document.createElement('div'); row.className='bundle-card';
-  row.innerHTML = '<div class="bundle-card-label">Bundle '+(list.children.length+1)+'</div>'
-    +'<div class="bundle-field"><label>Units / order</label><input type="number" class="b-units" value="2" min="1" step="1" oninput="bundleRecalc()"></div>'
-    +'<div class="bundle-field"><label>Total price (EGP)</label><input type="number" class="b-price" placeholder="e.g. 1100" min="0" oninput="bundleRecalc()"></div>'
-    +'<div class="bundle-field"><label>Orders sold</label><input type="number" class="b-orders" placeholder="e.g. 20" min="0" oninput="bundleRecalc()"></div>'
-    +'<div class="bundle-field" style="justify-content:flex-end"><label>Free shipping</label><label style="display:flex;align-items:center;height:34px"><div class="mini-toggle" onclick="this.classList.toggle(\'on\');bundleRecalc()"><div class="mini-thumb"></div></div></label></div>'
-    +'<button class="bundle-del-btn" onclick="bundleDelRow(this)" title="Remove">\u2715</button>';
+  row.innerHTML = '<div class="bundle-card-label">'+T[LANG].bundle_label+' '+(list.children.length+1)+'</div>'
+    +'<div class="bundle-field"><label>'+T[LANG].bundle_units+'</label><input type="number" class="b-units" value="2" min="1" step="1" oninput="bundleRecalc()"></div>'
+    +'<div class="bundle-field"><label>'+T[LANG].bundle_price+' ('+CURRENCY+')</label><input type="number" class="b-price" placeholder="e.g. 1100" min="0" oninput="bundleRecalc()"></div>'
+    +'<div class="bundle-field"><label>'+T[LANG].bundle_orders+'</label><input type="number" class="b-orders" placeholder="e.g. 20" min="0" oninput="bundleRecalc()"></div>'
+    +'<div class="bundle-field" style="justify-content:flex-end"><label>'+T[LANG].bundle_free_ship+'</label><label style="display:flex;align-items:center;height:34px"><div class="mini-toggle" onclick="this.classList.toggle(\'on\');bundleRecalc()"><div class="mini-thumb"></div></div></label></div>'
+    +'<button class="bundle-del-btn" onclick="bundleDelRow(this)" title="'+T[LANG].bundle_remove+'">\u2715</button>';
   list.appendChild(row); bundleRenumber(); bundleRecalc();
 }
 function bundleDelRow(btn){ const c=btn.closest('.bundle-card'); if(c)c.remove(); bundleRenumber(); bundleRecalc(); }
-function bundleRenumber(){ document.querySelectorAll('#adv_bundle_list .bundle-card').forEach((c,i)=>{ const l=c.querySelector('.bundle-card-label'); if(l)l.textContent='Bundle '+(i+1); }); }
+function bundleRenumber(){ document.querySelectorAll('#adv_bundle_list .bundle-card').forEach((c,i)=>{ const l=c.querySelector('.bundle-card-label'); if(l)l.textContent=T[LANG].bundle_label+' '+(i+1); }); }
 function bundleRecalc(){
   if(ADV_BUNDLE_LOCKED) return;
   const stock=parseFloat(document.getElementById('i_stock')?.value)||0;
@@ -5040,7 +5040,7 @@ function calc(){
     const markerPct=Math.min(beCPP/cap*100,100);
     const gf=document.getElementById('ov_cpa_gauge'); if(gf){gf.style.width=fillPct+'%';gf.style.background=adOkOv?'var(--c1)':'var(--red)';}
     const gm=document.getElementById('ov_cpa_marker'); if(gm) gm.style.left=markerPct+'%';
-    const bl=document.getElementById('ov_be_cpa_lbl'); if(bl) bl.textContent='BE: '+d1(beCPP);
+    const bl=document.getElementById('ov_be_cpa_lbl'); if(bl) bl.textContent=T[LANG].be_label+d1(beCPP);
   }
   // ROAS gauge — fill = actual/max capped; marker = BE ROAS
   if(beROAS>0&&actualROAS>0){
@@ -5049,7 +5049,7 @@ function calc(){
     const markerPct=Math.min(beROAS/cap*100,100);
     const gf=document.getElementById('ov_roas_gauge'); if(gf){gf.style.width=fillPct+'%';gf.style.background=roasOkOv?'var(--c1)':'var(--red)';}
     const gm=document.getElementById('ov_roas_marker'); if(gm) gm.style.left=markerPct+'%';
-    const bl=document.getElementById('ov_be_roas_lbl'); if(bl) bl.textContent='BE: '+(Math.round(beROAS*100)/100).toFixed(1)+'x';
+    const bl=document.getElementById('ov_be_roas_lbl'); if(bl) bl.textContent=T[LANG].be_label+(Math.round(beROAS*100)/100).toFixed(1)+'x';
   }
 
   // Verdict badge
@@ -5115,7 +5115,7 @@ function renderCPPBar(actual, max){
   const beLbl  = document.getElementById('gauge_be_lbl');
   const maxLbl = document.getElementById('gauge_max_lbl');
   if(actLbl) actLbl.textContent = actual > 0 ? actual.toFixed(1)+' EGP' : '—';
-  if(beLbl)  beLbl.textContent  = max > 0    ? 'BE: '+max.toFixed(1)+' EGP' : 'BE: —';
+  if(beLbl)  beLbl.textContent  = max > 0    ? T[LANG].be_label+max.toFixed(1)+' EGP' : T[LANG].be_label+'—';
   if(actLbl) actLbl.style.color = (actual <= max && max > 0) ? 'var(--c1)' : 'var(--red)';
 
   const maxScale = max > 0 ? max * 1.5 : 100;
@@ -5612,10 +5612,10 @@ function _simLockBtn(btnId, lblId, locked, lockedColor, lockedBg, lockedText, un
 }
 
 function _simUpdateUI(){
-  _simLockBtn('roas_lock_btn',    'roas_target_lbl',  SIM_LOCKS.roas,  'var(--c2)', 'rgba(59,130,246,.15)',  'Target ROAS',    'Target ROAS');
-  _simLockBtn('roas_rev_lock_btn','roas_rev_target_lbl', SIM_LOCKS.rev,'var(--c1)', 'rgba(0,229,160,.15)',   'Target Revenue', 'Target Revenue');
-  _simLockBtn('sim_cpp_lock_btn', 'sim_cpp_lbl',      SIM_LOCKS.cpp,  'var(--c3)', 'rgba(245,158,11,.15)',  'Planned CPA',    'Planned CPA');
-  _simLockBtn('sim_stock_lock_btn','sim_stock_lbl',   SIM_LOCKS.stock,'var(--c4)', 'rgba(167,139,250,.15)', 'Stock needed',   'Stock needed');
+  _simLockBtn('roas_lock_btn',    'roas_target_lbl',  SIM_LOCKS.roas,  'var(--c2)', 'rgba(59,130,246,.15)',  T[LANG].sim_roas_lbl,    T[LANG].sim_roas_lbl);
+  _simLockBtn('roas_rev_lock_btn','roas_rev_target_lbl', SIM_LOCKS.rev,'var(--c1)', 'rgba(0,229,160,.15)',   T[LANG].sim_rev_lbl, T[LANG].sim_rev_lbl);
+  _simLockBtn('sim_cpp_lock_btn', 'sim_cpp_lbl',      SIM_LOCKS.cpp,  'var(--c3)', 'rgba(245,158,11,.15)',  T[LANG].sim_cpp_lbl_s,    T[LANG].sim_cpp_lbl_s);
+  _simLockBtn('sim_stock_lock_btn','sim_stock_lbl',   SIM_LOCKS.stock,'var(--c4)', 'rgba(167,139,250,.15)', T[LANG].sim_stock_lbl_s,   T[LANG].sim_stock_lbl_s);
   _simUpdateDisabled();
 }
 
@@ -5844,7 +5844,7 @@ function _sliderDelta(el, cur, base, isEgp){
   if(!el) return;
   const diff = cur - base;
   if(Math.abs(diff) < (isEgp ? 0.5 : 0.1)){
-    el.textContent = 'base'; el.className = 'sl-delta neu'; return;
+    el.textContent = T[LANG].delta_base; el.className = 'sl-delta neu'; return;
   }
   const sign = diff > 0 ? '+' : '';
   el.textContent = sign + (isEgp ? Math.round(diff).toLocaleString('en') + ' ' + CURRENCY : diff.toFixed(1) + '%');
@@ -5904,7 +5904,7 @@ function syncSlidersFromInputs(){
   // Reset all delta badges to "base"
   ['sl_price_delta','sl_del_delta','sl_conf_delta','sl_cpa_delta'].forEach(id=>{
     const el = document.getElementById(id);
-    if(el){ el.textContent='base'; el.className='sl-delta neu'; }
+    if(el){ el.textContent=T[LANG].delta_base; el.className='sl-delta neu'; }
   });
 
   updateSlider('price');
@@ -6109,11 +6109,11 @@ function updateSlider(type){
     const cpaOk    = cpa <= maxCPP;
     const profitOk = netProfit >= 0 && profitPU >= 0;
     if(profitOk && cpaOk){
-      pillWrap.innerHTML = '<span class="si-status profit">✓ Profitable — CPA under BE</span>';
+      pillWrap.innerHTML = '<span class="si-status profit">'+T[LANG].si_status_ok+'</span>';
     } else if(profitOk && !cpaOk){
-      pillWrap.innerHTML = '<span class="si-status loss">⚠ Profit but CPA exceeds BE</span>';
+      pillWrap.innerHTML = '<span class="si-status loss">'+T[LANG].si_status_warn+'</span>';
     } else {
-      pillWrap.innerHTML = '<span class="si-status loss">✗ Loss at this CPA</span>';
+      pillWrap.innerHTML = '<span class="si-status loss">'+T[LANG].si_status_loss+'</span>';
     }
   }
 }
@@ -6127,7 +6127,7 @@ function toggleSection(bodyId, toggleId, lblId){
   const isOpen = body.classList.contains('show');
   body.classList.toggle('show', !isOpen);
   if(toggle) toggle.classList.toggle('on', !isOpen);
-  if(lbl)    lbl.textContent = isOpen ? 'Show' : 'Hide';
+  if(lbl)    lbl.textContent = isOpen ? T[LANG].adv_show : T[LANG].adv_hide;
   // If opening slider, refresh its outputs
   if(!isOpen && bodyId === 'sl_body') updateSlider('_baseline');
 }
@@ -6306,7 +6306,7 @@ function calcAllProducts(){
 
   // ─── OVERVIEW ───
   _s('ap_ov_profit', fmtM(totalProfit), isProfit?'var(--c1)':'var(--red)');
-  _s('ap_ov_profit_sub', (isProfit?'✓ Profitable':'✗ Loss-making')+' — '+all.filter(p=>p.calc.isProfit).length+' of '+all.length+' products profitable');
+  _s('ap_ov_profit_sub', (isProfit?T[LANG].ap_profitable:T[LANG].ap_loss)+' — '+all.filter(p=>p.calc.isProfit).length+' '+T[LANG].ap_of+' '+all.length+' '+T[LANG].ap_products_profitable);
   _s('ap_ov_rev',    fmtM(totalRev),    'var(--c4)');
   _s('ap_ov_margin', portMargin.toFixed(1)+'%', isProfit?'var(--c1)':'var(--red)');
   _s('ap_ov_ads',    fmtM(totalAds),    'var(--c3)');
@@ -6378,7 +6378,7 @@ function calcAllProducts(){
     tbody.innerHTML = rows.map(([lbl,val,cls])=>`
       <tr><td>${lbl}</td>
           <td style="text-align:right;font-family:var(--mono)" class="${val>=0?'val-pos':'val-neg'}">${val>=0?'+':'-'}${eg(Math.abs(val))}</td>
-          <td style="text-align:right"><span class="tag ${cls}">${cls==='tg'?'Income':cls==='tr'?'Variable':'Fixed'}</span></td>
+          <td style="text-align:right"><span class="tag ${cls}">${cls==='tg'?T[LANG].income_tag:cls==='tr'?T[LANG].variable_tag:T[LANG].fixed_tag}</span></td>
       </tr>`).join('') +
       `<tr style="font-weight:600;border-top:2px solid var(--bdr2)">
         <td>Net Profit / Loss</td>
@@ -7335,7 +7335,7 @@ function exportToExcel(){
     [],
     ['NET PROFIT / LOSS',        ...prods.map(p=>+p.calc.profitPU.toFixed(1)),  ...prods.map(p=>+p.calc.totalProf.toFixed(1))],
     ['Margin %',                 ...prods.map(p=>+(p.calc.marginPct/100).toFixed(4)), ...prods.map(()=>'—')],
-    ['Status',                   ...prods.map(p=>p.calc.isProfit?'Profitable':'Loss'), ...prods.map(()=>'')],
+    ['Status',                   ...prods.map(p=>p.calc.isProfit?T[LANG].excel_profitable:T[LANG].excel_loss), ...prods.map(()=>'')],
   ];
 
   // ── Sheet 5: Comparison ──
@@ -7354,7 +7354,7 @@ function exportToExcel(){
     ['Delivered orders',          ...prods.map(p=>Math.round(p.calc.delivNeeded))],
     ['Total revenue (EGP)',       ...prods.map(p=>+p.calc.totalRev.toFixed(1))],
     ['Net profit total (EGP)',    ...prods.map(p=>+p.calc.totalProf.toFixed(1))],
-    ['Status',                    ...prods.map(p=>p.calc.isProfit?'✓ Profitable':'✗ Loss')],
+    ['Status',                    ...prods.map(p=>p.calc.isProfit?T[LANG].js_profit_badge:T[LANG].js_loss_badge)],
   ];
 
   // Build workbook
@@ -7654,6 +7654,73 @@ const T = {
     js_verdict_exceeds:' EGP exceeds break-even limit of ',
     js_verdict_losing:' EGP. Losing ',
     js_verdict_on_this:' EGP on this scenario.',
+    bundle_label:'Bundle', bundle_units:'Units / order', bundle_price:'Total price',
+    bundle_orders:'Orders sold', bundle_free_ship:'Free shipping', bundle_remove:'Remove',
+    si_status_ok:'✓ Profitable — CPA under BE',
+    si_status_warn:'⚠ Profit but CPA exceeds BE',
+    si_status_loss:'✗ Loss at this CPA',
+    delta_base:'base',
+    ap_profitable:'✓ Profitable', ap_loss:'✗ Loss-making',
+    ap_of:'of', ap_products_profitable:'products profitable',
+    blended_cpa_hint:'→ Blended CPA: ',
+    excel_profitable:'Profitable', excel_loss:'Loss',
+    hide_card:'Hide card', show_card:'Show card',
+    enter_market_cpa:'Enter Market CPA',
+    income_tag:'Income', fixed_tag:'Fixed', variable_tag:'Variable', tax_tag:'Tax',
+    pl_salary:'Salary',
+    curr_menu_title:'Select Currency',
+    ap_total_budget:'Total Ad Budget', ap_total_budget_hint:'All products combined',
+    ap_blended_cpa_hint:'Total budget ÷ total leads',
+    ap_blended_roas_hint:'Total revenue ÷ total ads',
+    ap_weighted_be_hint:'Weighted break-even across products',
+    ap_after_conf_hint:'After confirmation rates',
+    ap_after_del_hint:'After delivery rates',
+    ap_sh_real_lbl:'Avg Real Shipping / unit', ap_sh_collected_lbl:'Avg Collected / unit',
+    ap_sh_net_lbl:'Avg Net Shipping on you', ap_sh_total_lbl:'Total Shipping Cost',
+    ap_sh_weighted_hint:'Weighted across products', ap_sh_all_hint:'All products combined',
+    ap_cpa_chart:'CPA vs Break-even CPA — per product',
+    ap_budget_chart:'Ad Budget — per product',
+    ap_sh_chart:'Real shipping cost vs collected — per product',
+    ov_total_rev_lbl:'Total Revenue',
+    ov_portfolio_margin_lbl:'Portfolio Margin', ov_portfolio_margin_sub:'net profit ÷ revenue',
+    sl_sync_btn:'↺ Sync from inputs', sl_sync_title:'Reset sliders to current input values',
+    be_label:'BE: ',
+    ap_blended_cpa_lbl:'Blended CPA', ap_blended_roas_lbl:'Blended ROAS', ap_weighted_be_lbl:'Weighted BE CPA',
+    ap_total_leads_lbl:'Total Leads', ap_total_conf_lbl:'Total Confirmed', ap_total_del_lbl:'Total Delivered',
+    ap_del_orders_chart:'Delivered Orders — per product',
+    ap_net_profit_chart:'Net Profit per product', ap_rev_breakdown_chart:'Revenue breakdown',
+    ap_margin_chart:'Profit margin % per product', ap_pl_summary_chart:'Full Business P&L Summary',
+    ap_ranked_by:'Products ranked by Total Net Profit',
+    ov_ads_title:'Advertising', ov_ads_card_sub:'CPA & ROAS vs break-even',
+    ov_delivery_title:'Delivery', ov_delivery_sub:'Units distribution', ov_del_ret_lbl:'Delivered / Returned',
+    ov_ship_title:'Shipping costs', ov_ship_sub:'Per unit breakdown', ov_ship_panel_sub:'weighted across all products',
+    ov_total_margin_lbl:'Total margin', ov_margin_pu_lbl:'Margin / unit', ov_net_pu_lbl:'Net / unit',
+    ov_ad_cost_order:'Ad cost / order', ov_total_orders_lbl:'Total orders',
+    ov_total_leads_lbl:'Total leads', ov_total_delivered_lbl:'Total delivered',
+    lbl_plat_lead:'Platform fee / lead',
+    sl_del_lbl:'Delivery rate', sl_conf_lbl:'Confirmation rate',
+    si_scenario_status:'Scenario status', si_apply_btn:'⬆ Apply this scenario to inputs',
+    card_fees:'Commissions & Fees', lbl_gateway:'Payment gateway fee',
+    card_fixed:'Fixed costs', export_title:'Export to Excel',
+    kpi_confirmed:'Confirmed orders', kpi_delivered:'Delivered orders',
+    hint_roas_rev:'Revenue ÷ ad spend', hint_be_full:'Full business break-even',
+    hint_be_min:'Min to break even', hint_cpa_eff_s:'vs break-even limit',
+    hint_cost_del_s:'Ad budget ÷ delivered', hint_wasted_s:'Lost to undelivered leads',
+    hint_spent_s:'Budget on real orders', kpi_pool_lbl:'Hidden cards — click + to restore',
+    si_leads_lbl:'Leads needed', si_rev_lbl:'Revenue (all stock)',
+    si_net_lbl:'Net profit (all stock)',
+    si_margin_pu_lbl:'Margin profit / unit', si_net_pu_lbl:'Net profit / unit',
+    si_budget_lbl:'Ad budget needed',
+    sim_roas_lbl:'Target ROAS', sim_rev_lbl:'Target Revenue',
+    sim_cpp_lbl_s:'Planned CPA', sim_stock_lbl_s:'Stock needed',
+    tp_calc_title:'Target Profit Calculator',
+    sh_totals_lbl:'TOTALS — ALL STOCK',
+    chart_sh_sens:'If your delivery rate changes — how does net profit move?',
+    chart_sh_sens_sub:'Red line = break-even. Green = profit zone, red = loss zone.',
+    chart_budget_title:'Where did your budget go?',
+    sign_out:'Sign out',
+    roas_leads_lbl:'Leads needed (ads)', roas_net_lbl:'Net profit',
+    roas_margin_lbl:'Profit margin', roas_after_costs_lbl:'after all costs',
   },
   ar: {
     nav_inputs:'المدخلات', nav_marketing:'الإعلانات', nav_shipping:'الشحن', nav_overview:'نظرة عامة',
@@ -7791,6 +7858,73 @@ const T = {
     js_verdict_exceeds:' EGP بيتخطى حد التعادل ',
     js_verdict_losing:' EGP. خسارة ',
     js_verdict_on_this:' EGP في هذا السيناريو.',
+    bundle_label:'باندل', bundle_units:'وحدات / أوردر', bundle_price:'السعر الكلي',
+    bundle_orders:'أوردرات مباعة', bundle_free_ship:'شحن مجاني', bundle_remove:'إزالة',
+    si_status_ok:'✓ رابح — CPA أقل من نقطة التعادل',
+    si_status_warn:'⚠ ربح لكن CPA تجاوز الـ BE',
+    si_status_loss:'✗ خسارة بهذا الـ CPA',
+    delta_base:'أساس',
+    ap_profitable:'✓ رابح', ap_loss:'✗ خسارة',
+    ap_of:'من', ap_products_profitable:'منتج رابح',
+    blended_cpa_hint:'→ Blended CPA: ',
+    excel_profitable:'رابح', excel_loss:'خسارة',
+    hide_card:'إخفاء', show_card:'إظهار',
+    enter_market_cpa:'أدخل Market CPA',
+    income_tag:'دخل', fixed_tag:'ثابت', variable_tag:'متغير', tax_tag:'ضريبة',
+    pl_salary:'الراتب',
+    curr_menu_title:'اختر العملة',
+    ap_total_budget:'إجمالي ميزانية الإعلانات', ap_total_budget_hint:'كل المنتجات مجتمعة',
+    ap_blended_cpa_hint:'الميزانية الكلية ÷ إجمالي الليدز',
+    ap_blended_roas_hint:'الإيراد الكلي ÷ الإعلانات',
+    ap_weighted_be_hint:'نقطة تعادل موزونة عبر المنتجات',
+    ap_after_conf_hint:'بعد نسب التأكيد',
+    ap_after_del_hint:'بعد نسب التوصيل',
+    ap_sh_real_lbl:'متوسط الشحن الحقيقي / وحدة', ap_sh_collected_lbl:'متوسط المحصّل / وحدة',
+    ap_sh_net_lbl:'متوسط صافي الشحن عليك', ap_sh_total_lbl:'إجمالي تكلفة الشحن',
+    ap_sh_weighted_hint:'موزون عبر المنتجات', ap_sh_all_hint:'كل المنتجات مجتمعة',
+    ap_cpa_chart:'CPA مقابل Break-even CPA — لكل منتج',
+    ap_budget_chart:'ميزانية الإعلانات — لكل منتج',
+    ap_sh_chart:'تكلفة الشحن الحقيقية مقابل المحصّل — لكل منتج',
+    ov_total_rev_lbl:'إجمالي الإيرادات',
+    ov_portfolio_margin_lbl:'هامش المحفظة', ov_portfolio_margin_sub:'صافي الربح ÷ الإيراد',
+    sl_sync_btn:'↺ مزامنة من المدخلات', sl_sync_title:'إعادة تعيين المؤشرات للقيم الحالية',
+    be_label:'تعادل: ',
+    ap_blended_cpa_lbl:'Blended CPA', ap_blended_roas_lbl:'Blended ROAS', ap_weighted_be_lbl:'Weighted BE CPA',
+    ap_total_leads_lbl:'إجمالي الليدز', ap_total_conf_lbl:'إجمالي المؤكدات', ap_total_del_lbl:'إجمالي الموصّلات',
+    ap_del_orders_chart:'الأوردرات الموصّلة — لكل منتج',
+    ap_net_profit_chart:'صافي الربح لكل منتج', ap_rev_breakdown_chart:'توزيع الإيرادات',
+    ap_margin_chart:'هامش الربح % لكل منتج', ap_pl_summary_chart:'ملخص P&L الكامل للبزنس',
+    ap_ranked_by:'المنتجات مرتبة بالربح الكلي الصافي',
+    ov_ads_title:'الإعلانات', ov_ads_card_sub:'CPA و ROAS مقابل نقطة التعادل',
+    ov_delivery_title:'التوصيل', ov_delivery_sub:'توزيع الوحدات', ov_del_ret_lbl:'وصلت / رجعت',
+    ov_ship_title:'تكاليف الشحن', ov_ship_sub:'تفصيل لكل وحدة', ov_ship_panel_sub:'موزون عبر كل المنتجات',
+    ov_total_margin_lbl:'إجمالي الهامش', ov_margin_pu_lbl:'الهامش / وحدة', ov_net_pu_lbl:'صافي / وحدة',
+    ov_ad_cost_order:'تكلفة الإعلان / أوردر', ov_total_orders_lbl:'إجمالي الأوردرات',
+    ov_total_leads_lbl:'إجمالي الليدز', ov_total_delivered_lbl:'إجمالي الموصّلات',
+    lbl_plat_lead:'رسوم المنصة / ليد',
+    sl_del_lbl:'نسبة التوصيل', sl_conf_lbl:'نسبة التأكيد',
+    si_scenario_status:'حالة السيناريو', si_apply_btn:'⬆ تطبيق هذا السيناريو على المدخلات',
+    card_fees:'العمولات والرسوم', lbl_gateway:'رسوم بوابة الدفع',
+    card_fixed:'التكاليف الثابتة', export_title:'تصدير إلى Excel',
+    kpi_confirmed:'الأوردرات المؤكدة', kpi_delivered:'الأوردرات الموصّلة',
+    hint_roas_rev:'الإيراد ÷ الإنفاق الإعلاني', hint_be_full:'نقطة تعادل البزنس الكاملة',
+    hint_be_min:'الحد الأدنى للتعادل', hint_cpa_eff_s:'مقابل حد التعادل',
+    hint_cost_del_s:'الميزانية ÷ الموصّلات', hint_wasted_s:'هدر على ليدز غير محوّلة',
+    hint_spent_s:'الإنفاق على أوردرات حقيقية', kpi_pool_lbl:'البطاقات المخفية — اضغط + لاستعادتها',
+    si_leads_lbl:'الليدز المطلوبة', si_rev_lbl:'الإيراد (كل المخزون)',
+    si_net_lbl:'صافي الربح (كل المخزون)',
+    si_margin_pu_lbl:'ربح الهامش / وحدة', si_net_pu_lbl:'صافي الربح / وحدة',
+    si_budget_lbl:'الميزانية المطلوبة',
+    sim_roas_lbl:'ROAS المستهدف', sim_rev_lbl:'الإيراد المستهدف',
+    sim_cpp_lbl_s:'Planned CPA', sim_stock_lbl_s:'المخزون المطلوب',
+    tp_calc_title:'حاسبة الربح المستهدف',
+    sh_totals_lbl:'الإجماليات — كل المخزون',
+    chart_sh_sens:'لو نسبة توصيلك اتغيرت — كيف يتأثر صافي الربح؟',
+    chart_sh_sens_sub:'الخط الأحمر = نقطة التعادل. الأخضر = ربح، الأحمر = خسارة.',
+    chart_budget_title:'فين راحت ميزانيتك؟',
+    sign_out:'تسجيل الخروج',
+    roas_leads_lbl:'الليدز المطلوبة (إعلانات)', roas_net_lbl:'صافي الربح',
+    roas_margin_lbl:'هامش الربح', roas_after_costs_lbl:'بعد كل التكاليف',
   }
 };
 
@@ -7802,6 +7936,10 @@ function applyLang(){
   document.querySelectorAll('[data-t]').forEach(el=>{
     const key = el.dataset.t;
     if(T[LANG][key] !== undefined) el.textContent = T[LANG][key];
+  });
+  document.querySelectorAll('[data-t-title]').forEach(el=>{
+    const key = el.dataset.tTitle;
+    if(T[LANG][key] !== undefined) el.title = T[LANG][key];
   });
 }
 
@@ -7937,7 +8075,7 @@ window.addEventListener('load', ()=>{
             '<div class="pl-menu-div"></div>'+
             '<button class="pl-menu-btn danger" onclick="window.__plLogout()">'+
               '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>'+
-              '<span>Sign out</span>'+
+              '<span data-t="sign_out">Sign out</span>'+
             '</button>'+
           '</div>';
         navRight.appendChild(wrap);
@@ -8168,11 +8306,11 @@ function toggleRevShipping(){
   function initCard(c,kid){
     c.dataset.kid=kid;
     const x=document.createElement('button');
-    x.className='kpi-x';x.textContent='×';x.title='Hide card';
+    x.className='kpi-x';x.textContent='×';x.title=T[LANG].hide_card;
     x.onclick=e=>{e.stopPropagation();kpiHide(kid);};
     c.appendChild(x);
     const plus=document.createElement('button');
-    plus.className='kpi-plus';plus.textContent='+';plus.title='Show card';
+    plus.className='kpi-plus';plus.textContent='+';plus.title=T[LANG].show_card;
     plus.onclick=e=>{e.stopPropagation();kpiShow(kid);};
     c.appendChild(plus);
     c.addEventListener('dragstart',onDragStart);
