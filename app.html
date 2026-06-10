@@ -3617,7 +3617,7 @@ function mbToggleAdvanced(){
     if(!el) return;
     el.style.opacity = open ? '0.35' : '1';
     el.style.pointerEvents = open ? 'none' : '';
-    el.title = open ? 'Overridden by Advanced options' : '';
+    el.title = open ? T[LANG].adv_override_hint : '';
   });
   // Also dim their labels
   const mbSection = document.getElementById('i_ads')?.closest('.input-group')?.parentElement;
@@ -4203,7 +4203,7 @@ function cfRecalc(){
     } else {
       // rates not set yet — show base only + note
       const baseOnly = commEgp + gatewayEgp + customPerOrder;
-      totalVal.textContent = baseOnly.toFixed(1) + ' ' + CURRENCY + '/order' + (platLead > 0 ? ' (enter Conf% and Del% to calculate Platform fee)' : '');
+      totalVal.textContent = baseOnly.toFixed(1) + ' ' + CURRENCY + '/order' + (platLead > 0 ? ' ' + T[LANG].plat_fee_hint : '');
     }
   }
   dCalc();
@@ -4808,26 +4808,20 @@ function calc(){
       // 🔴 Loss
       state = 'red';
       ic    = '✗';
-      ttl   = 'CPA exceeded break-even — you\'re losing money on every lead';
-      msg   = `Actual CPA is ${d1(actualCPP)} EGP — ${eff !== null ? Math.abs(eff.toFixed(1))+'%' : '—'} above the limit of ${d1(beCPP)} EGP. `
-            + `${wastedPct}% of your budget (${Math.round(wastedSpend).toLocaleString()} EGP) is lost to undelivered leads. `
-            + `Only ${l2o}% of leads convert to delivered orders.`;
+      ttl   = T[LANG].ads_loss_ttl;
+      msg   = tfmt('ads_loss_msg', d1(actualCPP)+' '+CURRENCY, eff !== null ? Math.abs(eff.toFixed(1)) : '—', d1(beCPP)+' '+CURRENCY, wastedPct, Math.round(wastedSpend).toLocaleString()+' '+CURRENCY, l2o);
     } else if(eff !== null && eff < 20){
       // 🟡 Tight
       state = 'yellow';
       ic    = '⚠';
-      ttl   = 'Margin tight — CPA is close to break-even limit';
-      msg   = `You have only ${eff.toFixed(1)}% headroom before hitting break-even (${d1(beCPP)} EGP). `
-            + `${wastedPct}% of your budget is lost to undelivered leads. `
-            + `Consider reducing CPA or improving delivery rate (currently ${(delR*100).toFixed(0)}%).`;
+      ttl   = T[LANG].ads_tight_ttl;
+      msg   = tfmt('ads_tight_msg', eff.toFixed(1), d1(beCPP)+' '+CURRENCY, wastedPct, (delR*100).toFixed(0));
     } else {
       // 🟢 Healthy
       state = 'green';
       ic    = '✓';
-      ttl   = 'Healthy — CPA is well within break-even limits';
-      msg   = `${eff !== null ? eff.toFixed(1)+'%' : '—'} headroom before break-even (${d1(beCPP)} EGP). `
-            + `${wastedPct}% of budget lost to undelivered leads — ${wastedPct < 60 ? 'within acceptable range' : 'consider improving funnel rates'}. `
-            + `Lead→Order conversion: ${l2o}%.`;
+      ttl   = T[LANG].ads_ok_ttl;
+      msg   = tfmt('ads_ok_msg', eff !== null ? eff.toFixed(1) : '—', d1(beCPP)+' '+CURRENCY, wastedPct, wastedPct < 60 ? T[LANG].ads_funnel_ok : T[LANG].ads_funnel_bad, l2o);
     }
 
     const colors = {
@@ -4851,7 +4845,7 @@ function calc(){
   if(netDelEl){
     if(pdr && pdr.rate > 0){
       netDelEl.style.display = '';
-      set('m_net_delivered', '▸ Net delivered (after returns): ' + d1(netDelivered), 'var(--red)');
+      set('m_net_delivered', T[LANG].m_net_del_lbl + d1(netDelivered), 'var(--red)');
     } else {
       netDelEl.style.display = 'none';
     }
@@ -4860,8 +4854,8 @@ function calc(){
   const cppAlert = document.getElementById('cpp_alert');
   cppAlert.className='alert '+(adOk?'ag':'ar');
   set('cpp_msg', adOk
-    ? `Efficient — actual CPA is ${d1(actualCPP)} EGP, below the break-even limit of ${d1(beCPP)} EGP.`
-    : `Overspending — actual CPA is ${d1(actualCPP)} EGP but break-even limit is ${d1(beCPP)} EGP.`
+    ? tfmt('cpp_ok', d1(actualCPP)+' '+CURRENCY, d1(beCPP)+' '+CURRENCY)
+    : tfmt('cpp_bad', d1(actualCPP)+' '+CURRENCY, d1(beCPP)+' '+CURRENCY)
   );
 
   renderCPPBar(actualCPP, beCPP);
@@ -4897,10 +4891,10 @@ function calc(){
       { val: retAbsorbed, color: '#f43f5e' },
     ];
     const total = segs.reduce((s,x)=>s+x.val,0);
-    const _lbl = ['Fulfillment','Courier','Returns absorbed'];
+    const _lbl = [T[LANG].sh_lbl_fulfill, T[LANG].sh_lbl_courier, T[LANG].sh_lbl_ret_abs];
     stackBar.innerHTML = segs.map((s,i)=>{
       const pct = total>0 ? (s.val/total*100).toFixed(1) : 0;
-      return '<div style="width:'+pct+'%;background:'+s.color+';transition:width .4s" title="'+_lbl[i]+': '+Math.round(s.val)+' EGP ('+pct+'%)"></div>';
+      return '<div style="width:'+pct+'%;background:'+s.color+';transition:width .4s" title="'+_lbl[i]+': '+Math.round(s.val)+' '+CURRENCY+' ('+pct+'%)"></div>';
     }).join('');
   }
   set('sh_t5', '+ '+eg(retAbsorbed));
@@ -5010,15 +5004,15 @@ function calc(){
   set('ov_total_margin', eg(totalMarginProfit), totalMarginProfit>=0?'var(--profit)':'var(--red)');
 
   const plStat=document.getElementById('pl_status');
-  plStat.innerHTML=`<span class="tag ${isP?'tg':'tr'}">${isP?'Profit':'Loss'}</span>`;
+  plStat.innerHTML=`<span class="tag ${isP?'tg':'tr'}">${T[LANG][isP?'js_profit_badge':'js_loss_badge']}</span>`;
 
   const fAlert=document.getElementById('final_alert');
   fAlert.className='alert '+(isP?'ag':'ar');
   set('final_msg', isP
-    ? `Profitable — ${Math.ceil(beUnits)} units to break even, ${stock.toFixed(1)} in stock. Expected net: ${eg(totalProf)}.`
+    ? tfmt('final_profit', Math.ceil(beUnits), stock.toFixed(1), eg(totalProf))
     : profitPU<0
-      ? 'Each unit is sold at a loss. Review product cost or selling price.'
-      : `Need ${Math.ceil(beUnits)} units to break even but only ${stock.toFixed(1)} available.`
+      ? T[LANG].final_loss_pu
+      : tfmt('final_loss_stock', Math.ceil(beUnits), stock.toFixed(1))
   );
 
   // ── Overview: Ads Snapshot ──
@@ -5114,12 +5108,12 @@ function renderCPPBar(actual, max){
   const actLbl = document.getElementById('gauge_actual_lbl');
   const beLbl  = document.getElementById('gauge_be_lbl');
   const maxLbl = document.getElementById('gauge_max_lbl');
-  if(actLbl) actLbl.textContent = actual > 0 ? actual.toFixed(1)+' EGP' : '—';
-  if(beLbl)  beLbl.textContent  = max > 0    ? T[LANG].be_label+max.toFixed(1)+' EGP' : T[LANG].be_label+'—';
+  if(actLbl) actLbl.textContent = actual > 0 ? actual.toFixed(1)+' '+CURRENCY : '—';
+  if(beLbl)  beLbl.textContent  = max > 0    ? T[LANG].be_label+max.toFixed(1)+' '+CURRENCY : T[LANG].be_label+'—';
   if(actLbl) actLbl.style.color = (actual <= max && max > 0) ? 'var(--c1)' : 'var(--red)';
 
   const maxScale = max > 0 ? max * 1.5 : 100;
-  if(maxLbl) maxLbl.textContent = Math.round(maxScale)+' EGP';
+  if(maxLbl) maxLbl.textContent = Math.round(maxScale)+' '+CURRENCY;
 
   const clampedActual = Math.min(actual, maxScale);
   const remaining     = Math.max(maxScale - clampedActual, 0);
@@ -5187,7 +5181,7 @@ function renderMktDonut(ads, salary, varCost){
   const sumEl = document.getElementById('waterfall_summary');
   if(sumEl && ads > 0){
     const effPct = Math.round(l2o * 100);
-    sumEl.innerHTML = `<span style="color:#00e5a0;font-weight:600">${effPct}%</span> of budget reached delivered orders — <span style="color:#f43f5e;font-weight:600">${Math.round(100-effPct)}%</span> lost to undelivered leads`;
+    sumEl.innerHTML = `<span style="color:#00e5a0;font-weight:600">${effPct}%</span> ${T[LANG].wf_summary_a} — <span style="color:#f43f5e;font-weight:600">${Math.round(100-effPct)}%</span> ${T[LANG].wf_summary_b}`;
   }
 
   CH['bwf'] = new Chart(document.getElementById('ch_budget_waterfall'), {
@@ -5209,7 +5203,7 @@ function renderMktDonut(ads, salary, varCost){
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: ctx => ' ' + Math.round(ctx.raw).toLocaleString() + ' EGP'
+            label: ctx => ' ' + Math.round(ctx.raw).toLocaleString() + ' ' + CURRENCY
           }
         }
       },
@@ -5318,7 +5312,7 @@ function renderCPPLine(confR, profitPU, salaryPU){
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: ctx => ctx.dataset.label+': '+ctx.raw+' EGP' } },
+        tooltip: { callbacks: { label: ctx => ctx.dataset.label+': '+ctx.raw+' '+CURRENCY } },
       },
       scales: {
         x: {
@@ -5420,7 +5414,7 @@ function renderShProfitSens(profitPU_base, effShip_base, salary, ads, stock, cos
         legend:{display:false},
         tooltip:{callbacks:{label: ctx => {
           const v = ctx.raw;
-          return (v>=0?'+ ':'') + Math.round(v).toLocaleString('en') + ' EGP';
+          return (v>=0?'+ ':'') + Math.round(v).toLocaleString('en') + ' ' + CURRENCY;
         }}}
       },
       scales:{
@@ -6807,11 +6801,11 @@ function _tpRender(stock, cpp, inp){
     if(netProfit >= target){
       alertEl.className = 'alert ag';
       alertEl.querySelector('.alert-icon').textContent = '✓';
-      msgEl.textContent = LANG==='ar' ? `${d0(stock)} وحدة → ربح ${d0(netProfit)} EGP (+${d0(diff)} عن الـ target) ✓` : `${d0(stock)} units → profit ${d0(netProfit)} EGP (+${d0(diff)} above target) ✓`;
+      msgEl.textContent = LANG==='ar' ? `${d0(stock)} وحدة → ربح ${d0(netProfit)} ${CURRENCY} (+${d0(diff)} عن الـ target) ✓` : `${d0(stock)} units → profit ${d0(netProfit)} ${CURRENCY} (+${d0(diff)} above target) ✓`;
     } else {
       alertEl.className = 'alert ar';
       alertEl.querySelector('.alert-icon').textContent = '✗';
-      msgEl.textContent = LANG==='ar' ? `${d0(stock)} وحدة → ربح ${d0(netProfit)} EGP فقط — ناقص ${d0(Math.abs(diff))} EGP` : `${d0(stock)} units → profit ${d0(netProfit)} EGP only — short by ${d0(Math.abs(diff))} EGP`;
+      msgEl.textContent = LANG==='ar' ? `${d0(stock)} وحدة → ربح ${d0(netProfit)} ${CURRENCY} فقط — ناقص ${d0(Math.abs(diff))} ${CURRENCY}` : `${d0(stock)} units → profit ${d0(netProfit)} ${CURRENCY} only — short by ${d0(Math.abs(diff))} ${CURRENCY}`;
     }
   } else {
     alertEl.style.display = 'none';
@@ -7554,7 +7548,7 @@ const T = {
     rate_error:'Please enter valid confirmation and delivery rates (1% to 100%) so the tool can calculate correctly.',
     roas_title:'ROAS target simulator', lbl_roas_target:'Target ROAS you want to achieve',
     lbl_roas_orders:'Target delivered orders', roas_budget_lbl:'Required ad budget',
-    roas_cpp_lbl:'Max CPA allowed', roas_leads_lbl:'Required leads', roas_rev_lbl:'Expected revenue',
+    roas_cpp_lbl:'Max CPA allowed', roas_rev_lbl:'Expected revenue',
     slider_title:'What-if sliders — adjust live',
     si_profit_lbl:'Profit / unit', si_maxcpp_lbl:'MAX CPA', si_be_lbl:'Break-even',
     sc_title:'Scenario comparison', sc_show:'Show', sc_a:'Scenario A', sc_b:'Scenario B',
@@ -7721,6 +7715,27 @@ const T = {
     sign_out:'Sign out',
     roas_leads_lbl:'Leads needed (ads)', roas_net_lbl:'Net profit',
     roas_margin_lbl:'Profit margin', roas_after_costs_lbl:'after all costs',
+    kpi_done:'✓ Done', kpi_customize:'⊞ Customize',
+    kpi_showing:'Showing {0} of {1} cards',
+    plat_fee_hint:'(enter Conf% and Del% to calculate Platform fee)',
+    m_net_del_lbl:'▸ Net delivered (after returns): ',
+    adv_override_hint:'Overridden by Advanced options',
+    wf_summary_a:'of budget reached delivered orders',
+    wf_summary_b:'lost to undelivered leads',
+    ads_loss_ttl:"CPA exceeded break-even — you're losing money on every lead",
+    ads_loss_msg:'Actual CPA is {0} — {1}% above the limit of {2}. {3}% of your budget ({4}) is lost to undelivered leads. Only {5}% of leads convert to delivered orders.',
+    ads_tight_ttl:'Margin tight — CPA is close to break-even limit',
+    ads_tight_msg:'You have only {0}% headroom before hitting break-even ({1}). {2}% of your budget is lost to undelivered leads. Consider reducing CPA or improving delivery rate (currently {3}%).',
+    ads_ok_ttl:'Healthy — CPA is well within break-even limits',
+    ads_ok_msg:'{0}% headroom before break-even ({1}). {2}% of budget lost to undelivered leads — {3}. Lead→Order conversion: {4}%.',
+    ads_funnel_ok:'within acceptable range',
+    ads_funnel_bad:'consider improving funnel rates',
+    cpp_ok:'Efficient — actual CPA is {0}, below the break-even limit of {1}.',
+    cpp_bad:'Overspending — actual CPA is {0} but break-even limit is {1}.',
+    final_profit:'Profitable — {0} units to break even, {1} in stock. Expected net: {2}.',
+    final_loss_pu:'Each unit is sold at a loss. Review product cost or selling price.',
+    final_loss_stock:'Need {0} units to break even but only {1} available.',
+    sh_lbl_fulfill:'Fulfillment', sh_lbl_courier:'Courier', sh_lbl_ret_abs:'Returns absorbed',
   },
   ar: {
     nav_inputs:'المدخلات', nav_marketing:'الإعلانات', nav_shipping:'الشحن', nav_overview:'نظرة عامة',
@@ -7758,7 +7773,7 @@ const T = {
     rate_error:'أدخل نسبة التأكيد والتوصيل (من 1% لـ 100%) عشان الأداة تحسب صح.',
     roas_title:'محاكي ROAS المستهدف', lbl_roas_target:'ROAS الذي تريد تحقيقه',
     lbl_roas_orders:'الأوردرات المستهدفة', roas_budget_lbl:'الميزانية المطلوبة',
-    roas_cpp_lbl:'أقصى CPA مسموح', roas_leads_lbl:'الليدز المطلوبة', roas_rev_lbl:'الإيراد المتوقع',
+    roas_cpp_lbl:'أقصى CPA مسموح', roas_rev_lbl:'الإيراد المتوقع',
     slider_title:'محاكاة What-if — اضبط لترى التأثير',
     si_profit_lbl:'ربح / وحدة', si_maxcpp_lbl:'MAX CPA', si_be_lbl:'نقطة التعادل',
     sc_title:'مقارنة السيناريوهات', sc_show:'إظهار', sc_a:'السيناريو A', sc_b:'السيناريو B',
@@ -7925,6 +7940,27 @@ const T = {
     sign_out:'تسجيل الخروج',
     roas_leads_lbl:'الليدز المطلوبة (إعلانات)', roas_net_lbl:'صافي الربح',
     roas_margin_lbl:'هامش الربح', roas_after_costs_lbl:'بعد كل التكاليف',
+    kpi_done:'✓ تم', kpi_customize:'⊞ تخصيص',
+    kpi_showing:'عرض {0} من {1} بطاقات',
+    plat_fee_hint:'(أدخل % التأكيد و% التوصيل لحساب رسوم المنصة)',
+    m_net_del_lbl:'▸ صافي الموصّل (بعد المرتجعات): ',
+    adv_override_hint:'مُلغى بواسطة الخيارات المتقدمة',
+    wf_summary_a:'من الميزانية وصلت لأوردرات موصّلة',
+    wf_summary_b:'ضاع على ليدز غير محوّلة',
+    ads_loss_ttl:'تجاوزت CPA نقطة التعادل — تخسر على كل ليد',
+    ads_loss_msg:'CPA الفعلي {0} — {1}% فوق الحد {2}. {3}% من ميزانيتك ({4}) ضاع على ليدز غير محوّلة. فقط {5}% من الليدز تتحول لأوردرات موصّلة.',
+    ads_tight_ttl:'الهامش ضيق — CPA قريب من حد التعادل',
+    ads_tight_msg:'لديك فقط {0}% مساحة قبل التعادل ({1}). {2}% من ميزانيتك ضاع على ليدز غير محوّلة. فكر في تخفيض CPA أو تحسين نسبة التوصيل (حالياً {3}%).',
+    ads_ok_ttl:'صحي — CPA ضمن حدود التعادل',
+    ads_ok_msg:'{0}% مساحة قبل التعادل ({1}). {2}% من الميزانية ضاع على ليدز غير محوّلة — {3}. تحويل ليد→أوردر: {4}%.',
+    ads_funnel_ok:'ضمن النطاق المقبول',
+    ads_funnel_bad:'فكر في تحسين معدلات القمع',
+    cpp_ok:'كفؤ — CPA الفعلي {0}، أقل من حد التعادل {1}.',
+    cpp_bad:'إنفاق زائد — CPA الفعلي {0} لكن حد التعادل {1}.',
+    final_profit:'مربح — {0} وحدة للتعادل، {1} في المخزون. صافي متوقع: {2}.',
+    final_loss_pu:'كل وحدة تُباع بخسارة. راجع تكلفة المنتج أو سعر البيع.',
+    final_loss_stock:'تحتاج {0} وحدة للتعادل لكن المتوفر فقط {1}.',
+    sh_lbl_fulfill:'فولفلمينت', sh_lbl_courier:'كورير', sh_lbl_ret_abs:'مرتجعات محسوبة',
   }
 };
 
@@ -7947,6 +7983,12 @@ function toggleLang(){
   LANG = LANG==='en'?'ar':'en';
   applyLang();
   persistSave();
+}
+
+function tfmt(key,...args){
+  let s=(T[LANG][key]!==undefined?T[LANG][key]:(T.en[key]||key));
+  args.forEach((v,i)=>{s=s.replace(new RegExp('\\{'+i+'\\}','g'),v);});
+  return s;
 }
 
 // ── TOOLTIP POSITIONING ────────────────────
@@ -8205,7 +8247,7 @@ window._lastRevExclShip = 0;
 function _updateRevDisplay(){
   const val = REV_INCL_SHIP ? window._lastRevInclShip : window._lastRevExclShip;
   const el  = document.getElementById('ov_rev');
-  if(el && val > 0) el.textContent = (Math.round(val*10)/10/1000).toFixed(1)+'K EGP';
+  if(el && val > 0) el.textContent = (Math.round(val*10)/10/1000).toFixed(1)+'K '+CURRENCY;
 }
 
 function toggleRevShipping(){
@@ -8261,7 +8303,7 @@ function toggleRevShipping(){
   function updateInfo(){
     const v=cards().length, h=poolCards().length;
     const el=document.getElementById('kpi_cbar_info');
-    if(el) el.textContent=h>0?'Showing '+v+' of '+(v+h)+' cards':'';
+    if(el) el.textContent=h>0?tfmt('kpi_showing',v,(v+h)):'';
     const p=pool();
     if(p) p.classList.toggle('show', h>0&&editing);
   }
@@ -8271,7 +8313,7 @@ function toggleRevShipping(){
     const r=row(), btn=document.getElementById('kpi_cbtn'), p=pool();
     if(!r) return;
     r.classList.toggle('kpi-row--edit', editing);
-    if(btn){btn.classList.toggle('on',editing);btn.textContent=editing?'✓ Done':'⊞ Customize';}
+    if(btn){btn.classList.toggle('on',editing);btn.textContent=editing?T[LANG].kpi_done:T[LANG].kpi_customize;}
     if(p) p.classList.toggle('show', editing&&poolCards().length>0);
     cards().forEach(c=>c.setAttribute('draggable',editing?'true':'false'));
     if(!editing) save();
