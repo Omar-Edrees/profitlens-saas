@@ -130,6 +130,50 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 }
 .icon-btn:hover{background:var(--surf3)}
 
+/* ─── PROFILE MENU ─── */
+.pl-profile{position:relative}
+.pl-avatar{
+  width:30px;height:30px;border-radius:50%;
+  background:linear-gradient(135deg,var(--c1),#8b5cf6);
+  color:#000;border:none;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--head);font-size:13px;font-weight:700;
+  overflow:hidden;padding:0;transition:box-shadow .15s;
+}
+.pl-avatar:hover{box-shadow:0 0 0 2px var(--c1)}
+.pl-avatar img{width:100%;height:100%;object-fit:cover}
+.pl-menu{
+  position:absolute;top:calc(100% + 8px);right:0;z-index:200;
+  width:248px;max-width:calc(100vw - 24px);
+  background:var(--surf);border:1px solid var(--bdr2);
+  border-radius:12px;padding:6px;
+  box-shadow:0 16px 48px rgba(0,0,0,.45);
+  opacity:0;visibility:hidden;transform:translateY(-6px);
+  transition:opacity .18s,transform .18s,visibility .18s;
+}
+.pl-menu.open{opacity:1;visibility:visible;transform:translateY(0)}
+.pl-menu-head{display:flex;align-items:center;gap:10px;padding:10px 10px 12px}
+.pl-menu-av{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--c1),#8b5cf6);color:#000;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--head);font-weight:700;font-size:17px;overflow:hidden;
+}
+.pl-menu-av img{width:100%;height:100%;object-fit:cover}
+.pl-menu-info{min-width:0;flex:1}
+.pl-menu-name{font-size:13px;font-weight:600;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pl-menu-email{font-size:11px;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:var(--mono);margin-top:2px}
+.pl-menu-div{height:1px;background:var(--bdr);margin:4px 4px}
+.pl-menu-btn{
+  width:100%;display:flex;align-items:center;gap:9px;
+  padding:10px;border:none;background:transparent;border-radius:8px;
+  color:var(--txt2);font-family:var(--body);font-size:13px;font-weight:500;
+  cursor:pointer;text-align:left;transition:background .15s,color .15s;
+}
+.pl-menu-btn svg{flex-shrink:0}
+.pl-menu-btn:hover{background:var(--surf3);color:var(--txt)}
+.pl-menu-btn.danger:hover{background:rgba(239,68,68,.12);color:#f87171}
+
 /* mobile tab bar — hidden on desktop */
 .mobile-tabs{display:none}
 
@@ -1046,6 +1090,11 @@ input[type=range]::-moz-range-thumb{
   .live{display:none}
   .brand-badge{display:none}
   .brand-name{font-size:14px}
+  .nav-right{gap:6px}
+  .curr-btn{padding:0 8px;height:30px}
+  .curr-arrow{display:none}
+  .icon-btn{width:30px;height:30px}
+  #lbtn{width:30px!important}
 
   /* MOBILE TAB BAR */
   .mobile-tabs{
@@ -7841,22 +7890,52 @@ window.addEventListener('load', ()=>{
         try { initProducts(); } catch(e){}
       }
 
-      // User bar in nav
-      const navRight = document.querySelector('.nav-right');
-      if (navRight && !document.getElementById('__user_bar')) {
-        const ubar = document.createElement('div');
-        ubar.id = '__user_bar';
-        ubar.style.cssText = 'display:flex;align-items:center;gap:8px;border-left:1px solid var(--bdr2);padding-left:8px;margin-left:4px';
-        ubar.innerHTML =
-          '<span style="font-size:11px;font-family:var(--mono);color:var(--txt2);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+session.user.email+'">'+session.user.email+'</span>'+
-          '<button onclick="window.__plLogout()" style="height:28px;padding:0 10px;border-radius:7px;background:transparent;border:1px solid var(--bdr2);color:var(--txt2);font-size:11px;cursor:pointer;font-family:var(--body);white-space:nowrap">Sign out</button>';
-        navRight.prepend(ubar);
-      }
-
       window.__plLogout = async function() {
-        await window.__sb.auth.signOut();
+        try { await window.__sb.auth.signOut(); } catch(e){}
         window.location.replace('/');
       };
+
+      // Profile menu in nav (avatar + dropdown with name / email / sign out)
+      const navRight = document.querySelector('.nav-right');
+      if (navRight && !document.getElementById('__pl_profile')) {
+        const u = session.user;
+        const meta = u.user_metadata || {};
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        const email = u.email || '';
+        const name = meta.full_name || meta.name || (email ? email.split('@')[0] : 'User');
+        const pic = meta.avatar_url || meta.picture || '';
+        const initial = esc((name || email || '?').trim().charAt(0).toUpperCase());
+        const avInner = pic
+          ? '<img src="'+esc(pic)+'" alt="" referrerpolicy="no-referrer">'
+          : initial;
+
+        const wrap = document.createElement('div');
+        wrap.className = 'pl-profile';
+        wrap.id = '__pl_profile';
+        wrap.innerHTML =
+          '<button class="pl-avatar" id="__pl_av" title="Account" aria-label="Account menu">'+avInner+'</button>'+
+          '<div class="pl-menu" id="__pl_menu">'+
+            '<div class="pl-menu-head">'+
+              '<div class="pl-menu-av">'+avInner+'</div>'+
+              '<div class="pl-menu-info">'+
+                '<div class="pl-menu-name" title="'+esc(name)+'">'+esc(name)+'</div>'+
+                '<div class="pl-menu-email" title="'+esc(email)+'">'+esc(email)+'</div>'+
+              '</div>'+
+            '</div>'+
+            '<div class="pl-menu-div"></div>'+
+            '<button class="pl-menu-btn danger" onclick="window.__plLogout()">'+
+              '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>'+
+              '<span>Sign out</span>'+
+            '</button>'+
+          '</div>';
+        navRight.appendChild(wrap);
+
+        const avBtn = wrap.querySelector('#__pl_av');
+        const menu  = wrap.querySelector('#__pl_menu');
+        avBtn.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); });
+        document.addEventListener('click', e => { if (!wrap.contains(e.target)) menu.classList.remove('open'); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') menu.classList.remove('open'); });
+      }
 
       // Cloud sync every 3s
       let __lastSyncedStr = localStorage.getItem(LS_KEY);
