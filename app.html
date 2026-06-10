@@ -9,39 +9,42 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500&display=swap&font-display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap&font-display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js" defer onerror="window.__chartFailed=true"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer onerror="window.__xlsxFailed=true"></script>
 <!-- ProfitLens SaaS: Supabase Auth -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 :root {
-  --bg:      #07090f;
-  --bg2:     #0c1018;
-  --surf:    #111722;
-  --surf2:   #171f2e;
-  --surf3:   #1e2840;
-  --bdr:     rgba(255,255,255,.07);
-  --bdr2:    rgba(255,255,255,.13);
-  --c1:      #00e5a0;
-  --c2:      #3b82f6;
-  --c3:      #f59e0b;
-  --c4:      #a78bfa;
-  --red:     #f43f5e;
-  --txt:     #e8edf5;
-  --txt2:    #8896ab;
-  --txt3:    #3d4f66;
-  --txt-title: #e8edf5;
-  --mono:    'JetBrains Mono',monospace;
-  --head:    'Syne',sans-serif;
-  --body:    'Outfit',sans-serif;
+  --bg:      #0d0f14;
+  --bg2:     #13161e;
+  --surf:    #13161e;
+  --surf2:   #1a1e28;
+  --surf3:   #222738;
+  --bdr:     #2a2f3d;
+  --bdr2:    #3a4055;
+  --c1:      #5b6af5;
+  --c2:      #8b5cf6;
+  --c3:      #22c55e;
+  --c4:      #3b82f6;
+  --acc:     #5b6af5;
+  --acc2:    #4a58e8;
+  --red:     #ef4444;
+  --grn:     #22c55e;
+  --txt:     #e8eaf0;
+  --txt2:    #8890a6;
+  --txt3:    #555e78;
+  --txt-title: #e8eaf0;
+  --mono:    'JetBrains Mono', monospace;
+  --head:    'Inter', system-ui, sans-serif;
+  --body:    'Inter', system-ui, sans-serif;
   --r:       10px;
   --r2:      16px;
 }
 [data-theme="light"]{
-  --bg:#f0f4f9; --bg2:#e8edf6; --surf:#fff; --surf2:#f5f8fd; --surf3:#eaf0fa;
-  --bdr:rgba(0,0,0,.07); --bdr2:rgba(0,0,0,.13); --txt:#0d1320; --txt2:#3a4f66; --txt3:#7a8fa8;
-  --txt-title: #0d1320;
+  --bg:#f5f6fa; --bg2:#eef0f7; --surf:#fff; --surf2:#f0f2f9; --surf3:#e8ebf5;
+  --bdr:#dde0ec; --bdr2:#c8cce0; --txt:#0d1018; --txt2:#3a4055; --txt3:#7a82a0;
+  --txt-title:#0d1018;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -62,7 +65,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 }
 .brand-mark svg{width:14px;height:14px;fill:none;stroke:#000;stroke-width:2.2;stroke-linecap:round}
 .brand-name{font-family:var(--head);font-size:15px;font-weight:700;letter-spacing:-.3px}
-.brand-badge{font-size:9px;font-family:var(--mono);background:var(--c1);color:#000;padding:2px 6px;border-radius:3px;font-weight:500}
+.brand-badge{font-size:9px;font-family:var(--mono);background:var(--c1);color:#fff;padding:2px 6px;border-radius:3px;font-weight:500}
 
 .nav-pills{display:flex;gap:0;background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:4px;flex:1;max-width:680px;margin:0 24px}
 .nav-pill{
@@ -72,10 +75,10 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
   display:flex;align-items:center;justify-content:center;
 }
 .nav-pill:hover{color:var(--txt);background:var(--surf2)}
-.nav-pill.active{background:var(--active-c,var(--c1));color:#000}
+.nav-pill.active{background:var(--active-c,var(--c1));color:#fff}
 .nav-pill[data-s="0"].active{--active-c:var(--c1)}
 .nav-pill[data-s="1"].active{--active-c:var(--c2);color:#fff}
-.nav-pill[data-s="2"].active{--active-c:var(--c3);color:#000}
+.nav-pill[data-s="2"].active{--active-c:var(--c3);color:#fff}
 .nav-pill[data-s="3"].active{--active-c:var(--c4);color:#fff}
 
 .nav-right{display:flex;align-items:center;gap:8px}
@@ -115,7 +118,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 }
 .curr-opt:last-child{border-bottom:none}
 .curr-opt:hover{background:var(--surf2)}
-.curr-opt.active{background:rgba(0,229,160,.07);color:var(--c1)}
+.curr-opt.active{background:rgba(91,106,245,.07);color:var(--c1)}
 .curr-opt-flag{font-size:15px;width:20px;text-align:center;flex-shrink:0}
 .curr-opt-info{display:flex;flex-direction:column;gap:1px}
 .curr-opt-code{font-family:var(--mono);font-size:12px;font-weight:700}
