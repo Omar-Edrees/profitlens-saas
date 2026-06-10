@@ -98,6 +98,26 @@
 
     .empty { padding: 40px; text-align: center; color: var(--txt3); font-size: 14px; }
 
+    /* ─── Promo codes ─── */
+    .promo-form {
+      display: flex; gap: 8px; padding: 16px 20px;
+      border-bottom: 1px solid var(--bdr); flex-wrap: wrap;
+    }
+    .promo-form input {
+      background: var(--bg3); border: 1px solid var(--bdr2); border-radius: 8px;
+      padding: 7px 12px; color: var(--txt); font-size: 13px; font-family: var(--mono);
+      outline: none; transition: border-color .15s; width: 180px; text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .promo-form input:focus { border-color: var(--acc); }
+    .promo-form input::placeholder { text-transform: none; letter-spacing: 0; color: var(--txt3); }
+    .promo-form input[type=number] { width: 90px; font-family: var(--body); letter-spacing: 0; }
+    .btn-create { background: rgba(91,106,245,.15); color: var(--acc); border: 1px solid rgba(91,106,245,.25); }
+    .btn-create:hover { background: rgba(91,106,245,.25); }
+    .promo-used { font-size: 11px; color: var(--txt3); font-family: var(--mono); }
+    .badge-active   { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: rgba(34,197,94,.12); color: var(--grn); border: 1px solid rgba(34,197,94,.2); }
+    .badge-inactive { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: rgba(239,68,68,.1); color: var(--red); border: 1px solid rgba(239,68,68,.2); }
+
     /* ─── Loading spinner ─── */
     .spinner {
       width: 32px; height: 32px; margin: 40px auto;
@@ -159,6 +179,21 @@
       <div class="spinner"></div>
     </div>
   </div>
+
+  <!-- Promo Codes -->
+  <div class="table-card" style="margin-top:24px">
+    <div class="table-header">
+      <div class="table-title">🎟️ Promo Codes</div>
+      <button class="btn btn-ghost" style="padding:6px 14px;font-size:12px" onclick="loadPromos()">↻ Refresh</button>
+    </div>
+    <div class="promo-form">
+      <input id="new-code" placeholder="PROMO CODE" maxlength="32" autocomplete="off" spellcheck="false"
+        oninput="this.value=this.value.toUpperCase()">
+      <input id="new-uses" type="number" placeholder="Max uses" min="1" value="1">
+      <button class="btn btn-create" onclick="createPromo()">+ Create Code</button>
+    </div>
+    <div id="promos-wrap"><div class="spinner"></div></div>
+  </div>
 </main>
 
 <div id="toast"></div>
@@ -187,6 +222,7 @@ async function init() {
 
     document.getElementById('admin-main').style.display = '';
     loadUsers();
+    loadPromos();
   } catch(e) { showGate(); }
 }
 
@@ -315,6 +351,84 @@ function toast(msg, type) {
 
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── PROMO CODES ───────────────────────────────────────────
+async function loadPromos() {
+  document.getElementById('promos-wrap').innerHTML = '<div class="spinner"></div>';
+  try {
+    const res = await fetch('/api/admin/promos', { headers: { 'Authorization': 'Bearer ' + __token } });
+    if (!res.ok) throw new Error(await res.text());
+    const { promos } = await res.json();
+    renderPromos(promos);
+  } catch(e) {
+    document.getElementById('promos-wrap').innerHTML = `<div class="empty">Failed: ${esc(e.message)}</div>`;
+  }
+}
+
+function renderPromos(promos) {
+  if (!promos.length) {
+    document.getElementById('promos-wrap').innerHTML = '<div class="empty">No promo codes yet. Create one above.</div>';
+    return;
+  }
+  const rows = promos.map(p => {
+    const created = new Date(p.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    const full = p.uses_count >= p.max_uses;
+    return `<tr>
+      <td><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--acc);letter-spacing:.06em">${esc(p.code)}</span></td>
+      <td class="promo-used">${p.uses_count} / ${p.max_uses}</td>
+      <td>
+        <div style="background:var(--bg3);border-radius:6px;overflow:hidden;height:6px;width:80px">
+          <div style="background:${full?'var(--red)':'var(--grn)'};height:100%;width:${Math.min(100,Math.round(p.uses_count/p.max_uses*100))}%"></div>
+        </div>
+      </td>
+      <td><span class="${p.is_active && !full ? 'badge-active' : 'badge-inactive'}">${p.is_active && !full ? 'Active' : 'Exhausted'}</span></td>
+      <td style="color:var(--txt2);font-size:12px">${created}</td>
+      <td>
+        <button class="btn btn-danger" onclick="deletePromo('${p.id}','${esc(p.code)}')">Delete</button>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('promos-wrap').innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Code</th><th>Uses</th><th>Progress</th><th>Status</th><th>Created</th><th>Actions</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+
+async function createPromo() {
+  const code = document.getElementById('new-code').value.trim();
+  const maxUses = parseInt(document.getElementById('new-uses').value) || 1;
+  if (!code) { toast('Enter a code first', 'error'); return; }
+  try {
+    const res = await fetch('/api/admin/promos', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + __token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code, max_uses: maxUses })
+    });
+    if (!res.ok) { const j = await res.json(); throw new Error(j.error); }
+    document.getElementById('new-code').value = '';
+    document.getElementById('new-uses').value = '1';
+    toast('Promo code created!', 'success');
+    loadPromos();
+  } catch(e) { toast('Error: ' + e.message, 'error'); }
+}
+
+async function deletePromo(id, code) {
+  if (!confirm(`Delete promo code "${code}"?`)) return;
+  try {
+    const res = await fetch('/api/admin/promos', {
+      method: 'DELETE',
+      headers: { 'Authorization': 'Bearer ' + __token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    toast('Promo code deleted.', 'success');
+    loadPromos();
+  } catch(e) { toast('Error: ' + e.message, 'error'); }
 }
 
 init();

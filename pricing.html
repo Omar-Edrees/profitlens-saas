@@ -207,6 +207,46 @@
     }
     .note-box strong { color: var(--acc); }
 
+    /* ── PROMO CODE ── */
+    .promo-wrap {
+      background: var(--bg2); border: 1px solid var(--bdr);
+      border-radius: 16px; padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+    .promo-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; background: none; border: none;
+      width: 100%; padding: 0; color: var(--txt2);
+      font-family: var(--body); font-size: 13px; font-weight: 500;
+    }
+    .promo-toggle:hover { color: var(--txt); }
+    .promo-toggle-arrow { transition: transform .2s; font-size: 11px; }
+    .promo-toggle-arrow.open { transform: rotate(180deg); }
+    .promo-body { display: none; margin-top: 16px; }
+    .promo-body.open { display: block; }
+    .promo-row { display: flex; gap: 8px; direction: rtl; }
+    .promo-input {
+      flex: 1; padding: 10px 14px;
+      background: var(--bg3); border: 1px solid var(--bdr2);
+      border-radius: 9px; color: var(--txt); font-size: 14px;
+      font-family: var(--mono); outline: none; text-transform: uppercase;
+      transition: border-color .15s; letter-spacing: .08em;
+      text-align: right;
+    }
+    .promo-input:focus { border-color: var(--acc); }
+    .promo-input::placeholder { color: var(--txt3); letter-spacing: 0; text-transform: none; }
+    .promo-btn {
+      padding: 10px 18px; border-radius: 9px;
+      background: var(--acc); color: #fff; border: none;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      font-family: var(--body); transition: opacity .15s; white-space: nowrap;
+    }
+    .promo-btn:hover { opacity: .85; }
+    .promo-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .promo-msg { margin-top: 10px; font-size: 12px; text-align: right; display: none; }
+    .promo-msg.error   { color: #fca5a5; display: block; }
+    .promo-msg.success { color: #86efac; display: block; }
+
     /* ── TRUST ── */
     .trust {
       display: flex; justify-content: center; gap: 24px;
@@ -323,6 +363,21 @@
       </a>
     </div>
 
+    <!-- PROMO CODE -->
+    <div class="promo-wrap">
+      <button class="promo-toggle" onclick="togglePromo(this)">
+        <span>🎟️ عندك برومو كود؟</span>
+        <span class="promo-toggle-arrow">▾</span>
+      </button>
+      <div class="promo-body" id="promo-body">
+        <div class="promo-row">
+          <input class="promo-input" id="promo-input" placeholder="أدخل الكود هنا" maxlength="32" autocomplete="off" spellcheck="false">
+          <button class="promo-btn" id="promo-btn" onclick="redeemPromo()">تفعيل</button>
+        </div>
+        <div class="promo-msg" id="promo-msg"></div>
+      </div>
+    </div>
+
     <div class="note-box">
       <strong>ملاحظة:</strong> بعد تحويل المبلغ، ابعت على واتساب <strong>صورة الإيصال</strong> + <strong>إيميلك</strong> اللي سجلت بيه في التطبيق. هيتم تفعيل حسابك في أقل من 24 ساعة.
     </div>
@@ -385,6 +440,55 @@
       if (__sb) { try { await __sb.auth.signOut(); } catch(e){} }
       window.location.replace('/');
     }
+
+    function togglePromo(btn) {
+      const body  = document.getElementById('promo-body');
+      const arrow = btn.querySelector('.promo-toggle-arrow');
+      body.classList.toggle('open');
+      arrow.classList.toggle('open');
+      if (body.classList.contains('open')) document.getElementById('promo-input').focus();
+    }
+
+    async function redeemPromo() {
+      const code = document.getElementById('promo-input').value.trim();
+      const msg  = document.getElementById('promo-msg');
+      const btn  = document.getElementById('promo-btn');
+      msg.className = 'promo-msg';
+
+      if (!code) { msg.textContent = 'ادخل الكود الأول'; msg.className = 'promo-msg error'; return; }
+      if (!__sb)  { msg.textContent = 'مفيش اتصال بالسيرفر، جرّب تاني'; msg.className = 'promo-msg error'; return; }
+
+      const { data: { session } } = await __sb.auth.getSession();
+      if (!session) { window.location.replace('/'); return; }
+
+      btn.disabled = true; btn.textContent = '…جاري التحقق';
+      try {
+        const res = await fetch('/api/redeem', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+          body: JSON.stringify({ code })
+        });
+        const json = await res.json();
+        if (!res.ok) {
+          msg.textContent = json.error || 'كود غلط أو منتهي';
+          msg.className = 'promo-msg error';
+          btn.disabled = false; btn.textContent = 'تفعيل';
+          return;
+        }
+        msg.textContent = '✓ تم التفعيل! بيتم تحويلك…';
+        msg.className = 'promo-msg success';
+        setTimeout(() => window.location.replace('/app'), 1200);
+      } catch(e) {
+        msg.textContent = 'حصل خطأ، حاول تاني';
+        msg.className = 'promo-msg error';
+        btn.disabled = false; btn.textContent = 'تفعيل';
+      }
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && document.activeElement === document.getElementById('promo-input'))
+        redeemPromo();
+    });
 
     init();
   </script>

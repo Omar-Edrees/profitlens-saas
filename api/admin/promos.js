@@ -1,0 +1,58 @@
+const { createClient } = require('@supabase/supabase-js');
+
+const admin = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
+async function isAdmin(token) {
+  if (!token) return false;
+  const { data: { user }, error } = await admin.auth.getUser(token);
+  if (error || !user) return false;
+  const { data: profile } = await admin
+    .from('profiles').select('role').eq('id', user.id).maybeSingle();
+  return profile?.role === 'admin';
+}
+
+module.exports = async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
+  const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
+  if (!(await isAdmin(token))) return res.status(403).json({ error: 'Forbidden' });
+
+  // GET — list all codes
+  if (req.method === 'GET') {
+    const { data, error } = await admin
+      .from('promo_codes')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) return res.status(500).json({ error: error.message });
+    return res.json({ promos: data });
+  }
+
+  // POST — create new code
+  if (req.method === 'POST') {
+    const { code, max_uses } = req.body || {};
+    if (!code) return res.status(400).json({ error: 'code is required' });
+    const { data, error } = await admin
+      .from('promo_codes')
+      .insert({ code: code.trim().toUpperCase(), max_uses: max_uses || 1 })
+      .select().single();
+    if (error) return res.status(400).json({ error: error.message });
+    return res.json({ promo: data });
+  }
+
+  // DELETE — deactivate or delete a code
+  if (req.method === 'DELETE') {
+    const { id } = req.body || {};
+    if (!id) return res.status(400).json({ error: 'id is required' });
+    const { error } = await admin.from('promo_codes').delete().eq('id', id);
+    if (error) return res.status(500).json({ error: error.message });
+    return res.json({ success: true });
+  }
+
+  return res.status(405).json({ error: 'Method not allowed' });
+};

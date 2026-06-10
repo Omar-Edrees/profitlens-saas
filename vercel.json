@@ -3,7 +3,9 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "routes": [
-    { "src": "/api/(.*)",  "dest": "/api/$1" },
+    { "src": "/api/redeem",        "dest": "/api/redeem" },
+    { "src": "/api/admin/promos", "dest": "/api/admin/promos" },
+    { "src": "/api/(.*)",         "dest": "/api/$1" },
     { "src": "/app",      "dest": "/app.html" },
     { "src": "/admin",    "dest": "/admin.html" },
     { "src": "/pricing",  "dest": "/pricing.html" },
