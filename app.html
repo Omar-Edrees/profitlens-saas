@@ -5717,11 +5717,11 @@ function _simRender(stock, cpp, inp){
     verdictEl.className = 'alert ' + (profitable ? 'ag' : 'ar');
     verdictIcon.textContent = profitable ? '✓' : '✗';
     if(profitable){
-      verdictMsg.textContent = T[LANG].js_verdict_profitable+d0(netProfit)+T[LANG].js_verdict_at+d1(cpp)+T[LANG].js_verdict_cpa
+      verdictMsg.textContent = T[LANG].js_verdict_profitable+d0(netProfit)+' '+CURRENCY+T[LANG].js_verdict_at+d1(cpp)+' '+CURRENCY+T[LANG].js_verdict_cpa
         + (marginPctSim !== null ? T[LANG].js_verdict_margin+marginPctSim.toFixed(1)+'%. ' : '')
         + T[LANG].js_verdict_budget+d0(adBudgetNeeded)+' '+CURRENCY+'.';
     } else {
-      verdictMsg.textContent = T[LANG].js_verdict_loss+d1(cpp)+T[LANG].js_verdict_exceeds+d1(beCPP)+T[LANG].js_verdict_losing+d0(Math.abs(netProfit))+T[LANG].js_verdict_on_this;
+      verdictMsg.textContent = T[LANG].js_verdict_loss+d1(cpp)+' '+CURRENCY+T[LANG].js_verdict_exceeds+d1(beCPP)+' '+CURRENCY+T[LANG].js_verdict_losing+d0(Math.abs(netProfit))+' '+CURRENCY+T[LANG].js_verdict_on_this;
     }
   } else if(verdictEl){
     verdictEl.style.display = 'none';
@@ -6496,10 +6496,10 @@ function renderAllProductsRanking(){
     return sign+abs.toFixed(1)+' '+CUR;
   };
   const countEl = document.getElementById('ap_prod_count');
-  if(countEl) countEl.textContent = prods.length+(prods.length===1?' product':' products');
+  if(countEl) countEl.textContent = prods.length===1 ? tfmt('n_product',prods.length) : tfmt('n_products',prods.length);
   if(!prods.length){
     const w=document.getElementById('ap_ranking_wrap');
-    if(w) w.innerHTML='<div class="master-empty">'+(LANG==='ar'?'أدخل بيانات المنتجات أولاً.':'Please enter product data first.')+'</div>';
+    if(w) w.innerHTML='<div class="master-empty">'+T[LANG].master_empty+'</div>';
     return;
   }
   const sorted=[...prods].sort((a,b)=>b.calc.totalProf-a.calc.totalProf);
@@ -6513,15 +6513,15 @@ function renderAllProductsRanking(){
       <td><div class="rank-prod-name">${escapeHtml(p.name)}</div>
         <div class="rank-bar-wrap"><div class="rank-bar" style="width:${barW}%;background:${isP?'var(--profit)':'var(--red)'}"></div></div></td>
       <td style="text-align:right"><div class="rank-profit-val" style="color:${isP?'var(--profit)':'var(--red)'}">${fmtM(c.totalProf)}</div>
-        <div class="rank-margin">${c.marginPct!==undefined?c.marginPct.toFixed(1)+'% margin':''}</div></td>
-      <td style="text-align:right"><div class="rank-margin">${fmtM(c.totalRev)} rev</div>
-        <div class="rank-margin">${c.stock>0?Math.round(c.stock)+' units':'—'}</div></td>
-      <td style="text-align:right"><button class="rank-go-btn" onclick="switchProduct(${p.index})">Edit ↗</button></td>
+        <div class="rank-margin">${c.marginPct!==undefined?c.marginPct.toFixed(1)+'% '+T[LANG].lbl_margin.toLowerCase():''}</div></td>
+      <td style="text-align:right"><div class="rank-margin">${fmtM(c.totalRev)}</div>
+        <div class="rank-margin">${c.stock>0?Math.round(c.stock)+T[LANG].js_units_lbl:'—'}</div></td>
+      <td style="text-align:right"><button class="rank-go-btn" onclick="switchProduct(${p.index})">${T[LANG].edit_btn} ↗</button></td>
     </tr>`;
   }).join('');
   const w=document.getElementById('ap_ranking_wrap');
   if(w) w.innerHTML=`<div style="overflow-x:auto"><table class="rank-table">
-    <thead><tr><th>#</th><th>Product</th><th style="text-align:right">Net Profit</th><th style="text-align:right">Revenue / Stock</th><th></th></tr></thead>
+    <thead><tr><th>#</th><th>${T[LANG].rank_product}</th><th style="text-align:right">${T[LANG].rank_net_profit}</th><th style="text-align:right">${T[LANG].rank_rev_stock}</th><th></th></tr></thead>
     <tbody>${rows}</tbody></table></div>`;
 }
 
@@ -6547,7 +6547,7 @@ function switchProduct(idx){
 
 function addProduct(){
   saveCurrentProduct();
-  const newProd = { name: 'Product ' + (PRODUCTS.length + 1), data: {} };
+  const newProd = { name: T[LANG].product_default + ' ' + (PRODUCTS.length + 1), data: {} };
   INPUT_IDS.forEach(id => newProd.data[id] = '');
   PRODUCTS.push(newProd);
   ACTIVE_PROD = PRODUCTS.length - 1;
@@ -6618,7 +6618,7 @@ function startRename(nameEl, idx){
 }
 
 function renameProduct(idx, name){
-  if(PRODUCTS[idx]) PRODUCTS[idx].name = name.trim() || ('Product '+(idx+1));
+  if(PRODUCTS[idx]) PRODUCTS[idx].name = name.trim() || (T[LANG].product_default+' '+(idx+1));
   renderProdTabs();
   persistSave();
 }
@@ -6727,7 +6727,7 @@ function persistLoad(){
 function initProducts(){
   const loaded = persistLoad();
   if(!loaded){
-    const initial = { name: 'Product 1', data: {} };
+    const initial = { name: T[LANG].product_default + ' 1', data: {} };
     INPUT_IDS.forEach(id => initial.data[id] = '');
     PRODUCTS.push(initial);
   }
@@ -6972,7 +6972,7 @@ function renderMasterOverview(){
 
   if(prods.length === 0){
     const wrap = document.getElementById('mo_ranking_wrap');
-    if(wrap) wrap.innerHTML = '<div class="master-empty">'+(LANG==='ar'?'أدخل بيانات منتج واحد على الأقل لتظهر المقارنة هنا.':'Enter at least one product to show comparison.')+'</div>';
+    if(wrap) wrap.innerHTML = '<div class="master-empty">'+T[LANG].master_empty+'</div>';
     ['mo_total_rev','mo_total_profit','mo_total_ads','mo_portfolio_margin'].forEach(id=>{
       const el=document.getElementById(id); if(el){el.textContent='—';el.style.color=''}
     });
@@ -7097,24 +7097,24 @@ function renderExportPreview(){
   const tab = CURRENT_EXPORT_TAB;
 
   if(tab === 'inputs'){
-    thead.innerHTML = `<tr><th>Field</th>${prods.map(p=>`<th style="color:var(--c1)">${escapeHtml(p.name)}</th>`).join('')}</tr>`;
+    thead.innerHTML = `<tr><th>${T[LANG].th_field}</th>${prods.map(p=>`<th style="color:var(--c1)">${escapeHtml(p.name)}</th>`).join('')}</tr>`;
     const rows = [
-      ['— PRICING —'],
-      ['Selling price (EGP)',      p=>fmtEGP(p.calc.price)],
-      ['Product cost (EGP)',       p=>fmtEGP(p.calc.cost)],
-      ['Ship charged to customer', p=>fmtEGP(p.calc.shipC)],
-      ['— SHIPPING & DELIVERY —'],
-      ['Fulfillment fee (del)',     p=>fmtEGP(p.calc.fulfillDel)],
-      ['Fulfillment fee (ret)',     p=>fmtEGP(p.calc.fulfillRet)],
-      ['Courier cost',             p=>fmtEGP(p.calc.courier)],
-      ['Commission',               p=>fmtPct(p.calc.commPct)],
-      ['Platform fee',             p=>fmtEGP(p.calc.plat)],
-      ['— RATES & BUDGET —'],
-      ['Confirmation rate',        p=>fmtPct(p.calc.confR)],
-      ['Delivery rate',            p=>fmtPct(p.calc.delR)],
-      ['Target delivered stock',   p=>fmt(p.calc.stock,0)+' units'],
-      ['Ad budget',                p=>fmtEGP(p.calc.ads)],
-      ['Total fixed costs',     p=>fmtEGP(p.calc.salary)],
+      [T[LANG].ex_sec_pricing],
+      [T[LANG].lbl_sell_price,     p=>fmtEGP(p.calc.price)],
+      [T[LANG].lbl_prod_cost,      p=>fmtEGP(p.calc.cost)],
+      [T[LANG].lbl_ship_charged,   p=>fmtEGP(p.calc.shipC)],
+      [T[LANG].ex_sec_shipping],
+      [T[LANG].lbl_ff_del,         p=>fmtEGP(p.calc.fulfillDel)],
+      [T[LANG].lbl_ff_ret,         p=>fmtEGP(p.calc.fulfillRet)],
+      [T[LANG].lbl_courier,        p=>fmtEGP(p.calc.courier)],
+      [T[LANG].lbl_comm,           p=>fmtPct(p.calc.commPct)],
+      [T[LANG].lbl_plat,           p=>fmtEGP(p.calc.plat)],
+      [T[LANG].ex_sec_rates],
+      [T[LANG].lbl_conf,           p=>fmtPct(p.calc.confR)],
+      [T[LANG].lbl_del,            p=>fmtPct(p.calc.delR)],
+      [T[LANG].lbl_stock,          p=>fmt(p.calc.stock,0)+T[LANG].js_units_lbl],
+      [T[LANG].pl_ads,             p=>fmtEGP(p.calc.ads)],
+      [T[LANG].lbl_salary,         p=>fmtEGP(p.calc.salary)],
     ];
     tbody.innerHTML = rows.map(r => {
       if(typeof r[0]==='string' && r.length===1)
@@ -7124,20 +7124,20 @@ function renderExportPreview(){
   }
 
   else if(tab === 'marketing'){
-    thead.innerHTML = `<tr><th>KPI</th>${prods.map(p=>`<th style="color:var(--c2)">${escapeHtml(p.name)}</th>`).join('')}</tr>`;
+    thead.innerHTML = `<tr><th>${T[LANG].th_kpi}</th>${prods.map(p=>`<th style="color:var(--c2)">${escapeHtml(p.name)}</th>`).join('')}</tr>`;
     const rows = [
-      ['— CPA ANALYSIS —'],
-      ['Actual CPA',           p=>{const ok=p.calc.actualCPP<=p.calc.beCPP; return `<span class="${ok?'val-pos':'val-neg'}">${fmtEGP(p.calc.actualCPP)}</span>`}],
-      ['Break-even CPA',       p=>`<span class="val-neutral">${fmtEGP(p.calc.beCPP)}</span>`],
-      ['CPA headroom',         p=>{const h=p.calc.beCPP-p.calc.actualCPP; return `<span class="${h>=0?'val-pos':'val-neg'}">${h>=0?'+':''}${fmtEGP(h)}</span>`}],
-      ['Break-even ROAS',      p=>`${fmt(p.calc.beROAS,1)}x`],
-      ['— FUNNEL —'],
-      ['Leads needed',         p=>fmt(p.calc.leadsNeeded,0)],
-      ['Confirmed orders',     p=>fmt(p.calc.confNeeded,0)],
-      ['Delivered orders',     p=>fmt(p.calc.delivNeeded,0)],
-      ['— BUDGET —'],
-      ['Ad budget',            p=>fmtEGP(p.calc.ads)],
-      ['Revenue / Ad spend',   p=>`${fmt(p.calc.roas,1)}x`],
+      [T[LANG].ex_sec_cpa],
+      [T[LANG].lbl_avg_cpp,    p=>{const ok=p.calc.actualCPP<=p.calc.beCPP; return `<span class="${ok?'val-pos':'val-neg'}">${fmtEGP(p.calc.actualCPP)}</span>`}],
+      [T[LANG].lbl_be_cpp,     p=>`<span class="val-neutral">${fmtEGP(p.calc.beCPP)}</span>`],
+      [T[LANG].lbl_cpa_head,   p=>{const h=p.calc.beCPP-p.calc.actualCPP; return `<span class="${h>=0?'val-pos':'val-neg'}">${h>=0?'+':''}${fmtEGP(h)}</span>`}],
+      [T[LANG].lbl_be_roas,    p=>`${fmt(p.calc.beROAS,1)}x`],
+      [T[LANG].ex_sec_funnel],
+      [T[LANG].roas_leads_lbl, p=>fmt(p.calc.leadsNeeded,0)],
+      [T[LANG].kpi_confirmed,  p=>fmt(p.calc.confNeeded,0)],
+      [T[LANG].kpi_delivered,  p=>fmt(p.calc.delivNeeded,0)],
+      [T[LANG].ex_sec_budget],
+      [T[LANG].pl_ads,         p=>fmtEGP(p.calc.ads)],
+      [T[LANG].lbl_roas,       p=>`${fmt(p.calc.roas,1)}x`],
     ];
     tbody.innerHTML = rows.map(r => {
       if(typeof r[0]==='string' && r.length===1)
@@ -7147,21 +7147,21 @@ function renderExportPreview(){
   }
 
   else if(tab === 'shipping'){
-    thead.innerHTML = `<tr><th>Metric</th>${prods.map(p=>`<th style="color:var(--c3)">${escapeHtml(p.name)}</th>`).join('')}</tr>`;
+    thead.innerHTML = `<tr><th>${T[LANG].th_metric}</th>${prods.map(p=>`<th style="color:var(--c3)">${escapeHtml(p.name)}</th>`).join('')}</tr>`;
     const rows = [
-      ['— PER ORDER COSTS —'],
-      ['Cost per delivered order', p=>fmtEGP(p.calc.costDel)],
-      ['Cost per returned order',  p=>fmtEGP(p.calc.costRet)],
-      ['Return cost absorbed',     p=>`<span class="val-neg">${fmtEGP(p.calc.retAbs)}</span>`],
-      ['— PER UNIT (BLENDED) —'],
-      ['Real shipping / unit',     p=>fmtEGP(p.calc.effShip)],
-      ['Collected from customer',  p=>fmtEGP(p.calc.shipC)],
-      ['Net shipping on you',      p=>{const n=p.calc.netShip; return `<span class="${n>0?'val-neg':'val-pos'}">${fmtEGP(n)}</span>`}],
-      ['— BREAKDOWN —'],
-      ['Fulfillment (del)',         p=>fmtEGP(p.calc.fulfillDel)],
-      ['Courier',                   p=>fmtEGP(p.calc.courier)],
-      ['Commission amount',         p=>fmtEGP(p.calc.commAmt)],
-      ['Platform fee',              p=>fmtEGP(p.calc.plat)],
+      [T[LANG].ex_sec_order],
+      [T[LANG].kpi_del_order,      p=>fmtEGP(p.calc.costDel)],
+      [T[LANG].kpi_ret_order,      p=>fmtEGP(p.calc.costRet)],
+      [T[LANG].kpi_ret_impact,     p=>`<span class="val-neg">${fmtEGP(p.calc.retAbs)}</span>`],
+      [T[LANG].ex_sec_unit],
+      [T[LANG].ap_sh_real_lbl,     p=>fmtEGP(p.calc.effShip)],
+      [T[LANG].ap_sh_collected_lbl,p=>fmtEGP(p.calc.shipC)],
+      [T[LANG].ap_sh_net_lbl,      p=>{const n=p.calc.netShip; return `<span class="${n>0?'val-neg':'val-pos'}">${fmtEGP(n)}</span>`}],
+      [T[LANG].ex_sec_breakdown],
+      [T[LANG].lbl_ff_del,         p=>fmtEGP(p.calc.fulfillDel)],
+      [T[LANG].sh_lbl_courier,     p=>fmtEGP(p.calc.courier)],
+      [T[LANG].lbl_comm,           p=>fmtEGP(p.calc.commAmt)],
+      [T[LANG].lbl_plat,           p=>fmtEGP(p.calc.plat)],
     ];
     tbody.innerHTML = rows.map(r => {
       if(typeof r[0]==='string' && r.length===1)
@@ -7171,21 +7171,21 @@ function renderExportPreview(){
   }
 
   else if(tab === 'pl'){
-    thead.innerHTML = `<tr><th>Line Item</th>${prods.map(p=>`<th style="color:var(--c4)">${escapeHtml(p.name)} / unit</th>`).join('')}${prods.map(p=>`<th style="color:var(--txt2)">${escapeHtml(p.name)} total</th>`).join('')}</tr>`;
+    thead.innerHTML = `<tr><th>${T[LANG].th_line_item}</th>${prods.map(p=>`<th style="color:var(--c4)">${escapeHtml(p.name)} ${T[LANG].th_per_unit}</th>`).join('')}${prods.map(p=>`<th style="color:var(--txt2)">${escapeHtml(p.name)} ${T[LANG].th_total}</th>`).join('')}</tr>`;
     const rows = [
-      ['— INCOME —'],
-      ['Revenue (product)',    p=>fmtEGP(p.calc.price),           p=>fmtEGP(p.calc.price*p.calc.stock)],
-      ['Revenue (shipping)',   p=>fmtEGP(p.calc.shipC),           p=>fmtEGP(p.calc.shipC*p.calc.stock)],
-      ['— VARIABLE COSTS —'],
-      ['Product cost',         p=>'-'+fmtEGP(p.calc.cost),        p=>'-'+fmtEGP(p.calc.cost*p.calc.stock)],
-      ['Real shipping cost',   p=>'-'+fmtEGP(p.calc.effShip),     p=>'-'+fmtEGP(p.calc.effShip*p.calc.stock)],
-      ['— FIXED COSTS —'],
-      ['Ad budget',            p=>'-'+fmtEGP(p.calc.ads/(p.calc.delivNeeded||1)), p=>'-'+fmtEGP(p.calc.ads)],
-      ['Salary',               p=>'-'+fmtEGP(p.calc.salary/(p.calc.delivNeeded||1)), p=>'-'+fmtEGP(p.calc.salary)],
-      ['— RESULT —'],
-      ['Net profit / unit',    p=>{const n=p.calc.profitPU; return `<span class="${n>=0?'val-pos':'val-neg'}">${n>=0?'+':'-'}${fmtEGP(Math.abs(n))}</span>`},
-                               p=>{const n=p.calc.totalProf; return `<span class="${n>=0?'val-pos':'val-neg'}">${n>=0?'+':'-'}${fmtEGP(Math.abs(n))}</span>`}],
-      ['Margin %',             p=>`${fmt(p.calc.marginPct,1)}%`,  p=>'—'],
+      [T[LANG].ex_sec_income],
+      [T[LANG].lbl_sell_price,   p=>fmtEGP(p.calc.price),                 p=>fmtEGP(p.calc.price*p.calc.stock)],
+      [T[LANG].lbl_ship_charged, p=>fmtEGP(p.calc.shipC),                 p=>fmtEGP(p.calc.shipC*p.calc.stock)],
+      [T[LANG].ex_sec_var],
+      [T[LANG].lbl_prod_cost,    p=>'-'+fmtEGP(p.calc.cost),              p=>'-'+fmtEGP(p.calc.cost*p.calc.stock)],
+      [T[LANG].ap_sh_real_lbl,   p=>'-'+fmtEGP(p.calc.effShip),           p=>'-'+fmtEGP(p.calc.effShip*p.calc.stock)],
+      [T[LANG].ex_sec_fixed],
+      [T[LANG].pl_ads,           p=>'-'+fmtEGP(p.calc.ads/(p.calc.delivNeeded||1)), p=>'-'+fmtEGP(p.calc.ads)],
+      [T[LANG].lbl_salary,       p=>'-'+fmtEGP(p.calc.salary/(p.calc.delivNeeded||1)), p=>'-'+fmtEGP(p.calc.salary)],
+      [T[LANG].ex_sec_result],
+      [T[LANG].si_net_pu_lbl,    p=>{const n=p.calc.profitPU; return `<span class="${n>=0?'val-pos':'val-neg'}">${n>=0?'+':'-'}${fmtEGP(Math.abs(n))}</span>`},
+                                 p=>{const n=p.calc.totalProf; return `<span class="${n>=0?'val-pos':'val-neg'}">${n>=0?'+':'-'}${fmtEGP(Math.abs(n))}</span>`}],
+      [T[LANG].lbl_margin+' %',  p=>`${fmt(p.calc.marginPct,1)}%`,        p=>'—'],
     ];
     tbody.innerHTML = rows.map(r => {
       if(typeof r[0]==='string' && r.length===1)
@@ -7195,18 +7195,18 @@ function renderExportPreview(){
   }
 
   else if(tab === 'compare'){
-    thead.innerHTML = `<tr><th>Metric</th>${prods.map(p=>`<th>${escapeHtml(p.name)}</th>`).join('')}</tr>`;
+    thead.innerHTML = `<tr><th>${T[LANG].th_metric}</th>${prods.map(p=>`<th>${escapeHtml(p.name)}</th>`).join('')}</tr>`;
     const rows = [
-      ['— KEY METRICS —'],
-      ['Selling price',        p=>fmtEGP(p.calc.price)],
-      ['Profit / unit',        p=>{const n=p.calc.profitPU; return `<span class="${n>=0?'val-pos':'val-neg'}">${fmtEGP(n)}</span>`}],
-      ['Margin %',             p=>`${fmt(p.calc.marginPct,1)}%`],
-      ['Break-even CPA',       p=>fmtEGP(p.calc.beCPP)],
-      ['Actual CPA',           p=>{const ok=p.calc.actualCPP<=p.calc.beCPP; return `<span class="${ok?'val-pos':'val-neg'}">${fmtEGP(p.calc.actualCPP)}</span>`}],
-      ['Break-even units',     p=>isFinite(p.calc.beUnits)?fmt(p.calc.beUnits,0)+' u':'∞'],
-      ['Total revenue',        p=>fmtEGP(p.calc.totalRev)],
-      ['Net profit (total)',   p=>{const n=p.calc.totalProf; return `<span class="${n>=0?'val-pos':'val-neg'}">${fmtEGP(n)}</span>`}],
-      ['Status',               p=>`<span class="${p.calc.isProfit?'val-pos':'val-neg'}">${p.calc.isProfit?'✓ Profitable':'✗ Loss'}</span>`],
+      [T[LANG].ex_sec_metrics],
+      [T[LANG].lbl_sell_price,    p=>fmtEGP(p.calc.price)],
+      [T[LANG].si_margin_pu_lbl,  p=>{const n=p.calc.profitPU; return `<span class="${n>=0?'val-pos':'val-neg'}">${fmtEGP(n)}</span>`}],
+      [T[LANG].lbl_margin+' %',   p=>`${fmt(p.calc.marginPct,1)}%`],
+      [T[LANG].lbl_be_cpp,        p=>fmtEGP(p.calc.beCPP)],
+      [T[LANG].lbl_avg_cpp,       p=>{const ok=p.calc.actualCPP<=p.calc.beCPP; return `<span class="${ok?'val-pos':'val-neg'}">${fmtEGP(p.calc.actualCPP)}</span>`}],
+      [T[LANG].lbl_be_units,      p=>isFinite(p.calc.beUnits)?fmt(p.calc.beUnits,0)+T[LANG].js_units_lbl:'∞'],
+      [T[LANG].ov_total_rev_lbl,  p=>fmtEGP(p.calc.totalRev)],
+      [T[LANG].roas_net_lbl,      p=>{const n=p.calc.totalProf; return `<span class="${n>=0?'val-pos':'val-neg'}">${fmtEGP(n)}</span>`}],
+      [T[LANG].si_scenario_status,p=>`<span class="${p.calc.isProfit?'val-pos':'val-neg'}">${T[LANG][p.calc.isProfit?'js_profit_badge':'js_loss_badge']}</span>`],
     ];
     tbody.innerHTML = rows.map(r => {
       if(typeof r[0]==='string' && r.length===1)
@@ -7640,14 +7640,14 @@ const T = {
     js_bundle_locked:'Locked → single price used',
     js_bundle_unlocked:'Unlocked → blended avg price & ship used',
     js_verdict_profitable:'Profitable — Net profit ',
-    js_verdict_at:' EGP at ',
-    js_verdict_cpa:' EGP CPA. ',
+    js_verdict_at:' at ',
+    js_verdict_cpa:' CPA. ',
     js_verdict_margin:'Margin: ',
     js_verdict_budget:'Ad budget needed: ',
     js_verdict_loss:'Loss — CPA of ',
-    js_verdict_exceeds:' EGP exceeds break-even limit of ',
-    js_verdict_losing:' EGP. Losing ',
-    js_verdict_on_this:' EGP on this scenario.',
+    js_verdict_exceeds:' exceeds break-even limit of ',
+    js_verdict_losing:'. Losing ',
+    js_verdict_on_this:' on this scenario.',
     bundle_label:'Bundle', bundle_units:'Units / order', bundle_price:'Total price',
     bundle_orders:'Orders sold', bundle_free_ship:'Free shipping', bundle_remove:'Remove',
     si_status_ok:'✓ Profitable — CPA under BE',
@@ -7736,6 +7736,24 @@ const T = {
     final_loss_pu:'Each unit is sold at a loss. Review product cost or selling price.',
     final_loss_stock:'Need {0} units to break even but only {1} available.',
     sh_lbl_fulfill:'Fulfillment', sh_lbl_courier:'Courier', sh_lbl_ret_abs:'Returns absorbed',
+    lbl_be_cpp:'Break-even CPA', lbl_cpa_head:'CPA headroom',
+    lbl_be_roas:'Break-even ROAS', lbl_roas:'ROAS',
+    lbl_be_units:'Break-even units', lbl_margin:'Margin',
+    js_units_lbl:' units',
+    th_field:'Field', th_kpi:'KPI', th_metric:'Metric', th_line_item:'Line Item',
+    th_per_unit:'/ unit', th_total:'total',
+    rank_product:'Product', rank_net_profit:'Net Profit', rank_rev_stock:'Revenue / Stock',
+    edit_btn:'Edit',
+    product_default:'Product',
+    n_products:'{0} products', n_product:'{0} product',
+    ex_sec_pricing:'— PRICING —', ex_sec_shipping:'— SHIPPING & DELIVERY —',
+    ex_sec_rates:'— RATES & BUDGET —', ex_sec_cpa:'— CPA ANALYSIS —',
+    ex_sec_funnel:'— FUNNEL —', ex_sec_budget:'— BUDGET —',
+    ex_sec_order:'— PER ORDER COSTS —', ex_sec_unit:'— PER UNIT (BLENDED) —',
+    ex_sec_breakdown:'— BREAKDOWN —', ex_sec_income:'— INCOME —',
+    ex_sec_var:'— VARIABLE COSTS —', ex_sec_fixed:'— FIXED COSTS —',
+    ex_sec_result:'— RESULT —', ex_sec_metrics:'— KEY METRICS —',
+    master_empty:'Enter at least one product to show comparison.',
   },
   ar: {
     nav_inputs:'المدخلات', nav_marketing:'الإعلانات', nav_shipping:'الشحن', nav_overview:'نظرة عامة',
@@ -7865,14 +7883,14 @@ const T = {
     js_bundle_locked:'مقفول → سعر واحد مستخدم',
     js_bundle_unlocked:'مفتوح → متوسط السعر والشحن المدمج',
     js_verdict_profitable:'رابح — صافي الربح ',
-    js_verdict_at:' EGP عند CPA ',
-    js_verdict_cpa:' EGP. ',
+    js_verdict_at:' عند CPA ',
+    js_verdict_cpa:'. ',
     js_verdict_margin:'الهامش: ',
     js_verdict_budget:'الميزانية المطلوبة: ',
     js_verdict_loss:'خسارة — CPA الـ ',
-    js_verdict_exceeds:' EGP بيتخطى حد التعادل ',
-    js_verdict_losing:' EGP. خسارة ',
-    js_verdict_on_this:' EGP في هذا السيناريو.',
+    js_verdict_exceeds:' بيتخطى حد التعادل ',
+    js_verdict_losing:'. خسارة ',
+    js_verdict_on_this:' في هذا السيناريو.',
     bundle_label:'باندل', bundle_units:'وحدات / أوردر', bundle_price:'السعر الكلي',
     bundle_orders:'أوردرات مباعة', bundle_free_ship:'شحن مجاني', bundle_remove:'إزالة',
     si_status_ok:'✓ رابح — CPA أقل من نقطة التعادل',
@@ -7961,6 +7979,24 @@ const T = {
     final_loss_pu:'كل وحدة تُباع بخسارة. راجع تكلفة المنتج أو سعر البيع.',
     final_loss_stock:'تحتاج {0} وحدة للتعادل لكن المتوفر فقط {1}.',
     sh_lbl_fulfill:'فولفلمينت', sh_lbl_courier:'كورير', sh_lbl_ret_abs:'مرتجعات محسوبة',
+    lbl_be_cpp:'CPA نقطة التعادل', lbl_cpa_head:'هامش CPA',
+    lbl_be_roas:'ROAS نقطة التعادل', lbl_roas:'ROAS',
+    lbl_be_units:'وحدات التعادل', lbl_margin:'الهامش',
+    js_units_lbl:' وحدة',
+    th_field:'الحقل', th_kpi:'المؤشر', th_metric:'المقياس', th_line_item:'البند',
+    th_per_unit:'/ وحدة', th_total:'إجمالي',
+    rank_product:'منتج', rank_net_profit:'صافي الربح', rank_rev_stock:'الإيراد / المخزون',
+    edit_btn:'تحرير',
+    product_default:'المنتج',
+    n_products:'{0} منتجات', n_product:'{0} منتج',
+    ex_sec_pricing:'— التسعير —', ex_sec_shipping:'— الشحن والتوصيل —',
+    ex_sec_rates:'— المعدلات والميزانية —', ex_sec_cpa:'— تحليل CPA —',
+    ex_sec_funnel:'— القمع —', ex_sec_budget:'— الميزانية —',
+    ex_sec_order:'— تكاليف الأوردر —', ex_sec_unit:'— لكل وحدة (موزون) —',
+    ex_sec_breakdown:'— التفصيل —', ex_sec_income:'— الإيرادات —',
+    ex_sec_var:'— التكاليف المتغيرة —', ex_sec_fixed:'— التكاليف الثابتة —',
+    ex_sec_result:'— النتيجة —', ex_sec_metrics:'— المؤشرات الرئيسية —',
+    master_empty:'أدخل بيانات منتج واحد على الأقل لتظهر المقارنة هنا.',
   }
 };
 
@@ -7977,6 +8013,12 @@ function applyLang(){
     const key = el.dataset.tTitle;
     if(T[LANG][key] !== undefined) el.title = T[LANG][key];
   });
+  if(typeof renderExportPreview==='function' && document.getElementById('export_thead')?.children.length){
+    renderExportPreview();
+  }
+  if(typeof renderAllProductsRanking==='function' && document.getElementById('ap_ranking_wrap')){
+    renderAllProductsRanking();
+  }
 }
 
 function toggleLang(){
@@ -8121,6 +8163,7 @@ window.addEventListener('load', ()=>{
             '</button>'+
           '</div>';
         navRight.appendChild(wrap);
+        applyLang(); // translate data-t elements inside the newly appended profile widget
 
         const avBtn = wrap.querySelector('#__pl_av');
         const menu  = wrap.querySelector('#__pl_menu');
