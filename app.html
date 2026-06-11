@@ -7244,111 +7244,114 @@ function exportToExcel(){
   }
 
   const prodNames = prods.map(p=>p.name);
+  const C = CURRENCY;
+  const L = k => T[LANG][k] || T.en[k] || k;
+  const LC = k => L(k)+' ('+C+')';
 
   // ── Sheet 1: Inputs ──
   const inputRows = [
-    ['ProfitLens Pro — Inputs', ...prodNames],
+    [L('ex_title_inputs'), ...prodNames],
     [],
-    ['PRICING', ...prodNames.map(()=>'')],
-    ['Selling price (EGP)',       ...prods.map(p=>p.calc.price)],
-    ['Product cost (EGP)',        ...prods.map(p=>p.calc.cost)],
-    ['Ship charged to customer',  ...prods.map(p=>p.calc.shipC)],
+    [L('ex_sec_pricing'), ...prodNames.map(()=>'')],
+    [LC('lbl_sell_price'),        ...prods.map(p=>p.calc.price)],
+    [LC('lbl_prod_cost'),         ...prods.map(p=>p.calc.cost)],
+    [L('lbl_ship_charged'),       ...prods.map(p=>p.calc.shipC)],
     [],
-    ['SHIPPING & DELIVERY COSTS', ...prodNames.map(()=>'')],
-    ['Fulfillment fee (delivered)',...prods.map(p=>p.calc.fulfillDel)],
-    ['Fulfillment fee (returned)', ...prods.map(p=>p.calc.fulfillRet)],
-    ['Courier cost',              ...prods.map(p=>p.calc.courier)],
-    ['Commission %',              ...prods.map(p=>p.calc.commPct)],
-    ['Platform fee',              ...prods.map(p=>p.calc.plat)],
+    [L('ex_sec_shipping'), ...prodNames.map(()=>'')],
+    [L('lbl_ff_del'),             ...prods.map(p=>p.calc.fulfillDel)],
+    [L('lbl_ff_ret'),             ...prods.map(p=>p.calc.fulfillRet)],
+    [L('lbl_courier'),            ...prods.map(p=>p.calc.courier)],
+    [L('ex_comm_pct'),            ...prods.map(p=>p.calc.commPct)],
+    [L('lbl_plat'),               ...prods.map(p=>p.calc.plat)],
     [],
-    ['RATES & BUDGET', ...prodNames.map(()=>'')],
-    ['Confirmation rate %',       ...prods.map(p=>p.calc.confR)],
-    ['Delivery rate %',           ...prods.map(p=>p.calc.delR)],
-    ['Target delivered stock (units)', ...prods.map(p=>p.calc.stock)],
-    ['Ad budget (EGP)',           ...prods.map(p=>p.calc.ads)],
-    ['Total fixed costs (EGP)',...prods.map(p=>p.calc.salary)],
+    [L('ex_sec_rates'), ...prodNames.map(()=>'')],
+    [L('ex_conf_pct'),            ...prods.map(p=>p.calc.confR)],
+    [L('ex_del_pct'),             ...prods.map(p=>p.calc.delR)],
+    [L('ex_stock_units'),         ...prods.map(p=>p.calc.stock)],
+    [LC('pl_ads'),                ...prods.map(p=>p.calc.ads)],
+    [LC('lbl_salary'),            ...prods.map(p=>p.calc.salary)],
   ];
 
   // ── Sheet 2: Marketing ──
   const mktRows = [
-    ['ProfitLens Pro — Marketing Analysis', ...prodNames],
+    [L('ex_title_marketing'), ...prodNames],
     [],
-    ['CPA ANALYSIS', ...prodNames.map(()=>'')],
-    ['Actual CPA (EGP)',          ...prods.map(p=>+p.calc.actualCPP.toFixed(1))],
-    ['Break-even CPA (EGP)',      ...prods.map(p=>+p.calc.beCPP.toFixed(1))],
-    ['CPA headroom (EGP)',        ...prods.map(p=>+(p.calc.beCPP-p.calc.actualCPP).toFixed(1))],
-    ['Break-even ROAS',           ...prods.map(p=>+p.calc.beROAS.toFixed(2))],
+    [L('ex_sec_cpa'), ...prodNames.map(()=>'')],
+    [LC('lbl_avg_cpp'),           ...prods.map(p=>+p.calc.actualCPP.toFixed(1))],
+    [LC('lbl_be_cpp'),            ...prods.map(p=>+p.calc.beCPP.toFixed(1))],
+    [LC('lbl_cpa_head'),          ...prods.map(p=>+(p.calc.beCPP-p.calc.actualCPP).toFixed(1))],
+    [L('lbl_be_roas'),            ...prods.map(p=>+p.calc.beROAS.toFixed(2))],
     [],
-    ['FUNNEL', ...prodNames.map(()=>'')],
-    ['Leads needed',              ...prods.map(p=>Math.ceil(p.calc.leadsNeeded))],
-    ['Confirmed orders',          ...prods.map(p=>Math.round(p.calc.confNeeded))],
-    ['Delivered orders',          ...prods.map(p=>Math.round(p.calc.delivNeeded))],
+    [L('ex_sec_funnel'), ...prodNames.map(()=>'')],
+    [L('roas_leads_lbl'),         ...prods.map(p=>Math.ceil(p.calc.leadsNeeded))],
+    [L('kpi_confirmed'),          ...prods.map(p=>Math.round(p.calc.confNeeded))],
+    [L('kpi_delivered'),          ...prods.map(p=>Math.round(p.calc.delivNeeded))],
     [],
-    ['BUDGET', ...prodNames.map(()=>'')],
-    ['Total ad budget (EGP)',     ...prods.map(p=>+p.calc.ads.toFixed(1))],
-    ['ROAS (Revenue / Ad spend)', ...prods.map(p=>+p.calc.roas.toFixed(2))],
+    [L('ex_sec_budget'), ...prodNames.map(()=>'')],
+    [LC('pl_ads'),                ...prods.map(p=>+p.calc.ads.toFixed(1))],
+    [L('ex_roas_div'),            ...prods.map(p=>+p.calc.roas.toFixed(2))],
   ];
 
   // ── Sheet 3: Shipping ──
   const shpRows = [
-    ['ProfitLens Pro — Shipping Analysis', ...prodNames],
+    [L('ex_title_shipping'), ...prodNames],
     [],
-    ['PER ORDER COSTS', ...prodNames.map(()=>'')],
-    ['Cost per delivered order',  ...prods.map(p=>+p.calc.costDel.toFixed(1))],
-    ['Cost per returned order',   ...prods.map(p=>+p.calc.costRet.toFixed(1))],
-    ['Return cost absorbed/unit', ...prods.map(p=>+p.calc.retAbs.toFixed(1))],
+    [L('ex_sec_order'), ...prodNames.map(()=>'')],
+    [L('kpi_del_order'),          ...prods.map(p=>+p.calc.costDel.toFixed(1))],
+    [L('kpi_ret_order'),          ...prods.map(p=>+p.calc.costRet.toFixed(1))],
+    [L('ex_ret_abs_unit'),        ...prods.map(p=>+p.calc.retAbs.toFixed(1))],
     [],
-    ['PER UNIT (BLENDED)', ...prodNames.map(()=>'')],
-    ['Real shipping / unit',      ...prods.map(p=>+p.calc.effShip.toFixed(1))],
-    ['Collected from customer',   ...prods.map(p=>+p.calc.shipC.toFixed(1))],
-    ['Net shipping on you',       ...prods.map(p=>+p.calc.netShip.toFixed(1))],
+    [L('ex_sec_unit'), ...prodNames.map(()=>'')],
+    [L('kpi_real_ship'),          ...prods.map(p=>+p.calc.effShip.toFixed(1))],
+    [L('kpi_collected'),          ...prods.map(p=>+p.calc.shipC.toFixed(1))],
+    [L('kpi_net_ship'),           ...prods.map(p=>+p.calc.netShip.toFixed(1))],
     [],
-    ['BREAKDOWN', ...prodNames.map(()=>'')],
-    ['Fulfillment (del)',          ...prods.map(p=>p.calc.fulfillDel)],
-    ['Courier cost',               ...prods.map(p=>p.calc.courier)],
-    ['Commission amount',          ...prods.map(p=>+p.calc.commAmt.toFixed(1))],
-    ['Platform fee',               ...prods.map(p=>p.calc.plat)],
+    [L('ex_sec_breakdown'), ...prodNames.map(()=>'')],
+    [L('lbl_ff_del'),             ...prods.map(p=>p.calc.fulfillDel)],
+    [L('lbl_courier'),            ...prods.map(p=>p.calc.courier)],
+    [L('lbl_comm'),               ...prods.map(p=>+p.calc.commAmt.toFixed(1))],
+    [L('lbl_plat'),               ...prods.map(p=>p.calc.plat)],
   ];
 
   // ── Sheet 4: P&L ──
   const plRows = [
-    ['ProfitLens Pro — P&L', 'Per Unit', ...prodNames.map(()=>''), 'Total (All Stock)', ...prodNames.map(()=>'')],
+    [L('ex_title_pl'), L('ex_per_unit'), ...prodNames.map(()=>''), L('ex_all_stock'), ...prodNames.map(()=>'')],
     ['', ...prodNames, ...prodNames],
     [],
-    ['INCOME'],
-    ['Revenue (product)',        ...prods.map(p=>+p.calc.price.toFixed(1)), ...prods.map(p=>+(p.calc.price*p.calc.stock).toFixed(1))],
-    ['Revenue (shipping)',       ...prods.map(p=>+p.calc.shipC.toFixed(1)), ...prods.map(p=>+(p.calc.shipC*p.calc.stock).toFixed(1))],
+    [L('ex_sec_income')],
+    [L('pl_rev_prod'),           ...prods.map(p=>+p.calc.price.toFixed(1)),  ...prods.map(p=>+(p.calc.price*p.calc.stock).toFixed(1))],
+    [L('pl_rev_ship'),           ...prods.map(p=>+p.calc.shipC.toFixed(1)),  ...prods.map(p=>+(p.calc.shipC*p.calc.stock).toFixed(1))],
     [],
-    ['VARIABLE COSTS'],
-    ['Product cost',             ...prods.map(p=>-p.calc.cost),             ...prods.map(p=>-(p.calc.cost*p.calc.stock))],
-    ['Real shipping cost',       ...prods.map(p=>+(-p.calc.effShip).toFixed(1)), ...prods.map(p=>+(-p.calc.effShip*p.calc.stock).toFixed(1))],
+    [L('ex_sec_var')],
+    [L('lbl_prod_cost'),         ...prods.map(p=>-p.calc.cost),              ...prods.map(p=>-(p.calc.cost*p.calc.stock))],
+    [L('pl_ship_cost'),          ...prods.map(p=>+(-p.calc.effShip).toFixed(1)), ...prods.map(p=>+(-p.calc.effShip*p.calc.stock).toFixed(1))],
     [],
-    ['FIXED COSTS'],
-    ['Ad budget / unit',         ...prods.map(p=>+(-(p.calc.ads/(p.calc.delivNeeded||1))).toFixed(1)), ...prods.map(p=>+(-p.calc.ads).toFixed(1))],
-    ['Salary / unit',            ...prods.map(p=>+(-(p.calc.salary/(p.calc.delivNeeded||1))).toFixed(1)), ...prods.map(p=>+(-p.calc.salary).toFixed(1))],
+    [L('ex_sec_fixed')],
+    [L('ex_budget_unit'),        ...prods.map(p=>+(-(p.calc.ads/(p.calc.delivNeeded||1))).toFixed(1)), ...prods.map(p=>+(-p.calc.ads).toFixed(1))],
+    [L('ex_salary_unit'),        ...prods.map(p=>+(-(p.calc.salary/(p.calc.delivNeeded||1))).toFixed(1)), ...prods.map(p=>+(-p.calc.salary).toFixed(1))],
     [],
-    ['NET PROFIT / LOSS',        ...prods.map(p=>+p.calc.profitPU.toFixed(1)),  ...prods.map(p=>+p.calc.totalProf.toFixed(1))],
-    ['Margin %',                 ...prods.map(p=>+(p.calc.marginPct/100).toFixed(4)), ...prods.map(()=>'—')],
-    ['Status',                   ...prods.map(p=>p.calc.isProfit?T[LANG].excel_profitable:T[LANG].excel_loss), ...prods.map(()=>'')],
+    [L('pl_net'),                ...prods.map(p=>+p.calc.profitPU.toFixed(1)),  ...prods.map(p=>+p.calc.totalProf.toFixed(1))],
+    [L('lbl_margin')+' %',      ...prods.map(p=>+(p.calc.marginPct/100).toFixed(4)), ...prods.map(()=>'—')],
+    [L('lbl_status'),            ...prods.map(p=>p.calc.isProfit?T[LANG].excel_profitable:T[LANG].excel_loss), ...prods.map(()=>'')],
   ];
 
   // ── Sheet 5: Comparison ──
   const cmpRows = [
-    ['ProfitLens Pro — Product Comparison', ...prodNames],
+    [L('ex_title_compare'), ...prodNames],
     [],
-    ['KEY METRICS'],
-    ['Selling price (EGP)',       ...prods.map(p=>p.calc.price)],
-    ['Product cost (EGP)',        ...prods.map(p=>p.calc.cost)],
-    ['Profit / unit (EGP)',       ...prods.map(p=>+p.calc.profitPU.toFixed(1))],
-    ['Margin %',                  ...prods.map(p=>+(p.calc.marginPct/100).toFixed(4))],
-    ['Break-even CPA (EGP)',      ...prods.map(p=>+p.calc.beCPP.toFixed(1))],
-    ['Actual CPA (EGP)',          ...prods.map(p=>+p.calc.actualCPP.toFixed(1))],
-    ['Break-even ROAS',           ...prods.map(p=>+p.calc.beROAS.toFixed(2))],
-    ['Break-even units',          ...prods.map(p=>isFinite(p.calc.beUnits)?Math.ceil(p.calc.beUnits):'∞')],
-    ['Delivered orders',          ...prods.map(p=>Math.round(p.calc.delivNeeded))],
-    ['Total revenue (EGP)',       ...prods.map(p=>+p.calc.totalRev.toFixed(1))],
-    ['Net profit total (EGP)',    ...prods.map(p=>+p.calc.totalProf.toFixed(1))],
-    ['Status',                    ...prods.map(p=>p.calc.isProfit?T[LANG].js_profit_badge:T[LANG].js_loss_badge)],
+    [L('ex_sec_metrics')],
+    [LC('lbl_sell_price'),        ...prods.map(p=>p.calc.price)],
+    [LC('lbl_prod_cost'),         ...prods.map(p=>p.calc.cost)],
+    [LC('si_margin_pu_lbl'),      ...prods.map(p=>+p.calc.profitPU.toFixed(1))],
+    [L('lbl_margin')+' %',       ...prods.map(p=>+(p.calc.marginPct/100).toFixed(4))],
+    [LC('lbl_be_cpp'),            ...prods.map(p=>+p.calc.beCPP.toFixed(1))],
+    [LC('lbl_avg_cpp'),           ...prods.map(p=>+p.calc.actualCPP.toFixed(1))],
+    [L('lbl_be_roas'),            ...prods.map(p=>+p.calc.beROAS.toFixed(2))],
+    [L('lbl_be_units'),           ...prods.map(p=>isFinite(p.calc.beUnits)?Math.ceil(p.calc.beUnits):'∞')],
+    [L('kpi_delivered'),          ...prods.map(p=>Math.round(p.calc.delivNeeded))],
+    [LC('ov_total_rev_lbl'),      ...prods.map(p=>+p.calc.totalRev.toFixed(1))],
+    [LC('roas_net_lbl'),          ...prods.map(p=>+p.calc.totalProf.toFixed(1))],
+    [L('lbl_status'),             ...prods.map(p=>p.calc.isProfit?T[LANG].js_profit_badge:T[LANG].js_loss_badge)],
   ];
 
   // Build workbook
@@ -7367,11 +7370,11 @@ function exportToExcel(){
     ];
   });
 
-  XLSX.utils.book_append_sheet(wb, ws1, '📋 Inputs');
-  XLSX.utils.book_append_sheet(wb, ws2, '📢 Marketing');
-  XLSX.utils.book_append_sheet(wb, ws3, '🚚 Shipping');
+  XLSX.utils.book_append_sheet(wb, ws1, '📋 '+L('nav_inputs'));
+  XLSX.utils.book_append_sheet(wb, ws2, '📢 '+L('nav_marketing'));
+  XLSX.utils.book_append_sheet(wb, ws3, '🚚 '+L('nav_shipping'));
   XLSX.utils.book_append_sheet(wb, ws4, '💰 P&L');
-  XLSX.utils.book_append_sheet(wb, ws5, '⚖️ Compare');
+  XLSX.utils.book_append_sheet(wb, ws5, '⚖️ '+L('ex_title_compare').split('—')[1]?.trim()||'Compare');
 
   const date = new Date().toISOString().slice(0,10);
   XLSX.writeFile(wb, `ProfitLens_Report_${date}.xlsx`);
@@ -7754,6 +7757,18 @@ const T = {
     ex_sec_var:'— VARIABLE COSTS —', ex_sec_fixed:'— FIXED COSTS —',
     ex_sec_result:'— RESULT —', ex_sec_metrics:'— KEY METRICS —',
     master_empty:'Enter at least one product to show comparison.',
+    ex_title_inputs:'ProfitLens Pro — Inputs',
+    ex_title_marketing:'ProfitLens Pro — Marketing Analysis',
+    ex_title_shipping:'ProfitLens Pro — Shipping Analysis',
+    ex_title_pl:'ProfitLens Pro — P&L',
+    ex_title_compare:'ProfitLens Pro — Product Comparison',
+    lbl_status:'Status',
+    ex_per_unit:'Per Unit', ex_all_stock:'Total (All Stock)',
+    ex_comm_pct:'Commission %', ex_conf_pct:'Confirmation rate %',
+    ex_del_pct:'Delivery rate %', ex_stock_units:'Target delivered stock',
+    ex_budget_unit:'Ad budget / unit', ex_salary_unit:'Salary / unit',
+    ex_ret_abs_unit:'Return cost absorbed/unit',
+    ex_roas_div:'ROAS (Revenue ÷ Ad spend)',
   },
   ar: {
     nav_inputs:'المدخلات', nav_marketing:'الإعلانات', nav_shipping:'الشحن', nav_overview:'نظرة عامة',
@@ -7997,6 +8012,18 @@ const T = {
     ex_sec_var:'— التكاليف المتغيرة —', ex_sec_fixed:'— التكاليف الثابتة —',
     ex_sec_result:'— النتيجة —', ex_sec_metrics:'— المؤشرات الرئيسية —',
     master_empty:'أدخل بيانات منتج واحد على الأقل لتظهر المقارنة هنا.',
+    ex_title_inputs:'ProfitLens Pro — المدخلات',
+    ex_title_marketing:'ProfitLens Pro — تحليل الإعلانات',
+    ex_title_shipping:'ProfitLens Pro — تحليل الشحن',
+    ex_title_pl:'ProfitLens Pro — P&L',
+    ex_title_compare:'ProfitLens Pro — مقارنة المنتجات',
+    lbl_status:'الحالة',
+    ex_per_unit:'لكل وحدة', ex_all_stock:'الإجمالي (كل المخزون)',
+    ex_comm_pct:'العمولة %', ex_conf_pct:'نسبة التأكيد %',
+    ex_del_pct:'نسبة التوصيل %', ex_stock_units:'المخزون المستهدف',
+    ex_budget_unit:'الميزانية / وحدة', ex_salary_unit:'التكاليف الثابتة / وحدة',
+    ex_ret_abs_unit:'تكلفة المرتجع / وحدة',
+    ex_roas_div:'ROAS (الإيراد ÷ الإعلانات)',
   }
 };
 
