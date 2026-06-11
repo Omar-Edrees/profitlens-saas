@@ -6,9 +6,6 @@ const admin = createClient(
 );
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -37,14 +34,22 @@ export default async function handler(req, res) {
   if (promo.uses_count >= promo.max_uses)
     return res.status(400).json({ error: 'This promo code has reached its limit' });
 
+  // Atomic optimistic-lock increment: only the request that reads uses_count=N can update it to N+1.
+  // Concurrent requests all read the same N, but only the first UPDATE WHERE uses_count=N succeeds;
+  // the rest match 0 rows → rejected. Prevents race-condition over-redemption.
+  const { data: claimed } = await admin
+    .from('promo_codes')
+    .update({ uses_count: promo.uses_count + 1 })
+    .eq('id', promo.id)
+    .eq('uses_count', promo.uses_count)
+    .select('id');
+
+  if (!claimed || claimed.length === 0)
+    return res.status(400).json({ error: 'This promo code has reached its limit' });
+
   const { error: updateErr } = await admin
     .from('profiles').update({ plan: 'pro' }).eq('id', user.id);
   if (updateErr) return res.status(500).json({ error: 'Failed to activate account' });
-
-  await admin
-    .from('promo_codes')
-    .update({ uses_count: promo.uses_count + 1 })
-    .eq('id', promo.id);
 
   return res.status(200).json({ success: true });
 }

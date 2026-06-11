@@ -4,22 +4,18 @@ function adminClient() {
   return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
+// SECURITY: verifies JWT signature via Supabase — no manual decode
 async function verifyAdmin(authHeader) {
   if (!authHeader?.startsWith('Bearer ')) return null;
   const token = authHeader.slice(7);
-  const [, payload] = token.split('.');
-  if (!payload) return null;
-  const { sub } = JSON.parse(Buffer.from(payload, 'base64url').toString());
-  if (!sub) return null;
   const sb = adminClient();
-  const { data: profile } = await sb.from('profiles').select('role').eq('id', sub).single();
-  return profile?.role === 'admin' ? sub : null;
+  const { data: { user }, error } = await sb.auth.getUser(token);
+  if (error || !user) return null;
+  const { data: profile } = await sb.from('profiles').select('role').eq('id', user.id).single();
+  return profile?.role === 'admin' ? user.id : null;
 }
 
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, PATCH, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   const adminId = await verifyAdmin(req.headers.authorization).catch(() => null);
@@ -46,7 +42,8 @@ export default async function handler(req, res) {
   if (req.method === 'PATCH') {
     const { userId, role } = req.body || {};
     if (!userId || !['user', 'admin'].includes(role)) return res.status(400).json({ error: 'Invalid payload' });
-    const { error } = await sb.from('profiles').upsert({ id: userId, role }, { onConflict: 'id' });
+    // update (not upsert) — prevents creating phantom profile rows for arbitrary UUIDs
+    const { error } = await sb.from('profiles').update({ role }).eq('id', userId);
     if (error) return res.status(500).json({ error: error.message });
     return res.status(200).json({ ok: true });
   }
