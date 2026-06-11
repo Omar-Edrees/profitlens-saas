@@ -1,4 +1,4 @@
-const { createClient } = require('@supabase/supabase-js');
+import { createClient } from '@supabase/supabase-js';
 
 const admin = createClient(
   process.env.SUPABASE_URL,
@@ -14,7 +14,7 @@ async function isAdmin(token) {
   return profile?.role === 'admin';
 }
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -23,7 +23,6 @@ module.exports = async (req, res) => {
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!(await isAdmin(token))) return res.status(403).json({ error: 'Forbidden' });
 
-  // GET — list all codes
   if (req.method === 'GET') {
     const { data, error } = await admin
       .from('promo_codes')
@@ -33,7 +32,6 @@ module.exports = async (req, res) => {
     return res.json({ promos: data });
   }
 
-  // POST — create new code
   if (req.method === 'POST') {
     const { code, max_uses } = req.body || {};
     if (!code) return res.status(400).json({ error: 'code is required' });
@@ -45,7 +43,6 @@ module.exports = async (req, res) => {
     return res.json({ promo: data });
   }
 
-  // DELETE — deactivate or delete a code
   if (req.method === 'DELETE') {
     const { id } = req.body || {};
     if (!id) return res.status(400).json({ error: 'id is required' });
@@ -55,4 +52,4 @@ module.exports = async (req, res) => {
   }
 
   return res.status(405).json({ error: 'Method not allowed' });
-};
+}

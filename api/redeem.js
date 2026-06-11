@@ -1,18 +1,17 @@
-const { createClient } = require('@supabase/supabase-js');
+import { createClient } from '@supabase/supabase-js';
 
 const admin = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-module.exports = async (req, res) => {
+export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  // Verify user JWT
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
   const { data: { user }, error: authErr } = await admin.auth.getUser(token);
@@ -21,13 +20,11 @@ module.exports = async (req, res) => {
   const code = ((req.body || {}).code || '').trim().toUpperCase();
   if (!code) return res.status(400).json({ error: 'No code provided' });
 
-  // Check user is not already active
   const { data: profile } = await admin
     .from('profiles').select('plan').eq('id', user.id).maybeSingle();
   if (profile?.plan && profile.plan !== 'free')
     return res.status(400).json({ error: 'Your account is already active' });
 
-  // Validate promo code
   const { data: promo } = await admin
     .from('promo_codes')
     .select('id, uses_count, max_uses')
@@ -40,16 +37,14 @@ module.exports = async (req, res) => {
   if (promo.uses_count >= promo.max_uses)
     return res.status(400).json({ error: 'This promo code has reached its limit' });
 
-  // Activate user
   const { error: updateErr } = await admin
     .from('profiles').update({ plan: 'pro' }).eq('id', user.id);
   if (updateErr) return res.status(500).json({ error: 'Failed to activate account' });
 
-  // Increment usage count
   await admin
     .from('promo_codes')
     .update({ uses_count: promo.uses_count + 1 })
     .eq('id', promo.id);
 
   return res.status(200).json({ success: true });
-};
+}
