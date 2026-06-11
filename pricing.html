@@ -139,6 +139,15 @@
       border-radius: 20px; letter-spacing: .03em;
     }
     .price-desc { font-size: 13px; color: var(--txt2); margin-bottom: 28px; }
+    .price-warn { font-size: 12px; color: #fbbf24; font-weight: 600; }
+    .limited-banner {
+      display: inline-block; align-self: flex-end;
+      background: linear-gradient(90deg, rgba(251,191,36,.15), rgba(239,68,68,.12));
+      border: 1px solid rgba(251,191,36,.3);
+      color: #fbbf24; font-size: 12px; font-weight: 700;
+      padding: 5px 12px; border-radius: 20px; margin-bottom: 14px;
+      letter-spacing: .02em;
+    }
 
     .features { list-style: none; margin-bottom: 28px; display: flex; flex-direction: column; gap: 12px; }
     .feature {
@@ -303,6 +312,7 @@
 
     <!-- PRICING CARD -->
     <div class="card">
+      <div class="limited-banner">⏳ عرض لفترة محدودة</div>
       <div class="price-original-row">
         <span class="price-original" id="price-original">XXX EGP</span>
         <span class="price-badge" id="price-badge">-XX%</span>
@@ -312,7 +322,7 @@
         <span class="price-amount" id="price-amount">XXX</span>
         <span class="price-period">مرة واحدة</span>
       </div>
-      <p class="price-desc">ادفع مرة واحدة — استخدم مدى الحياة 🎉</p>
+      <p class="price-desc">ادفع مرة واحدة — استخدم مدى الحياة 🎉<br><span class="price-warn">السعر ده لفترة محدودة وهيرجع 1500 ج.م قريب</span></p>
 
       <ul class="features">
         <li class="feature">
