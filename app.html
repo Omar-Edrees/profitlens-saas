@@ -8141,9 +8141,9 @@ window.addEventListener('load', ()=>{
         return;
       }
 
-      // Pre-load cloud data into localStorage then re-init.
-      // Only accept data that matches the current schema — stale/foreign data
-      // would otherwise corrupt localStorage and crash the app on next load.
+      // Always start from cloud state — clears any leftover data from a previous
+      // user's session on the same browser before loading this user's cloud data.
+      localStorage.removeItem(LS_KEY);
       const { data: row } = await window.__sb.from('user_data')
         .select('data').eq('user_id', session.user.id).maybeSingle();
       if (row?.data && isValidState(row.data)) {
@@ -8152,6 +8152,7 @@ window.addEventListener('load', ()=>{
       }
 
       window.__plLogout = async function() {
+        localStorage.removeItem(LS_KEY);
         try { await window.__sb.auth.signOut(); } catch(e){}
         window.location.replace('/');
       };
