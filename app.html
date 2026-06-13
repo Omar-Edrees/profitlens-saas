@@ -1508,12 +1508,10 @@ input[type=range]::-moz-range-thumb{
       <div class="field">
         <label data-t="lbl_conf">Confirmation rate</label>
         <div class="f-row"><input type="number" id="i_conf" value="" min="1" max="100" oninput="dCalc();cfRecalc()"><span class="unit">%</span></div>
-        <div class="rate-warn" id="warn_conf" data-t="warn_conf">⚠ Confirmation rate below 40% — high lead waste</div>
       </div>
       <div class="field">
         <label data-t="lbl_del">Delivery rate (of confirmed)</label>
         <div class="f-row"><input type="number" id="i_del" value="" min="1" max="100" oninput="dCalc();cfRecalc()"><span class="unit">%</span></div>
-        <div class="rate-warn" id="warn_del" data-t="warn_del">⚠ Delivery rate below 40% — returns are eating your margin</div>
       </div>
     </div>
 
@@ -4722,7 +4720,6 @@ function calc(){
   const actualROAS   = actualCPP>0 ? (price+shipC)/(ads/netDelivered||1) : 0;
   const minROAS      = maxCPP>0 ? (price+shipC)*confR*netDelR/maxCPP : 0;
 
-  checkRateWarnings(confR, delR);
   calcRoas();
   calcOps(stock, ads, delivNeeded, durMonths, actualCPP, confR, delR, profitPU); // coming soon — no-op
 
@@ -5492,12 +5489,6 @@ function resetDef(){
   localStorage.removeItem(LS_KEY);
   tpCppTouched = false;
   calc();
-}
-
-// ── RATE WARNINGS ──────────────────────────
-function checkRateWarnings(confR, delR){
-  document.getElementById('warn_conf').classList.toggle('show', confR*100 < 40);
-  document.getElementById('warn_del').classList.toggle('show',  delR*100  < 40);
 }
 
 // ── ROAS SIMULATOR ─────────────────────────────────────────────────────────
@@ -7546,8 +7537,6 @@ const T = {
     pl_rev_prod:'Revenue from product', pl_rev_ship:'Revenue from shipping',
     pl_ship_cost:'Real shipping cost', pl_ads:'Ad budget', pl_net:'Net profit / loss',
     pl_vat:'VAT payable (net)',
-    warn_conf:'⚠ Confirmation rate below 40% — high lead waste',
-    warn_del:'⚠ Delivery rate below 40% — returns are eating your margin',
     rate_error:'Please enter valid confirmation and delivery rates (1% to 100%) so the tool can calculate correctly.',
     roas_title:'ROAS target simulator', lbl_roas_target:'Target ROAS you want to achieve',
     lbl_roas_orders:'Target delivered orders', roas_budget_lbl:'Required ad budget',
@@ -7801,8 +7790,6 @@ const T = {
     pl_rev_prod:'إيراد المنتج', pl_rev_ship:'إيراد الشحن',
     pl_ship_cost:'تكلفة الشحن الحقيقية', pl_ads:'ميزانية الإعلانات', pl_net:'صافي الربح / الخسارة',
     pl_vat:'ضريبة القيمة المضافة (صافي)',
-    warn_conf:'⚠ نسبة التأكيد أقل من 40% — هدر عالي في الليدز',
-    warn_del:'⚠ نسبة التوصيل أقل من 40% — المرتجعات بتاكل هامشك',
     rate_error:'أدخل نسبة التأكيد والتوصيل (من 1% لـ 100%) عشان الأداة تحسب صح.',
     roas_title:'محاكي ROAS المستهدف', lbl_roas_target:'ROAS الذي تريد تحقيقه',
     lbl_roas_orders:'الأوردرات المستهدفة', roas_budget_lbl:'الميزانية المطلوبة',
