@@ -8112,6 +8112,7 @@ window.addEventListener('load', ()=>{
   (async () => {
     try {
       const cfg = await fetch('/api/config').then(r=>r.json()).catch(()=>({}));
+      if (cfg.authDisabled) return;   // staging only: skip auth gate, open app directly
       if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) return;
 
       const { createClient } = supabase;

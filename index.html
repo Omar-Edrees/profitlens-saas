@@ -232,6 +232,7 @@
     async function init() {
       try {
         const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
+        if (cfg.authDisabled) { window.location.replace('/app'); return; }
         if (cfg.supabaseUrl && cfg.supabaseAnonKey) {
           const { createClient } = supabase;
           __sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
