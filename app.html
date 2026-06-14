@@ -383,6 +383,13 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .mb-pro-cpa-inp{width:100%;background:var(--surf2);border:1px solid var(--bdr2);border-radius:8px;color:var(--txt);outline:none;font-family:var(--mono);font-size:13px;font-weight:600;padding:6px 8px;height:36px}
 .mb-pro-cpa-inp:focus{border-color:var(--c2)}
 
+/* Budget / CPA input toggle (compact, inline) */
+.mb-io-head{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px}
+.mb-io-seg{display:inline-flex;gap:3px;background:var(--surf2);border:1px solid var(--bdr2);border-radius:7px;padding:2px}
+.mb-io-seg-btn{padding:4px 9px;border:none;border-radius:5px;background:transparent;color:var(--txt3);font-size:10.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap}
+.mb-io-seg-btn:hover{color:var(--txt2)}
+.mb-io-seg-btn.active{background:var(--c2);color:#fff}
+
 /* Channel Cards */
 .mb-ch-card{background:var(--surf2);border:1px solid var(--bdr2);border-radius:10px;padding:12px 14px;margin-bottom:8px;transition:border-color .2s}
 .mb-ch-card:hover{border-color:var(--c2)}
@@ -1493,9 +1500,18 @@ input[type=range]::-moz-range-thumb{
 
     <div class="input-card">
       <div class="input-card-title"><span class="ic-dot" style="background:var(--c1)"></span><span data-t="card_pricing">Pricing</span></div>
-      <div class="field"><label data-t="lbl_sell_price">Selling price</label><div class="f-row"><input type="number" id="i_price" value="" oninput="dCalc();cfRecalc()"><span class="unit">EGP</span></div></div>
+      <div class="field"><label data-t="lbl_sell_price">Selling price</label><div class="f-row"><input type="number" id="i_price" value="" oninput="uoOnPrice();cfRecalc()"><span class="unit">EGP</span></div></div>
       <div class="field"><label data-t="lbl_prod_cost">Product cost</label><div class="f-row"><input type="number" id="i_cost" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
-      <div class="field"><label data-t="lbl_avg_units">Avg units / order</label><div class="f-row"><input type="number" id="i_units" value="1" min="0.1" step="0.1" oninput="dCalc()"><span class="unit">units</span></div></div>
+      <div class="field">
+        <div class="mb-io-head">
+          <div class="mb-io-seg">
+            <button type="button" id="uo_seg_units" class="mb-io-seg-btn active" onclick="uoSetMode('units')">Avg units / order</button>
+            <button type="button" id="uo_seg_aov" class="mb-io-seg-btn" onclick="uoSetMode('aov')">AOV</button>
+          </div>
+        </div>
+        <div id="uo_units_field" class="f-row"><input type="number" id="i_units" value="1" min="0.1" step="0.1" oninput="dCalc()"><span class="unit">units</span></div>
+        <div id="uo_aov_field" class="f-row" style="display:none"><input type="number" id="i_aov" value="" min="0" step="0.1" oninput="uoAovInput()" placeholder="e.g. 600"><span class="unit">EGP</span></div>
+      </div>
       <div class="field"><label data-t="lbl_ship_charged">Shipping charged to customer</label><div class="f-row"><input type="number" id="i_ship_c" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
     </div>
 
@@ -1558,24 +1574,34 @@ input[type=range]::-moz-range-thumb{
     <div class="input-card">
       <div class="input-card-title"><span class="ic-dot" style="background:var(--c2)"></span><span data-t="card_media">Media buying & fixed costs</span></div>
 
-      <!-- Total budget -->
-      <div class="field">
-        <label data-t="lbl_budget">Total ad budget <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_budget">Total monthly ad budget across all channels.<br>If you open Channel breakdown, the tool sums channels automatically.</span></span></label>
-        <div class="f-row"><input type="number" id="i_ads" value="" min="0" oninput="mbManualBudget()" placeholder="e.g. 30000"><span class="unit">EGP</span></div>
-        <div id="ads_derived_display" style="display:none;margin-top:4px;font-size:11px;color:var(--c1);font-family:var(--mono)"></div>
-      </div>
-
-      <!-- Avg blended CPA -->
-      <div class="field">
-        <label data-t="lbl_avg_cpp">Avg blended CPA <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_avg_cpp">Average cost per Lead across all channels combined.<br>If Channel breakdown is open, auto-calculated as weighted average.<br>If typed directly → standalone.</span></span></label>
-        <div class="f-row"><input type="number" id="i_avg_cpp" value="" min="0" placeholder="e.g. 50" oninput="mbManualCpa()"><span class="unit">EGP</span></div>
-        <div id="cpp_derived_display" style="display:none;margin-top:4px;font-size:11px;color:var(--c1);font-family:var(--mono)"></div>
-      </div>
-
-      <!-- Target stock -->
+      <!-- Target stock (moved above budget/CPA) -->
       <div class="field" id="stock_basic_field">
         <label data-t="lbl_stock">Target delivered stock</label>
         <div class="f-row"><input type="number" id="i_stock" value="" oninput="dCalc()" placeholder="e.g. 500"><span class="unit">units</span></div>
+      </div>
+
+      <!-- Ad spend — Total Budget / CPP per order (toggle = UI only, no calc change) -->
+      <div class="field" style="margin-top:28px">
+        <div class="mb-io-head">
+          <div class="mb-io-seg">
+            <button type="button" id="mbio_seg_cpa" class="mb-io-seg-btn" onclick="mbSetInputMode('cpa')">CPA / Order</button>
+            <button type="button" id="mbio_seg_budget" class="mb-io-seg-btn active" onclick="mbSetInputMode('budget')">Total Budget</button>
+          </div>
+        </div>
+
+        <!-- Total budget -->
+        <div id="mbio_budget_field">
+          <label data-t="lbl_budget">Total ad budget <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_budget">Total monthly ad budget across all channels.<br>If you open Channel breakdown, the tool sums channels automatically.</span></span></label>
+          <div class="f-row"><input type="number" id="i_ads" value="" min="0" oninput="mbManualBudget()" placeholder="e.g. 30000"><span class="unit">EGP</span></div>
+          <div id="ads_derived_display" style="display:none;margin-top:4px;font-size:11px;color:var(--c1);font-family:var(--mono)"></div>
+        </div>
+
+        <!-- Avg blended CPA -->
+        <div id="mbio_cpa_field" style="margin-top:10px;display:none">
+          <label data-t="lbl_avg_cpp">Avg blended CPA <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_avg_cpp">Average cost per Lead across all channels combined.<br>If Channel breakdown is open, auto-calculated as weighted average.<br>If typed directly → standalone.</span></span></label>
+          <div class="f-row"><input type="number" id="i_avg_cpp" value="" min="0" placeholder="e.g. 50" oninput="mbManualCpa()"><span class="unit">EGP</span></div>
+          <div id="cpp_derived_display" style="display:none;margin-top:4px;font-size:11px;color:var(--c1);font-family:var(--mono)"></div>
+        </div>
       </div>
 
       <!-- Advanced options toggle -->
@@ -2230,6 +2256,7 @@ input[type=range]::-moz-range-thumb{
       <div class="field">
         <label data-t="lbl_salary">Total fixed costs <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_salary">All monthly fixed costs — salaries, rent, subscriptions, tools, production...<br>For more detail open the Advanced breakdown below.</span></span></label>
         <div class="f-row"><input type="number" id="i_salary" value="" min="0" placeholder="e.g. 5000" oninput="fcManualInput()"><span class="unit">EGP</span></div>
+        <div style="margin-top:4px;font-size:11px;color:var(--txt3);font-family:var(--mono)">↳ Business-wide — shared across all products (split by orders)</div>
       </div>
 
       <!-- Advanced breakdown toggle -->
@@ -3657,6 +3684,61 @@ function mbManualBudget(){
   mbRefreshCurrentMode();
 }
 function mbManualCpa(){ MB_MANUAL_CPA = true; MB_MANUAL_BUDGET = false; dOnAvgCppInput(); mbRefreshCurrentMode(); }
+
+// Budget/CPA input toggle — purely visual: shows one input at a time. Does NOT touch any calculation.
+function mbSetInputMode(mode){
+  const budget = (mode !== 'cpa');
+  const bf = document.getElementById('mbio_budget_field');
+  const cf = document.getElementById('mbio_cpa_field');
+  const bb = document.getElementById('mbio_seg_budget');
+  const cb = document.getElementById('mbio_seg_cpa');
+  if(!bf || !cf || !bb || !cb) return;
+  bf.style.display = budget ? '' : 'none';
+  cf.style.display = budget ? 'none' : '';
+  bb.classList.toggle('active', budget);
+  cb.classList.toggle('active', !budget);
+}
+
+// ── Avg units / order  ↔  AOV toggle ──────────────────────────────────────
+// Keeps i_units as the single source of truth for ALL calculations.
+// AOV is converted to units behind the scenes: units = AOV / selling price.
+let UO_MODE = 'units';
+function uoSetMode(mode){
+  UO_MODE = (mode === 'aov') ? 'aov' : 'units';
+  const uf = document.getElementById('uo_units_field');
+  const af = document.getElementById('uo_aov_field');
+  const ub = document.getElementById('uo_seg_units');
+  const ab = document.getElementById('uo_seg_aov');
+  if(!uf || !af || !ub || !ab) return;
+  const aov = (UO_MODE === 'aov');
+  uf.style.display = aov ? 'none' : '';
+  af.style.display = aov ? '' : 'none';
+  ub.classList.toggle('active', !aov);
+  ab.classList.toggle('active', aov);
+  if(aov){
+    // prefill AOV from current units × selling price so the shown value matches
+    const price = parseFloat(document.getElementById('i_price').value) || 0;
+    const units = parseFloat(document.getElementById('i_units').value) || 1;
+    if(price > 0) document.getElementById('i_aov').value = +(price * units).toFixed(2);
+    uoAovInput();
+  }
+}
+// AOV typed → convert to units behind the scenes, then recalc as usual
+function uoAovInput(){
+  const price = parseFloat(document.getElementById('i_price').value) || 0;
+  const aov   = parseFloat(document.getElementById('i_aov').value) || 0;
+  if(price > 0) document.getElementById('i_units').value = aov / price;
+  dCalc();
+}
+// Selling price changed → in AOV mode, re-derive units from the AOV; always recalc
+function uoOnPrice(){
+  if(UO_MODE === 'aov'){
+    const price = parseFloat(document.getElementById('i_price').value) || 0;
+    const aov   = parseFloat(document.getElementById('i_aov').value) || 0;
+    if(price > 0) document.getElementById('i_units').value = aov / price;
+  }
+  dCalc();
+}
 
 // Independent budget/CPA inside Advanced panel
 function mbAdvBudgetChange(){ mbRefreshCurrentMode(); }
@@ -6125,7 +6207,7 @@ const PRODUCTS = [];
 let ACTIVE_PROD = 0;
 const PROD_COLORS = ['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--red)'];
 const INPUT_IDS = ['i_price','i_cost','i_units','i_ship_c','i_fulfill_del','i_fulfill_ret',
-                   'i_courier','i_comm','i_gateway_fee','i_plat','i_ads','i_avg_cpp','i_salary',
+                   'i_courier','i_comm','i_gateway_fee','i_plat','i_ads','i_avg_cpp',
                    'i_conf','i_del','i_stock'];
 
 function saveCurrentProduct(){
@@ -6652,7 +6734,8 @@ function persistSave(){
       advBundleRows:(()=>{const r=[];document.querySelectorAll('#adv_bundle_list .bundle-card').forEach(card=>{r.push({units:card.querySelector('.b-units')?.value||'2',price:card.querySelector('.b-price')?.value||'',freeShip:card.querySelector('.mini-toggle')?.classList.contains('on')||false,orders:card.querySelector('.b-orders')?.value||''});});return r;})(),
       advCycleDays: document.getElementById('adv_cycle_days')?.value||'',
       advCfDays: document.getElementById('adv_cf_days')?.value||'',
-      advCfCash: document.getElementById('adv_cf_cash')?.value||''
+      advCfCash: document.getElementById('adv_cf_cash')?.value||'',
+      globalFixedCost: document.getElementById('i_salary')?.value || ''
     };
     localStorage.setItem(LS_KEY, JSON.stringify(state));
   } catch(e){}
@@ -6711,6 +6794,12 @@ function persistLoad(){
     window.__advPdrShip   = state.advPdrShip || '';
     window.__advPdrDamaged= state.advPdrDamaged || false;
 
+    // Fixed costs are now business-wide (shared across products). Migrate older
+    // per-product saves by falling back to whichever product carried a value.
+    window.__globalFixedCost = (state.globalFixedCost !== undefined && state.globalFixedCost !== '')
+      ? state.globalFixedCost
+      : (((PRODUCTS.find(p => p.data && p.data.i_salary) || {}).data || {}).i_salary || '');
+
     return true;
   } catch(e){ return false; }
 }
@@ -6722,6 +6811,9 @@ function initProducts(){
     INPUT_IDS.forEach(id => initial.data[id] = '');
     PRODUCTS.push(initial);
   }
+  // Business-wide fixed cost (global, shared across all products)
+  const __gfc = document.getElementById('i_salary');
+  if(__gfc) __gfc.value = window.__globalFixedCost || '';
   loadProduct(ACTIVE_PROD);
   renderProdTabs();
 }
@@ -6882,12 +6974,17 @@ function calcTargetProfitFromStock(){ onTpStock(); }
 
 // ── EXPORT ENGINE ───────────────────────────
 
-function calcProductData(data){
+function calcProductData(data, salaryRawOverride){
   const n = id => parseFloat(data[id]) || 0;
   const price      = n('i_price'),  cost    = n('i_cost'),  shipC = n('i_ship_c');
   const fulfillDel = n('i_fulfill_del'), fulfillRet = n('i_fulfill_ret');
   const courier    = n('i_courier'), commPct = n('i_comm')/100, plat = n('i_plat');
-  const salaryRaw  = n('i_salary'),  stock   = n('i_stock');
+  const stock      = n('i_stock');
+  // Fixed costs are business-wide (shared). The overview passes this product's
+  // allocated share; fall back to the global field for any direct call.
+  const salaryRaw  = (salaryRawOverride !== undefined)
+    ? salaryRawOverride
+    : (parseFloat(document.getElementById('i_salary')?.value) || 0);
   const rawBudget  = n('i_ads'),     rawCpp  = n('i_avg_cpp');
   const confR      = n('i_conf')/100 || .001;
   const delR       = n('i_del')/100  || .001;
@@ -7053,12 +7150,21 @@ function renderMasterOverview(){
 
 function getAllProductsData(){
   saveCurrentProduct();
-  return PRODUCTS.map((p,i) => ({
-    name: p.name,
-    index: i,
-    data: p.data,
-    calc: calcProductData(p.data)
-  }));
+  // Business-wide fixed cost, shared across products and split by order volume
+  // (delivered stock). Σ(shares) = 1, so the portfolio total counts it once.
+  const G = parseFloat(document.getElementById('i_salary')?.value) || 0;
+  const stocks = PRODUCTS.map(p => parseFloat(p.data.i_stock) || 0);
+  const totalStock = stocks.reduce((a,b) => a + b, 0);
+  return PRODUCTS.map((p,i) => {
+    const share = totalStock > 0 ? stocks[i] / totalStock
+                                 : (PRODUCTS.length ? 1 / PRODUCTS.length : 0);
+    return {
+      name: p.name,
+      index: i,
+      data: p.data,
+      calc: calcProductData(p.data, G * share)
+    };
+  });
 }
 
 // ── Preview tables ──────────────────────────
@@ -7565,7 +7671,7 @@ const T = {
     tip_plat:'Fixed amount charged per incoming lead from ads — regardless of confirmation or delivery.<br>Example: EasyOrders charges per lead.',
     tip_budget:'Total monthly ad budget across all channels.<br>If you open Channel breakdown, the tool sums channels automatically.',
     tip_avg_cpp:'Average cost per Lead across all channels combined.<br>If Channel breakdown is open, auto-calculated as weighted average.<br>If typed directly → standalone.',
-    tip_salary:'All monthly fixed costs — salaries, rent, subscriptions, tools, production...',
+    tip_salary:'All monthly fixed costs — salaries, rent, subscriptions, tools, production...<br>Business-wide: entered once, shared across all products and split by order volume in the overview.',
     tip_dur:'Campaign duration in months. Tool multiplies monthly Salary × duration to get total fixed cost.<br>If locked → tool treats campaign as 1 month (default behaviour).',
     tip_vat:'VAT rate (14% in Egypt for registered businesses). Tool deducts VAT from revenue and adds input VAT on costs.<br>If locked → no VAT in calculations.',
     tip_bundle:'Enter each bundle and order count. Tool auto-calculates blended avg price and shipping.',
@@ -7818,7 +7924,7 @@ const T = {
     tip_plat:'مبلغ ثابت بيتحسب على كل lead بييجي من الإعلانات — بغض النظر عن التأكيد أو التوصيل.<br>مثال: منصة EasyOrders بتاخد مبلغ على كل lead وارد.',
     tip_budget:'إجمالي ميزانية الإعلانات الشهرية على كل الـ channels.<br>لو فتحت الـ Channel breakdown، التول بيجمع الـ channels تلقائي هنا.',
     tip_avg_cpp:'متوسط تكلفة اكتساب الـ Lead عبر كل الـ channels مجتمعة.<br>لو فتحت الـ Channel breakdown، بيتحسب تلقائي كـ weighted average.<br>لو بتكتب هنا مباشرة → standalone.',
-    tip_salary:'كل التكاليف الثابتة الشهرية — رواتب، إيجار، اشتراكات، أدوات، إنتاج...',
+    tip_salary:'كل التكاليف الثابتة الشهرية — رواتب، إيجار، اشتراكات، أدوات، إنتاج...<br>تكلفة على مستوى البيزنس: بتتكتب مرة واحدة وبتتقسم على كل المنتجات حسب عدد الأوردرات في صفحة الإجمالي.',
     tip_dur:'مدة الحملة بالشهور. التول يضرب الـ Salary الشهري × المدة علشان يحسب التكلفة الإجمالية للراتب.<br>لو القفل مقفول → التول بيعتبر الحملة شهر واحد (السلوك الافتراضي).',
     tip_vat:'نسبة ضريبة القيمة المضافة (14% في مصر للمسجّلين). التول بيخصم الـ VAT من الإيراد وبيضيف VAT على التكاليف (input VAT).<br>لو القفل مقفول → التول مش بيحسب VAT نهائياً.',
     tip_bundle:'حط كل bundle وعدد الأوردرات. التول هيحسب متوسط السعر والشحن تلقائياً.',
