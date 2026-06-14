@@ -48,10 +48,20 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'PATCH') {
-    const { userId, role } = req.body || {};
-    if (!userId || !['user', 'admin'].includes(role)) return res.status(400).json({ error: 'Invalid payload' });
+    const { userId, role, plan } = req.body || {};
+    if (!userId) return res.status(400).json({ error: 'userId required' });
+    const updates = {};
+    if (role !== undefined) {
+      if (!['user', 'admin'].includes(role)) return res.status(400).json({ error: 'Invalid role' });
+      updates.role = role;
+    }
+    if (plan !== undefined) {
+      if (!['free', 'pro', 'enterprise'].includes(plan)) return res.status(400).json({ error: 'Invalid plan' });
+      updates.plan = plan;
+    }
+    if (Object.keys(updates).length === 0) return res.status(400).json({ error: 'Nothing to update' });
     // update (not upsert) — prevents creating phantom profile rows for arbitrary UUIDs
-    const { error } = await sb.from('profiles').update({ role }).eq('id', userId);
+    const { error } = await sb.from('profiles').update(updates).eq('id', userId);
     if (error) return res.status(500).json({ error: error.message });
     return res.status(200).json({ ok: true });
   }

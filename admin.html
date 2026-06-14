@@ -228,8 +228,9 @@ async function init() {
     document.getElementById('table-wrap').addEventListener('click', e => {
       const btn = e.target.closest('button[data-action]');
       if (!btn) return;
-      const { action, id, role, email } = btn.dataset;
+      const { action, id, role, plan, email } = btn.dataset;
       if (action === 'toggle') toggleRole(id, role, email);
+      else if (action === 'toggle-plan') togglePlan(id, plan, email);
       else if (action === 'delete-user') deleteUser(id, email);
     });
     document.getElementById('promos-wrap').addEventListener('click', e => {
@@ -297,6 +298,7 @@ function renderTable(users) {
         <div style="font-size:11px;color:var(--txt3);font-family:var(--mono);margin-top:2px">${u.id.slice(0,8)}…</div>
       </td>
       <td><span class="role-badge ${u.role === 'admin' ? 'role-admin' : 'role-user'}">${u.role}</span></td>
+      <td><span class="role-badge ${u.plan === 'free' ? 'role-user' : 'role-admin'}">${esc(u.plan)}</span></td>
       <td>
         <span class="data-dot" style="background:${u.has_data ? 'var(--grn)' : 'var(--txt3)'}"></span>
         ${u.has_data ? 'Yes' : 'No'}
@@ -311,13 +313,17 @@ function renderTable(users) {
       <td style="color:var(--txt2);font-size:12px">${lastSeen}</td>
       <td>
         <div class="actions">
+          <button class="btn ${u.plan==='free'?'btn-create':'btn-ghost'}"
+            data-action="toggle-plan" data-id="${esc(u.id)}" data-plan="${esc(u.plan)}" data-email="${esc(u.email)}">
+            ${u.plan==='free' ? 'Activate Pro' : 'Set Free'}
+          </button>
           ${!isMe ? `
             <button class="btn ${u.role==='admin'?'btn-ghost':'btn-promote'}"
               data-action="toggle" data-id="${esc(u.id)}" data-role="${esc(u.role)}" data-email="${esc(u.email)}">
               ${u.role === 'admin' ? 'Demote' : 'Make Admin'}
             </button>
             <button class="btn btn-danger" data-action="delete-user" data-id="${esc(u.id)}" data-email="${esc(u.email)}">Delete</button>
-          ` : '<span style="color:var(--txt3);font-size:12px">—</span>'}
+          ` : ''}
         </div>
       </td>
     </tr>`;
@@ -327,7 +333,7 @@ function renderTable(users) {
     <table>
       <thead>
         <tr>
-          <th>Email</th><th>Role</th><th>Has Data</th><th>Promo</th>
+          <th>Email</th><th>Role</th><th>Plan</th><th>Has Data</th><th>Promo</th>
           <th>Joined</th><th>Last Sign In</th><th>Actions</th>
         </tr>
       </thead>
@@ -346,6 +352,22 @@ async function toggleRole(userId, currentRole, email) {
     });
     if (!res.ok) throw new Error(await res.text());
     toast(`Role updated to ${newRole}`, 'success');
+    loadUsers();
+  } catch(e) { toast('Error: ' + e.message, 'error'); }
+}
+
+async function togglePlan(userId, currentPlan, email) {
+  const newPlan = currentPlan === 'free' ? 'pro' : 'free';
+  const action  = newPlan === 'pro' ? 'activate Pro for' : 'downgrade to Free';
+  if (!confirm(`${newPlan === 'pro' ? 'Activate Pro for' : 'Downgrade to Free'} ${email}?`)) return;
+  try {
+    const res = await fetch('/api/admin/users', {
+      method: 'PATCH',
+      headers: { 'Authorization': 'Bearer ' + __token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, plan: newPlan })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    toast(`Plan updated to ${newPlan}`, 'success');
     loadUsers();
   } catch(e) { toast('Error: ' + e.message, 'error'); }
 }
