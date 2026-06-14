@@ -14,6 +14,16 @@ export default async function handler(req, res) {
   const { data: { user }, error: authErr } = await admin.auth.getUser(token);
   if (authErr || !user) return res.status(401).json({ error: 'Unauthorized' });
 
+  // Rate limit promo attempts to curb code-guessing/abuse (per user and per IP).
+  // Atomic DB-backed counter; fails open on limiter infra error so legit redeems never break.
+  const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
+  const limits = await Promise.all([
+    admin.rpc('bump_rate_limit', { p_key: `redeem:user:${user.id}`, p_max: 8,  p_window_seconds: 600 }),
+    admin.rpc('bump_rate_limit', { p_key: `redeem:ip:${ip}`,        p_max: 20, p_window_seconds: 600 }),
+  ]);
+  if (limits.some(r => r.data === false))
+    return res.status(429).json({ error: 'Too many attempts. Please try again in a few minutes.' });
+
   const code = ((req.body || {}).code || '').trim().toUpperCase();
   if (!code) return res.status(400).json({ error: 'No code provided' });
 

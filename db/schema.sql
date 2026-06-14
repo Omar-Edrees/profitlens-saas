@@ -56,63 +56,54 @@ drop policy if exists "user_data_insert_own"     on public.user_data;
 drop policy if exists "user_data_update_own"     on public.user_data;
 drop policy if exists "user_data_delete_own"     on public.user_data;
 
--- profiles: own row only — WITH CHECK prevents updating id to escape scope
+-- profiles: clients may READ their own row only.
+-- Clients NEVER write profiles directly — role/plan are changed server-side via the
+-- service_role key (api/redeem.js, api/admin/users.js), which bypasses RLS and grants.
+-- There is deliberately NO client INSERT/UPDATE/DELETE policy on profiles.
 create policy "profiles_select_own" on public.profiles
-  for select using (auth.uid() = id);
+  for select to authenticated using ((select auth.uid()) = id);
 
-create policy "profiles_update_own" on public.profiles
-  for update using (auth.uid() = id) with check (auth.uid() = id);
-
--- user_data: own rows only
+-- user_data: owners get full CRUD on their own rows (USING + WITH CHECK on every write)
 create policy "user_data_select_own" on public.user_data
-  for select using (auth.uid() = user_id);
+  for select to authenticated using ((select auth.uid()) = user_id);
 
 create policy "user_data_insert_own" on public.user_data
-  for insert with check (auth.uid() = user_id);
+  for insert to authenticated with check ((select auth.uid()) = user_id);
 
 create policy "user_data_update_own" on public.user_data
-  for update using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  for update to authenticated using ((select auth.uid()) = user_id)
+                              with check ((select auth.uid()) = user_id);
 
 create policy "user_data_delete_own" on public.user_data
-  for delete using (auth.uid() = user_id);
+  for delete to authenticated using ((select auth.uid()) = user_id);
 
--- ─── COLUMN-LEVEL LOCK: clients can NEVER write role or plan ─────────────────
--- Even with a matching UPDATE policy, anon/authenticated cannot touch these columns.
--- Only service_role (server-side API) or the admin RPC below can change them.
+-- ─── TABLE-LEVEL PRIVILEGES (CRITICAL — read the warning) ─────────────────────
+-- Supabase grants anon/authenticated FULL table privileges by default.
+-- ⚠️  A column-level `REVOKE UPDATE (col)` does NOT override a table-level `GRANT UPDATE`.
+--     So locking individual columns is useless while the table-wide grant exists —
+--     a logged-in user could `PATCH /rest/v1/profiles?id=eq.<self>` and set
+--     role='admin'/plan='enterprise'. We must revoke at the TABLE level instead.
+--
+-- profiles: authenticated needs SELECT only; anon needs nothing.
+revoke all on public.profiles from anon, authenticated;
+grant  select on public.profiles to authenticated;
 
-revoke update (role, plan) on public.profiles from anon, authenticated;
+-- user_data: authenticated needs full CRUD (gated by RLS above); anon needs nothing.
+revoke all on public.user_data from anon;
 
--- ─── ADMIN RPC: the only safe path for plan/role changes in application code ──
--- Checks caller is admin, validates inputs, then updates as security definer
--- (bypasses column-level REVOKE because it runs as the function owner, not the user).
+-- promo_codes: service-role only (see promo_codes.sql) — strip all client grants.
+revoke all on public.promo_codes from anon, authenticated;
 
-create or replace function public.admin_set_plan(target_email text, new_plan text)
-returns text language plpgsql security definer set search_path = public as $$
-declare
-  caller_role text;
-  affected    int;
-begin
-  select role into caller_role from public.profiles where id = auth.uid();
-  if caller_role is distinct from 'admin' then
-    raise exception 'not authorized';
-  end if;
-  if new_plan not in ('free', 'pro', 'enterprise') then
-    raise exception 'invalid plan: %', new_plan;
-  end if;
-  update public.profiles set plan = new_plan where email = target_email;
-  get diagnostics affected = row_count;
-  if affected = 0 then
-    raise exception 'user not found: %', target_email;
-  end if;
-  return target_email || ' -> ' || new_plan;
-end;
-$$;
+-- handle_new_user() is a trigger function; it must NOT be exposed as a public RPC.
+-- (Revoking EXECUTE does not stop the trigger, which runs as the function owner.)
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
 
--- Any authenticated user can call it, but the function itself enforces admin-only
-revoke execute on function public.admin_set_plan(text, text) from public, anon;
-grant  execute on function public.admin_set_plan(text, text) to authenticated;
+-- ─── ADMIN PLAN/ROLE CHANGES ──────────────────────────────────────────────────
+-- Application code changes plan/role server-side using the service_role key
+-- (api/redeem.js, api/admin/users.js). The service_role bypasses RLS and the
+-- table-level revokes above, so no client-callable RPC is required or exposed.
 
 -- ─── BOOTSTRAP (run once after your first sign-up) ───────────────────────────
--- Uncomment, replace the email, then run:
--- update public.profiles set role = 'admin', plan = 'pro'
---   where email = 'your@email.com';
+-- Promote yourself to admin using the SQL editor (runs as a privileged role):
+--   update public.profiles set role = 'admin', plan = 'pro'
+--     where email = 'your@email.com';

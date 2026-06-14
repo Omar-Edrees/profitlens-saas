@@ -221,6 +221,22 @@ async function init() {
     if (profile?.role !== 'admin') { showGate(); return; }
 
     document.getElementById('admin-main').style.display = '';
+
+    // Event delegation — replaces inline onclick built from user-controlled strings.
+    // Values are read from data-* attributes (HTML-escaped), never interpolated into JS.
+    document.getElementById('table-wrap').addEventListener('click', e => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const { action, id, role, email } = btn.dataset;
+      if (action === 'toggle') toggleRole(id, role, email);
+      else if (action === 'delete-user') deleteUser(id, email);
+    });
+    document.getElementById('promos-wrap').addEventListener('click', e => {
+      const btn = e.target.closest('button[data-action="delete-promo"]');
+      if (!btn) return;
+      deletePromo(btn.dataset.id, btn.dataset.code);
+    });
+
     loadUsers();
     loadPromos();
   } catch(e) { showGate(); }
@@ -290,10 +306,10 @@ function renderTable(users) {
         <div class="actions">
           ${!isMe ? `
             <button class="btn ${u.role==='admin'?'btn-ghost':'btn-promote'}"
-              onclick="toggleRole('${u.id}','${u.role}','${esc(u.email)}')">
+              data-action="toggle" data-id="${esc(u.id)}" data-role="${esc(u.role)}" data-email="${esc(u.email)}">
               ${u.role === 'admin' ? 'Demote' : 'Make Admin'}
             </button>
-            <button class="btn btn-danger" onclick="deleteUser('${u.id}','${esc(u.email)}')">Delete</button>
+            <button class="btn btn-danger" data-action="delete-user" data-id="${esc(u.id)}" data-email="${esc(u.email)}">Delete</button>
           ` : '<span style="color:var(--txt3);font-size:12px">—</span>'}
         </div>
       </td>
@@ -385,7 +401,7 @@ function renderPromos(promos) {
       <td><span class="${p.is_active && !full ? 'badge-active' : 'badge-inactive'}">${p.is_active && !full ? 'Active' : 'Exhausted'}</span></td>
       <td style="color:var(--txt2);font-size:12px">${created}</td>
       <td>
-        <button class="btn btn-danger" onclick="deletePromo('${p.id}','${esc(p.code)}')">Delete</button>
+        <button class="btn btn-danger" data-action="delete-promo" data-id="${esc(p.id)}" data-code="${esc(p.code)}">Delete</button>
       </td>
     </tr>`;
   }).join('');
