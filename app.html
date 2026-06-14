@@ -384,7 +384,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .mb-pro-cpa-inp:focus{border-color:var(--c2)}
 
 /* Budget / CPA input toggle (compact, inline) */
-.mb-io-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.mb-io-head{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:6px}
 .mb-io-seg{display:inline-flex;gap:3px;background:var(--surf2);border:1px solid var(--bdr2);border-radius:7px;padding:2px}
 .mb-io-seg-btn{padding:4px 9px;border:none;border-radius:5px;background:transparent;color:var(--txt3);font-size:10.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap}
 .mb-io-seg-btn:hover{color:var(--txt2)}
@@ -1572,9 +1572,8 @@ input[type=range]::-moz-range-thumb{
       </div>
 
       <!-- Ad spend — Total Budget / CPP per order (toggle = UI only, no calc change) -->
-      <div class="field">
+      <div class="field" style="margin-top:18px">
         <div class="mb-io-head">
-          <span style="font-size:12px;font-weight:600;color:var(--txt2)">📢 Ad Spend</span>
           <div class="mb-io-seg">
             <button type="button" id="mbio_seg_cpa" class="mb-io-seg-btn" onclick="mbSetInputMode('cpa')">CPP / Order</button>
             <button type="button" id="mbio_seg_budget" class="mb-io-seg-btn active" onclick="mbSetInputMode('budget')">Total Budget</button>
