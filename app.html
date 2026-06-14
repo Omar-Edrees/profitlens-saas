@@ -383,9 +383,10 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .mb-pro-cpa-inp{width:100%;background:var(--surf2);border:1px solid var(--bdr2);border-radius:8px;color:var(--txt);outline:none;font-family:var(--mono);font-size:13px;font-weight:600;padding:6px 8px;height:36px}
 .mb-pro-cpa-inp:focus{border-color:var(--c2)}
 
-/* Budget / CPA input toggle */
-.mb-io-seg{display:flex;gap:4px;background:var(--surf2);border:1px solid var(--bdr2);border-radius:9px;padding:4px}
-.mb-io-seg-btn{flex:1;padding:7px 6px;border:none;border-radius:6px;background:transparent;color:var(--txt3);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+/* Budget / CPA input toggle (compact, inline) */
+.mb-io-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.mb-io-seg{display:inline-flex;gap:3px;background:var(--surf2);border:1px solid var(--bdr2);border-radius:7px;padding:2px}
+.mb-io-seg-btn{padding:4px 9px;border:none;border-radius:5px;background:transparent;color:var(--txt3);font-size:10.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;white-space:nowrap}
 .mb-io-seg-btn:hover{color:var(--txt2)}
 .mb-io-seg-btn.active{background:var(--c2);color:#fff}
 
@@ -1572,13 +1573,16 @@ input[type=range]::-moz-range-thumb{
 
       <!-- Ad spend — Total Budget / CPP per order (toggle = UI only, no calc change) -->
       <div class="field">
-        <div class="mb-io-seg">
-          <button type="button" id="mbio_seg_budget" class="mb-io-seg-btn active" onclick="mbSetInputMode('budget')">Total Budget</button>
-          <button type="button" id="mbio_seg_cpa" class="mb-io-seg-btn" onclick="mbSetInputMode('cpa')">CPP / Order</button>
+        <div class="mb-io-head">
+          <span style="font-size:12px;font-weight:600;color:var(--txt2)">📢 Ad Spend</span>
+          <div class="mb-io-seg">
+            <button type="button" id="mbio_seg_cpa" class="mb-io-seg-btn" onclick="mbSetInputMode('cpa')">CPP / Order</button>
+            <button type="button" id="mbio_seg_budget" class="mb-io-seg-btn active" onclick="mbSetInputMode('budget')">Total Budget</button>
+          </div>
         </div>
 
         <!-- Total budget -->
-        <div id="mbio_budget_field" style="margin-top:10px">
+        <div id="mbio_budget_field">
           <label data-t="lbl_budget">Total ad budget <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_budget">Total monthly ad budget across all channels.<br>If you open Channel breakdown, the tool sums channels automatically.</span></span></label>
           <div class="f-row"><input type="number" id="i_ads" value="" min="0" oninput="mbManualBudget()" placeholder="e.g. 30000"><span class="unit">EGP</span></div>
           <div id="ads_derived_display" style="display:none;margin-top:4px;font-size:11px;color:var(--c1);font-family:var(--mono)"></div>
