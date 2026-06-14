@@ -4,12 +4,21 @@
 -- ─── TABLES ───────────────────────────────────────────────────────────────────
 
 create table if not exists public.profiles (
-  id         uuid primary key references auth.users(id) on delete cascade,
-  email      text,
-  role       text not null default 'user'  check (role in ('user', 'admin')),
-  plan       text not null default 'free'  check (plan in ('free', 'pro', 'enterprise')),
-  created_at timestamp with time zone default now()
+  id                    uuid primary key references auth.users(id) on delete cascade,
+  email                 text,
+  role                  text not null default 'user'  check (role in ('user', 'admin')),
+  plan                  text not null default 'free'  check (plan in ('free', 'pro', 'enterprise')),
+  -- promo redemption tracking (written server-side by /api/redeem; shown in the admin panel)
+  redeemed_code         text,
+  redeemed_discount_pct integer,
+  redeemed_at           timestamp with time zone,
+  created_at            timestamp with time zone default now()
 );
+
+-- For databases created before the redemption columns existed:
+alter table public.profiles add column if not exists redeemed_code         text;
+alter table public.profiles add column if not exists redeemed_discount_pct integer;
+alter table public.profiles add column if not exists redeemed_at           timestamp with time zone;
 
 create table if not exists public.user_data (
   id         uuid primary key default gen_random_uuid(),
