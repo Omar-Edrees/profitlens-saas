@@ -190,6 +190,7 @@
       <input id="new-code" placeholder="PROMO CODE" maxlength="32" autocomplete="off" spellcheck="false"
         oninput="this.value=this.value.toUpperCase()">
       <input id="new-uses" type="number" placeholder="Max uses" min="1" value="1">
+      <input id="new-discount" type="number" placeholder="Discount %" min="0" max="100" value="100" title="Discount percentage this code grants">
       <button class="btn btn-create" onclick="createPromo()">+ Create Code</button>
     </div>
     <div id="promos-wrap"><div class="spinner"></div></div>
@@ -227,8 +228,9 @@ async function init() {
     document.getElementById('table-wrap').addEventListener('click', e => {
       const btn = e.target.closest('button[data-action]');
       if (!btn) return;
-      const { action, id, role, email } = btn.dataset;
+      const { action, id, role, plan, email } = btn.dataset;
       if (action === 'toggle') toggleRole(id, role, email);
+      else if (action === 'toggle-plan') togglePlan(id, plan, email);
       else if (action === 'delete-user') deleteUser(id, email);
     });
     document.getElementById('promos-wrap').addEventListener('click', e => {
@@ -296,21 +298,32 @@ function renderTable(users) {
         <div style="font-size:11px;color:var(--txt3);font-family:var(--mono);margin-top:2px">${u.id.slice(0,8)}…</div>
       </td>
       <td><span class="role-badge ${u.role === 'admin' ? 'role-admin' : 'role-user'}">${u.role}</span></td>
+      <td><span class="role-badge ${u.plan === 'free' ? 'role-user' : 'role-admin'}">${esc(u.plan)}</span></td>
       <td>
         <span class="data-dot" style="background:${u.has_data ? 'var(--grn)' : 'var(--txt3)'}"></span>
         ${u.has_data ? 'Yes' : 'No'}
+      </td>
+      <td>
+        ${u.promo_code
+          ? `<span style="font-family:var(--mono);font-size:12px;font-weight:600;color:var(--acc)">${esc(u.promo_code)}</span>`
+            + (u.promo_discount == null ? '' : ` <span class="role-badge role-user" style="margin-left:4px">${esc(String(u.promo_discount))}%</span>`)
+          : '<span style="color:var(--txt3)">—</span>'}
       </td>
       <td style="color:var(--txt2);font-size:12px">${created}</td>
       <td style="color:var(--txt2);font-size:12px">${lastSeen}</td>
       <td>
         <div class="actions">
+          <button class="btn ${u.plan==='free'?'btn-create':'btn-ghost'}"
+            data-action="toggle-plan" data-id="${esc(u.id)}" data-plan="${esc(u.plan)}" data-email="${esc(u.email)}">
+            ${u.plan==='free' ? 'Activate Pro' : 'Set Free'}
+          </button>
           ${!isMe ? `
             <button class="btn ${u.role==='admin'?'btn-ghost':'btn-promote'}"
               data-action="toggle" data-id="${esc(u.id)}" data-role="${esc(u.role)}" data-email="${esc(u.email)}">
               ${u.role === 'admin' ? 'Demote' : 'Make Admin'}
             </button>
             <button class="btn btn-danger" data-action="delete-user" data-id="${esc(u.id)}" data-email="${esc(u.email)}">Delete</button>
-          ` : '<span style="color:var(--txt3);font-size:12px">—</span>'}
+          ` : ''}
         </div>
       </td>
     </tr>`;
@@ -320,7 +333,7 @@ function renderTable(users) {
     <table>
       <thead>
         <tr>
-          <th>Email</th><th>Role</th><th>Has Data</th>
+          <th>Email</th><th>Role</th><th>Plan</th><th>Has Data</th><th>Promo</th>
           <th>Joined</th><th>Last Sign In</th><th>Actions</th>
         </tr>
       </thead>
@@ -339,6 +352,22 @@ async function toggleRole(userId, currentRole, email) {
     });
     if (!res.ok) throw new Error(await res.text());
     toast(`Role updated to ${newRole}`, 'success');
+    loadUsers();
+  } catch(e) { toast('Error: ' + e.message, 'error'); }
+}
+
+async function togglePlan(userId, currentPlan, email) {
+  const newPlan = currentPlan === 'free' ? 'pro' : 'free';
+  const action  = newPlan === 'pro' ? 'activate Pro for' : 'downgrade to Free';
+  if (!confirm(`${newPlan === 'pro' ? 'Activate Pro for' : 'Downgrade to Free'} ${email}?`)) return;
+  try {
+    const res = await fetch('/api/admin/users', {
+      method: 'PATCH',
+      headers: { 'Authorization': 'Bearer ' + __token, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, plan: newPlan })
+    });
+    if (!res.ok) throw new Error(await res.text());
+    toast(`Plan updated to ${newPlan}`, 'success');
     loadUsers();
   } catch(e) { toast('Error: ' + e.message, 'error'); }
 }
@@ -392,6 +421,7 @@ function renderPromos(promos) {
     const full = p.uses_count >= p.max_uses;
     return `<tr>
       <td><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--acc);letter-spacing:.06em">${esc(p.code)}</span></td>
+      <td><span class="badge-active" style="font-family:var(--mono)">${esc(String(p.discount_pct == null ? 100 : p.discount_pct))}%</span></td>
       <td class="promo-used">${p.uses_count} / ${p.max_uses}</td>
       <td>
         <div style="background:var(--bg3);border-radius:6px;overflow:hidden;height:6px;width:80px">
@@ -409,7 +439,7 @@ function renderPromos(promos) {
   document.getElementById('promos-wrap').innerHTML = `
     <table>
       <thead><tr>
-        <th>Code</th><th>Uses</th><th>Progress</th><th>Status</th><th>Created</th><th>Actions</th>
+        <th>Code</th><th>Discount</th><th>Uses</th><th>Progress</th><th>Status</th><th>Created</th><th>Actions</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
@@ -418,16 +448,21 @@ function renderPromos(promos) {
 async function createPromo() {
   const code = document.getElementById('new-code').value.trim();
   const maxUses = parseInt(document.getElementById('new-uses').value) || 1;
+  const discount = parseInt(document.getElementById('new-discount').value);
   if (!code) { toast('Enter a code first', 'error'); return; }
+  if (!Number.isFinite(discount) || discount < 0 || discount > 100) {
+    toast('Discount must be between 0 and 100', 'error'); return;
+  }
   try {
     const res = await fetch('/api/admin/promos', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + __token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, max_uses: maxUses })
+      body: JSON.stringify({ code, max_uses: maxUses, discount_pct: discount })
     });
     if (!res.ok) { const j = await res.json(); throw new Error(j.error); }
     document.getElementById('new-code').value = '';
     document.getElementById('new-uses').value = '1';
+    document.getElementById('new-discount').value = '100';
     toast('Promo code created!', 'success');
     loadPromos();
   } catch(e) { toast('Error: ' + e.message, 'error'); }

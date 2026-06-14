@@ -370,7 +370,7 @@
           <div class="step-num">1</div>
           <div class="step-body">
             <div class="step-label">حوّل المبلغ عبر InstaPay أو المحفظة</div>
-            <div class="step-note">حوّل 500 جنيه مرة واحدة على الرقم ده (InstaPay / Vodafone Cash / أي محفظة):</div>
+            <div class="step-note">حوّل <span id="pay-step-amount">500</span> جنيه مرة واحدة على الرقم ده (InstaPay / Vodafone Cash / أي محفظة):</div>
             <div class="copy-row">
               <span class="copy-val" id="payment-number">01X-XXXX-XXXX</span>
               <button class="copy-btn" onclick="copyNumber()">Copy</button>
@@ -439,6 +439,7 @@
 
     document.getElementById('price-amount').textContent  = PRICE_EGP;
     document.getElementById('price-original').textContent = PRICE_ORIGINAL + ' EGP';
+    document.getElementById('pay-step-amount').textContent = PRICE_EGP;
     const discount = Math.round((1 - parseInt(PRICE_EGP) / parseInt(PRICE_ORIGINAL)) * 100);
     document.getElementById('price-badge').textContent = '-' + discount + '%';
     document.getElementById('payment-number').textContent = PAYMENT_NUMBER;
@@ -447,6 +448,28 @@
       '?text=' + encodeURIComponent(
         'مرحبا، عايز أشترك في ProfitLens Pro\n\nإيميلي: '
       );
+
+    // Apply a promo discount to the price (discount is OFF the base/original price).
+    // The customer then pays the discounted amount manually; an admin activates them.
+    function applyCouponDiscount(discountPct, code) {
+      const base = parseInt(PRICE_ORIGINAL);
+      const newPrice = Math.max(0, Math.round(base * (1 - discountPct / 100)));
+      document.getElementById('price-amount').textContent   = newPrice;
+      document.getElementById('price-badge').textContent    = '-' + discountPct + '%';
+      document.getElementById('pay-step-amount').textContent = newPrice;
+      document.getElementById('wa-btn').href =
+        'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(
+          'مرحبا، عايز أشترك في ProfitLens Pro\n\n' +
+          'كوبون: ' + code + ' (خصم ' + discountPct + '%)\n' +
+          'المبلغ بعد الخصم: ' + newPrice + ' جنيه\n' +
+          'إيميلي: '
+        );
+      const input = document.getElementById('promo-input');
+      const pbtn  = document.getElementById('promo-btn');
+      input.disabled = true; pbtn.disabled = true; pbtn.textContent = 'تم التطبيق ✓';
+      return newPrice;
+    }
+    window.__applyCouponDiscount = applyCouponDiscount;
 
     function copyNumber() {
       navigator.clipboard.writeText(PAYMENT_NUMBER).then(() => {
@@ -469,12 +492,22 @@
         if (session) {
           // If already paid, send to app
           const { data: profile } = await __sb.from('profiles')
-            .select('plan').eq('id', session.user.id).maybeSingle();
+            .select('plan, redeemed_code, redeemed_discount_pct').eq('id', session.user.id).maybeSingle();
           if (profile?.plan && profile.plan !== 'free') {
             window.location.replace('/app');
             return;
           }
           document.getElementById('sign-out-btn').style.display = 'block';
+          // already applied a discount code but not paid yet → show their discounted price
+          if (profile?.redeemed_code && profile.redeemed_discount_pct != null && profile.redeemed_discount_pct < 100) {
+            window.__applyCouponDiscount(profile.redeemed_discount_pct, profile.redeemed_code);
+            const m = document.getElementById('promo-msg');
+            m.textContent = 'كوبون ' + profile.redeemed_code + ' متطبّق (خصم ' + profile.redeemed_discount_pct +
+              '%). حوّل المبلغ وابعت الإيصال على واتساب.';
+            m.className = 'promo-msg success';
+            document.getElementById('promo-body').classList.add('open');
+            document.querySelector('.promo-toggle-arrow').classList.add('open');
+          }
         }
       } catch(e) {}
     }
@@ -518,9 +551,18 @@
           btn.disabled = false; btn.textContent = 'تفعيل';
           return;
         }
-        msg.textContent = '✓ تم التفعيل! بيتم تحويلك…';
-        msg.className = 'promo-msg success';
-        setTimeout(() => window.location.replace('/app'), 1200);
+        if (json.activated) {
+          // 100% code → free unlock, go straight to the app
+          msg.textContent = '✓ تم التفعيل! بيتم تحويلك…';
+          msg.className = 'promo-msg success';
+          setTimeout(() => window.location.replace('/app'), 1200);
+        } else {
+          // discount code → apply discount to the price; customer pays it manually
+          const newPrice = window.__applyCouponDiscount(json.discount_pct, code.toUpperCase());
+          msg.textContent = '✓ تم تطبيق الكوبون: خصم ' + json.discount_pct + '% — السعر بقى ' + newPrice +
+            ' جنيه. حوّل المبلغ وابعت الإيصال على واتساب وهنفعّلك.';
+          msg.className = 'promo-msg success';
+        }
       } catch(e) {
         msg.textContent = 'حصل خطأ، حاول تاني';
         msg.className = 'promo-msg error';

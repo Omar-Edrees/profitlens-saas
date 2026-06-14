@@ -28,13 +28,15 @@ export default async function handler(req, res) {
   if (!code) return res.status(400).json({ error: 'No code provided' });
 
   const { data: profile } = await admin
-    .from('profiles').select('plan').eq('id', user.id).maybeSingle();
+    .from('profiles').select('plan, redeemed_code').eq('id', user.id).maybeSingle();
   if (profile?.plan && profile.plan !== 'free')
-    return res.status(400).json({ error: 'Your account is already active' });
+    return res.status(400).json({ error: 'حسابك مفعّل بالفعل' });
+  if (profile?.redeemed_code)
+    return res.status(400).json({ error: 'إنت مطبّق كوبون بالفعل' });
 
   const { data: promo } = await admin
     .from('promo_codes')
-    .select('id, uses_count, max_uses')
+    .select('id, uses_count, max_uses, discount_pct')
     .eq('code', code)
     .eq('is_active', true)
     .maybeSingle();
@@ -57,9 +59,21 @@ export default async function handler(req, res) {
   if (!claimed || claimed.length === 0)
     return res.status(400).json({ error: 'This promo code has reached its limit' });
 
-  const { error: updateErr } = await admin
-    .from('profiles').update({ plan: 'pro' }).eq('id', user.id);
-  if (updateErr) return res.status(500).json({ error: 'Failed to activate account' });
+  // 100% code = free unlock → activate now. Any lower % = discount on the price;
+  // the customer pays the discounted amount manually and an admin activates them.
+  const discount  = promo.discount_pct;
+  const activate  = discount >= 100;
 
-  return res.status(200).json({ success: true });
+  const updates = {
+    redeemed_code: code,
+    redeemed_discount_pct: discount,
+    redeemed_at: new Date().toISOString(),
+  };
+  if (activate) updates.plan = 'pro';
+
+  const { error: updateErr } = await admin
+    .from('profiles').update(updates).eq('id', user.id);
+  if (updateErr) return res.status(500).json({ error: 'Failed to apply promo code' });
+
+  return res.status(200).json({ success: true, activated: activate, discount_pct: discount });
 }
