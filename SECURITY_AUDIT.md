@@ -17,8 +17,9 @@
 | F3 | `promo_codes` retained client table/column grants (RLS-blocked, defense-in-depth) | Low | A05 / CWE-732 | ✅ Fixed & verified |
 | F4 | Session tokens in `localStorage` + CSP `script-src 'unsafe-inline'` (XSS token theft) | Medium | A07 / CWE-522 | ⚠️ Documented (needs SSR refactor) |
 | F5 | Supabase Auth "leaked password protection" disabled | Low | A07 / CWE-521 | ⚠️ Action required (dashboard toggle) |
-| F6 | `admin.html` builds inline `onclick` with email in a JS-string context | Low | A03 / CWE-79 | ⚠️ Documented (not exploitable; email format-validated) |
-| F7 | `/api/redeem` has no app-level rate limiting (promo-code guessing/abuse) | Low | A04 / CWE-307 | ⚠️ Recommendation |
+| F6 | `admin.html` builds inline `onclick` with email in a JS-string context | Low | A03 / CWE-79 | ✅ Fixed (data-* + event delegation) |
+| F7 | `/api/redeem` has no app-level rate limiting (promo-code guessing/abuse) | Low | A04 / CWE-307 | ✅ Fixed (DB-backed limiter) |
+| F8 | Additional cross-origin isolation headers (COOP/CORP) | Hardening | A05 | ✅ Added |
 
 **Access-control checks that PASSED** (verified, no action needed): `user_data` IDOR (read/write/delete) is correctly bound to `auth.uid() = user_id` with `USING` + `WITH CHECK`; unfiltered mass `UPDATE`/`DELETE` is auto-scoped to the caller's own rows by RLS; admin APIs (`/api/admin/*`) re-verify `role='admin'` server-side via a signature-checked token (the client-side admin gate is UX only); `service_role` key is **not** present in any client bundle; APIs are bearer-token (not cookie) based so CSRF does not apply; all DB access uses the parameterized query builder (no SQL injection); no SSRF/file-upload/open-redirect surfaces exist.
 
@@ -138,8 +139,13 @@ No application code change was required for the fixes (the frontend never writes
 - [x] `anon` stripped of all access to `profiles` and `user_data`
 - [x] `service_role` confirmed absent from client bundles
 - [x] `db/schema.sql` corrected (re-run no longer re-opens F1)
-- [ ] **F5** enable leaked-password protection (dashboard toggle) — owner action
+- [x] **F6** replaced inline `onclick` in `admin.html` with `data-*` + event delegation
+- [x] **F7** added DB-backed atomic rate limiter (`rate_limits` + `bump_rate_limit`) on `/api/redeem` (8/user, 20/IP per 10 min)
+- [x] **F8** added `Cross-Origin-Opener-Policy: same-origin-allow-popups` + `Cross-Origin-Resource-Policy: same-origin`
+- [ ] **F5** enable leaked-password protection — owner action (requires Supabase **Pro** plan; advisor still reports disabled)
 - [ ] **F4** migrate to cookie-based sessions + remove CSP `'unsafe-inline'` — planned refactor
-- [ ] **F6** replace inline `onclick` in `admin.html` with `addEventListener`/`data-*`
-- [ ] **F7** add rate limiting to `/api/redeem`
 - [ ] Confirm `DISABLE_AUTH` is **not** set in the production environment (staging-only flag)
+
+### Residual notes
+- The F7 limiter is fixed-window and **fails open** if the limiter call errors (so a limiter fault never blocks legitimate redemptions). For stricter guarantees use a sliding window / dedicated service (e.g. Upstash).
+- F6 was not exploitable (Supabase validates email format; panel is admin-only); the refactor removes the fragile JS-string interpolation entirely.
