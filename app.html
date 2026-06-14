@@ -1659,6 +1659,17 @@ input[type=range]::-moz-range-thumb{
             <label style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);display:block;margin-bottom:5px">Total ad budget</label>
             <div class="f-row"><input type="number" id="mb_alloc_budget" placeholder="e.g. 70000" min="0" oninput="mbAllocRecalc()" style="font-size:14px;font-weight:700"><span class="unit">EGP</span></div>
           </div>
+          <div class="field" style="margin-bottom:12px">
+            <label style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);display:block;margin-bottom:5px">Target CPA efficiency <span class="tip"><span class="tip-icon">?</span><span class="tip-box">How aggressively you plan to buy, relative to your break-even CPA.<br>Lower % = safer (bigger margin); higher % = more aggressive (closer to break-even).<br>Default 70% keeps a 30% safety margin.</span></span></label>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+              <div class="mb-io-seg">
+                <button type="button" class="mb-io-seg-btn mb-alloc-preset" data-pct="90" onclick="mbSetAllocTarget(90)">Aggressive</button>
+                <button type="button" class="mb-io-seg-btn mb-alloc-preset active" data-pct="70" onclick="mbSetAllocTarget(70)">Realistic</button>
+                <button type="button" class="mb-io-seg-btn mb-alloc-preset" data-pct="55" onclick="mbSetAllocTarget(55)">Safe</button>
+              </div>
+              <div class="f-row" style="max-width:120px"><input type="number" id="mb_alloc_target_pct" value="70" min="10" max="100" step="5" oninput="mbAllocTargetInput()"><span class="unit">% of BE</span></div>
+            </div>
+          </div>
           <div id="mb_alloc_channels">
             <div class="mb-ch-card mb-alloc-card" data-ch="meta">
               <div class="mb-ch-card-header">
@@ -1691,7 +1702,7 @@ input[type=range]::-moz-range-thumb{
                   <span class="mb-card-result-val val-budget mb-alloc-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">CPA (70% of BE)</span>
+                  <span class="mb-card-result-label">Target CPA</span>
                   <span class="mb-card-result-val val-cpa mb-alloc-cpa">—</span>
                 </div>
                 <div class="mb-card-result-item">
@@ -1743,7 +1754,7 @@ input[type=range]::-moz-range-thumb{
                   <span class="mb-card-result-val val-budget mb-alloc-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">CPA (70% of BE)</span>
+                  <span class="mb-card-result-label">Target CPA</span>
                   <span class="mb-card-result-val val-cpa mb-alloc-cpa">—</span>
                 </div>
                 <div class="mb-card-result-item">
@@ -1795,7 +1806,7 @@ input[type=range]::-moz-range-thumb{
                   <span class="mb-card-result-val val-budget mb-alloc-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">CPA (70% of BE)</span>
+                  <span class="mb-card-result-label">Target CPA</span>
                   <span class="mb-card-result-val val-cpa mb-alloc-cpa">—</span>
                 </div>
                 <div class="mb-card-result-item">
@@ -1847,7 +1858,7 @@ input[type=range]::-moz-range-thumb{
                   <span class="mb-card-result-val val-budget mb-alloc-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">CPA (70% of BE)</span>
+                  <span class="mb-card-result-label">Target CPA</span>
                   <span class="mb-card-result-val val-cpa mb-alloc-cpa">—</span>
                 </div>
                 <div class="mb-card-result-item">
@@ -3743,11 +3754,36 @@ function uoOnPrice(){
 // Independent budget/CPA inside Advanced panel
 function mbAdvBudgetChange(){ mbRefreshCurrentMode(); }
 
-// ── MODE: ALLOC — % per channel → Budget + CPA (70% of BE) (BE × 70%) ──────
+// Target CPA efficiency for ALLOC mode — configurable % of break-even CPA (default 70%)
+function mbAllocTargetFactor(){
+  const el = document.getElementById('mb_alloc_target_pct');
+  let pct = el ? parseFloat(el.value) : 70;
+  if(!isFinite(pct) || pct <= 0) pct = 70;
+  return Math.max(10, Math.min(100, pct)) / 100;
+}
+function mbSyncAllocPresets(){
+  const el = document.getElementById('mb_alloc_target_pct');
+  const pct = el ? parseFloat(el.value) : 70;
+  document.querySelectorAll('.mb-alloc-preset').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.dataset.pct) === pct);
+  });
+}
+function mbSetAllocTarget(pct){
+  const el = document.getElementById('mb_alloc_target_pct');
+  if(el) el.value = pct;
+  mbSyncAllocPresets();
+  mbAllocRecalc(); dCalc();
+}
+function mbAllocTargetInput(){
+  mbSyncAllocPresets();
+  mbAllocRecalc(); dCalc();
+}
+
+// ── MODE: ALLOC — % per channel → Budget + Target CPA (% of break-even) ──────
 function mbAllocRecalc(){
   const totalBudget = parseFloat(document.getElementById('mb_alloc_budget')?.value) || 0;
   const beCpa       = window.LAST_BE_CPA || 0;
-  const autoCpa     = beCpa > 0 ? beCpa * 0.70 : 0; // 30% safety margin
+  const autoCpa     = beCpa > 0 ? beCpa * mbAllocTargetFactor() : 0; // configurable safety margin
   const confR = (parseFloat(document.getElementById('i_conf')?.value) || 0) / 100;
   const delR  = (parseFloat(document.getElementById('i_del')?.value)  || 0) / 100;
   const salaryRaw = parseFloat(document.getElementById('i_salary')?.value) || 0;
@@ -3891,7 +3927,7 @@ function mbAllocAddChannel(){
         <span class="mb-card-result-val val-budget mb-alloc-budget">—</span>
       </div>
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">CPA (70% of BE)</span>
+        <span class="mb-card-result-label">Target CPA</span>
         <span class="mb-card-result-val val-cpa mb-alloc-cpa">—</span>
       </div>
       <div class="mb-card-result-item">
@@ -4651,7 +4687,7 @@ function calc(){
     if(MB_CURRENT_MODE === 'alloc'){
       const advBudget_ = parseFloat(document.getElementById('mb_alloc_budget')?.value) || 0;
       const beCpa__ = window.LAST_BE_CPA || 0;
-      const autoCpa__ = beCpa__ > 0 ? beCpa__ * 0.70 : 0;
+      const autoCpa__ = beCpa__ > 0 ? beCpa__ * mbAllocTargetFactor() : 0;
       document.querySelectorAll('#mb_alloc_channels .mb-alloc-card').forEach(card => {
         const pct = parseFloat(card.querySelector('.mb-alloc-pct')?.value) || 0;
         const chBudget_ = advBudget_ * pct / 100;
@@ -4708,7 +4744,7 @@ function calc(){
     if(MB_CURRENT_MODE === 'alloc'){
       advBudget = parseFloat(document.getElementById('mb_alloc_budget')?.value) || 0;
       const beCpa_ = window.LAST_BE_CPA || 0;
-      const autoCpa_ = beCpa_ > 0 ? beCpa_ * 0.70 : 0;
+      const autoCpa_ = beCpa_ > 0 ? beCpa_ * mbAllocTargetFactor() : 0;
       document.querySelectorAll('#mb_alloc_channels .mb-alloc-card').forEach(card => {
         const pct = parseFloat(card.querySelector('.mb-alloc-pct')?.value) || 0;
         const chBudget = advBudget * pct / 100;
@@ -7714,7 +7750,7 @@ const T = {
     ov_rev_toggle:'+Ship',
     ov_total_returns:'💸 Total return costs',
     export_sub:'All product analytics in one Excel sheet — Inputs, Marketing, Shipping, P&L, and product comparison',
-    js_auto_cpa:'★ CPA (70% of BE) = Break-even CPA × 70% = ',
+    js_auto_cpa:'★ Target CPA = ',
     js_auto_cpa_suffix:' (30% safety margin)',
     js_no_be_cpa:'⚠ Enter product data in Inputs to auto-calculate Break-even CPA',
     js_be_hint:'★ Break-even CPA: ',
@@ -7967,7 +8003,7 @@ const T = {
     ov_rev_toggle:'+شحن',
     ov_total_returns:'💸 إجمالي تكلفة الإرجاعات',
     export_sub:'كل أناليسيز المنتجات في شيت Excel واحدة — Inputs، Marketing، Shipping، P&L، ومقارنة المنتجات',
-    js_auto_cpa:'★ CPA (70% من Break-even) = Break-even CPA × 70% = ',
+    js_auto_cpa:'★ الـ CPA المستهدف = ',
     js_auto_cpa_suffix:' (هامش أمان 30%)',
     js_no_be_cpa:'⚠ أدخل بيانات المنتج في الـ Inputs عشان يتحسب Break-even CPA تلقائي',
     js_be_hint:'★ Break-even CPA: ',
