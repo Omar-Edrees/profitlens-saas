@@ -1500,9 +1500,18 @@ input[type=range]::-moz-range-thumb{
 
     <div class="input-card">
       <div class="input-card-title"><span class="ic-dot" style="background:var(--c1)"></span><span data-t="card_pricing">Pricing</span></div>
-      <div class="field"><label data-t="lbl_sell_price">Selling price</label><div class="f-row"><input type="number" id="i_price" value="" oninput="dCalc();cfRecalc()"><span class="unit">EGP</span></div></div>
+      <div class="field"><label data-t="lbl_sell_price">Selling price</label><div class="f-row"><input type="number" id="i_price" value="" oninput="uoOnPrice();cfRecalc()"><span class="unit">EGP</span></div></div>
       <div class="field"><label data-t="lbl_prod_cost">Product cost</label><div class="f-row"><input type="number" id="i_cost" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
-      <div class="field"><label data-t="lbl_avg_units">Avg units / order</label><div class="f-row"><input type="number" id="i_units" value="1" min="0.1" step="0.1" oninput="dCalc()"><span class="unit">units</span></div></div>
+      <div class="field">
+        <div class="mb-io-head">
+          <div class="mb-io-seg">
+            <button type="button" id="uo_seg_units" class="mb-io-seg-btn active" onclick="uoSetMode('units')">Avg units / order</button>
+            <button type="button" id="uo_seg_aov" class="mb-io-seg-btn" onclick="uoSetMode('aov')">AOV</button>
+          </div>
+        </div>
+        <div id="uo_units_field" class="f-row"><input type="number" id="i_units" value="1" min="0.1" step="0.1" oninput="dCalc()"><span class="unit">units</span></div>
+        <div id="uo_aov_field" class="f-row" style="display:none"><input type="number" id="i_aov" value="" min="0" step="0.1" oninput="uoAovInput()" placeholder="e.g. 600"><span class="unit">EGP</span></div>
+      </div>
       <div class="field"><label data-t="lbl_ship_charged">Shipping charged to customer</label><div class="f-row"><input type="number" id="i_ship_c" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
     </div>
 
@@ -3687,6 +3696,47 @@ function mbSetInputMode(mode){
   cf.style.display = budget ? 'none' : '';
   bb.classList.toggle('active', budget);
   cb.classList.toggle('active', !budget);
+}
+
+// ── Avg units / order  ↔  AOV toggle ──────────────────────────────────────
+// Keeps i_units as the single source of truth for ALL calculations.
+// AOV is converted to units behind the scenes: units = AOV / selling price.
+let UO_MODE = 'units';
+function uoSetMode(mode){
+  UO_MODE = (mode === 'aov') ? 'aov' : 'units';
+  const uf = document.getElementById('uo_units_field');
+  const af = document.getElementById('uo_aov_field');
+  const ub = document.getElementById('uo_seg_units');
+  const ab = document.getElementById('uo_seg_aov');
+  if(!uf || !af || !ub || !ab) return;
+  const aov = (UO_MODE === 'aov');
+  uf.style.display = aov ? 'none' : '';
+  af.style.display = aov ? '' : 'none';
+  ub.classList.toggle('active', !aov);
+  ab.classList.toggle('active', aov);
+  if(aov){
+    // prefill AOV from current units × selling price so the shown value matches
+    const price = parseFloat(document.getElementById('i_price').value) || 0;
+    const units = parseFloat(document.getElementById('i_units').value) || 1;
+    if(price > 0) document.getElementById('i_aov').value = +(price * units).toFixed(2);
+    uoAovInput();
+  }
+}
+// AOV typed → convert to units behind the scenes, then recalc as usual
+function uoAovInput(){
+  const price = parseFloat(document.getElementById('i_price').value) || 0;
+  const aov   = parseFloat(document.getElementById('i_aov').value) || 0;
+  if(price > 0) document.getElementById('i_units').value = aov / price;
+  dCalc();
+}
+// Selling price changed → in AOV mode, re-derive units from the AOV; always recalc
+function uoOnPrice(){
+  if(UO_MODE === 'aov'){
+    const price = parseFloat(document.getElementById('i_price').value) || 0;
+    const aov   = parseFloat(document.getElementById('i_aov').value) || 0;
+    if(price > 0) document.getElementById('i_units').value = aov / price;
+  }
+  dCalc();
 }
 
 // Independent budget/CPA inside Advanced panel
