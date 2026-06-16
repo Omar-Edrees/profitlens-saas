@@ -3817,7 +3817,7 @@ function mbRefreshCurrentMode(){
 function mbManualBudget(){
   MB_MANUAL_BUDGET = true;
   MB_MANUAL_CPA    = false;
-  MB_BASE_BUDGET   = parseFloat(document.getElementById('i_ads').value) || 0;
+  MB_BASE_BUDGET   = numClean(document.getElementById('i_ads').value) || 0;
   dOnBudgetInput();
   mbRefreshCurrentMode();
 }
@@ -3855,24 +3855,24 @@ function uoSetMode(mode){
   ab.classList.toggle('active', aov);
   if(aov){
     // prefill AOV from current units × selling price so the shown value matches
-    const price = parseFloat(document.getElementById('i_price').value) || 0;
+    const price = numClean(document.getElementById('i_price').value) || 0;
     const units = parseFloat(document.getElementById('i_units').value) || 1;
-    if(price > 0) document.getElementById('i_aov').value = +(price * units).toFixed(2);
+    if(price > 0){ const _aov=document.getElementById('i_aov'); _aov.value = +(price * units).toFixed(2); fmtThousands(_aov); }
     uoAovInput();
   }
 }
 // AOV typed → convert to units behind the scenes, then recalc as usual
 function uoAovInput(){
-  const price = parseFloat(document.getElementById('i_price').value) || 0;
-  const aov   = parseFloat(document.getElementById('i_aov').value) || 0;
+  const price = numClean(document.getElementById('i_price').value) || 0;
+  const aov   = numClean(document.getElementById('i_aov').value) || 0;
   if(price > 0) document.getElementById('i_units').value = aov / price;
   dCalc();
 }
 // Selling price changed → in AOV mode, re-derive units from the AOV; always recalc
 function uoOnPrice(){
   if(UO_MODE === 'aov'){
-    const price = parseFloat(document.getElementById('i_price').value) || 0;
-    const aov   = parseFloat(document.getElementById('i_aov').value) || 0;
+    const price = numClean(document.getElementById('i_price').value) || 0;
+    const aov   = numClean(document.getElementById('i_aov').value) || 0;
     if(price > 0) document.getElementById('i_units').value = aov / price;
   }
   dCalc();
@@ -3908,12 +3908,12 @@ function mbAllocTargetInput(){
 
 // ── MODE: ALLOC — % per channel → Budget + Target CPA (% of break-even) ──────
 function mbAllocRecalc(){
-  const totalBudget = parseFloat(document.getElementById('mb_alloc_budget')?.value) || 0;
+  const totalBudget = numClean(document.getElementById('mb_alloc_budget')?.value) || 0;
   const beCpa       = window.LAST_BE_CPA || 0;
   const autoCpa     = beCpa > 0 ? beCpa * mbAllocTargetFactor() : 0; // configurable safety margin
   const confR = (parseFloat(document.getElementById('i_conf')?.value) || 0) / 100;
   const delR  = (parseFloat(document.getElementById('i_del')?.value)  || 0) / 100;
-  const salaryRaw = parseFloat(document.getElementById('i_salary')?.value) || 0;
+  const salaryRaw = numClean(document.getElementById('i_salary')?.value) || 0;
   const durMonths = typeof advDurMonths === 'function' ? advDurMonths() : 1;
   const totalSalary = salaryRaw * durMonths;
 
@@ -4082,8 +4082,8 @@ function mbAllocAddChannel(){
 function mbMORecalc(){
   const confR   = (parseFloat(document.getElementById('i_conf')?.value) || 0) / 100;
   const delR    = (parseFloat(document.getElementById('i_del')?.value)  || 0) / 100;
-  const beCpa   = typeof LAST_BE_CPA !== 'undefined' ? LAST_BE_CPA : (parseFloat(document.getElementById('i_avg_cpp').value) || 0);
-  const salaryRaw   = parseFloat(document.getElementById('i_salary')?.value) || 0;
+  const beCpa   = typeof LAST_BE_CPA !== 'undefined' ? LAST_BE_CPA : (numClean(document.getElementById('i_avg_cpp').value) || 0);
+  const salaryRaw   = numClean(document.getElementById('i_salary')?.value) || 0;
   const durMonths   = typeof advDurMonths === 'function' ? advDurMonths() : 1;
   const totalSalary = salaryRaw * durMonths;
   // Pre-calculate total orders to distribute salary proportionally
@@ -4226,10 +4226,10 @@ function mbMOAddChannel(){
 
 // ── MODE: PRO — Per-Channel CPA ────────────────────
 function mbProRecalc(){
-  const totalBudget = parseFloat(document.getElementById('mb_pro_budget')?.value) || 0;
+  const totalBudget = numClean(document.getElementById('mb_pro_budget')?.value) || 0;
   const confR = (parseFloat(document.getElementById('i_conf')?.value) || 0) / 100;
   const delR  = (parseFloat(document.getElementById('i_del')?.value)  || 0) / 100;
-  const salaryRaw   = parseFloat(document.getElementById('i_salary')?.value) || 0;
+  const salaryRaw   = numClean(document.getElementById('i_salary')?.value) || 0;
   const durMonths   = typeof advDurMonths === 'function' ? advDurMonths() : 1;
   const totalSalary = salaryRaw * durMonths;
 
@@ -4388,7 +4388,7 @@ function cfAddRow(){
 
 function cfGetTotalPerOrder(){
   // Returns total extra cost per DELIVERED ORDER (converts pct and lead types using current price/leads)
-  const price = parseFloat(document.getElementById('i_price')?.value) || 0;
+  const price = numClean(document.getElementById('i_price')?.value) || 0;
   let total = 0;
   document.querySelectorAll('.cf-custom-row').forEach(row => {
     const amt  = parseFloat(row.querySelector('.cf-amount')?.value) || 0;
@@ -4411,7 +4411,7 @@ function cfGetTotalPerLead(){
 }
 
 function cfRecalc(){
-  const price      = parseFloat(document.getElementById('i_price')?.value)       || 0;
+  const price      = numClean(document.getElementById('i_price')?.value)       || 0;
   const commPct    = parseFloat(document.getElementById('i_comm')?.value)         || 0;
   const gatewayPct = parseFloat(document.getElementById('i_gateway_fee')?.value)  || 0;
   const platLead   = parseFloat(document.getElementById('i_plat')?.value)         || 0;
@@ -4524,7 +4524,7 @@ function fcRecalc(){
   }
   if(!FC_MANUAL){
     const sal = document.getElementById('i_salary');
-    if(sal) sal.value = total > 0 ? total : '';
+    if(sal){ sal.value = total > 0 ? total : ''; fmtThousands(sal); }
   }
   dCalc();
 }
@@ -4692,11 +4692,11 @@ function bundleDelRow(btn){ const c=btn.closest('.bundle-card'); if(c)c.remove()
 function bundleRenumber(){ document.querySelectorAll('#adv_bundle_list .bundle-card').forEach((c,i)=>{ const l=c.querySelector('.bundle-card-label'); if(l)l.textContent=T[LANG].bundle_label+' '+(i+1); }); }
 function bundleRecalc(){
   if(ADV_BUNDLE_LOCKED) return;
-  const stock=parseFloat(document.getElementById('i_stock')?.value)||0;
+  const stock=numClean(document.getElementById('i_stock')?.value)||0;
   const rows=document.querySelectorAll('#adv_bundle_list .bundle-card');
   let tU=0,tR=0,tS=0,tO=0;
-  const sp=parseFloat(document.getElementById('i_price')?.value)||0;
-  const ss=parseFloat(document.getElementById('i_ship_c')?.value)||0;
+  const sp=numClean(document.getElementById('i_price')?.value)||0;
+  const ss=numClean(document.getElementById('i_ship_c')?.value)||0;
   const um=Math.max(parseFloat(document.getElementById('i_units')?.value)||1,0.1);
   rows.forEach(r=>{
     const u=parseFloat(r.querySelector('.b-units')?.value)||0;
@@ -4733,7 +4733,45 @@ function _applyCashLockUI(){ /* coming soon */ }
 
 
 
-function v(id){return parseFloat(document.getElementById(id)?.value)||0}
+// Parse a numeric input value tolerantly — strips thousand separators (commas) so
+// formatted inputs (e.g. "14,285") still read as numbers. Returns 0 on empty/invalid.
+function numClean(s){ if(s==null) return 0; return parseFloat(String(s).replace(/,/g,'')) || 0; }
+function v(id){const el=document.getElementById(id);return el?numClean(el.value):0}
+
+// ── Thousand-separator formatting for large-value INPUT fields ───────────────
+// type="number" can't show commas, so these fields are switched to text and
+// formatted live. All readers use numClean(), and saved/exported data is stripped
+// of commas, so the underlying numbers stay clean everywhere.
+const THOUSANDS_IDS = ['i_price','i_cost','i_ship_c','i_fulfill_del','i_fulfill_ret','i_courier','i_ads','i_avg_cpp','i_stock','i_aov','i_salary','mb_alloc_budget','mb_pro_budget'];
+function fmtThousands(el){
+  if(!el || el.type === 'number') return; // commas are invalid in type=number; skip until converted
+  const old = String(el.value);
+  const selFromEnd = old.length - (el.selectionStart ?? old.length); // keep caret distance from end
+  let s = old.replace(/[^\d.]/g,'');                 // these inputs are non-negative: digits + dot only
+  const dot = s.indexOf('.');
+  if(dot !== -1) s = s.slice(0,dot+1) + s.slice(dot+1).replace(/\./g,''); // keep only the first dot
+  const hasDot  = s.indexOf('.') !== -1;
+  let intPart   = hasDot ? s.slice(0, s.indexOf('.')) : s;
+  const decPart = hasDot ? s.slice(s.indexOf('.'))    : '';   // includes the dot
+  intPart = intPart.replace(/^0+(?=\d)/,'');         // trim leading zeros
+  const intFmt = intPart === '' ? '' : Number(intPart).toLocaleString('en');
+  const out = intFmt + decPart;
+  if(out === old) return;
+  el.value = out;
+  const pos = Math.max(0, out.length - selFromEnd);
+  try{ el.setSelectionRange(pos,pos); }catch(_){}
+}
+function reformatThousands(){ THOUSANDS_IDS.forEach(id => fmtThousands(document.getElementById(id))); }
+function attachThousandsFormatting(){
+  THOUSANDS_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if(!el || el.dataset.thFmt) return;
+    el.dataset.thFmt = '1';
+    if(el.type === 'number'){ el.type = 'text'; el.setAttribute('inputmode','decimal'); }
+    el.addEventListener('input', () => fmtThousands(el));
+    fmtThousands(el); // format any pre-filled value
+  });
+}
 function eg(n){return (Math.round(n*10)/10).toLocaleString('en',{minimumFractionDigits:1,maximumFractionDigits:1})+' '+CURRENCY}
 function pct(n,d=1){return (Math.round(n*Math.pow(10,d))/Math.pow(10,d)).toFixed(d)+'%'}
 function set(id,val,col){const e=document.getElementById(id);if(!e)return;e.textContent=val;if(col)e.style.color=col}
@@ -4749,7 +4787,7 @@ function dk(id){
 
 function onBudgetInput(){
   // Last-touched field wins — clear the other so calc() knows which mode to use
-  const bv = parseFloat(document.getElementById('i_ads').value)||0;
+  const bv = numClean(document.getElementById('i_ads').value)||0;
   if(bv>0){
     document.getElementById('i_avg_cpp').value='';
     document.getElementById('cpp_derived_display').style.display='none';
@@ -4758,7 +4796,7 @@ function onBudgetInput(){
 }
 
 function onAvgCppInput(){
-  const cv = parseFloat(document.getElementById('i_avg_cpp').value)||0;
+  const cv = numClean(document.getElementById('i_avg_cpp').value)||0;
   if(cv>0){
     document.getElementById('i_ads').value='';
     document.getElementById('ads_derived_display').style.display='none';
@@ -4812,7 +4850,7 @@ function calc(){
   if(advPanelOpenEarly){
     let advOrders = 0;
     if(MB_CURRENT_MODE === 'alloc'){
-      const advBudget_ = parseFloat(document.getElementById('mb_alloc_budget')?.value) || 0;
+      const advBudget_ = numClean(document.getElementById('mb_alloc_budget')?.value) || 0;
       const beCpa__ = window.LAST_BE_CPA || 0;
       const autoCpa__ = beCpa__ > 0 ? beCpa__ * mbAllocTargetFactor() : 0;
       document.querySelectorAll('#mb_alloc_channels .mb-alloc-card').forEach(card => {
@@ -4822,7 +4860,7 @@ function calc(){
         advOrders += chLeads_ * (confR||0.001) * (delR||0.001);
       });
     } else if(MB_CURRENT_MODE === 'pro'){
-      const advBudget_ = parseFloat(document.getElementById('mb_pro_budget')?.value) || 0;
+      const advBudget_ = numClean(document.getElementById('mb_pro_budget')?.value) || 0;
       document.querySelectorAll('#mb_pro_channels .mb-pro-card').forEach(card => {
         const pct = parseFloat(card.querySelector('.mb-pro-pct')?.value) || 0;
         const cpa_ = parseFloat(card.querySelector('.mb-pro-cpa-inp')?.value) || 0;
@@ -4869,7 +4907,7 @@ function calc(){
     const _delR  = delR  || 0.001;
 
     if(MB_CURRENT_MODE === 'alloc'){
-      advBudget = parseFloat(document.getElementById('mb_alloc_budget')?.value) || 0;
+      advBudget = numClean(document.getElementById('mb_alloc_budget')?.value) || 0;
       const beCpa_ = window.LAST_BE_CPA || 0;
       const autoCpa_ = beCpa_ > 0 ? beCpa_ * mbAllocTargetFactor() : 0;
       document.querySelectorAll('#mb_alloc_channels .mb-alloc-card').forEach(card => {
@@ -4878,7 +4916,7 @@ function calc(){
         if(autoCpa_ > 0 && chBudget > 0) advLeads += chBudget / autoCpa_;
       });
     } else if(MB_CURRENT_MODE === 'pro'){
-      advBudget = parseFloat(document.getElementById('mb_pro_budget')?.value) || 0;
+      advBudget = numClean(document.getElementById('mb_pro_budget')?.value) || 0;
       document.querySelectorAll('#mb_pro_channels .mb-pro-card').forEach(card => {
         const pct = parseFloat(card.querySelector('.mb-pro-pct')?.value) || 0;
         const cpa = parseFloat(card.querySelector('.mb-pro-cpa-inp')?.value) || 0;
@@ -6204,6 +6242,7 @@ function syncSliderToInputs(){
   if(delEl   && slDel)   delEl.value   = slDel.value;
   if(confEl  && slConf)  confEl.value  = slConf.value;
   if(cpaEl   && slCpa)   cpaEl.value   = slCpa.value;
+  fmtThousands(priceEl); fmtThousands(cpaEl);
 
   if(typeof calc === 'function') calc();
   syncSlidersFromInputs();
@@ -6428,7 +6467,7 @@ function saveCurrentProduct(){
   const data = {};
   INPUT_IDS.forEach(id => {
     const el = document.getElementById(id);
-    data[id] = el ? el.value : '';
+    data[id] = el ? String(el.value).replace(/,/g,'') : ''; // store clean numbers (no separators)
   });
   PRODUCTS[ACTIVE_PROD].data = data;
 }
@@ -6441,6 +6480,7 @@ function loadProduct(idx){
     const el = document.getElementById(id);
     if(el) el.value = pdata[id] !== undefined ? pdata[id] : '';
   });
+  if(typeof reformatThousands === 'function') reformatThousands();
   calc();
 }
 
@@ -6950,7 +6990,7 @@ function persistSave(){
       advCycleDays: document.getElementById('adv_cycle_days')?.value||'',
       advCfDays: document.getElementById('adv_cf_days')?.value||'',
       advCfCash: document.getElementById('adv_cf_cash')?.value||'',
-      globalFixedCost: document.getElementById('i_salary')?.value || ''
+      globalFixedCost: (document.getElementById('i_salary')?.value || '').replace(/,/g,'')
     };
     localStorage.setItem(LS_KEY, JSON.stringify(state));
   } catch(e){}
@@ -7199,7 +7239,7 @@ function calcProductData(data, salaryRawOverride){
   // allocated share; fall back to the global field for any direct call.
   const salaryRaw  = (salaryRawOverride !== undefined)
     ? salaryRawOverride
-    : (parseFloat(document.getElementById('i_salary')?.value) || 0);
+    : (numClean(document.getElementById('i_salary')?.value) || 0);
   const rawBudget  = n('i_ads'),     rawCpp  = n('i_avg_cpp');
   const confR      = n('i_conf')/100 || .001;
   const delR       = n('i_del')/100  || .001;
@@ -7367,7 +7407,7 @@ function getAllProductsData(){
   saveCurrentProduct();
   // Business-wide fixed cost, shared across products and split by order volume
   // (delivered stock). Σ(shares) = 1, so the portfolio total counts it once.
-  const G = parseFloat(document.getElementById('i_salary')?.value) || 0;
+  const G = numClean(document.getElementById('i_salary')?.value) || 0;
   const stocks = PRODUCTS.map(p => parseFloat(p.data.i_stock) || 0);
   const totalStock = stocks.reduce((a,b) => a + b, 0);
   return PRODUCTS.map((p,i) => {
@@ -8560,6 +8600,7 @@ window.addEventListener('load', ()=>{
     document.body.appendChild(banner);
   })();
 
+  attachThousandsFormatting(); // convert large-value inputs to formatted text BEFORE values load
   initProducts();
   applyLang();
   applyCurrencyToUnits();
