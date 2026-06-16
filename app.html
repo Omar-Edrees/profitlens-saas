@@ -1572,7 +1572,7 @@ input[type=range]::-moz-range-thumb{
     </div>
 
     <div class="input-card">
-      <div class="input-card-title"><span class="ic-dot" style="background:var(--c2)"></span><span data-t="card_media">Media buying & fixed costs</span></div>
+      <div class="input-card-title"><span class="ic-dot" style="background:var(--c2)"></span><span data-t="card_media">Media buying</span></div>
 
       <!-- Target stock (moved above budget/CPA) -->
       <div class="field" id="stock_basic_field">
@@ -1927,6 +1927,21 @@ input[type=range]::-moz-range-thumb{
                   <div class="f-row"><input type="number" placeholder="e.g. 50" class="mb-pro-cpa-inp" oninput="mbProRecalc()"><span class="unit">EGP</span></div>
                 </div>
               </div>
+              <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
+                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+              </button>
+              <div class="mb-rates-panel">
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
+                </div>
+              </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr 1fr">
                 <div class="mb-card-result-item">
                   <span class="mb-card-result-label">Budget</span>
@@ -1962,6 +1977,21 @@ input[type=range]::-moz-range-thumb{
                 <div class="mb-card-inp-group">
                   <label>CPA</label>
                   <div class="f-row"><input type="number" placeholder="e.g. 50" class="mb-pro-cpa-inp" oninput="mbProRecalc()"><span class="unit">EGP</span></div>
+                </div>
+              </div>
+              <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
+                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+              </button>
+              <div class="mb-rates-panel">
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
                 </div>
               </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr 1fr">
@@ -2001,6 +2031,21 @@ input[type=range]::-moz-range-thumb{
                   <div class="f-row"><input type="number" placeholder="e.g. 50" class="mb-pro-cpa-inp" oninput="mbProRecalc()"><span class="unit">EGP</span></div>
                 </div>
               </div>
+              <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
+                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+              </button>
+              <div class="mb-rates-panel">
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
+                </div>
+              </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr 1fr">
                 <div class="mb-card-result-item">
                   <span class="mb-card-result-label">Budget</span>
@@ -2036,6 +2081,21 @@ input[type=range]::-moz-range-thumb{
                 <div class="mb-card-inp-group">
                   <label>CPA</label>
                   <div class="f-row"><input type="number" placeholder="e.g. 50" class="mb-pro-cpa-inp" oninput="mbProRecalc()"><span class="unit">EGP</span></div>
+                </div>
+              </div>
+              <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
+                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+              </button>
+              <div class="mb-rates-panel">
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
                 </div>
               </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr 1fr">
@@ -2106,6 +2166,21 @@ input[type=range]::-moz-range-thumb{
                   <div class="f-row"><input type="number" placeholder="or BE CPA" min="0" class="mb-mo-cpa" oninput="mbMORecalc()"><span class="unit">EGP</span></div>
                 </div>
               </div>
+              <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
+                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+              </button>
+              <div class="mb-rates-panel">
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
+                </div>
+              </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr">
                 <div class="mb-card-result-item">
                   <span class="mb-card-result-label">Budget needed</span>
@@ -2138,6 +2213,21 @@ input[type=range]::-moz-range-thumb{
                 <div class="mb-card-inp-group">
                   <label>Market CPA <span style="font-weight:400;opacity:.7">(optional)</span></label>
                   <div class="f-row"><input type="number" placeholder="or BE CPA" min="0" class="mb-mo-cpa" oninput="mbMORecalc()"><span class="unit">EGP</span></div>
+                </div>
+              </div>
+              <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
+                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+              </button>
+              <div class="mb-rates-panel">
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
                 </div>
               </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr">
@@ -2174,6 +2264,21 @@ input[type=range]::-moz-range-thumb{
                   <div class="f-row"><input type="number" placeholder="or BE CPA" min="0" class="mb-mo-cpa" oninput="mbMORecalc()"><span class="unit">EGP</span></div>
                 </div>
               </div>
+              <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
+                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+              </button>
+              <div class="mb-rates-panel">
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
+                </div>
+              </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr">
                 <div class="mb-card-result-item">
                   <span class="mb-card-result-label">Budget needed</span>
@@ -2206,6 +2311,21 @@ input[type=range]::-moz-range-thumb{
                 <div class="mb-card-inp-group">
                   <label>Market CPA <span style="font-weight:400;opacity:.7">(optional)</span></label>
                   <div class="f-row"><input type="number" placeholder="or BE CPA" min="0" class="mb-mo-cpa" oninput="mbMORecalc()"><span class="unit">EGP</span></div>
+                </div>
+              </div>
+              <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
+                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+              </button>
+              <div class="mb-rates-panel">
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
+                  <div class="mb-card-inp-group">
+                    <label style="font-size:10px">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                  </div>
                 </div>
               </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr">
@@ -3565,10 +3685,11 @@ input[type=range]::-moz-range-thumb{
           <tr><td data-t="pl_rev_ship">Revenue from shipping</td><td id="pl_pu_sc">—</td><td id="pl_tot_sc">—</td><td><span class="tag tg" data-t="income_tag">Income</span></td></tr>
           <tr><td data-t="lbl_prod_cost">Product cost</td><td id="pl_pu_cost">—</td><td id="pl_tot_cost">—</td><td><span class="tag tr" data-t="variable_tag">Variable</span></td></tr>
           <tr><td data-t="pl_ship_cost">Real shipping cost</td><td id="pl_pu_ship">—</td><td id="pl_tot_ship">—</td><td><span class="tag tr" data-t="variable_tag">Variable</span></td></tr>
+          <tr id="pl_comm_row" style="display:none"><td data-t="pl_comm">Commission &amp; fees</td><td id="pl_pu_comm">—</td><td id="pl_tot_comm">—</td><td><span class="tag tr" data-t="variable_tag">Variable</span></td></tr>
           <tr id="pl_plat_row"><td data-t="lbl_plat_lead">Platform fee / lead</td><td id="pl_pu_plat">—</td><td id="pl_tot_plat">—</td><td><span class="tag tr" data-t="variable_tag">Variable</span></td></tr>
           <tr id="pl_pdr_row" style="display:none"><td data-t="adv_pdr_lbl">Post-delivery return</td><td id="pl_pu_pdr">—</td><td id="pl_tot_pdr">—</td><td><span class="tag tr">Variable</span></td></tr>
           <tr><td data-t="pl_ads">Ad budget</td><td id="pl_pu_ads">—</td><td id="pl_tot_ads">—</td><td><span class="tag ta" data-t="fixed_tag">Fixed</span></td></tr>
-          <tr><td data-t="pl_salary">Salary</td><td id="pl_pu_sal">—</td><td id="pl_tot_sal">—</td><td><span class="tag ta" data-t="fixed_tag">Fixed</span></td></tr>
+          <tr><td data-t="pl_salary">Fixed cost</td><td id="pl_pu_sal">—</td><td id="pl_tot_sal">—</td><td><span class="tag ta" data-t="fixed_tag">Fixed</span></td></tr>
           <tr id="pl_vat_row" style="display:none"><td data-t="pl_vat">VAT payable (net)</td><td id="pl_pu_vat">—</td><td id="pl_tot_vat">—</td><td><span class="tag ta" data-t="tax_tag">Tax</span></td></tr>
         </tbody>
         <tfoot>
@@ -3580,6 +3701,12 @@ input[type=range]::-moz-range-thumb{
           </tr>
         </tfoot>
       </table>
+      </div>
+      <!-- P&L composition visualization — where every pound of revenue goes -->
+      <div id="pl_viz" style="margin-top:18px;padding-top:16px;border-top:1px solid var(--bdr)">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--txt3);margin-bottom:10px" data-t="pl_viz_title">Where your revenue goes</div>
+        <div id="pl_viz_bar" style="display:flex;height:30px;border-radius:8px;overflow:hidden;background:var(--surf2)"></div>
+        <div id="pl_viz_legend" style="display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:12px"></div>
       </div>
     </div>
   </div>
@@ -4804,7 +4931,9 @@ function calc(){
   // Platform fee/lead + custom per-lead fees → converted to cost per DELIVERED ORDER
   const leadsPerOrder  = (confR > 0 && delR > 0) ? 1 / (confR * delR) : 0;
   const platPerOrder   = (plat + cfGetTotalPerLead()) * leadsPerOrder;
-  const costDel     = fulfillDel + courier + commAmt + cfCustomPerOrder;
+  // Shipping cost per delivered order — commission is NOT a shipping cost; it is shown
+  // as its own line in the P&L (moved out of the Shipping analysis tab).
+  const costDel     = fulfillDel + courier + cfCustomPerOrder;
   const costRet     = fulfillRet;
   const effShip     = delR > 0 ? (delR*costDel+(1-delR)*costRet)/delR : costRet;
   const retAbsorbed = effShip-costDel;
@@ -4820,8 +4949,10 @@ function calc(){
   // Net delivered rate after post-delivery returns
   const netDelR = pdr ? delR * (1 - pdr.rate) : delR;
 
-  // Profit per unit — now accounts for PDR cost
-  const profitPU    = priceNet - costNet - (effShip - shipCNet) - platPerOrder - pdrCostPerUnit;
+  // Profit per unit — now accounts for PDR cost.
+  // commAmt (commission + gateway) is subtracted here as its own term — it is no longer
+  // baked into effShip/shipping, so net profit is unchanged but categorisation is cleaner.
+  const profitPU    = priceNet - costNet - (effShip - shipCNet) - platPerOrder - pdrCostPerUnit - commAmt;
   const marginPct   = price>0?(profitPU/priceNet)*100:0;
 
   // totalFixed = truly fixed costs only (salary + ads)
@@ -4844,13 +4975,13 @@ function calc(){
   // Revenue totals — use NET (what actually belongs to you after VAT)
   // platPerOrder + pdrCostPerUnit are variable costs per delivered unit
   const totalRev    = stock*(priceNet+shipCNet);
-  const totalVar    = stock*(costNet+effShip+platPerOrder+pdrCostPerUnit);
+  const totalVar    = stock*(costNet+effShip+platPerOrder+pdrCostPerUnit+commAmt);
   const totalProf   = totalRev-totalVar-totalFixed;
   const isP         = totalProf>=0;
   const pc          = isP?'var(--profit)':'var(--red)';
 
   // ── Section 1: Marketing ──
-  const d1 = n => (!isFinite(n)||isNaN(n)) ? '—' : (Math.round(n*10)/10).toFixed(1);
+  const d1 = n => (!isFinite(n)||isNaN(n)) ? '—' : (Math.round(n*10)/10).toLocaleString('en',{minimumFractionDigits:1,maximumFractionDigits:1});
 
   // Break-even CPP = يغطي كل تكاليف البزنس (منتج + شحن + راتب + إعلانات)
   // الراتب بيتوزع على الوحدات الموصّلة
@@ -5030,7 +5161,7 @@ function calc(){
   set('sh_tot_ret',       fmt0(totRetCost)       + ' ' + CURRENCY, 'var(--red)');
   set('sh_tot_collected', fmt0(totCollected)     + ' ' + CURRENCY, 'var(--c1)');
   const retHint = document.getElementById('sh_tot_ret_hint');
-  if(retHint) retHint.textContent = Math.round(returnUnits) + T[LANG].js_returns_expected;
+  if(retHint) retHint.textContent = Math.round(returnUnits).toLocaleString('en') + T[LANG].js_returns_expected;
   const netHint = document.getElementById('sh_tot_net_hint');
   if(netHint){
     netHint.textContent = T[LANG].js_net_on_you + fmt0(totNetOnYou) + ' ' + CURRENCY;
@@ -5049,8 +5180,8 @@ function calc(){
     ? `You absorb ${(Math.round(overPay*10)/10).toFixed(1)} ${CURRENCY} per delivered unit in real shipping costs above what you collect.`
     : `Shipping collected covers real cost — no shipping loss.`
   );
-  renderShBar(fulfillDel, courier, commAmt, plat, retAbsorbed, shipC);
-  renderShLine(fulfillDel, courier, commAmt, plat, costRet);
+  renderShBar(fulfillDel, courier, retAbsorbed, shipC);
+  renderShLine(fulfillDel, courier, costRet);
   renderShProfitSens(profitPU, effShip, salary, ads, stock, costDel, costRet);
 
   // ── Section 3: Overview ──
@@ -5076,6 +5207,14 @@ function calc(){
   set('pl_pu_sc',     '+'+eg(shipC));       set('pl_tot_sc',    '+'+eg(stock*shipC));
   set('pl_pu_cost',   '-'+eg(cost));        set('pl_tot_cost',  '-'+eg(stock*cost));
   set('pl_pu_ship',   '-'+eg(effShip));     set('pl_tot_ship',  '-'+eg(stock*effShip));
+  // Commission & fees row — only show when commission/gateway is set (moved here from Shipping)
+  const commRowEl = document.getElementById('pl_comm_row');
+  if(commAmt > 0){
+    if(commRowEl) commRowEl.style.display = '';
+    set('pl_pu_comm',   '-'+eg(commAmt));     set('pl_tot_comm',  '-'+eg(stock*commAmt));
+  } else {
+    if(commRowEl) commRowEl.style.display = 'none';
+  }
   // Platform fee row — only show when platform fee is set
   const platRowEl = document.getElementById('pl_plat_row');
   if(platPerOrder > 0){
@@ -5112,6 +5251,17 @@ function calc(){
   const profitPUNet = profitPU - (ads/soldUnits) - (salary/soldUnits);
   set('pl_pu_net',  (profitPUNet>=0?'':'-')+eg(Math.abs(profitPUNet)), profitPUNet>=0?'var(--profit)':'var(--red)');
   set('pl_tot_net', (isP?'':'-')+eg(Math.abs(totalProf)), pc);
+
+  // P&L composition visualization — same cost buckets as the table above
+  renderPLComposition([
+    { label: T[LANG].lbl_prod_cost, val: stock*cost,           color:'#f43f5e' },
+    { label: T[LANG].pl_ship_cost,  val: stock*effShip,        color:'#f59e0b' },
+    { label: T[LANG].pl_comm,       val: stock*commAmt,        color:'#ec4899' },
+    { label: T[LANG].lbl_plat_lead, val: stock*platPerOrder,   color:'#3b82f6' },
+    { label: T[LANG].adv_pdr_lbl,   val: stock*pdrCostPerUnit, color:'#a855f7' },
+    { label: T[LANG].pl_ads,        val: ads,                  color:'#6366f1' },
+    { label: T[LANG].pl_salary,     val: salary,               color:'#a78bfa' },
+  ], totalProf);
 
   // ── Hero strip extras ──
   const totalMarginProfit = totalRev - totalVar;   // before fixed costs
@@ -5193,8 +5343,8 @@ function calc(){
     const ul=document.getElementById('ov_units_label'); if(ul) ul.textContent=delPct+'% delivery';
   }
 
-  renderWaterfall(price, cost, effShip, shipC, totalFixed/stock);
-  renderOvDonut(stock, cost, effShip, totalFixed, price, shipC);
+  renderWaterfall(price, cost, effShip, shipC, totalFixed/stock, commAmt);
+  renderOvDonut(stock, cost, effShip, totalFixed, price, shipC, commAmt);
   renderBECurve(beUnits, profitPU, totalFixed);
 
   // refresh export preview + master overview if on overview tab
@@ -5471,19 +5621,19 @@ function renderCPPLine(confR, profitPU, salaryPU){
   });
 }
 
-function renderShBar(fulfill, courier, commAmt, plat, retAbs, shipC){
+function renderShBar(fulfill, courier, retAbs, shipC){
   if(!dk('shb')) return;
   CH['shb']=new Chart(document.getElementById('ch_sh_bar'),{
     type:'bar',
-    data:{labels:['Fulfillment','Courier','Commission','Platform','Return absorbed','Customer pays'],datasets:[{data:[fulfill,courier,commAmt,plat,retAbs,shipC],backgroundColor:['#f59e0b','#f43f5e','#a78bfa','#3b82f6','#f43f5e','#00e5a0'],borderRadius:5}]},
+    data:{labels:['Fulfillment','Courier','Return absorbed','Customer pays'],datasets:[{data:[fulfill,courier,retAbs,shipC],backgroundColor:['#f59e0b','#3b82f6','#f43f5e','#00e5a0'],borderRadius:5}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc(),font:{size:10}},grid:{display:false}},y:{ticks:{color:tc(),callback:v=>Math.round(v)},grid:{color:gc()}}}}
   });
 }
 
-function renderShLine(fulfill, courier, commAmt, plat, costRet){
+function renderShLine(fulfill, courier, costRet){
   if(!dk('shl')) return;
   const rates=[10,20,30,40,50,60,70,80,90,100].map(r=>r/100);
-  const costDel=fulfill+courier+commAmt+plat;
+  const costDel=fulfill+courier;
   CH['shl']=new Chart(document.getElementById('ch_sh_line'),{
     type:'line',
     data:{labels:rates.map(r=>Math.round(r*100)+'%'),datasets:[{label:'Real shipping/unit',data:rates.map(r=>(r*costDel+(1-r)*costRet)/r),borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.08)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#f59e0b'}]},
@@ -5540,26 +5690,53 @@ function renderShProfitSens(profitPU_base, effShip_base, salary, ads, stock, cos
   });
 }
 
-function renderWaterfall(price, cost, effShip, shipC, fixedPU){
+function renderWaterfall(price, cost, effShip, shipC, fixedPU, commAmt){
   if(!dk('wf')) return;
-  const revenue=price+shipC, profit=revenue-cost-effShip-fixedPU;
+  const comm=commAmt||0;
+  const revenue=price+shipC, profit=revenue-cost-effShip-comm-fixedPU;
   CH['wf']=new Chart(document.getElementById('ch_wf'),{
     type:'bar',
-    data:{labels:['Revenue','Product','Shipping','Fixed/unit','Net profit'],datasets:[{data:[revenue,cost,effShip,fixedPU,profit],backgroundColor:['#00e5a0','#f43f5e','#f59e0b','#a78bfa',profit>=0?'#00e5a0':'#f43f5e'],borderRadius:5}]},
+    data:{labels:['Revenue','Product','Shipping','Commission','Fixed/unit','Net profit'],datasets:[{data:[revenue,cost,effShip,comm,fixedPU,profit],backgroundColor:['#00e5a0','#f43f5e','#f59e0b','#ec4899','#a78bfa',profit>=0?'#00e5a0':'#f43f5e'],borderRadius:5}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc(),font:{size:10}},grid:{display:false}},y:{ticks:{color:tc(),callback:v=>Math.round(v)},grid:{color:gc()}}}}
   });
 }
 
-function renderOvDonut(stock, cost, effShip, totalFixed, price, shipC){
+function renderOvDonut(stock, cost, effShip, totalFixed, price, shipC, commAmt){
   if(!dk('ovd')) return;
   const totalRev=stock*(price+shipC);
-  const pCost=stock*cost, sCost=stock*effShip, prof=Math.max(totalRev-pCost-sCost-totalFixed,0);
-  const labels=['Product cost','Shipping cost','Fixed costs','Net profit'];
-  const data=[pCost,sCost,totalFixed,prof];
-  const colors=['#f43f5e','#f59e0b','#a78bfa','#00e5a0'];
-  const total=pCost+sCost+totalFixed+prof;
+  const cCost=stock*(commAmt||0);
+  const pCost=stock*cost, sCost=stock*effShip, prof=Math.max(totalRev-pCost-sCost-cCost-totalFixed,0);
+  const labels=['Product cost','Shipping cost','Commission','Fixed costs','Net profit'];
+  const data=[pCost,sCost,cCost,totalFixed,prof];
+  const colors=['#f43f5e','#f59e0b','#ec4899','#a78bfa','#00e5a0'];
+  const total=pCost+sCost+cCost+totalFixed+prof;
   document.getElementById('ov_legend').innerHTML=labels.map((l,i)=>`<div class="li"><span class="ld" style="background:${colors[i]}"></span>${l} ${total>0?Math.round(data[i]/total*100)+'%':''}</div>`).join('');
   CH['ovd']=new Chart(document.getElementById('ch_ov_donut'),{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{display:false}}}});
+}
+
+// P&L composition — horizontal stacked bar showing where every pound of revenue goes.
+// Pure DOM (no Chart.js), so it always renders regardless of chart toggles.
+function renderPLComposition(parts, profitVal){
+  const bar = document.getElementById('pl_viz_bar');
+  const leg = document.getElementById('pl_viz_legend');
+  if(!bar || !leg) return;
+  const segs = parts.filter(p => p.val > 0);
+  segs.push({
+    label: profitVal >= 0 ? T[LANG].pl_viz_profit : T[LANG].pl_viz_loss,
+    val:   Math.abs(profitVal),
+    color: profitVal >= 0 ? '#00e5a0' : '#f43f5e'
+  });
+  const sum = segs.reduce((s,p)=>s + Math.max(p.val,0), 0);
+  if(sum <= 0){ bar.innerHTML = ''; leg.innerHTML = ''; return; }
+  bar.innerHTML = segs.map(p=>{
+    const pct = Math.max(p.val,0)/sum*100;
+    if(pct <= 0) return '';
+    return `<div title="${escapeHtml(p.label)}: ${Math.round(p.val).toLocaleString('en')} ${CURRENCY} (${pct.toFixed(1)}%)" style="width:${pct}%;background:${p.color};transition:width .4s"></div>`;
+  }).join('');
+  leg.innerHTML = segs.map(p=>{
+    const pct = Math.max(p.val,0)/sum*100;
+    return `<div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--txt2)"><span style="width:10px;height:10px;border-radius:2px;background:${p.color};display:inline-block;flex:0 0 auto"></span>${escapeHtml(p.label)} <span style="color:var(--txt3);font-family:var(--mono)">${pct.toFixed(0)}%</span></div>`;
+  }).join('');
 }
 
 function renderBECurve(beU, profPU, totalFixed){
@@ -5753,7 +5930,7 @@ function _roasInputs(){
 }
 
 function _simRender(stock, cpp, inp){
-  const d1 = n => (!isFinite(n)||isNaN(n)) ? '—' : (Math.round(n*10)/10).toFixed(1);
+  const d1 = n => (!isFinite(n)||isNaN(n)) ? '—' : (Math.round(n*10)/10).toLocaleString('en',{minimumFractionDigits:1,maximumFractionDigits:1});
   const d0 = n => Math.round(n).toLocaleString('en');
   const {price, cost, shipC, priceNet, costNet, shipCNet, salary, confR, delR, effShip, profitPU} = inp;
 
@@ -6122,7 +6299,7 @@ function updateSlider(type){
   const bDelOrders = stock; // stock = delivered units target
   const bNetProfit = bProfitPU * bDelOrders - salary - bAdBudget;
 
-  const d1 = n => (!isFinite(n)||isNaN(n)) ? '—' : (Math.round(n*10)/10).toFixed(1);
+  const d1 = n => (!isFinite(n)||isNaN(n)) ? '—' : (Math.round(n*10)/10).toLocaleString('en',{minimumFractionDigits:1,maximumFractionDigits:1});
 
   // Row 1 — Leads needed
   const leadsEl = document.getElementById('si_leads');
@@ -6375,6 +6552,7 @@ function calcAllProducts(){
   const totalSalary  = all.reduce((s,p)=>s+p.calc.salary,     0);
   const totalCost    = all.reduce((s,p)=>s+p.calc.cost*p.calc.stock, 0);
   const totalShipCost= all.reduce((s,p)=>s+p.calc.effShip*p.calc.stock,0);
+  const totalCommission= all.reduce((s,p)=>s+(p.calc.commAmt||0)*p.calc.stock,0);
   const totalShipColl= all.reduce((s,p)=>s+p.calc.shipC*p.calc.stock, 0);
 
   // Blended CPA = total budget / total leads
@@ -6461,8 +6639,8 @@ function calcAllProducts(){
     const rPct=(apReturned/apTotal*100).toFixed(1);
     const db=document.getElementById('ap_del_bar'); if(db) db.style.width=dPct+'%';
     const rb=document.getElementById('ap_ret_bar'); if(rb) rb.style.width=rPct+'%';
-    _s('ap_del_units', Math.round(apDelivered)+(LANG==='ar'?' وحدة':' units'));
-    _s('ap_ret_units', Math.round(apReturned)+(LANG==='ar'?' وحدة':' units'));
+    _s('ap_del_units', Math.round(apDelivered).toLocaleString('en')+(LANG==='ar'?' وحدة':' units'));
+    _s('ap_ret_units', Math.round(apReturned).toLocaleString('en')+(LANG==='ar'?' وحدة':' units'));
     _s('ap_units_label', dPct+'% delivery');
   }
 
@@ -6475,6 +6653,7 @@ function calcAllProducts(){
       ['Revenue from shipping',  totalShipColl,             'tg'],
       ['Product costs',         -totalCost,                 'tr'],
       ['Real shipping costs',   -totalShipCost,             'tr'],
+      ...(totalCommission > 0 ? [['Commission & fees', -totalCommission, 'tr']] : []),
       ['Total ad budget',       -totalAds,                  'ta'],
       ['Total salaries',        -totalSalary,               'ta'],
     ];
@@ -6888,7 +7067,7 @@ function _tpInputs(){
 }
 
 function _tpRender(stock, cpp, inp){
-  const d1 = n => (!isFinite(n)||isNaN(n)) ? '—' : (Math.round(n*10)/10).toFixed(1);
+  const d1 = n => (!isFinite(n)||isNaN(n)) ? '—' : (Math.round(n*10)/10).toLocaleString('en',{minimumFractionDigits:1,maximumFractionDigits:1});
   const d0 = n => Math.round(n).toLocaleString('en');
   const {price, cost, shipC, priceNet, costNet, shipCNet, salary, confR, delR, effShip, profitPU} = inp;
 
@@ -7043,7 +7222,7 @@ function calcProductData(data, salaryRawOverride){
   }
 
   const commAmt    = price * (commPct + n('i_gateway_fee')/100); // uses saved product data, not DOM
-  const costDel    = fulfillDel + courier + commAmt;             // plat NOT here (it's per-lead, not per-delivery)
+  const costDel    = fulfillDel + courier;                       // shipping only — commission is a separate P&L line (plat is per-lead, not per-delivery)
   const costRet    = fulfillRet;
   const effShip    = delR > 0 ? (delR*costDel+(1-delR)*costRet)/delR : costRet; // guard: delR=0 safe
   const retAbs     = effShip - costDel;
@@ -7053,7 +7232,7 @@ function calcProductData(data, salaryRawOverride){
   // PDR — mirror main calc logic
   const pdr3 = (typeof advPDR === 'function') ? advPDR() : null;
   const pdrCostPerUnit3 = pdr3 ? pdr3.rate * (pdr3.ship + (pdr3.damaged ? cost : 0)) : 0;
-  const profitPU   = priceNet - costNet - (effShip - shipCNet) - platPerOrderEx - pdrCostPerUnit3;
+  const profitPU   = priceNet - costNet - (effShip - shipCNet) - platPerOrderEx - pdrCostPerUnit3 - commAmt;
   const marginPct  = priceNet > 0 ? (profitPU/priceNet*100) : 0;
   const confNeeded = leadsNeeded * confR;
   const delivNeeded= confNeeded * delR;
@@ -7063,7 +7242,7 @@ function calcProductData(data, salaryRawOverride){
   const beROAS     = beCPP > 0 ? (price+shipC)*confR*delR/beCPP : 0;
   const beUnits    = profitPU > 0 ? totalFixed/profitPU : Infinity;
   const totalRev   = stock * (priceNet + shipCNet);
-  const totalProf  = totalRev - stock*(costNet+effShip+platPerOrderEx+pdrCostPerUnit3) - totalFixed;
+  const totalProf  = totalRev - stock*(costNet+effShip+platPerOrderEx+pdrCostPerUnit3+commAmt) - totalFixed;
   const roas       = ads > 0 ? (stock*(price+shipC))/ads : 0;  // ROAS uses gross (ad platform view)
 
   return {
@@ -7293,8 +7472,6 @@ function renderExportPreview(){
       [T[LANG].ex_sec_breakdown],
       [T[LANG].lbl_ff_del,         p=>fmtEGP(p.calc.fulfillDel)],
       [T[LANG].sh_lbl_courier,     p=>fmtEGP(p.calc.courier)],
-      [T[LANG].lbl_comm,           p=>fmtEGP(p.calc.commAmt)],
-      [T[LANG].lbl_plat,           p=>fmtEGP(p.calc.plat)],
     ];
     tbody.innerHTML = rows.map(r => {
       if(typeof r[0]==='string' && r.length===1)
@@ -7312,6 +7489,7 @@ function renderExportPreview(){
       [T[LANG].ex_sec_var],
       [T[LANG].lbl_prod_cost,    p=>'-'+fmtEGP(p.calc.cost),              p=>'-'+fmtEGP(p.calc.cost*p.calc.stock)],
       [T[LANG].ap_sh_real_lbl,   p=>'-'+fmtEGP(p.calc.effShip),           p=>'-'+fmtEGP(p.calc.effShip*p.calc.stock)],
+      [T[LANG].pl_comm,          p=>'-'+fmtEGP(p.calc.commAmt),           p=>'-'+fmtEGP(p.calc.commAmt*p.calc.stock)],
       [T[LANG].ex_sec_fixed],
       [T[LANG].pl_ads,           p=>'-'+fmtEGP(p.calc.ads/(p.calc.delivNeeded||1)), p=>'-'+fmtEGP(p.calc.ads)],
       [T[LANG].lbl_salary,       p=>'-'+fmtEGP(p.calc.salary/(p.calc.delivNeeded||1)), p=>'-'+fmtEGP(p.calc.salary)],
@@ -7442,8 +7620,6 @@ function exportToExcel(){
     [L('ex_sec_breakdown'), ...prodNames.map(()=>'')],
     [L('lbl_ff_del'),             ...prods.map(p=>p.calc.fulfillDel)],
     [L('lbl_courier'),            ...prods.map(p=>p.calc.courier)],
-    [L('lbl_comm'),               ...prods.map(p=>+p.calc.commAmt.toFixed(1))],
-    [L('lbl_plat'),               ...prods.map(p=>p.calc.plat)],
   ];
 
   // ── Sheet 4: P&L ──
@@ -7458,6 +7634,7 @@ function exportToExcel(){
     [L('ex_sec_var')],
     [L('lbl_prod_cost'),         ...prods.map(p=>-p.calc.cost),              ...prods.map(p=>-(p.calc.cost*p.calc.stock))],
     [L('pl_ship_cost'),          ...prods.map(p=>+(-p.calc.effShip).toFixed(1)), ...prods.map(p=>+(-p.calc.effShip*p.calc.stock).toFixed(1))],
+    [L('pl_comm'),               ...prods.map(p=>+(-p.calc.commAmt).toFixed(1)), ...prods.map(p=>+(-p.calc.commAmt*p.calc.stock).toFixed(1))],
     [],
     [L('ex_sec_fixed')],
     [L('ex_budget_unit'),        ...prods.map(p=>+(-(p.calc.ads/(p.calc.delivNeeded||1))).toFixed(1)), ...prods.map(p=>+(-p.calc.ads).toFixed(1))],
@@ -7655,7 +7832,7 @@ const T = {
     sec1_eye:'Ad analytics', sec1_title:'Ad spend & CPA analysis', sec1_sub:'How efficiently is your budget converting to delivered orders?',
     sec2_eye:'Shipping analytics', sec2_title:'Fulfillment cost analysis', sec2_sub:'Real shipping cost after accounting for returns and failed deliveries.',
     sec3_eye:'Full overview', sec3_title:'Complete financial picture', sec3_sub:'End-to-end P&L — revenue, costs, profit, and break-even.',
-    card_pricing:'Pricing', card_fulfill:'Shipping & Delivery costs', card_media:'Media buying & fixed costs', card_rates:'Rates & stock',
+    card_pricing:'Pricing', card_fulfill:'Shipping & Delivery costs', card_media:'Media buying', card_rates:'Rates & stock',
     lbl_sell_price:'Selling price', lbl_prod_cost:'Product cost', lbl_avg_units:'Avg units / order', lbl_ship_charged:'Shipping charged to customer',
     lbl_ff_del:'Fulfillment fee — delivered order', lbl_ff_ret:'Total return cost (all-in)',
     lbl_courier:'Avg. shipping cost (your cost)', lbl_comm:'Commission on delivered orders', lbl_plat:'Platform fee per order',
@@ -7677,7 +7854,8 @@ const T = {
     chart_pl:'Full P&L — all stock',
     th_line:'Line item', th_per_unit:'Per unit', th_total:'Total (all stock)', th_status:'Status',
     pl_rev_prod:'Revenue from product', pl_rev_ship:'Revenue from shipping',
-    pl_ship_cost:'Real shipping cost', pl_ads:'Ad budget', pl_net:'Net profit / loss',
+    pl_ship_cost:'Real shipping cost', pl_comm:'Commission & fees', pl_ads:'Ad budget', pl_net:'Net profit / loss',
+    pl_viz_title:'Where your revenue goes', pl_viz_profit:'Net profit', pl_viz_loss:'Net loss',
     pl_vat:'VAT payable (net)',
     rate_error:'Please enter valid confirmation and delivery rates (1% to 100%) so the tool can calculate correctly.',
     roas_title:'ROAS target simulator', lbl_roas_target:'Target ROAS you want to achieve',
@@ -7795,7 +7973,7 @@ const T = {
     hide_card:'Hide card', show_card:'Show card',
     enter_market_cpa:'Enter Market CPA',
     income_tag:'Income', fixed_tag:'Fixed', variable_tag:'Variable', tax_tag:'Tax',
-    pl_salary:'Salary',
+    pl_salary:'Fixed cost',
     curr_menu_title:'Select Currency',
     ap_total_budget:'Total Ad Budget', ap_total_budget_hint:'All products combined',
     ap_blended_cpa_hint:'Total budget ÷ total leads',
@@ -7908,7 +8086,7 @@ const T = {
     sec1_eye:'تحليلات الإعلانات', sec1_title:'الإنفاق الإعلاني وتحليل CPA', sec1_sub:'ما مدى كفاءة ميزانيتك في تحويل الليدز إلى أوردرات محصّلة؟',
     sec2_eye:'تحليلات الشحن', sec2_title:'تحليل تكاليف التوصيل', sec2_sub:'تكلفة الشحن الحقيقية بعد حساب المرتجعات والأوردرات الفاشلة.',
     sec3_eye:'نظرة شاملة', sec3_title:'الصورة المالية الكاملة', sec3_sub:'P&L كامل — الإيرادات والتكاليف والربح ونقطة التعادل.',
-    card_pricing:'التسعير', card_fulfill:'تكاليف الشحن والتوصيل', card_media:'الميديا باينج والتكاليف الثابتة', card_rates:'المعدلات والمخزون',
+    card_pricing:'التسعير', card_fulfill:'تكاليف الشحن والتوصيل', card_media:'الميديا باينج', card_rates:'المعدلات والمخزون',
     lbl_sell_price:'سعر البيع', lbl_prod_cost:'تكلفة المنتج', lbl_avg_units:'متوسط الوحدات / أوردر', lbl_ship_charged:'رسوم الشحن من العميل',
     lbl_ff_del:'فولفلمينت — أوردر محصّل', lbl_ff_ret:'تكلفة المرتجع الكلية (شاملة)',
     lbl_courier:'متوسط تكلفة الشحن (عليك)', lbl_comm:'عمولة الأوردرات المحصّلة', lbl_plat:'رسوم المنصة لكل أوردر',
@@ -7930,7 +8108,8 @@ const T = {
     chart_pl:'P&L الكامل — المخزون كله',
     th_line:'البند', th_per_unit:'لكل وحدة', th_total:'الإجمالي (كل المخزون)', th_status:'الحالة',
     pl_rev_prod:'إيراد المنتج', pl_rev_ship:'إيراد الشحن',
-    pl_ship_cost:'تكلفة الشحن الحقيقية', pl_ads:'ميزانية الإعلانات', pl_net:'صافي الربح / الخسارة',
+    pl_ship_cost:'تكلفة الشحن الحقيقية', pl_comm:'العمولة والرسوم', pl_ads:'ميزانية الإعلانات', pl_net:'صافي الربح / الخسارة',
+    pl_viz_title:'فين بيروح الإيراد', pl_viz_profit:'صافي ربح', pl_viz_loss:'صافي خسارة',
     pl_vat:'ضريبة القيمة المضافة (صافي)',
     rate_error:'أدخل نسبة التأكيد والتوصيل (من 1% لـ 100%) عشان الأداة تحسب صح.',
     roas_title:'محاكي ROAS المستهدف', lbl_roas_target:'ROAS الذي تريد تحقيقه',
@@ -8048,7 +8227,7 @@ const T = {
     hide_card:'إخفاء', show_card:'إظهار',
     enter_market_cpa:'أدخل Market CPA',
     income_tag:'دخل', fixed_tag:'ثابت', variable_tag:'متغير', tax_tag:'ضريبة',
-    pl_salary:'الراتب',
+    pl_salary:'التكلفة الثابتة',
     curr_menu_title:'اختر العملة',
     ap_total_budget:'إجمالي ميزانية الإعلانات', ap_total_budget_hint:'كل المنتجات مجتمعة',
     ap_blended_cpa_hint:'الميزانية الكلية ÷ إجمالي الليدز',
