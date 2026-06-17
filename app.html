@@ -880,6 +880,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .ov-card{background:var(--surf2);border-radius:14px;padding:22px}
 .ov-card-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:20px}
 .ov-card-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-top:2px}
+.ov-card-icon svg{width:18px;height:18px}
 .ov-card-title-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .ov-card-title{font-size:13px;font-weight:700;color:var(--txt-title)}
 .ov-card-sub{font-size:10px;color:var(--txt2);font-family:var(--mono);margin-top:3px}
@@ -3686,7 +3687,7 @@ input[type=range]::-moz-range-thumb{
     <!-- Card 1: Advertising -->
     <div class="ov-card">
       <div class="ov-card-head">
-        <span class="ov-card-icon" style="background:rgba(59,130,246,.12);color:var(--c2)">📢</span>
+        <span class="ov-card-icon" style="background:rgba(244,63,94,.13);color:#f43f5e"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span>
         <div>
           <div class="ov-card-title-row">
             <div class="ov-card-title" data-t="ov_ads_title">Advertising</div>
@@ -3737,7 +3738,7 @@ input[type=range]::-moz-range-thumb{
     <!-- Card 2: Delivery -->
     <div class="ov-card">
       <div class="ov-card-head">
-        <span class="ov-card-icon" style="background:rgba(0,229,160,.1);color:var(--c1)">🚚</span>
+        <span class="ov-card-icon" style="background:rgba(79,143,247,.13);color:#4f8ff7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"/><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></span>
         <div>
           <div class="ov-card-title" data-t="ov_delivery_title">Delivery</div>
           <div class="ov-card-sub" data-t="ov_delivery_sub">Units distribution</div>
@@ -3773,7 +3774,7 @@ input[type=range]::-moz-range-thumb{
     <!-- Card 3: Shipping costs -->
     <div class="ov-card">
       <div class="ov-card-head">
-        <span class="ov-card-icon" style="background:rgba(245,158,11,.12);color:var(--c3)">📦</span>
+        <span class="ov-card-icon" style="background:rgba(245,158,11,.13);color:#f59e0b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
         <div>
           <div class="ov-card-title" data-t="ov_ship_title">Shipping costs</div>
           <div class="ov-card-sub" data-t="ov_ship_sub">Per unit breakdown</div>
