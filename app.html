@@ -40,7 +40,7 @@
   --head:    'Inter', system-ui, sans-serif;
   --body:    'Inter', system-ui, sans-serif;
   --r:       10px;
-  --r2:      16px;
+  --r2:      14px;
 }
 [data-theme="light"]{
   --bg:#f5f6fa; --bg2:#eef0f7; --surf:#fff; --surf2:#f0f2f9; --surf3:#e8ebf5;
@@ -584,6 +584,15 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .kpi-lbl{font-size:12px;font-weight:600;color:var(--txt-title);margin-bottom:5px}
 .kpi-val{font-family:var(--mono);font-size:21px;font-weight:700;letter-spacing:-.2px;font-variant-numeric:tabular-nums}
 .kpi-hint{font-size:11px;color:var(--txt);margin-top:3px;font-family:var(--mono);opacity:.75}
+/* ── Tiered hierarchy: promote the 2 key metrics, compact the rest ── */
+.kpi--hero{
+  background:linear-gradient(180deg, color-mix(in srgb, var(--kc,var(--c1)) 9%, var(--surf)), var(--surf));
+  border-color:color-mix(in srgb, var(--kc,var(--c1)) 28%, var(--bdr));
+}
+.kpi--hero::after{height:3px}
+.kpi--hero .kpi-val{font-size:30px;letter-spacing:-.6px}
+.kpi-row--tiered .kpi:not(.kpi--hero){padding:12px 14px}
+.kpi-row--tiered .kpi:not(.kpi--hero) .kpi-val{font-size:18px}
 
 /* ── KPI Customizer ── */
 .kpi-cbar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
@@ -693,13 +702,13 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
   min-width:200px;
 }
 .ov2-eyebrow{font-size:11px;font-family:var(--mono);letter-spacing:.2px;color:var(--txt2);margin-bottom:8px}
-.ov2-big-number{font-family:var(--mono);font-size:38px;font-weight:700;letter-spacing:-1px;line-height:1}
+.ov2-big-number{font-family:var(--mono);font-size:54px;font-weight:800;letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums}
 .ov2-big-sub{font-size:11px;color:var(--txt);margin-top:6px;font-family:var(--mono)}
 .ov2-hero-stats{display:flex;align-items:center;padding:0 24px;gap:0;flex:1}
 .ov2-stat{flex:1;padding:20px 16px;text-align:center}
 .ov2-stat-div{width:1px;height:40px;background:var(--bdr)}
 .ov2-stat-lbl{font-size:10px;color:var(--txt2);font-family:var(--mono);letter-spacing:.1px;margin-bottom:6px}
-.ov2-stat-val{font-family:var(--mono);font-size:18px;font-weight:600}
+.ov2-stat-val{font-family:var(--mono);font-size:26px;font-weight:700;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
 .ov2-stat-sub{font-size:10px;color:var(--txt);font-family:var(--mono);margin-top:3px;opacity:.8}
 
 /* ── Hero KPI — separate cards layout ── */
@@ -790,7 +799,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
   .ov2-hero-main{border-left:none;border-bottom:1px solid var(--bdr)}
   .ov2-hero-stats{flex-wrap:wrap;padding:16px}
   .ov2-insight-row{grid-template-columns:1fr}
-  .ov2-big-number{font-size:28px}
+  .ov2-big-number{font-size:40px}
 }
 
 /* ─── OVERVIEW HERO ─────────────────── */
@@ -1214,11 +1223,11 @@ input[type=range]::-moz-range-thumb{
   /* OVERVIEW v2 — MOBILE */
   .ov2-hero{grid-template-columns:1fr}
   .ov2-hero-main{border-left:none;border-bottom:1px solid var(--bdr);padding:20px 16px}
-  .ov2-big-number{font-size:26px}
+  .ov2-big-number{font-size:32px}
   .ov2-hero-stats{flex-wrap:wrap;padding:12px 8px;gap:0}
   .ov2-stat{flex:0 0 50%;padding:12px 10px;text-align:left}
   .ov2-stat-div{display:none}
-  .ov2-stat-val{font-size:16px}
+  .ov2-stat-val{font-size:20px}
   .ov2-insight-row{grid-template-columns:1fr}
   .ov2-ship-compare{flex-wrap:wrap;gap:6px}
   .ov2-ship-item{flex:1 1 calc(50% - 12px)}
@@ -2706,10 +2715,10 @@ input[type=range]::-moz-range-thumb{
 
   <!-- ALL PRODUCTS — Marketing Summary -->
   <div id="ap_mkt_panel" style="display:none">
-    <div class="kpi-row">
+    <div class="kpi-row kpi-row--tiered">
       <div class="kpi" style="--kc:var(--c1)"><div class="kpi-lbl" data-t="ap_total_budget">Total Ad Budget</div><div class="kpi-val" id="ap_m_budget" style="color:var(--c1)">—</div><div class="kpi-hint" data-t="ap_total_budget_hint">All products combined</div></div>
-      <div class="kpi" style="--kc:var(--c2)"><div class="kpi-lbl" data-t="ap_blended_cpa_lbl">Blended CPA</div><div class="kpi-val" id="ap_m_cpa" style="color:var(--c2)">—</div><div class="kpi-hint" data-t="ap_blended_cpa_hint">Total budget ÷ total leads</div></div>
-      <div class="kpi" style="--kc:var(--c4)"><div class="kpi-lbl" data-t="ap_blended_roas_lbl">Blended ROAS</div><div class="kpi-val" id="ap_m_roas" style="color:var(--c4)">—</div><div class="kpi-hint" data-t="ap_blended_roas_hint">Total revenue ÷ total ads</div></div>
+      <div class="kpi kpi--hero" style="--kc:var(--c2)"><div class="kpi-lbl" data-t="ap_blended_cpa_lbl">Blended CPA</div><div class="kpi-val" id="ap_m_cpa" style="color:var(--c2)">—</div><div class="kpi-hint" data-t="ap_blended_cpa_hint">Total budget ÷ total leads</div></div>
+      <div class="kpi kpi--hero" style="--kc:var(--c4)"><div class="kpi-lbl" data-t="ap_blended_roas_lbl">Blended ROAS</div><div class="kpi-val" id="ap_m_roas" style="color:var(--c4)">—</div><div class="kpi-hint" data-t="ap_blended_roas_hint">Total revenue ÷ total ads</div></div>
       <div class="kpi" style="--kc:var(--c3)"><div class="kpi-lbl" data-t="ap_weighted_be_lbl">Weighted BE CPA</div><div class="kpi-val" id="ap_m_becpa" style="color:var(--c3)">—</div><div class="kpi-hint" data-t="ap_weighted_be_hint">Weighted break-even across products</div></div>
       <div class="kpi" style="--kc:var(--txt2)"><div class="kpi-lbl" data-t="ap_total_leads_lbl">Total Leads</div><div class="kpi-val" id="ap_m_leads" style="color:var(--txt)">—</div><div class="kpi-hint" data-t="hint_leads">All incoming leads</div></div>
       <div class="kpi" style="--kc:var(--c3)"><div class="kpi-lbl" data-t="ap_total_conf_lbl">Total Confirmed</div><div class="kpi-val" id="ap_m_conf" style="color:var(--c3)">—</div><div class="kpi-hint" data-t="ap_after_conf_hint">After confirmation rates</div></div>
@@ -2740,13 +2749,13 @@ input[type=range]::-moz-range-thumb{
     <button class="kpi-cbtn" id="kpi_cbtn" onclick="kpiToggleEdit()">⊞ Customize</button>
   </div>
 
-  <div class="kpi-row" id="s1_kpi_row">
-    <div class="kpi" style="--kc:var(--c1)">
+  <div class="kpi-row kpi-row--tiered" id="s1_kpi_row">
+    <div class="kpi kpi--hero" style="--kc:var(--c1)">
       <div class="kpi-lbl">Actual CPA (ads) <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_actual_cpa">Actual cost per Lead from ads.<br>= Ad budget ÷ total leads needed<br>If above Break-even CPA → business is losing.</span></span></div>
       <div class="kpi-val" id="m_acpp" style="color:var(--c1)">—</div>
       <div class="kpi-hint" data-t="hint_acpp">Budget ÷ total leads</div>
     </div>
-    <div class="kpi" style="--kc:var(--c1)">
+    <div class="kpi kpi--hero" style="--kc:var(--c1)">
       <div class="kpi-lbl">Actual ROAS <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_actual_roas">Actual return on ad spend.<br>= (Selling price + customer shipping) × delivered orders ÷ ad budget<br>If below Break-even ROAS → business is losing.</span></span></div>
       <div class="kpi-val" id="m_actual_roas" style="color:var(--c1)">—</div>
       <div class="kpi-hint" data-t="hint_roas_rev">Revenue ÷ ad spend</div>
@@ -5227,7 +5236,7 @@ function calc(){
   set('ov_margin', pct(marginPct)+' margin');
   (function(){
     const _absProf = Math.abs(Math.round(totalProf*10)/10);
-    const _profStr = _absProf >= 1000 ? (_absProf/1000).toFixed(1)+'K '+CURRENCY : _absProf.toFixed(1)+' '+CURRENCY;
+    const _profStr = Math.round(_absProf).toLocaleString('en')+' '+CURRENCY;
     set('ov_total', (isP?'':'-')+_profStr, pc);
   })();
   set('ov_total_sub', isP?'Profitable':'Loss-making');
@@ -6626,7 +6635,7 @@ function calcAllProducts(){
   _s('ap_sh_total',     fmtM(totalShipCost), 'var(--c4)');
 
   // ─── OVERVIEW ───
-  _s('ap_ov_profit', fmtM(totalProfit), isProfit?'var(--c1)':'var(--red)');
+  _s('ap_ov_profit', (isProfit?'':'-')+Math.round(Math.abs(totalProfit)).toLocaleString('en')+' '+CUR, isProfit?'var(--c1)':'var(--red)');
   _s('ap_ov_profit_sub', (isProfit?T[LANG].ap_profitable:T[LANG].ap_loss)+' — '+all.filter(p=>p.calc.isProfit).length+' '+T[LANG].ap_of+' '+all.length+' '+T[LANG].ap_products_profitable);
   _s('ap_ov_rev',    fmtM(totalRev),    'var(--c4)');
   _s('ap_ov_margin', portMargin.toFixed(1)+'%', isProfit?'var(--c1)':'var(--red)');
