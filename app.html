@@ -5740,16 +5740,18 @@ function renderCPPLine(confR, profitPU, salaryPU){
         {
           label: 'BE CPA',
           data: beValues,
-          borderColor: '#f59e0b',
-          backgroundColor: 'rgba(245,158,11,.08)',
-          fill: true, tension: .4, pointRadius: 3, pointBackgroundColor: '#f59e0b'
+          borderColor: '#F59E0B',
+          backgroundColor: 'rgba(245,158,11,.10)',
+          borderWidth: 2.5,
+          fill: true, tension: .4,
+          pointRadius: 5, pointBackgroundColor: '#F59E0B', pointBorderColor: '#fff', pointBorderWidth: 2
         },
         ...(currentActual > 0 ? [{
           label: 'Your CPA',
           data: l2oRates.map(() => currentActual),
-          borderColor: currentActual <= currentBE ? '#00e5a0' : '#f43f5e',
-          borderDash: [5,4],
-          borderWidth: 2,
+          borderColor: currentActual <= currentBE ? '#34D399' : '#F87171',
+          borderDash: [6,4],
+          borderWidth: 1.5,
           pointRadius: 0,
           fill: false,
           tension: 0,
@@ -5765,8 +5767,8 @@ function renderCPPLine(confR, profitPU, salaryPU){
       },
       scales: {
         x: {
-          title: { display: true, text: 'Lead → Order Rate (Conf% × Del%)', color: 'var(--txt2)', font: { size: 10 } },
-          ticks: { color: tc() }, grid: { color: gc() }
+          title: { display: true, text: 'Lead → Order Rate (Conf% × Del%)', color: 'var(--txt3)', font: { size: 11 } },
+          ticks: { color: tc(), maxTicksLimit: 6, autoSkip: true }, grid: { display: false }
         },
         y: { ticks: { color: tc(), callback: v => Math.round(v) }, grid: { color: gc() } }
       },
@@ -5786,19 +5788,28 @@ function renderCPPLine(confR, profitPU, salaryPU){
         const t = (clampedL2O - minR) / (maxR - minR);
         const x = xAxis.left + t * (xAxis.right - xAxis.left);
 
+        const yPix = Math.max(yAxis.top, Math.min(yAxis.bottom, yAxis.getPixelForValue(currentBE)));
         ctx2.save();
-        ctx2.setLineDash([4,4]);
-        ctx2.strokeStyle = '#94a3b8';
+        // vertical dashed line from x-axis up to the "You" point
+        ctx2.setLineDash([4,3]);
+        ctx2.strokeStyle = 'rgba(239,68,68,.4)';
         ctx2.lineWidth   = 1.5;
         ctx2.beginPath();
-        ctx2.moveTo(x, yAxis.top);
-        ctx2.lineTo(x, yAxis.bottom);
+        ctx2.moveTo(x, yAxis.bottom);
+        ctx2.lineTo(x, yPix);
         ctx2.stroke();
         ctx2.setLineDash([]);
-        ctx2.fillStyle = '#f43f5e';
-        ctx2.font = 'bold 10px system-ui';
+        // red "You" point on the curve
+        ctx2.beginPath();
+        ctx2.arc(x, yPix, 6, 0, Math.PI*2);
+        ctx2.fillStyle = '#EF4444';
+        ctx2.fill();
+        ctx2.lineWidth = 2; ctx2.strokeStyle = '#fff'; ctx2.stroke();
+        // "You 56%" label
+        ctx2.fillStyle = '#F87171';
+        ctx2.font = 'bold 11px Inter, system-ui';
         ctx2.textAlign = 'center';
-        ctx2.fillText('▲ You ('+ Math.round(currentL2O*100) +'%)', x, yAxis.bottom + 14);
+        ctx2.fillText('You '+ Math.round(currentL2O*100) +'%', x, yAxis.bottom + 16);
         ctx2.restore();
       }
     }]
