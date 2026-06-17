@@ -2976,7 +2976,7 @@ input[type=range]::-moz-range-thumb{
     <div class="chart-card">
       <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span><span data-t="chart_budget_title">Where did your budget go?</span></div>
       <div class="ch-wrap"><canvas id="ch_budget_waterfall"></canvas></div>
-      <div id="waterfall_summary" style="font-size:11px;color:var(--txt2);margin-top:8px;text-align:center"></div>
+      <div id="waterfall_summary" style="font-size:13px;color:var(--txt2);margin-top:12px;text-align:center"></div>
     </div>
   </div>
 
@@ -5651,13 +5651,13 @@ function renderMktDonut(ads, salary, varCost){
 
   const labels = ['Ad Budget', '→ Reached Orders', '→ Wasted on Undelivered', 'Salary'];
   const values  = [ads, deliveredSpend, wastedSpend2, salary];
-  const colors  = ['#4f8ff7', '#00e5a0', '#f43f5e', '#a78bfa'];
+  const colors  = ['#4F8FF7', '#34D399', '#F87171', '#A78BFA'];
 
   // Summary line
   const sumEl = document.getElementById('waterfall_summary');
   if(sumEl && ads > 0){
     const effPct = Math.round(l2o * 100);
-    sumEl.innerHTML = `<span style="color:#00e5a0;font-weight:600">${effPct}%</span> ${T[LANG].wf_summary_a} — <span style="color:#f43f5e;font-weight:600">${Math.round(100-effPct)}%</span> ${T[LANG].wf_summary_b}`;
+    sumEl.innerHTML = `<span style="color:#34D399;font-weight:600">${effPct}%</span> ${T[LANG].wf_summary_a} — <span style="color:#F87171;font-weight:600">${Math.round(100-effPct)}%</span> ${T[LANG].wf_summary_b}`;
   }
 
   CH['bwf'] = new Chart(document.getElementById('ch_budget_waterfall'), {
