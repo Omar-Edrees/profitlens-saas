@@ -734,6 +734,63 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .hkpi-row .hkpi-card{text-align:center;padding:20px 16px}
 .hkpi-rev{text-align:center;padding:20px 40px}
 
+/* ── Premium profit hero (Overview) — glowing dark card ── */
+.hkpi-main{
+  position:relative;overflow:hidden;text-align:center;padding:36px 40px 34px;
+  --hero-glow:var(--profit);
+  background:
+    radial-gradient(125% 85% at 50% -12%, color-mix(in srgb, var(--hero-glow) 18%, transparent), transparent 62%),
+    var(--surf);
+}
+.hkpi-main.is-loss{--hero-glow:var(--red)}
+.hkpi-main::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:58%;height:2px;border-radius:0 0 3px 3px;
+  background:linear-gradient(90deg,transparent,var(--hero-glow),transparent);
+  box-shadow:0 0 24px 3px var(--hero-glow);opacity:.8;
+}
+.hkpi-main .ov2-eyebrow{
+  display:inline-flex;align-items:center;gap:9px;justify-content:center;
+  text-transform:uppercase;letter-spacing:1.7px;font-weight:600;font-family:var(--head);color:var(--txt2);
+}
+.hkpi-main .ov2-eyebrow::before{
+  content:'';width:7px;height:7px;border-radius:50%;
+  background:var(--hero-glow);box-shadow:0 0 9px var(--hero-glow);
+}
+.hkpi-main .ov2-big-number{
+  font-size:64px;letter-spacing:-3px;line-height:1.02;
+  text-shadow:0 0 44px color-mix(in srgb, var(--hero-glow) 50%, transparent);
+}
+.hkpi-main .ov2-cur{font-size:.4em;font-weight:700;letter-spacing:-.5px;margin-left:8px;opacity:.8}
+.hkpi-main .ov2-big-sub{
+  display:inline-flex;align-items:center;gap:11px;margin:18px auto 0;
+  padding:8px 18px;border-radius:999px;font-family:var(--head);font-size:13px;font-weight:600;
+  background:color-mix(in srgb, var(--hero-glow) 13%, transparent);
+  border:1px solid color-mix(in srgb, var(--hero-glow) 34%, transparent);
+  color:var(--hero-glow);
+}
+.hkpi-main .ov2-big-sub::before{
+  content:'✓';font-weight:800;font-size:10px;
+  width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+  background:color-mix(in srgb, var(--hero-glow) 22%, transparent);
+}
+.hkpi-main.is-loss .ov2-big-sub::before{content:'✕'}
+.hb-sep{width:1px;height:13px;background:currentColor;opacity:.35}
+.hb-pu{opacity:.9;font-variant-numeric:tabular-nums}
+.hero-spark{display:block;width:100%;max-width:480px;height:56px;margin:22px auto 0}
+.hero-spark-line{
+  fill:none;stroke:var(--hero-glow);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;
+  vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 5px color-mix(in srgb, var(--hero-glow) 75%, transparent));
+}
+.hero-spark-area{fill:url(#heroSparkGrad)}
+.hero-spark-stop0{stop-color:var(--hero-glow);stop-opacity:.34}
+.hero-spark-stop1{stop-color:var(--hero-glow);stop-opacity:0}
+@media(max-width:600px){
+  .hkpi-main{padding:26px 20px}
+  .hkpi-main .ov2-big-number{font-size:38px;letter-spacing:-1.5px}
+  .hero-spark{height:42px}
+}
+
 /* ── Hero v2 — centered vertical layout (sp_ov_panel) ── */
 .ov2-hero-v{
   display:flex;flex-direction:column;align-items:center;
@@ -3526,10 +3583,17 @@ input[type=range]::-moz-range-thumb{
   <div class="hkpi-wrap">
 
     <!-- Net Profit card -->
-    <div class="hkpi-card hkpi-main">
+    <div class="hkpi-card hkpi-main" id="ov_hero_card">
       <div class="ov2-eyebrow" data-t="ov_net_profit">Net total profit</div>
       <div class="ov2-big-number" id="ov_total">—</div>
       <div class="ov2-big-sub" id="ov_total_sub">—</div>
+      <svg class="hero-spark" viewBox="0 0 480 60" preserveAspectRatio="none" aria-hidden="true">
+        <defs><linearGradient id="heroSparkGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop class="hero-spark-stop0" offset="0"/><stop class="hero-spark-stop1" offset="1"/>
+        </linearGradient></defs>
+        <path class="hero-spark-area" d="M0 46 L48 41 L96 43 L144 35 L192 37 L240 27 L288 31 L336 21 L384 25 L432 12 L480 7 L480 60 L0 60 Z"/>
+        <polyline class="hero-spark-line" points="0,46 48,41 96,43 144,35 192,37 240,27 288,31 336,21 384,25 432,12 480,7"/>
+      </svg>
     </div>
 
     <!-- 3 stat cards -->
@@ -5259,8 +5323,13 @@ function calc(){
   set('ov_margin', pct(marginPct)+' margin');
   (function(){
     const _absProf = Math.abs(Math.round(totalProf*10)/10);
-    const _profStr = Math.round(_absProf).toLocaleString('en')+' '+CURRENCY;
-    set('ov_total', (isP?'':'-')+_profStr, pc);
+    const _np = document.getElementById('ov_total');
+    if(_np){
+      _np.innerHTML = (isP?'':'-')+Math.round(_absProf).toLocaleString('en')+' <span class="ov2-cur">'+CURRENCY+'</span>';
+      _np.style.color = pc;
+    }
+    const _hc = document.getElementById('ov_hero_card');
+    if(_hc) _hc.classList.toggle('is-loss', !isP);
   })();
   set('ov_total_sub', isP?'Profitable':'Loss-making');
   set('ov_be', isFinite(beUnits)?Math.ceil(beUnits)+' units':'∞', 'var(--c2)');
@@ -5337,6 +5406,16 @@ function calc(){
   const totalMarginProfit = totalRev - totalVar;   // before fixed costs
   set('ov_net_pu',      (profitPUNet>=0?'':'-')+eg(Math.abs(profitPUNet)), profitPUNet>=0?'var(--profit)':'var(--red)');
   set('ov_total_margin', eg(totalMarginProfit), totalMarginProfit>=0?'var(--profit)':'var(--red)');
+  // Hero badge: verdict + net profit / unit (presentation only)
+  (function(){
+    const _sub = document.getElementById('ov_total_sub');
+    if(_sub){
+      const _pu = (profitPUNet>=0?'+':'-')+eg(Math.abs(profitPUNet));
+      _sub.innerHTML = '<span class="hb-verdict">'+(isP?'Profitable':'Loss-making')+'</span>'
+        + '<span class="hb-sep"></span>'
+        + '<span class="hb-pu">'+_pu+' / unit</span>';
+    }
+  })();
 
   const plStat=document.getElementById('pl_status');
   plStat.innerHTML=`<span class="tag ${isP?'tg':'tr'}">${T[LANG][isP?'js_profit_badge':'js_loss_badge']}</span>`;
