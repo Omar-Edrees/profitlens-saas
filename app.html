@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap&font-display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap&font-display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js" defer onerror="window.__chartFailed=true"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer onerror="window.__xlsxFailed=true"></script>
 <!-- ProfitLens SaaS: Supabase Auth -->
@@ -36,7 +36,7 @@
   --txt2:    #8890a6;
   --txt3:    #555e78;
   --txt-title: #e8eaf0;
-  --mono:    'JetBrains Mono', monospace;
+  --mono:    'Inter', system-ui, sans-serif; /* numeric text now uses Inter w/ tabular-nums (was JetBrains Mono) */
   --head:    'Inter', system-ui, sans-serif;
   --body:    'Inter', system-ui, sans-serif;
   --r:       10px;
@@ -49,7 +49,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13px;line-height:1.6;transition:background .3s,color .3s;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13px;line-height:1.6;transition:background .3s,color .3s;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 
 /* ─── NAV ─────────────────────────── */
 .topnav{
@@ -273,8 +273,8 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 /* ─── SECTION HEADER ─────────────────── */
 .section-header{margin-bottom:24px}
 .section-eyebrow{
-  font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;
-  margin-bottom:6px;display:flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:6px;display:flex;align-items:center;gap:8px;color:var(--txt2);
 }
 .section-eyebrow .num{
   width:20px;height:20px;border-radius:5px;
@@ -582,7 +582,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 }
 .kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kc,var(--c1))}
 .kpi-lbl{font-size:12px;font-weight:600;color:var(--txt-title);margin-bottom:5px}
-.kpi-val{font-family:var(--mono);font-size:21px;font-weight:500}
+.kpi-val{font-family:var(--mono);font-size:21px;font-weight:700;letter-spacing:-.2px;font-variant-numeric:tabular-nums}
 .kpi-hint{font-size:11px;color:var(--txt);margin-top:3px;font-family:var(--mono);opacity:.75}
 
 /* ── KPI Customizer ── */
@@ -804,7 +804,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 }
 .hero-card::before{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:var(--hc,var(--c1))}
 .hero-lbl{font-size:12px;font-weight:600;color:var(--txt-title);margin-bottom:8px}
-.hero-val{font-family:var(--mono);font-size:28px;font-weight:500}
+.hero-val{font-family:var(--mono);font-size:28px;font-weight:700;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
 .hero-sub{font-size:11px;color:var(--txt);margin-top:4px;font-family:var(--mono);opacity:.8}
 
 /* ─── TOOLTIPS ───────────────────────── */
@@ -5555,11 +5555,11 @@ function renderFunnel(leads, conf, del){
     // Drop-off badge between bars
     if(i === 0 && confDrop > 0){
       const badgeY = y + barH + gap/2 - 7;
-      svg += `<text x="${W-2}" y="${badgeY+10}" text-anchor="end" font-size="10" fill="#f43f5e" font-family="monospace,system-ui">↓ ${confDrop}% dropped</text>`;
+      svg += `<text x="${W-2}" y="${badgeY+10}" text-anchor="end" font-size="10" fill="#f43f5e" font-family="Inter,system-ui">↓ ${confDrop}% dropped</text>`;
     }
     if(i === 1 && delDrop > 0){
       const badgeY = y + barH + gap/2 - 7;
-      svg += `<text x="${W-2}" y="${badgeY+10}" text-anchor="end" font-size="10" fill="#f43f5e" font-family="monospace,system-ui">↓ ${delDrop}% dropped</text>`;
+      svg += `<text x="${W-2}" y="${badgeY+10}" text-anchor="end" font-size="10" fill="#f43f5e" font-family="Inter,system-ui">↓ ${delDrop}% dropped</text>`;
     }
   });
 
