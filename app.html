@@ -1036,16 +1036,17 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 
 /* ─── TARGET PROFIT ──────────────────── */
 .target-profit-card{
-  background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);
-  padding:20px;margin-bottom:20px;
-  border-left:3px solid var(--c1);
+  background:var(--surf);border:1px solid var(--bdr);border-radius:12px;
+  padding:16px 20px;margin-bottom:14px;
 }
 .target-profit-title{
-  font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;
-  color:var(--c1);display:flex;align-items:center;justify-content:space-between;gap:7px;
+  font-family:var(--head);font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--txt2);display:flex;align-items:center;justify-content:space-between;gap:7px;
   cursor:pointer;user-select:none;
 }
-.target-profit-title-left{display:flex;align-items:center;gap:7px}
+.target-profit-title-left{display:flex;align-items:center;gap:12px}
+.tp-icon{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:color-mix(in srgb,var(--ic,#7C8FF5) 14%, transparent);color:var(--ic,#7C8FF5)}
+.tp-icon svg{width:16px;height:16px}
 .collapsible-body{display:none;margin-top:14px}
 .collapsible-body.show{display:block}
 .target-profit-inputs{
@@ -1064,18 +1065,18 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 
 /* ─── SCENARIO ───────────────────────── */
 .scenario-toggle{
-  display:flex;align-items:center;gap:8px;font-size:12px;color:var(--txt2);cursor:pointer;
+  display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt3);cursor:pointer;
 }
 .toggle-track{
-  width:36px;height:20px;border-radius:10px;background:var(--surf3);
-  border:1px solid var(--bdr2);position:relative;transition:background .2s;cursor:pointer;
+  width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,0.1);
+  border:none;position:relative;transition:background .2s;cursor:pointer;
 }
-.toggle-track.on{background:var(--c2)}
+.toggle-track.on{background:rgba(52,211,153,0.3)}
 .toggle-thumb{
-  width:14px;height:14px;border-radius:50%;background:var(--txt3);
-  position:absolute;top:2px;left:2px;transition:all .2s;
+  width:14px;height:14px;border-radius:50%;background:#6B7280;
+  position:absolute;top:3px;left:3px;transition:all .2s;
 }
-.toggle-track.on .toggle-thumb{left:18px;background:#fff}
+.toggle-track.on .toggle-thumb{left:19px;background:#34D399}
 
 /* ─── SHIPPING BREAKDOWN ────────────── */
 .sh-breakdown-row{display:flex;align-items:center;gap:7px;font-size:12px;padding:4px 0}
@@ -3003,7 +3004,7 @@ input[type=range]::-moz-range-thumb{
   <!-- Target Profit Calculator -->
   <div class="target-profit-card">
     <div class="target-profit-title" onclick="toggleSection('tp_body','tp_toggle','tp_toggle_lbl')">
-      <div class="target-profit-title-left"><span>🎯</span> <span data-t="tp_calc_title">Target Profit Calculator</span></div>
+      <div class="target-profit-title-left"><span class="tp-icon" style="--ic:#F87171"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> <span data-t="tp_calc_title">Target Profit Calculator</span></div>
       <div class="scenario-toggle">
         <span id="tp_toggle_lbl">Show</span>
         <div class="toggle-track" id="tp_toggle"><div class="toggle-thumb"></div></div>
@@ -3052,9 +3053,9 @@ input[type=range]::-moz-range-thumb{
   </div>
 
   <!-- ROAS Target Simulator — 4-scenario lock system -->
-  <div class="target-profit-card" style="border-left-color:var(--c2)">
-    <div class="target-profit-title" style="color:var(--c2)" onclick="toggleSection('roas_body','roas_toggle','roas_toggle_lbl')">
-      <div class="target-profit-title-left"><span>📈</span> <span data-t="roas_title">ROAS Target Simulator</span></div>
+  <div class="target-profit-card">
+    <div class="target-profit-title" onclick="toggleSection('roas_body','roas_toggle','roas_toggle_lbl')">
+      <div class="target-profit-title-left"><span class="tp-icon" style="--ic:#7C8FF5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span> <span data-t="roas_title">ROAS Target Simulator</span></div>
       <div class="scenario-toggle">
         <span id="roas_toggle_lbl">Show</span>
         <div class="toggle-track" id="roas_toggle"><div class="toggle-thumb"></div></div>
