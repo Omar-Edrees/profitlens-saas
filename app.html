@@ -696,6 +696,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 /* ─── ALERT ─────────────────────────── */
 .alert{border-radius:var(--r);padding:11px 14px;font-size:12px;margin-top:12px;display:flex;gap:9px;align-items:flex-start;line-height:1.5}
 .alert-icon{flex-shrink:0;font-size:14px;margin-top:1px}
+.ib-num{font-weight:600;color:#fff}
 .ag{background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.2);color:var(--c1)}
 .ar{background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);color:var(--red)}
 .aa{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:var(--c3)}
@@ -2935,18 +2936,18 @@ input[type=range]::-moz-range-thumb{
   <!-- ── Ads Health Banner — moved below KPIs ── -->
   <div id="ads_health_banner" style="
     display:none;
-    align-items:flex-start;gap:12px;
-    padding:14px 18px;
-    border-radius:var(--r);
-    border:1px solid var(--ads-banner-border, rgba(0,229,160,.25));
-    background:var(--ads-banner-bg, rgba(0,229,160,.07));
-    margin-top:4px;margin-bottom:0;
-    font-size:13px;line-height:1.5;
+    align-items:flex-start;gap:14px;
+    padding:16px 20px;
+    border-radius:12px;
+    border:1px solid var(--ads-banner-border, rgba(52,211,153,.18));
+    background:var(--ads-banner-bg, rgba(52,211,153,.07));
+    margin-top:4px;margin-bottom:18px;
+    font-size:13px;line-height:1.6;
   ">
-    <span id="ads_health_icon" style="font-size:18px;flex-shrink:0;margin-top:1px">✓</span>
+    <span id="ads_health_icon" style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;background:rgba(52,211,153,.15);color:#34D399">✓</span>
     <div>
-      <div id="ads_health_title" style="font-weight:700;margin-bottom:3px;color:var(--ads-banner-color,var(--c1))">—</div>
-      <div id="ads_health_body" style="color:var(--txt);opacity:.85">—</div>
+      <div id="ads_health_title" style="font-weight:600;font-size:14px;margin-bottom:4px;color:var(--ads-banner-color,#34D399)">—</div>
+      <div id="ads_health_body" style="color:var(--txt2)">—</div>
     </div>
   </div>
   <!-- ── NEW VISUAL ANALYTICS ── -->
@@ -5269,18 +5270,20 @@ function calc(){
     }
 
     const colors = {
-      green:  { bg:'rgba(0,229,160,.07)',  border:'rgba(0,229,160,.25)',  color:'var(--c1)' },
-      yellow: { bg:'rgba(245,158,11,.07)', border:'rgba(245,158,11,.3)',  color:'var(--c3)' },
-      red:    { bg:'rgba(244,63,94,.07)',   border:'rgba(244,63,94,.25)',  color:'var(--red)' },
+      green:  { bg:'rgba(52,211,153,.07)',  border:'rgba(52,211,153,.18)', color:'#34D399', iconBg:'rgba(52,211,153,.15)' },
+      yellow: { bg:'rgba(245,158,11,.07)',  border:'rgba(245,158,11,.3)',  color:'#f59e0b', iconBg:'rgba(245,158,11,.15)' },
+      red:    { bg:'rgba(248,113,113,.07)', border:'rgba(248,113,113,.25)', color:'#F87171', iconBg:'rgba(248,113,113,.15)' },
     };
     const c = colors[state];
     banner.style.display      = 'flex';
     banner.style.background   = c.bg;
     banner.style.borderColor  = c.border;
     icon.textContent          = ic;
+    icon.style.background     = c.iconBg;
+    icon.style.color          = c.color;
     title.style.color         = c.color;
     title.textContent         = ttl;
-    body.textContent          = msg;
+    body.innerHTML            = msg.replace(/(\d[\d.,]*\s?(?:EGP|%|x)?)/g, '<b class="ib-num">$1</b>');
   })();
   // ─────────────────────────────────────────────────────────────
 
