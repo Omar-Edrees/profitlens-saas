@@ -697,6 +697,11 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .alert{border-radius:var(--r);padding:11px 14px;font-size:12px;margin-top:12px;display:flex;gap:9px;align-items:flex-start;line-height:1.5}
 .alert-icon{flex-shrink:0;font-size:14px;margin-top:1px}
 .ib-num{font-weight:600;color:#fff}
+/* ── Funnel drop-off (Ads) ── */
+.fn-row{display:flex;align-items:center;gap:12px}
+.fn-bar{height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,.18);transition:width .6s cubic-bezier(.4,0,.2,1)}
+.fn-drop{font-size:13px;font-weight:500;color:#F87171;white-space:nowrap;flex-shrink:0}
+.fn-summary{font-size:13px;color:var(--txt2);margin-top:6px}
 .ag{background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.18);color:var(--c3)}
 .ar{background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);color:var(--red)}
 .aa{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:var(--c3)}
@@ -5691,7 +5696,7 @@ function renderMktDonut(ads, salary, varCost){
   });
 }
 
-// Chart 3: Funnel with drop-off % (SVG-based, no Chart.js)
+// Chart 3: Funnel with drop-off % (HTML/CSS bars)
 function renderFunnel(leads, conf, del){
   const el = document.getElementById('ch_funnel_svg');
   if(!el) return;
@@ -5699,48 +5704,16 @@ function renderFunnel(leads, conf, del){
   const confDrop = leads > 0 ? Math.round((1 - conf/leads)*100) : 0;
   const delDrop  = conf  > 0 ? Math.round((1 - del/conf)*100)  : 0;
   const l2oPct   = leads > 0 ? Math.round(del/leads*100) : 0;
+  const wConf    = leads > 0 ? Math.max(conf/leads*100, 24) : 0;
+  const wDel     = leads > 0 ? Math.max(del/leads*100, 24) : 0;
+  const f = n => Math.round(n).toLocaleString('en');
 
-  const stages = [
-    { label:'Leads',     val: leads, color:'#4f8ff7', pct:100 },
-    { label:'Confirmed', val: conf,  color:'#a78bfa', pct: leads>0?Math.round(conf/leads*100):0 },
-    { label:'Delivered', val: del,   color:'#00e5a0', pct: leads>0?Math.round(del/leads*100):0  },
-  ];
-
-  const W = el.clientWidth || 340;
-  const H = 200;
-  const maxW = W * 0.85;
-  const barH = 42;
-  const gap  = 18;
-
-  let svg = `<svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">`;
-
-  stages.forEach((s, i) => {
-    const barW = maxW * (s.pct / 100);
-    const x    = (W - barW) / 2;
-    const y    = i * (barH + gap) + 10;
-
-    // Bar
-    svg += `<rect x="${x.toFixed(1)}" y="${y}" width="${barW.toFixed(1)}" height="${barH}" rx="6" fill="${s.color}" opacity="0.85"/>`;
-
-    // Label inside
-    svg += `<text x="${(W/2).toFixed(1)}" y="${(y + barH/2 + 5).toFixed(1)}" text-anchor="middle" font-size="13" font-weight="700" fill="white" font-family="system-ui">${s.label}: ${s.val.toLocaleString()}</text>`;
-
-    // Drop-off badge between bars
-    if(i === 0 && confDrop > 0){
-      const badgeY = y + barH + gap/2 - 7;
-      svg += `<text x="${W-2}" y="${badgeY+10}" text-anchor="end" font-size="10" fill="#f43f5e" font-family="Inter,system-ui">↓ ${confDrop}% dropped</text>`;
-    }
-    if(i === 1 && delDrop > 0){
-      const badgeY = y + barH + gap/2 - 7;
-      svg += `<text x="${W-2}" y="${badgeY+10}" text-anchor="end" font-size="10" fill="#f43f5e" font-family="Inter,system-ui">↓ ${delDrop}% dropped</text>`;
-    }
-  });
-
-  // Overall conversion
-  svg += `<text x="${(W/2).toFixed(1)}" y="${H}" text-anchor="middle" font-size="10" fill="var(--txt2)" font-family="system-ui">Overall: ${l2oPct}% of leads → delivered orders</text>`;
-  svg += '</svg>';
-
-  el.innerHTML = svg;
+  el.style.cssText = 'display:flex;flex-direction:column;justify-content:center;gap:12px;min-height:200px;padding:6px 0';
+  el.innerHTML =
+    '<div class="fn-row"><div class="fn-bar" style="width:100%;background:#4F8FF7">Leads: '+f(leads)+'</div></div>'+
+    '<div class="fn-row"><div class="fn-bar" style="width:'+wConf+'%;background:linear-gradient(90deg,#7C3AED,#A78BFA)">Confirmed: '+f(conf)+'</div><span class="fn-drop">↓ '+confDrop+'% dropped</span></div>'+
+    '<div class="fn-row"><div class="fn-bar" style="width:'+wDel+'%;background:linear-gradient(90deg,#059669,#34D399)">Delivered: '+f(del)+'</div><span class="fn-drop">↓ '+delDrop+'% dropped</span></div>'+
+    '<div class="fn-summary">Overall: <b style="color:#34D399">'+l2oPct+'%</b> of leads → delivered orders</div>';
 }
 
 // Chart 4: BE CPA Sensitivity + "You are here" marker
