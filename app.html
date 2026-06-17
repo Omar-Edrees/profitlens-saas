@@ -697,7 +697,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .alert{border-radius:var(--r);padding:11px 14px;font-size:12px;margin-top:12px;display:flex;gap:9px;align-items:flex-start;line-height:1.5}
 .alert-icon{flex-shrink:0;font-size:14px;margin-top:1px}
 .ib-num{font-weight:600;color:#fff}
-.ag{background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.2);color:var(--c1)}
+.ag{background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.18);color:var(--c3)}
 .ar{background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);color:var(--red)}
 .aa{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:var(--c3)}
 
@@ -2956,17 +2956,17 @@ input[type=range]::-moz-range-thumb{
   <div class="charts-2">
     <!-- Chart 1: CPA Gauge -->
     <div class="chart-card">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c2)"></span>CPA vs Break-even</div>
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span>CPA vs Break-even</div>
       <div style="position:relative;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:8px">
         <canvas id="ch_cpa_gauge" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
         <div style="position:relative;z-index:2;text-align:center;margin-bottom:4px">
-          <div id="gauge_actual_lbl" style="font-size:22px;font-weight:800;font-family:var(--mono);color:var(--c1)">—</div>
-          <div style="font-size:10px;color:var(--txt2);margin-top:2px">Actual CPA</div>
+          <div id="gauge_actual_lbl" style="font-size:40px;font-weight:800;letter-spacing:-1px;font-family:var(--mono);color:var(--c1)">—</div>
+          <div style="font-size:13px;color:var(--txt3);margin-top:2px">Actual CPA</div>
         </div>
       </div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-top:4px;padding:0 4px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--txt3);margin-top:8px;padding:0 4px">
         <span>0</span>
-        <span id="gauge_be_lbl" style="color:var(--c2);font-weight:600">BE: — EGP</span>
+        <span id="gauge_be_lbl" style="color:#7C8FF5;font-weight:600">BE: — EGP</span>
         <span id="gauge_max_lbl">Max</span>
       </div>
       <div id="cpp_alert" class="alert ag" style="margin-top:10px"><span class="alert-icon">✓</span><span id="cpp_msg">—</span></div>
@@ -5304,6 +5304,7 @@ function calc(){
     ? tfmt('cpp_ok', d1(actualCPP)+' '+CURRENCY, d1(beCPP)+' '+CURRENCY)
     : tfmt('cpp_bad', d1(actualCPP)+' '+CURRENCY, d1(beCPP)+' '+CURRENCY)
   );
+  { const _m=document.getElementById('cpp_msg'); if(_m) _m.innerHTML=_m.textContent.replace(/(\d[\d.,]*\s?(?:EGP|%|x)?)/g,'<b class="ib-num">$1</b>'); }
 
   renderCPPBar(actualCPP, beCPP);
   renderCPPLine(confR, profitPU, salaryPerDelivered);
@@ -5609,34 +5610,26 @@ function renderCPPBar(actual, max){
   const isOver = actual > max && max > 0;
   const actColor = isOver ? '#f43f5e' : '#00e5a0';
 
+  const _gap = maxScale * 0.012;
   CH['gauge'] = new Chart(document.getElementById('ch_cpa_gauge'), {
     type: 'doughnut',
     data: {
       datasets: [
-        // Background track (safe + danger zones)
+        // Safe zone (0→BE) green | gap | danger zone (BE→max) maroon
         {
-          data: [safeZone, dangerZone],
-          backgroundColor: ['rgba(0,229,160,.15)', 'rgba(244,63,94,.15)'],
+          data: [Math.max(safeZone - _gap, 0.01), _gap, dangerZone],
+          backgroundColor: ['#34D399', 'transparent', '#7B2B2B'],
           borderWidth: 0,
+          borderRadius: 8,
           circumference: 180,
           rotation: 270,
-          weight: 1,
-        },
-        // Actual CPA fill
-        {
-          data: [clampedActual, maxScale - clampedActual],
-          backgroundColor: [actColor, 'transparent'],
-          borderWidth: 0,
-          circumference: 180,
-          rotation: 270,
-          weight: 0.6,
         }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: '65%',
+      cutout: '70%',
       plugins: { legend: { display: false }, tooltip: { enabled: false } },
       animation: { duration: 600, easing: 'easeOutQuart' }
     }
