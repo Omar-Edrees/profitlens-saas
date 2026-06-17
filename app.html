@@ -605,15 +605,27 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 
 /* ── KPI Customizer ── */
 .kpi-cbar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.kpi-cbar-info{font-size:11px;color:var(--txt2);font-family:var(--mono);flex:1}
+.kpi-cbar-info{font-size:13px;color:var(--txt3);font-family:var(--head);flex:1}
 .kpi-cbtn{
-  font-size:11px;padding:5px 12px;border-radius:var(--r);
-  border:1px solid var(--bdr2);background:var(--surf2);
-  color:var(--txt2);cursor:pointer;display:flex;align-items:center;gap:5px;
-  font-family:var(--mono);transition:all .15s;
+  font-size:13px;padding:7px 14px;border-radius:8px;
+  border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);
+  color:var(--txt2);cursor:pointer;display:flex;align-items:center;gap:6px;
+  font-family:var(--head);transition:all .15s;
 }
 .kpi-cbtn:hover{background:var(--surf3);color:var(--txt)}
 .kpi-cbtn.on{background:var(--c1);color:var(--surf);border-color:var(--c1)}
+/* ── Ads metric cards (pixel-perfect 4x2 grid) ── */
+#s1_kpi_row{grid-template-columns:repeat(4,1fr);gap:12px}
+#s1_kpi_row .kpi{padding:18px}
+#s1_kpi_row .kpi-lbl{font-size:13px;font-weight:500;color:var(--txt2);padding-right:22px}
+#s1_kpi_row .kpi-val{font-size:32px;font-weight:700;letter-spacing:-.5px}
+#s1_kpi_row .kpi--count .kpi-val{font-size:36px}
+#s1_kpi_row .kpi-hint{font-size:12px;color:var(--txt3);opacity:1;font-family:var(--head);margin-top:4px}
+#s1_kpi_row .kpi::before{opacity:.55}
+.kpi-prog{height:4px;border-radius:2px;background:rgba(124,143,245,.15);overflow:hidden;margin-top:12px}
+.kpi-prog-fill{height:100%;border-radius:2px;background:#7C8FF5;transition:width .6s cubic-bezier(.4,0,.2,1)}
+@media(max-width:1024px){#s1_kpi_row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){#s1_kpi_row{grid-template-columns:1fr}}
 .kpi-row--edit .kpi{cursor:grab;user-select:none;overflow:visible!important}
 .kpi-row--edit .kpi:active{cursor:grabbing}
 .kpi-x,.kpi-plus{
@@ -2851,40 +2863,40 @@ input[type=range]::-moz-range-thumb{
     <button class="kpi-cbtn" id="kpi_cbtn" onclick="kpiToggleEdit()">⊞ Customize</button>
   </div>
 
-  <div class="kpi-row kpi-row--tiered" id="s1_kpi_row">
-    <div class="kpi kpi--hero" style="--kc:var(--c1)">
+  <div class="kpi-row" id="s1_kpi_row">
+    <div class="kpi" style="--kc:var(--c1)">
       <div class="kpi-lbl">Actual CPA (ads) <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_actual_cpa">Actual cost per Lead from ads.<br>= Ad budget ÷ total leads needed<br>If above Break-even CPA → business is losing.</span></span></div>
       <div class="kpi-val" id="m_acpp" style="color:var(--c1)">—</div>
       <div class="kpi-hint" data-t="hint_acpp">Budget ÷ total leads</div>
     </div>
-    <div class="kpi kpi--hero" style="--kc:var(--c1)">
+    <div class="kpi" style="--kc:var(--c3)">
       <div class="kpi-lbl">Actual ROAS <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_actual_roas">Actual return on ad spend.<br>= (Selling price + customer shipping) × delivered orders ÷ ad budget<br>If below Break-even ROAS → business is losing.</span></span></div>
       <div class="kpi-val" id="m_actual_roas" style="color:var(--c1)">—</div>
       <div class="kpi-hint" data-t="hint_roas_rev">Revenue ÷ ad spend</div>
     </div>
-    <div class="kpi" style="--kc:var(--c2)">
+    <div class="kpi" style="--kc:rgba(255,255,255,.2)">
       <div class="kpi-lbl">Break-even CPA <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_be_cpa">Max CPA you can pay and still cover all business costs (product + shipping + ads + salary).<br>= (Profit/unit − Salary/unit) × Conf% × Del%<br>If Actual CPA exceeds this → you are losing on the whole business.</span></span></div>
       <div class="kpi-val" id="m_maxcpp" style="color:var(--c2)">—</div>
       <div class="kpi-hint" data-t="hint_be_full">Full business break-even</div>
     </div>
-    <div class="kpi" style="--kc:var(--c4)">
+    <div class="kpi" style="--kc:rgba(255,255,255,.2)">
       <div class="kpi-lbl">Break-even ROAS <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_be_roas">Minimum ROAS needed to cover all business costs.<br>= (Price + ShipC) × Conf% × Del% ÷ Break-even CPA<br>If Actual ROAS is below this → business is losing.</span></span></div>
       <div class="kpi-val" id="m_be_roas" style="color:var(--c4)">—</div>
       <div class="kpi-hint" id="m_roas_hint" data-t="hint_be_min">Min to break even</div>
     </div>
-    <div class="kpi" style="--kc:var(--txt2)">
+    <div class="kpi kpi--count" style="--kc:transparent">
       <div class="kpi-lbl">Leads needed <span style="color:var(--txt3)">(ads)</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_leads_needed">Total leads needed from ads to sell all stock.<br>= Stock ÷ Del% ÷ Conf%</span></span></div>
       <div class="kpi-val" id="m_leads" style="color:var(--txt)">—</div>
       <div class="kpi-hint" data-t="hint_leads">All incoming leads</div>
     </div>
-    <div class="kpi" style="--kc:var(--c3)">
+    <div class="kpi kpi--count" style="--kc:var(--c3)">
       <div class="kpi-lbl"><span data-t="kpi_confirmed">Confirmed orders</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_confirmed">Confirmed orders from leads.<br>= Leads × Confirmation rate</span></span></div>
       <div class="kpi-val" id="m_confirmed" style="color:var(--c3)">—</div>
       <div class="kpi-hint" data-t="hint_confirmed">After confirmation rate</div>
     </div>
-    <div class="kpi" style="--kc:var(--c4)">
+    <div class="kpi kpi--count" style="--kc:var(--c1)">
       <div class="kpi-lbl"><span data-t="kpi_delivered">Delivered orders</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_delivered">Actually delivered orders — your real sold units.<br>= Confirmed × Delivery rate</span></span></div>
-      <div class="kpi-val" id="m_delivered" style="color:var(--c4)">—</div>
+      <div class="kpi-val" id="m_delivered" style="color:var(--c1)">—</div>
       <div class="kpi-hint" data-t="hint_delivered">After delivery rate</div>
     </div>
     <div class="kpi" style="--kc:var(--c1)">
@@ -2897,10 +2909,11 @@ input[type=range]::-moz-range-thumb{
       <div class="kpi-val" id="m_cost_per_del" style="color:var(--c3)">—</div>
       <div class="kpi-hint" data-t="hint_cost_del_s">Ad budget ÷ delivered</div>
     </div>
-    <div class="kpi" style="--kc:var(--c2)">
+    <div class="kpi kpi--count" style="--kc:var(--c1)">
       <div class="kpi-lbl">Lead → Order Rate <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_lead_order">Lead to delivered order conversion — funnel efficiency in one number.<br>= Delivered ÷ Leads × 100<br>= Conf% × Del%<br>Higher is better.</span></span></div>
-      <div class="kpi-val" id="m_l2o_rate" style="color:var(--c2)">—</div>
+      <div class="kpi-val" id="m_l2o_rate" style="color:var(--c1)">—</div>
       <div class="kpi-hint">Conf% × Del%</div>
+      <div class="kpi-prog"><div class="kpi-prog-fill" id="m_l2o_bar" style="width:0%"></div></div>
     </div>
     <div class="kpi" style="--kc:var(--red)">
       <div class="kpi-lbl">Wasted Ad Spend <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_wasted">Portion of ad budget spent on leads that did not convert to delivered orders.<br>= Budget × (1 − Conf% × Del%)<br>Not a total loss — confirmation cost is normal — but lower is better.</span></span></div>
@@ -5183,12 +5196,12 @@ function calc(){
   const adOk    = actualCPP <= beCPP && beCPP > 0;
   const adsAdOk = adOk;
 
-  set('m_maxcpp',  d1(beCPP)+' '+CURRENCY,  beCPP>0?'var(--c2)':'var(--red)');
-  set('m_be_roas', (Math.round(beROAS*100)/100).toFixed(1)+'x', 'var(--c4)');
+  set('m_maxcpp',  d1(beCPP)+' '+CURRENCY,  beCPP>0?'#fff':'var(--red)');
+  set('m_be_roas', (Math.round(beROAS*100)/100).toFixed(1)+'x', '#fff');
   set('m_roas_hint', 'Min to break even: '+(Math.round(beROAS*100)/100).toFixed(1)+'x');
   set('m_acpp',    d1(actualCPP)+' '+CURRENCY, adOk?'var(--c1)':'var(--red)');
   const roasOk = beROAS > 0 && actualROAS >= beROAS;
-  set('m_actual_roas', actualROAS>0 ? (Math.round(actualROAS*100)/100).toFixed(1)+'x' : '—', roasOk?'var(--c1)':'var(--red)');
+  set('m_actual_roas', actualROAS>0 ? (Math.round(actualROAS*100)/100).toFixed(1)+'x' : '—', roasOk?'var(--c3)':'var(--red)');
   set('m_leads',   d1(leadsNeeded));
   set('m_confirmed', d1(confNeeded));
   set('m_delivered', d1(delivNeeded));
@@ -5211,7 +5224,8 @@ function calc(){
   set('m_cost_per_del', costPerDel > 0 ? d1(costPerDel)+' '+CURRENCY : '—', 'var(--c3)');
   // 3. Lead-to-Order Rate
   const l2oRate = confR * delR * 100;
-  set('m_l2o_rate', l2oRate > 0 ? l2oRate.toFixed(1)+'%' : '—', 'var(--c2)');
+  set('m_l2o_rate', l2oRate > 0 ? l2oRate.toFixed(1)+'%' : '—', 'var(--c1)');
+  { const _b=document.getElementById('m_l2o_bar'); if(_b) _b.style.width=Math.max(0,Math.min(100,l2oRate||0))+'%'; }
   // 4. Wasted Ad Spend
   const wastedSpend = ads > 0 ? ads * (1 - confR * delR) : 0;
   set('m_wasted_spend', wastedSpend > 0 ? Math.round(wastedSpend).toLocaleString()+' '+CURRENCY : '—', 'var(--red)');
