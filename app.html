@@ -16,26 +16,27 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 :root {
-  --bg:      #0B0E14;
-  --bg2:     #0e1219;
-  --surf:    #131720;
-  --surf2:   #1a1e28;
-  --surf3:   #222738;
-  --bdr:     rgba(255,255,255,0.07);
-  --bdr2:    rgba(255,255,255,0.12);
-  --c1:      #7C8FF5;
+  --bg:      #0D1117;
+  --bg2:     #10151C;
+  --surf:    #161B22;
+  --surf2:   #1C2128;
+  --surf3:   #22272E;
+  --bdr:     rgba(255,255,255,0.06);
+  --bdr2:    rgba(255,255,255,0.10);
+  --c1:      #818CF8;
+  --c1l:     #A5B4FC;
   --c2:      #A78BFA;
   --c3:      #34D399;
-  --c4:      #4f8ff7;
-  --acc:     #7C8FF5;
-  --acc2:    #6172e6;
+  --c4:      #38BDF8;
+  --acc:     #818CF8;
+  --acc2:    #6366F1;
   --red:     #F87171;
   --grn:     #34D399;
   --profit:  #34D399;
-  --txt:     #e8eaf0;
-  --txt2:    #9CA3AF;
-  --txt3:    #6B7280;
-  --txt-title: #e8eaf0;
+  --txt:     #E6EDF3;
+  --txt2:    #8B949E;
+  --txt3:    #6E7681;
+  --txt-title: #E6EDF3;
   --mono:    'Inter', system-ui, sans-serif; /* numeric text now uses Inter w/ tabular-nums (was JetBrains Mono) */
   --head:    'Inter', system-ui, sans-serif;
   --body:    'Inter', system-ui, sans-serif;
@@ -62,12 +63,12 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 }
 .brand{display:flex;align-items:center;gap:10px}
 .brand-mark{
-  width:32px;height:32px;border-radius:10px;background:#4F63E8;
+  width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#818CF8,#6366F1);
   display:flex;align-items:center;justify-content:center;
 }
 .brand-mark svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round}
 .brand-name{font-family:var(--head);font-size:18px;font-weight:600;letter-spacing:-.3px;color:#fff}
-.brand-badge{font-size:11px;font-family:var(--head);background:rgba(124,143,245,0.15);color:#7C8FF5;padding:2px 7px;border-radius:5px;font-weight:600;border:1px solid rgba(124,143,245,0.25)}
+.brand-badge{font-size:11px;font-family:var(--head);background:rgba(129,140,248,0.15);color:#A5B4FC;padding:2px 7px;border-radius:5px;font-weight:600;border:1px solid rgba(129,140,248,0.3)}
 
 .nav-pills{display:flex;gap:0;background:rgba(255,255,255,0.05);border:none;border-radius:10px;padding:4px;flex:1;max-width:680px;margin:0 24px}
 .nav-pill{
@@ -77,7 +78,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
   display:flex;align-items:center;justify-content:center;
 }
 .nav-pill:hover{color:var(--txt);background:rgba(255,255,255,0.04)}
-.nav-pill.active{background:#7C8FF5;color:#fff;font-weight:600;box-shadow:0 2px 8px rgba(124,143,245,.35)}
+.nav-pill.active{background:linear-gradient(135deg,#818CF8,#6366F1);color:#fff;font-weight:600;box-shadow:0 2px 10px rgba(99,102,241,.4)}
 
 .nav-right{display:flex;align-items:center;gap:8px}
 .live{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--c1);font-family:var(--mono)}
@@ -280,7 +281,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
   font-size:11px;font-weight:700;letter-spacing:0;
 }
 .s0 .section-eyebrow .num{background:rgba(0,229,160,.15);color:var(--c1)}
-.s1 .section-eyebrow .num{background:rgba(124,143,245,.12);color:#7C8FF5}
+.s1 .section-eyebrow .num{background:rgba(129,140,248,.15);color:#A5B4FC}
 .s2 .section-eyebrow .num{background:rgba(245,158,11,.15);color:var(--c3)}
 .s3 .section-eyebrow .num{background:rgba(167,139,250,.15);color:var(--c4)}
 .section-title{font-family:var(--head);font-size:28px;font-weight:800;letter-spacing:-.5px;color:#fff}
@@ -619,8 +620,8 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 #s1_kpi_row .kpi--count .kpi-val{font-size:36px}
 #s1_kpi_row .kpi-hint{font-size:12px;color:var(--txt3);opacity:1;font-family:var(--head);margin-top:4px}
 #s1_kpi_row .kpi::before{opacity:.55}
-.kpi-prog{height:4px;border-radius:2px;background:rgba(124,143,245,.15);overflow:hidden;margin-top:12px}
-.kpi-prog-fill{height:100%;border-radius:2px;background:#7C8FF5;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.kpi-prog{height:4px;border-radius:2px;background:rgba(129,140,248,.15);overflow:hidden;margin-top:12px}
+.kpi-prog-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#818CF8,#A5B4FC);transition:width .6s cubic-bezier(.4,0,.2,1)}
 @media(max-width:1024px){#s1_kpi_row{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:560px){#s1_kpi_row{grid-template-columns:1fr}}
 .kpi-row--edit .kpi{cursor:grab;user-select:none;overflow:visible!important}
@@ -1042,7 +1043,7 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
   cursor:pointer;user-select:none;
 }
 .target-profit-title-left{display:flex;align-items:center;gap:12px}
-.tp-icon{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:color-mix(in srgb,var(--ic,#7C8FF5) 14%, transparent);color:var(--ic,#7C8FF5)}
+.tp-icon{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:color-mix(in srgb,var(--ic,#818CF8) 14%, transparent);color:var(--ic,#818CF8)}
 .tp-icon svg{width:16px;height:16px}
 .collapsible-body{display:none;margin-top:14px}
 .collapsible-body.show{display:block}
@@ -2969,7 +2970,7 @@ input[type=range]::-moz-range-thumb{
       </div>
       <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--txt3);margin-top:8px;padding:0 4px">
         <span>0</span>
-        <span id="gauge_be_lbl" style="color:#7C8FF5;font-weight:600">BE: — EGP</span>
+        <span id="gauge_be_lbl" style="color:#A5B4FC;font-weight:600">BE: — EGP</span>
         <span id="gauge_max_lbl">Max</span>
       </div>
       <div id="cpp_alert" class="alert ag" style="margin-top:10px"><span class="alert-icon">✓</span><span id="cpp_msg">—</span></div>
@@ -3052,7 +3053,7 @@ input[type=range]::-moz-range-thumb{
   <!-- ROAS Target Simulator — 4-scenario lock system -->
   <div class="target-profit-card">
     <div class="target-profit-title" onclick="toggleSection('roas_body','roas_toggle','roas_toggle_lbl')">
-      <div class="target-profit-title-left"><span class="tp-icon" style="--ic:#7C8FF5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span> <span data-t="roas_title">ROAS Target Simulator</span></div>
+      <div class="target-profit-title-left"><span class="tp-icon" style="--ic:#818CF8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span> <span data-t="roas_title">ROAS Target Simulator</span></div>
       <div class="scenario-toggle">
         <span id="roas_toggle_lbl">Show</span>
         <div class="toggle-track" id="roas_toggle"><div class="toggle-thumb"></div></div>
