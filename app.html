@@ -937,7 +937,8 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .ov2-ship-arrow{color:var(--txt3);font-size:14px;flex-shrink:0}
 
 /* ── Overview redesign — 3 clean cards ── */
-.ov-cards-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin:20px 0}
+.ov-cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:0 0 18px}
+.pl-num{font-variant-numeric:tabular-nums}
 .ov-card{background:var(--surf2);border-radius:14px;padding:22px}
 .ov-card-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:20px}
 .ov-card-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-top:2px}
@@ -3717,121 +3718,126 @@ input[type=range]::-moz-range-thumb{
     </div>
   </div>
 
-  <!-- ══ 3 CLEAN CARDS ═════════════════════════════════════════════════ -->
+  <!-- ══ 3 INSIGHT PANELS ═══════════════════════════════════════════════ -->
   <div class="ov-cards-3">
 
-    <!-- Card 1: Advertising -->
-    <div class="ov-card">
-      <div class="ov-card-head">
-        <span class="ov-card-icon" style="background:rgba(244,63,94,.13);color:#f43f5e"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span>
-        <div>
-          <div class="ov-card-title-row">
-            <div class="ov-card-title" data-t="ov_ads_title">Advertising</div>
-            <div id="ov_ads_verdict" class="ov2-badge" style="flex-shrink:0">—</div>
+    <!-- PANEL 1: Advertising -->
+    <div style="border-radius:16px;padding:22px;background:#161B22;border:1px solid rgba(255,255,255,0.06)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:11px">
+          <span style="width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:rgba(248,113,113,0.12)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 11-5.8-1.6"/></svg></span>
+          <div>
+            <div style="font-size:15px;font-weight:600;color:#E6EDF3" data-t="ov_ads_title">Advertising</div>
+            <div style="font-size:12px;color:#6E7681" data-t="ov_ads_card_sub">CPA &amp; ROAS vs break-even</div>
           </div>
-          <div class="ov-card-sub" data-t="ov_ads_card_sub">CPA &amp; ROAS vs break-even</div>
+        </div>
+        <div id="ov_ads_verdict" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#6EE7B7;background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.28);padding:3px 9px;border-radius:999px;flex-shrink:0">—</div>
+      </div>
+
+      <!-- Block A — Actual CPA -->
+      <div style="margin-bottom:18px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+          <span style="font-size:13px;color:#8B949E">Actual CPA</span>
+          <span class="pl-num" id="ov_actual_cpa" style="font-size:16px;font-weight:700;color:#34D399">—</span>
+        </div>
+        <div style="position:relative;height:6px;border-radius:3px;background:rgba(255,255,255,0.06)">
+          <div id="ov_cpa_gauge" style="width:0%;height:100%;border-radius:3px;background:linear-gradient(90deg,#818CF8,#A5B4FC)"></div>
+          <div style="position:absolute;top:-3px;left:100%;width:2px;height:12px;background:#F87171;transform:translateX(-2px)"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px">
+          <span style="color:#6E7681">0</span>
+          <span class="pl-num" id="ov_be_cpa_lbl" style="color:#8B949E">BE: —</span>
         </div>
       </div>
 
-      <div class="ov-card-metric">
-        <span class="ov-card-lbl">Actual CPA</span>
-        <span class="ov-card-val" id="ov_actual_cpa">—</span>
-      </div>
-      <div class="ov2-gauge-wrap" style="margin:8px 0 16px">
-        <div class="ov2-gauge-track">
-          <div class="ov2-gauge-fill" id="ov_cpa_gauge" style="width:0%"></div>
-          <div class="ov2-gauge-marker" id="ov_cpa_marker" style="left:70%"></div>
+      <!-- Block B — Actual ROAS -->
+      <div style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+          <span style="font-size:13px;color:#8B949E">Actual ROAS</span>
+          <span class="pl-num" id="ov_actual_roas" style="font-size:16px;font-weight:700;color:#A5B4FC">—</span>
         </div>
-        <div class="ov2-gauge-labels"><span>0</span><span id="ov_be_cpa_lbl">BE CPA: —</span></div>
+        <div style="position:relative;height:6px;border-radius:3px;background:rgba(255,255,255,0.06)">
+          <div id="ov_roas_gauge" style="width:0%;height:100%;border-radius:3px;background:linear-gradient(90deg,#818CF8,#A5B4FC)"></div>
+          <div style="position:absolute;top:-3px;left:50%;width:2px;height:12px;background:#34D399"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px">
+          <span style="color:#6E7681">0×</span>
+          <span class="pl-num" id="ov_be_roas_lbl" style="color:#8B949E">BE: —</span>
+        </div>
       </div>
 
-      <div class="ov-card-metric">
-        <span class="ov-card-lbl">Actual ROAS</span>
-        <span class="ov-card-val" id="ov_actual_roas">—</span>
-      </div>
-      <div class="ov2-gauge-wrap" style="margin:8px 0 16px">
-        <div class="ov2-gauge-track">
-          <div class="ov2-gauge-fill ov2-gauge-roas" id="ov_roas_gauge" style="width:0%"></div>
-          <div class="ov2-gauge-marker" id="ov_roas_marker" style="left:50%"></div>
-        </div>
-        <div class="ov2-gauge-labels"><span>0×</span><span id="ov_be_roas_lbl">BE: —</span></div>
-      </div>
-
-      <div style="display:flex;gap:20px">
+      <!-- Footer -->
+      <div style="display:flex;gap:28px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.05)">
         <div>
-          <div class="ov-card-lbl" data-t="ov_total_orders_lbl">Total orders</div>
-          <div class="ov-card-val" style="margin-top:4px" id="ov_orders">—</div>
+          <div style="font-size:11px;color:#6E7681;margin-bottom:4px" data-t="ov_total_orders_lbl">Total orders</div>
+          <div class="pl-num" id="ov_orders" style="font-size:16px;font-weight:700;color:#E6EDF3">—</div>
         </div>
         <div>
-          <div class="ov-card-lbl" data-t="ov_ad_cost_order">Ad cost / order</div>
-          <div class="ov-card-val" style="margin-top:4px" id="ov_ad_per_order">—</div>
+          <div style="font-size:11px;color:#6E7681;margin-bottom:4px" data-t="ov_ad_cost_order">Ad cost / order</div>
+          <div class="pl-num" id="ov_ad_per_order" style="font-size:16px;font-weight:700;color:#E6EDF3">—</div>
         </div>
       </div>
       <!-- hidden IDs required by JS -->
       <div style="display:none"><span id="ov_be_cpa">—</span><span id="ov_be_roas">—</span></div>
     </div>
 
-    <!-- Card 2: Delivery -->
-    <div class="ov-card">
-      <div class="ov-card-head">
-        <span class="ov-card-icon" style="background:rgba(79,143,247,.13);color:#4f8ff7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"/><path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg></span>
+    <!-- PANEL 2: Delivery -->
+    <div style="border-radius:16px;padding:22px;background:#161B22;border:1px solid rgba(255,255,255,0.06)">
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:20px">
+        <span style="width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:rgba(56,189,248,0.12)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11" rx="1"/><path d="M15 9h4l3 3v5h-7z"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span>
         <div>
-          <div class="ov-card-title" data-t="ov_delivery_title">Delivery</div>
-          <div class="ov-card-sub" data-t="ov_delivery_sub">Units distribution</div>
+          <div style="font-size:15px;font-weight:600;color:#E6EDF3" data-t="ov_delivery_title">Delivery</div>
+          <div style="font-size:12px;color:#6E7681" data-t="ov_delivery_sub">Units distribution</div>
         </div>
       </div>
 
-      <div class="ov-card-metric">
-        <span class="ov-card-lbl" data-t="ov_del_ret_lbl">Delivered / Returned</span>
-        <span style="font-size:11px;color:var(--txt3);font-family:var(--mono)" id="ov_units_label">—</span>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+        <span style="font-size:13px;color:#8B949E" data-t="ov_del_ret_lbl">Delivered / Returned</span>
+        <span class="pl-num" id="ov_units_label" style="font-size:13px;font-weight:600;color:#C9D1D9">—</span>
       </div>
 
-      <div style="height:10px;border-radius:5px;overflow:hidden;display:flex;margin:12px 0 8px">
-        <div id="ov_del_bar" style="background:var(--c1);height:100%;transition:width .6s ease"></div>
-        <div id="ov_ret_bar" style="background:var(--red);height:100%;opacity:.6;transition:width .6s ease"></div>
+      <div style="display:flex;height:12px;border-radius:4px;overflow:hidden;gap:2px">
+        <div id="ov_del_bar" style="flex:300;background:#38BDF8;border-radius:3px 0 0 3px"></div>
+        <div id="ov_ret_bar" style="flex:129;background:#F87171;border-radius:0 3px 3px 0"></div>
       </div>
-      <div style="display:flex;gap:16px;margin-bottom:20px">
-        <div style="display:flex;align-items:center;gap:5px">
-          <span style="width:8px;height:8px;border-radius:2px;background:var(--c1);flex-shrink:0;display:inline-block"></span>
-          <span style="font-size:10px;color:var(--txt2)"><span data-t="ov_delivered">Delivered</span> <strong id="ov_del_units" style="color:var(--txt)">—</strong></span>
-        </div>
-        <div style="display:flex;align-items:center;gap:5px">
-          <span style="width:8px;height:8px;border-radius:2px;background:var(--red);opacity:.7;flex-shrink:0;display:inline-block"></span>
-          <span style="font-size:10px;color:var(--txt2)"><span data-t="ov_returned">Returned</span> <strong id="ov_ret_units" style="color:var(--txt)">—</strong></span>
-        </div>
+      <div style="display:flex;gap:18px;margin-top:12px;font-size:12px;color:#8B949E">
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:3px;background:#38BDF8"></span><span data-t="ov_delivered">Delivered</span> <b class="pl-num" id="ov_del_units" style="color:#C9D1D9;font-weight:700">—</b></span>
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:3px;background:#F87171"></span><span data-t="ov_returned">Returned</span> <b class="pl-num" id="ov_ret_units" style="color:#C9D1D9;font-weight:700">—</b></span>
       </div>
 
-      <div class="ov-card-metric">
-        <span class="ov-card-lbl" data-t="ov_total_returns">Total return costs</span>
-        <span class="ov-card-val" style="color:var(--red)" id="ov_ret_loss">—</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding:14px 16px;border-radius:11px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2)">
+        <span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#C9D1D9"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 015 5v3"/></svg><span data-t="ov_total_returns">Total return costs</span></span>
+        <span class="pl-num" id="ov_ret_loss" style="font-size:16px;font-weight:700;color:#F87171">—</span>
       </div>
     </div>
 
-    <!-- Card 3: Shipping costs -->
-    <div class="ov-card">
-      <div class="ov-card-head">
-        <span class="ov-card-icon" style="background:rgba(245,158,11,.13);color:#f59e0b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
+    <!-- PANEL 3: Shipping costs -->
+    <div style="border-radius:16px;padding:22px;background:#161B22;border:1px solid rgba(255,255,255,0.06)">
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:24px">
+        <span style="width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:rgba(251,191,36,0.12)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 00-1-1.7l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.7l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.3 7L12 12l8.7-5M12 22V12"/></svg></span>
         <div>
-          <div class="ov-card-title" data-t="ov_ship_title">Shipping costs</div>
-          <div class="ov-card-sub" data-t="ov_ship_sub">Per unit breakdown</div>
+          <div style="font-size:15px;font-weight:600;color:#E6EDF3" data-t="ov_ship_title">Shipping costs</div>
+          <div style="font-size:12px;color:#6E7681" data-t="ov_ship_sub">Per unit breakdown</div>
         </div>
       </div>
 
-      <div class="ov2-ship-compare" style="margin:4px 0 20px">
-        <div class="ov2-ship-item ov2-ship-cost">
-          <div style="font-size:9px;color:var(--txt3);margin-bottom:4px" data-t="ov_you_bear">You bear</div>
-          <div style="font-family:var(--mono);font-size:15px;font-weight:700" id="ov_eff_ship">—</div>
+      <div style="display:flex;align-items:stretch;gap:10px">
+        <div style="flex:1;text-align:center;padding:16px 8px;border-radius:12px;background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.18)">
+          <div style="font-size:11px;color:#8B949E;margin-bottom:8px" data-t="ov_you_bear">You bear</div>
+          <div class="pl-num" id="ov_eff_ship" style="font-size:22px;font-weight:700;color:#F87171">—</div>
+          <div class="ov-ship-cur" style="font-size:10px;color:#6E7681;margin-top:2px">EGP</div>
         </div>
-        <div class="ov2-ship-arrow">→</div>
-        <div class="ov2-ship-item ov2-ship-charged">
-          <div style="font-size:9px;color:var(--txt3);margin-bottom:4px" data-t="ov_customer_pays">Customer pays</div>
-          <div style="font-family:var(--mono);font-size:15px;font-weight:700" id="ov_ship_charged">—</div>
+        <div style="display:grid;place-items:center;color:#6E7681"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+        <div style="flex:1;text-align:center;padding:16px 8px;border-radius:12px;background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.18)">
+          <div style="font-size:11px;color:#8B949E;margin-bottom:8px" data-t="ov_customer_pays">Customer pays</div>
+          <div class="pl-num" id="ov_ship_charged" style="font-size:22px;font-weight:700;color:#34D399">—</div>
+          <div class="ov-ship-cur" style="font-size:10px;color:#6E7681;margin-top:2px">EGP</div>
         </div>
-        <div class="ov2-ship-arrow">＝</div>
-        <div class="ov2-ship-item">
-          <div style="font-size:9px;color:var(--txt3);margin-bottom:4px" data-t="ov_net">Net</div>
-          <div style="font-family:var(--mono);font-size:15px;font-weight:700" id="ov_ship_net">—</div>
-        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.05)">
+        <span style="font-size:13px;color:#8B949E" data-t="ov_net_ship_impact">Net shipping impact</span>
+        <span class="pl-num" id="ov_ship_net" style="font-size:20px;font-weight:700;color:#F87171">—</span>
       </div>
     </div>
 
@@ -5534,38 +5540,43 @@ function calc(){
   const roasOkOv = beROAS > 0 && actualROAS >= beROAS;
   const adPerOrder = delivNeeded > 0 ? ads / delivNeeded : 0;
 
-  set('ov_actual_cpa', actualCPP>0 ? d1(actualCPP)+' '+CURRENCY : '— (not set)', actualCPP>0&&adOkOv?'var(--c1)':actualCPP>0?'var(--red)':'var(--txt3)');
+  set('ov_actual_cpa', actualCPP>0 ? d1(actualCPP)+' '+CURRENCY : '—', actualCPP<=0?'#6E7681':(adOkOv?'#34D399':'#F87171'));
   set('ov_be_cpa',     beCPP>0 ? d1(beCPP)+' '+CURRENCY : '—');
-  set('ov_actual_roas',actualROAS>0 ? (Math.round(actualROAS*100)/100).toFixed(1)+'x' : '— (not set)', actualROAS>0&&roasOkOv?'var(--c1)':actualROAS>0?'var(--red)':'var(--txt3)');
+  set('ov_actual_roas',actualROAS>0 ? (Math.round(actualROAS*100)/100).toFixed(1)+'x' : '—', actualROAS<=0?'#6E7681':(roasOkOv?'#A5B4FC':'#F87171'));
   set('ov_be_roas',    beROAS>0 ? (Math.round(beROAS*100)/100).toFixed(1)+'x' : '—');
-  set('ov_orders',     d1(delivNeeded)+' units');
+  set('ov_orders',     Math.round(delivNeeded).toLocaleString('en')+' units');
   set('ov_ad_per_order', adPerOrder>0 ? eg(adPerOrder) : '—');
 
-  // CPA gauge — fill = actual/BE capped at 150%; marker = BE position
-  if(beCPP>0&&actualCPP>0){
-    const cap=beCPP*1.5;
-    const fillPct=Math.min(actualCPP/cap*100,100);
-    const markerPct=Math.min(beCPP/cap*100,100);
-    const gf=document.getElementById('ov_cpa_gauge'); if(gf){gf.style.width=fillPct+'%';gf.style.background=adOkOv?'var(--c1)':'var(--red)';}
-    const gm=document.getElementById('ov_cpa_marker'); if(gm) gm.style.left=markerPct+'%';
-    const bl=document.getElementById('ov_be_cpa_lbl'); if(bl) bl.textContent=T[LANG].be_label+d1(beCPP);
+  // CPA gauge — fill = actual ÷ break-even (the red tick at 100% marks break-even)
+  {
+    const gf=document.getElementById('ov_cpa_gauge');
+    if(gf) gf.style.width=(beCPP>0&&actualCPP>0?Math.min(actualCPP/beCPP*100,100):0)+'%';
+    const bl=document.getElementById('ov_be_cpa_lbl'); if(bl) bl.textContent=T[LANG].be_label+(beCPP>0?d1(beCPP):'—');
   }
-  // ROAS gauge — fill = actual/max capped; marker = BE ROAS
-  if(beROAS>0&&actualROAS>0){
-    const cap=Math.max(actualROAS,beROAS)*1.4;
-    const fillPct=Math.min(actualROAS/cap*100,100);
-    const markerPct=Math.min(beROAS/cap*100,100);
-    const gf=document.getElementById('ov_roas_gauge'); if(gf){gf.style.width=fillPct+'%';gf.style.background=roasOkOv?'var(--c1)':'var(--red)';}
-    const gm=document.getElementById('ov_roas_marker'); if(gm) gm.style.left=markerPct+'%';
-    const bl=document.getElementById('ov_be_roas_lbl'); if(bl) bl.textContent=T[LANG].be_label+(Math.round(beROAS*100)/100).toFixed(1)+'x';
+  // ROAS gauge — fill = actual ÷ (2×break-even) (the green tick at 50% marks break-even)
+  {
+    const gf=document.getElementById('ov_roas_gauge');
+    if(gf) gf.style.width=(beROAS>0&&actualROAS>0?Math.min(actualROAS/(2*beROAS)*100,100):0)+'%';
+    const bl=document.getElementById('ov_be_roas_lbl'); if(bl) bl.textContent=T[LANG].be_label+(beROAS>0?(Math.round(beROAS*100)/100).toFixed(1)+'x':'—');
   }
 
-  // Verdict badge
+  // Verdict pill — icon + label, colored by state
   const vEl=document.getElementById('ov_ads_verdict');
   if(vEl){
-    if(actualCPP<=0){vEl.textContent=T[LANG].js_enter_cpa;vEl.style.background='var(--surf3)';vEl.style.color='var(--txt3)';}
-    else if(adOkOv){vEl.textContent=T[LANG].js_profitable;vEl.style.background='rgba(34,197,94,.12)';vEl.style.color='var(--profit)';}
-    else{vEl.textContent=T[LANG].js_loss;vEl.style.background='rgba(244,63,94,.12)';vEl.style.color='var(--red)';}
+    const strip = s => (s||'').replace(/^[^\p{L}\d]+/u,'').trim();
+    let label, fg, bg, bd, stroke, icon;
+    if(actualCPP<=0){
+      label=strip(T[LANG].js_enter_cpa); fg='#8B949E'; bg='rgba(255,255,255,0.05)'; bd='rgba(255,255,255,0.12)'; stroke='#8B949E';
+      icon='<circle cx="12" cy="12" r="8"/>';
+    } else if(adOkOv){
+      label=strip(T[LANG].js_profitable); fg='#6EE7B7'; bg='rgba(52,211,153,0.12)'; bd='rgba(52,211,153,0.28)'; stroke='#34D399';
+      icon='<path d="M5 12l5 5L20 7"/>';
+    } else {
+      label=strip(T[LANG].js_loss); fg='#FCA5A5'; bg='rgba(248,113,113,0.12)'; bd='rgba(248,113,113,0.28)'; stroke='#F87171';
+      icon='<path d="M6 6l12 12M18 6L6 18"/>';
+    }
+    vEl.style.color=fg; vEl.style.background=bg; vEl.style.border='1px solid '+bd;
+    vEl.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="'+stroke+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'+icon+'</svg>'+escapeHtml(label);
   }
 
   // ── Overview: Shipping Snapshot ──
@@ -5575,20 +5586,21 @@ function calc(){
   const shipNetPU     = shipC - effShip;
   const retLossTotal  = ovReturned * costRet;
 
-  set('ov_del_units',    Math.round(ovDelivered)+' units');
-  set('ov_ret_units',    Math.round(ovReturned)+' units');
-  set('ov_eff_ship',     eg(effShip));
-  set('ov_ship_charged', eg(shipC));
-  set('ov_ship_net',     (shipNetPU>=0?'+':'')+eg(shipNetPU), shipNetPU>=0?'var(--profit)':'var(--red)');
-  set('ov_ret_loss',     retLossTotal>0?'-'+eg(retLossTotal):'—', 'var(--red)');
+  set('ov_del_units',    Math.round(ovDelivered).toLocaleString('en'));
+  set('ov_ret_units',    Math.round(Math.max(ovReturned,0)).toLocaleString('en'));
+  set('ov_eff_ship',     d1(effShip));
+  set('ov_ship_charged', d1(shipC));
+  set('ov_ship_net',     (shipNetPU>=0?'+':'')+eg(shipNetPU), shipNetPU>=0?'#34D399':'#F87171');
+  set('ov_ret_loss',     retLossTotal>0?'-'+eg(retLossTotal):'—', '#F87171');
+  document.querySelectorAll('.ov-ship-cur').forEach(e=>e.textContent=CURRENCY);
 
   // Delivery bar visualization
   const total = ovDelivered + ovReturned;
   if(total>0){
     const delPct=(ovDelivered/total*100).toFixed(1);
     const retPct=(ovReturned/total*100).toFixed(1);
-    const db=document.getElementById('ov_del_bar'); if(db) db.style.width=delPct+'%';
-    const rb=document.getElementById('ov_ret_bar'); if(rb) rb.style.width=retPct+'%';
+    const db=document.getElementById('ov_del_bar'); if(db) db.style.flexGrow=ovDelivered;
+    const rb=document.getElementById('ov_ret_bar'); if(rb) rb.style.flexGrow=Math.max(ovReturned,0);
     const ul=document.getElementById('ov_units_label'); if(ul) ul.textContent=delPct+'% delivery';
   }
 
@@ -8181,7 +8193,7 @@ const T = {
     ov_net_profit:'Net total profit',
     ov_after_ads:'After ads & salary',
     ov_rev_toggle:'+Ship',
-    ov_total_returns:'💸 Total return costs',
+    ov_total_returns:'Total return costs', ov_net_ship_impact:'Net shipping impact',
     export_sub:'All product analytics in one Excel sheet — Inputs, Marketing, Shipping, P&L, and product comparison',
     js_auto_cpa:'★ Target CPA = ',
     js_auto_cpa_suffix:' (30% safety margin)',
@@ -8436,7 +8448,7 @@ const T = {
     ov_net_profit:'صافي الربح الكلي',
     ov_after_ads:'بعد الإعلانات والراتب',
     ov_rev_toggle:'+شحن',
-    ov_total_returns:'💸 إجمالي تكلفة الإرجاعات',
+    ov_total_returns:'إجمالي تكلفة الإرجاعات', ov_net_ship_impact:'صافي أثر الشحن',
     export_sub:'كل أناليسيز المنتجات في شيت Excel واحدة — Inputs، Marketing، Shipping، P&L، ومقارنة المنتجات',
     js_auto_cpa:'★ الـ CPA المستهدف = ',
     js_auto_cpa_suffix:' (هامش أمان 30%)',
