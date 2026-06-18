@@ -873,6 +873,27 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
   padding:18px 40px 24px;text-align:center;width:100%;
 }
 
+/* ── Overview: margin + revenue summary cards ── */
+.ovx-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:28px}
+.ovx-card{position:relative;background:var(--surf);border:1px solid var(--bdr);border-radius:16px;padding:28px 28px 24px;overflow:hidden}
+.ovx-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ax,var(--c1))}
+.ovx-head{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.ovx-ic{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:color-mix(in srgb,var(--ic,#818CF8) 15%, transparent);color:var(--ic,#818CF8)}
+.ovx-ic svg{width:16px;height:16px}
+.ovx-lbl{font-size:13px;font-weight:600;color:var(--txt)}
+.ovx-pill{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#A5B4FC;background:rgba(129,140,248,.15);border:1px solid rgba(129,140,248,.3);padding:3px 9px;border-radius:20px;cursor:pointer;font-family:var(--head)}
+.ovx-cap{margin-left:auto;font-size:12px;color:var(--txt3);text-align:right;white-space:nowrap}
+.ovx-val{font-size:52px;font-weight:800;letter-spacing:-1.5px;line-height:1;font-variant-numeric:tabular-nums;margin-bottom:16px;color:var(--txt)}
+.ovx-cur{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-left:5px}
+.ovx-meta{font-size:13px;color:var(--txt2);display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.ovx-meta b{font-weight:700;color:#C9D1D9;font-variant-numeric:tabular-nums}
+.ovx-divider{width:1px;height:12px;background:var(--bdr2);display:inline-block}
+.ovx-track{height:5px;border-radius:3px;background:rgba(255,255,255,.06);overflow:hidden}
+.ovx-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#818CF8,#A5B4FC);transition:width .6s cubic-bezier(.4,0,.2,1)}
+.ovx-split{display:flex;gap:3px;height:5px;overflow:hidden}
+.ovx-split-seg{border-radius:3px;transition:flex-grow .6s cubic-bezier(.4,0,.2,1);min-width:3px}
+@media(max-width:720px){.ovx-row{grid-template-columns:1fr}.ovx-val{font-size:42px}}
+
 .ov2-insight-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
 .ov2-insight-card{
   background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);
@@ -3648,57 +3669,36 @@ input[type=range]::-moz-range-thumb{
       </svg>
     </div>
 
-    <!-- 3 stat cards -->
-    <div class="hkpi-row">
-      <div class="hkpi-card hstat" style="--ic-c:var(--grn)">
-        <div class="hstat-head">
-          <span class="hstat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>
-          <span class="hstat-lbl" data-t="ov_total_margin_lbl">Total margin</span>
+    <!-- Margin + Revenue summary (2 cards) -->
+    <div class="ovx-row">
+      <!-- Card 1: Total gross margin -->
+      <div class="ovx-card" style="--ax:#34D399">
+        <div class="ovx-head">
+          <span class="ovx-ic" style="--ic:#34D399"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>
+          <span class="ovx-lbl">Total gross margin</span>
+          <span class="ovx-cap">Before fixed costs</span>
         </div>
-        <div class="ov2-stat-val" id="ov_total_margin">—</div>
-        <div class="ov2-stat-sub" data-t="ov_before_fixed">Before fixed costs</div>
-        <svg class="hstat-spark" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><path class="hstat-spark-area" d="M0 30 L28 26 L56 28 L84 20 L112 23 L140 14 L168 17 L200 8 L200 40 L0 40 Z"/><polyline class="hstat-spark-line" points="0,30 28,26 56,28 84,20 112,23 140,14 168,17 200,8"/></svg>
+        <div class="ovx-val" id="ov_total_margin" style="color:#34D399">—</div>
+        <div class="ovx-meta">Margin / unit <b id="ov_pu">—</b><span class="ovx-divider"></span><b id="ov_margin" style="color:#A5B4FC">—</b> margin</div>
+        <div class="ovx-track"><div class="ovx-fill" id="ov_margin_bar" style="width:0%"></div></div>
       </div>
-      <div class="hkpi-card hstat" style="--ic-c:var(--c2)">
-        <div class="hstat-head">
-          <span class="hstat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></span>
-          <span class="hstat-lbl" data-t="ov_margin_pu_lbl">Margin / unit</span>
+      <!-- Card 2: Revenue -->
+      <div class="ovx-card" style="--ax:#818CF8">
+        <div class="ovx-head">
+          <span class="ovx-ic" style="--ic:#818CF8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+          <span class="ovx-lbl" data-t="hero_rev">Revenue</span>
+          <button id="rev_ship_toggle" onclick="toggleRevShipping()" class="ovx-pill" data-t="ov_rev_toggle">+Ship</button>
+          <span class="ovx-cap" id="ov_rev_sub">—</span>
         </div>
-        <div class="ov2-stat-val" id="ov_pu">—</div>
-        <div class="ov2-stat-sub" id="ov_margin">—</div>
-        <div class="hstat-bar"><div class="hstat-bar-fill" id="ov_margin_bar" style="width:0%"></div></div>
-      </div>
-      <div class="hkpi-card hstat" style="--ic-c:var(--grn)">
-        <div class="hstat-head">
-          <span class="hstat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
-          <span class="hstat-lbl" data-t="ov_net_pu_lbl">Net / unit</span>
-        </div>
-        <div class="ov2-stat-val" id="ov_net_pu">—</div>
-        <div class="ov2-stat-sub" data-t="ov_after_ads" id="ov_net_pu_sub">After ads &amp; salary</div>
-        <svg class="hstat-spark" viewBox="0 0 200 40" preserveAspectRatio="none" aria-hidden="true"><path class="hstat-spark-area" d="M0 32 L28 28 L56 30 L84 22 L112 25 L140 16 L168 18 L200 9 L200 40 L0 40 Z"/><polyline class="hstat-spark-line" points="0,32 28,28 56,30 84,22 112,25 140,16 168,18 200,9"/></svg>
+        <div class="ovx-val" id="ov_rev">—</div>
+        <div class="ovx-meta">Product <b id="ov_rev_prod">—</b><span class="ovx-divider"></span>Shipping <b id="ov_rev_ship">—</b></div>
+        <div class="ovx-split"><div class="ovx-split-seg" id="ov_rev_prod_seg" style="flex-grow:8;background:#818CF8"></div><div class="ovx-split-seg" id="ov_rev_ship_seg" style="flex-grow:1;background:#A78BFA"></div></div>
       </div>
     </div>
 
-    <!-- Revenue card -->
-    <div class="hkpi-card hkpi-rev">
-      <div class="hrev-main">
-        <div class="hrev-lbl">
-          <span data-t="hero_rev">Revenue</span>
-          <button id="rev_ship_toggle" onclick="toggleRevShipping()" class="hrev-toggle" data-t="ov_rev_toggle">+Ship</button>
-        </div>
-        <div class="ov2-stat-val hrev-val" id="ov_rev">—</div>
-        <div class="ov2-stat-sub" id="ov_rev_sub">—</div>
-      </div>
-      <div class="hrev-break">
-        <div class="hrev-break-item">
-          <div class="hrev-break-lbl" data-t="ov_rev_prod_lbl">Product revenue</div>
-          <div class="hrev-break-val" id="ov_rev_prod">—</div>
-        </div>
-        <div class="hrev-break-item">
-          <div class="hrev-break-lbl" data-t="ov_rev_ship_lbl">Shipping collected</div>
-          <div class="hrev-break-val" id="ov_rev_ship">—</div>
-        </div>
-      </div>
+    <!-- retained for JS (no longer displayed) -->
+    <div style="display:none">
+      <span id="ov_net_pu">—</span><span id="ov_net_pu_sub">—</span>
     </div>
 
     <!-- hidden IDs required by JS -->
@@ -5400,7 +5400,7 @@ function calc(){
 
   // ── Section 3: Overview ──
   set('ov_pu',    (Math.round(profitPU*10)/10).toFixed(1)+' '+CURRENCY, profitPU>=0?'var(--txt-title)':'var(--red)');
-  set('ov_margin', pct(marginPct)+' margin');
+  set('ov_margin', pct(marginPct));
   { const _mb=document.getElementById('ov_margin_bar'); if(_mb) _mb.style.width=Math.max(0,Math.min(100,marginPct))+'%'; }
   (function(){
     const _absProf = Math.abs(Math.round(totalProf*10)/10);
@@ -5487,7 +5487,9 @@ function calc(){
   // ── Hero strip extras ──
   const totalMarginProfit = totalRev - totalVar;   // before fixed costs
   set('ov_net_pu',      (profitPUNet>=0?'':'-')+eg(Math.abs(profitPUNet)), profitPUNet>=0?'var(--profit)':'var(--red)');
-  set('ov_total_margin', eg(totalMarginProfit), totalMarginProfit>=0?'var(--profit)':'var(--red)');
+  { const _tm=document.getElementById('ov_total_margin');
+    if(_tm){ _tm.innerHTML=(totalMarginProfit<0?'-':'')+Math.round(Math.abs(totalMarginProfit)).toLocaleString('en')+' <span class="ovx-cur" style="color:#6EE7B7">'+CURRENCY+'</span>';
+             _tm.style.color=totalMarginProfit>=0?'var(--profit)':'var(--red)'; } }
   // Hero badge: verdict + net profit / unit (presentation only)
   (function(){
     const _sub = document.getElementById('ov_total_sub');
@@ -8759,13 +8761,16 @@ function _updateRevDisplay(){
   const incl = window._lastRevInclShip||0, excl = window._lastRevExclShip||0;
   const units = window._lastDelivUnits||0;
   const val = REV_INCL_SHIP ? incl : excl;
+  const ship = Math.max(incl-excl,0);
   const fmtFull = n => Math.round(n).toLocaleString('en')+' '+CURRENCY;
   const el  = document.getElementById('ov_rev');
-  if(el && val > 0) el.textContent = fmtFull(val);
+  if(el && val > 0) el.innerHTML = Math.round(val).toLocaleString('en')+' <span class="ovx-cur" style="color:var(--txt2)">'+CURRENCY+'</span>';
   const sub = document.getElementById('ov_rev_sub');
-  if(sub && units > 0) sub.textContent = Math.round(units).toLocaleString('en')+' delivered units · '+(Math.round(val/units*10)/10).toLocaleString('en')+' '+CURRENCY+' each';
+  if(sub && units > 0) sub.textContent = Math.round(units).toLocaleString('en')+' units · '+(Math.round(val/units*10)/10).toLocaleString('en')+' '+CURRENCY;
   const rp = document.getElementById('ov_rev_prod'); if(rp) rp.textContent = fmtFull(excl);
-  const rs = document.getElementById('ov_rev_ship'); if(rs) rs.textContent = fmtFull(incl-excl);
+  const rs = document.getElementById('ov_rev_ship'); if(rs) rs.textContent = fmtFull(ship);
+  const ps = document.getElementById('ov_rev_prod_seg'); if(ps) ps.style.flexGrow = Math.max(excl,0.0001);
+  const ss = document.getElementById('ov_rev_ship_seg'); if(ss) ss.style.flexGrow = Math.max(ship,0.0001);
 }
 
 function toggleRevShipping(){
@@ -8773,9 +8778,10 @@ function toggleRevShipping(){
   const btn = document.getElementById('rev_ship_toggle');
   if(btn){
     btn.textContent      = REV_INCL_SHIP ? '+ Ship' : '− Ship';
-    btn.style.background = REV_INCL_SHIP ? 'rgba(167,139,250,.12)' : 'rgba(167,139,250,.3)';
-    btn.style.borderColor= REV_INCL_SHIP ? 'rgba(167,139,250,.4)' : 'var(--c4)';
-    btn.style.fontWeight = REV_INCL_SHIP ? '400' : '700';
+    btn.style.background = REV_INCL_SHIP ? 'rgba(129,140,248,.3)' : 'rgba(129,140,248,.12)';
+    btn.style.borderColor= REV_INCL_SHIP ? '#818CF8' : 'rgba(129,140,248,.3)';
+    btn.style.color      = '#A5B4FC';
+    btn.style.fontWeight = '700';
   }
   _updateRevDisplay();
 }
