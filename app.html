@@ -696,9 +696,9 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .alert-icon{flex-shrink:0;font-size:14px;margin-top:1px}
 .ib-num{font-weight:600;color:#fff}
 /* ── Funnel drop-off (Ads) ── */
-.fn-row{display:flex;align-items:center;gap:12px}
-.fn-bar{height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,.18);transition:width .6s cubic-bezier(.4,0,.2,1)}
-.fn-drop{font-size:13px;font-weight:500;color:#F87171;white-space:nowrap;flex-shrink:0}
+.fn-row{position:relative;display:flex;align-items:center;justify-content:center}
+.fn-bar{height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,.18);transition:width .6s cubic-bezier(.4,0,.2,1);font-variant-numeric:tabular-nums}
+.fn-drop{position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:13px;font-weight:500;color:#F87171;white-space:nowrap}
 .fn-summary{font-size:13px;color:var(--txt2);margin-top:6px}
 /* ── Budget breakdown bars (Ads) ── */
 .bdg-row{display:grid;grid-template-columns:130px 1fr;align-items:center;gap:12px;margin-bottom:12px}
@@ -2875,14 +2875,14 @@ input[type=range]::-moz-range-thumb{
   </div>
 
   <div class="kpi-row" id="s1_kpi_row">
-    <div class="kpi" style="--kc:var(--c1)">
-      <div class="kpi-lbl">Actual CPA (ads) <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_actual_cpa">Actual cost per Lead from ads.<br>= Ad budget ÷ total leads needed<br>If above Break-even CPA → business is losing.</span></span></div>
-      <div class="kpi-val" id="m_acpp" style="color:var(--c1)">—</div>
+    <div class="kpi kpi--hero" style="--kc:var(--c1)">
+      <div class="kpi-lbl">Actual CPA (ads)<span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_actual_cpa">Actual cost per Lead from ads.<br>= Ad budget ÷ total leads needed<br>If above Break-even CPA → business is losing.</span></span></div>
+      <div class="kpi-val" id="m_acpp" style="color:var(--c1l)">—</div>
       <div class="kpi-hint" data-t="hint_acpp">Budget ÷ total leads</div>
     </div>
     <div class="kpi" style="--kc:var(--c3)">
       <div class="kpi-lbl">Actual ROAS <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_actual_roas">Actual return on ad spend.<br>= (Selling price + customer shipping) × delivered orders ÷ ad budget<br>If below Break-even ROAS → business is losing.</span></span></div>
-      <div class="kpi-val" id="m_actual_roas" style="color:var(--c1)">—</div>
+      <div class="kpi-val" id="m_actual_roas" style="color:var(--c3)">—</div>
       <div class="kpi-hint" data-t="hint_roas_rev">Revenue ÷ ad spend</div>
     </div>
     <div class="kpi" style="--kc:rgba(255,255,255,.2)">
@@ -5673,9 +5673,9 @@ function renderFunnel(leads, conf, del){
 
   el.style.cssText = 'display:flex;flex-direction:column;justify-content:center;gap:12px;min-height:200px;padding:6px 0';
   el.innerHTML =
-    '<div class="fn-row"><div class="fn-bar" style="width:100%;background:#4F8FF7">Leads: '+f(leads)+'</div></div>'+
+    '<div class="fn-row"><div class="fn-bar" style="width:100%;background:linear-gradient(90deg,#3B82F6,#60A5FA)">Leads: '+f(leads)+'</div></div>'+
     '<div class="fn-row"><div class="fn-bar" style="width:'+wConf+'%;background:linear-gradient(90deg,#7C3AED,#A78BFA)">Confirmed: '+f(conf)+'</div><span class="fn-drop">↓ '+confDrop+'% dropped</span></div>'+
-    '<div class="fn-row"><div class="fn-bar" style="width:'+wDel+'%;background:linear-gradient(90deg,#059669,#34D399)">Delivered: '+f(del)+'</div><span class="fn-drop">↓ '+delDrop+'% dropped</span></div>'+
+    '<div class="fn-row"><div class="fn-bar" style="width:'+wDel+'%;background:linear-gradient(90deg,#10B981,#34D399)">Delivered: '+f(del)+'</div><span class="fn-drop">↓ '+delDrop+'% dropped</span></div>'+
     '<div class="fn-summary">Overall: <b style="color:#34D399">'+l2oPct+'%</b> of leads → delivered orders</div>';
 }
 
