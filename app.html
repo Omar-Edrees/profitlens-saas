@@ -718,6 +718,19 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .fn-bar{height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.28);transition:width .6s cubic-bezier(.4,0,.2,1);font-variant-numeric:tabular-nums}
 .fn-drop{font-size:13px;font-weight:500;color:#F87171;white-space:nowrap}
 .fn-summary{font-size:13px;color:var(--txt2);margin-top:12px;text-align:center;padding-right:150px}
+@media(max-width:560px){
+  /* Mobile: shrink the drop-label column to content so bars keep their width,
+     and stop offsetting the summary so it centres under the funnel. */
+  .fn-row{grid-template-columns:1fr auto;gap:8px}
+  .fn-barwrap{justify-content:flex-start}
+  .fn-bar{height:40px;font-size:14px;border-radius:9px}
+  .fn-drop{font-size:11px}
+  .fn-summary{padding-right:0}
+}
+@media(max-width:380px){
+  .fn-bar{height:36px;font-size:13px}
+  .fn-drop{font-size:10px}
+}
 /* ── Budget breakdown bars (Ads) ── */
 .bdg-row{display:grid;grid-template-columns:130px 1fr;align-items:center;gap:12px;margin-bottom:12px}
 .bdg-lbl{text-align:right;font-size:12px;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -939,6 +952,83 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 /* ── Overview redesign — 3 clean cards ── */
 .ov-cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:0 0 18px}
 .pl-num{font-variant-numeric:tabular-nums}
+
+/* ═══════ SHIPPING TAB — REDESIGN (theme-scoped to #s2) ═══════ */
+#s2{
+  --surface:#161B22; --surface-2:#11161D;
+  --text-strong:#fff; --text-2:#C9D1D9;
+  --muted:#8B949E; --muted-2:#6E7681; --faint:#4D5562;
+  --border:rgba(255,255,255,.06); --border-2:rgba(255,255,255,.08); --hairline:rgba(255,255,255,.04);
+  --inset:rgba(255,255,255,.03); --track:rgba(255,255,255,.06); --grid:rgba(255,255,255,.06);
+  --green:#34D399; --green-2:#6EE7B7; --purple:#818CF8; --purple-2:#A5B4FC;
+  --red:#F87171; --red-2:#FCA5A5; --blue:#38BDF8; --amber:#FBBF24;
+  --shp-trans:background-color .28s ease, border-color .28s ease, color .2s ease;
+}
+body[data-theme="light"] #s2{
+  --surface:#FFFFFF; --surface-2:#FFFFFF;
+  --text-strong:#0B1220; --text-2:#384152;
+  --muted:#5B6573; --muted-2:#7A8493; --faint:#A2ABB8;
+  --border:rgba(15,23,42,.10); --border-2:rgba(15,23,42,.12); --hairline:rgba(15,23,42,.06);
+  --inset:rgba(15,23,42,.035); --track:rgba(15,23,42,.08); --grid:rgba(15,23,42,.09);
+  --green:#059669; --green-2:#10B981; --purple:#6366F1; --purple-2:#4F46E5;
+  --red:#DC2626; --red-2:#EF4444; --blue:#0284C7; --amber:#B45309;
+}
+/* section header — match spec (purple badge, big H1) */
+.s2 .section-eyebrow .num{background:rgba(129,140,248,.14);border:1px solid rgba(129,140,248,.26);color:var(--purple-2)}
+.s2 .section-eyebrow{letter-spacing:.16em;color:var(--muted-2)}
+#s2 .section-title{font-size:34px;letter-spacing:-.03em;color:var(--text-strong)}
+#s2 .section-sub{font-size:15px;color:var(--muted)}
+
+#sp_ship_panel{color:var(--text)}
+.shp-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px}
+.shp-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px}
+.shp-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;transition:var(--shp-trans)}
+.shp-hero{position:relative;overflow:hidden}
+.shp-hero::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac,var(--green))}
+.shp-hero-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.shp-hero-lbl{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--text-2)}
+.shp-hero-lbl svg{width:14px;height:14px;color:var(--faint)}
+.shp-hero-trend{width:16px;height:16px;color:var(--ac,var(--green))}
+.shp-hero-val{font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--ac);font-variant-numeric:tabular-nums}
+.shp-hero-val .cur{font-size:19px;font-weight:700;margin-left:3px}
+.shp-hero-cap{font-size:12px;color:var(--muted-2);margin-top:8px}
+.shp-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:var(--text);margin-bottom:16px}
+.shp-bullet{width:7px;height:7px;border-radius:2px;flex-shrink:0}
+.shp-stack{display:flex;gap:2px;height:18px;border-radius:6px;overflow:hidden;margin-bottom:18px;background:var(--inset)}
+.shp-stack>div{transition:flex-grow .5s cubic-bezier(.4,0,.2,1)}
+.shp-legrow{display:flex;align-items:center;justify-content:space-between;padding:7px 0}
+.shp-legrow+.shp-legrow{border-top:1px solid var(--hairline)}
+.shp-leg-l{display:inline-flex;align-items:center;gap:9px;font-size:13px;color:var(--text-2)}
+.shp-leg-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.shp-leg-v{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums}
+.shp-divider{height:1px;background:var(--hairline);margin:14px 0}
+.shp-bigrow{display:flex;align-items:center;justify-content:space-between}
+.shp-bigrow-lbl{font-size:13px;color:var(--muted)}
+.shp-bigrow-val{font-size:24px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums}
+.shp-note{display:flex;align-items:flex-start;gap:9px;margin-top:16px;padding:12px 14px;border-radius:11px;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.2);font-size:13px;color:var(--text-2);line-height:1.5}
+.shp-note svg{width:16px;height:16px;color:var(--red);flex-shrink:0;margin-top:1px}
+.shp-totals-lbl{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted-2);margin-bottom:16px}
+.shp-totals-grid{display:grid;grid-template-columns:repeat(3,1fr)}
+.shp-totals-col{padding:0 22px}
+.shp-totals-col+.shp-totals-col{border-left:1px solid var(--hairline)}
+.shp-totals-col:first-child{padding-left:0}
+.shp-totals-col:last-child{padding-right:0}
+.shp-tot-lbl{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:8px}
+.shp-tot-lbl svg{width:14px;height:14px}
+.shp-tot-val{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.shp-tot-cap{font-size:12px;color:var(--muted-2);margin-top:8px}
+.shp-chart-sub{font-size:12px;color:var(--muted-2);margin:-8px 0 14px 15px}
+.shp-svg{width:100%;height:auto;display:block}
+.shp-svg text{font-variant-numeric:tabular-nums}
+.shp-cap{font-size:12px;color:var(--muted-2);margin-top:12px;line-height:1.5}
+@media(max-width:860px){
+  .shp-grid-3{grid-template-columns:1fr}
+  .shp-grid-2{grid-template-columns:1fr}
+  .shp-totals-grid{grid-template-columns:1fr;gap:18px}
+  .shp-totals-col{padding:0!important;border-left:none!important}
+  .shp-totals-col+.shp-totals-col{border-top:1px solid var(--hairline);padding-top:18px!important}
+  #s2 .section-title{font-size:26px}
+}
 .ov-card{background:var(--surf2);border-radius:14px;padding:22px}
 .ov-card-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:20px}
 .ov-card-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-top:2px}
@@ -3337,62 +3427,61 @@ input[type=range]::-moz-range-thumb{
   <!-- SINGLE PRODUCT — Shipping content -->
   <div id="sp_ship_panel">
 
-  <!-- ── Per-unit KPIs ── -->
-  <div class="kpi-row" style="grid-template-columns:repeat(3,1fr)">
-    <div class="kpi" style="--kc:var(--c3)">
-      <div class="kpi-lbl"><span data-t="kpi_real_ship">Real shipping / unit</span>
-        <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_real_ship">Real shipping cost per delivered unit after accounting for returns.<br>= (Del% × costDel + (1−Del%) × costRet) ÷ Del%</span></span>
+  <!-- ── Hero metric cards ── -->
+  <div class="shp-grid-3">
+    <div class="shp-card shp-hero" style="--ac:var(--green)">
+      <div class="shp-hero-head">
+        <span class="shp-hero-lbl"><span data-t="kpi_real_ship">Real shipping / unit</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+        <svg class="shp-hero-trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v5h-5"/></svg>
       </div>
-      <div class="kpi-val" id="sh_real" style="color:var(--c3)">—</div>
-      <div class="kpi-hint" data-t="hint_real_ship">Blended with returns</div>
+      <div class="shp-hero-val" id="sh_real">—</div>
+      <div class="shp-hero-cap" data-t="hint_real_ship">Blended with returns</div>
     </div>
-    <div class="kpi" style="--kc:var(--c1)">
-      <div class="kpi-lbl"><span data-t="kpi_collected">Customer pays</span>
-        <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_collected">Shipping amount collected from the customer per delivered unit.</span></span>
+    <div class="shp-card shp-hero" style="--ac:var(--blue)">
+      <div class="shp-hero-head">
+        <span class="shp-hero-lbl"><span data-t="kpi_collected">Collected from customer</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+        <svg class="shp-hero-trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v5h-5"/></svg>
       </div>
-      <div class="kpi-val" id="sh_collected" style="color:var(--c1)">—</div>
-      <div class="kpi-hint" data-t="hint_collected">Per delivered unit</div>
+      <div class="shp-hero-val" id="sh_collected">—</div>
+      <div class="shp-hero-cap" data-t="hint_collected">Per delivered unit</div>
     </div>
-    <div class="kpi" style="--kc:var(--red)">
-      <div class="kpi-lbl"><span data-t="kpi_net_ship">You absorb</span>
-        <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_net_ship">Net shipping cost you bear after the customer pays.<br>= Real shipping − Customer pays</span></span>
+    <div class="shp-card shp-hero" style="--ac:var(--red)">
+      <div class="shp-hero-head">
+        <span class="shp-hero-lbl"><span data-t="kpi_net_ship">Net shipping on you</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span>
+        <svg class="shp-hero-trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l6 6 4-4 8 8"/><path d="M21 17v-5h-5"/></svg>
       </div>
-      <div class="kpi-val" id="sh_net" style="color:var(--red)">—</div>
-      <div class="kpi-hint" data-t="hint_net_ship">After customer payment</div>
+      <div class="shp-hero-val" id="sh_net">—</div>
+      <div class="shp-hero-cap" data-t="hint_net_ship">After customer payment</div>
     </div>
   </div>
 
-  <!-- ── Cost breakdown visual card ── -->
-  <div class="chart-card" style="margin-bottom:14px">
-    <div class="chart-lbl" style="margin-bottom:14px">
-      <span class="cdot" style="background:var(--c3)"></span>
-      <span data-t="chart_sh_table">Shipping cost breakdown — per delivered order</span>
-    </div>
-    <!-- Stacked bar -->
-    <div id="sh_stack_bar" style="display:flex;height:28px;border-radius:8px;overflow:hidden;margin-bottom:16px"></div>
-    <!-- Legend rows -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px 20px">
-      <div class="sh-breakdown-row">
-        <span class="sh-dot" style="background:#00e5a0"></span>
-        <span class="sh-lbl">Fulfillment fee</span>
-        <span class="sh-val" id="sh_t1">—</span>
+  <!-- ── Cost breakdown card ── -->
+  <div class="shp-card" style="margin-bottom:18px">
+    <div class="shp-title"><span class="shp-bullet" style="background:var(--green)"></span><span data-t="chart_sh_table">Cost breakdown per delivered unit</span></div>
+    <div id="sh_stack_bar" class="shp-stack"></div>
+    <div>
+      <div class="shp-legrow">
+        <span class="shp-leg-l"><span class="shp-leg-dot" style="background:var(--green)"></span>Fulfillment fee</span>
+        <span class="shp-leg-v" id="sh_t1" style="color:var(--text)">—</span>
       </div>
-      <div class="sh-breakdown-row">
-        <span class="sh-dot" style="background:#4f8ff7"></span>
-        <span class="sh-lbl">Courier cost</span>
-        <span class="sh-val" id="sh_t2">—</span>
+      <div class="shp-legrow">
+        <span class="shp-leg-l"><span class="shp-leg-dot" style="background:var(--blue)"></span>Courier cost</span>
+        <span class="shp-leg-v" id="sh_t2" style="color:var(--text)">—</span>
       </div>
-      <div class="sh-breakdown-row" style="color:var(--red)">
-        <span class="sh-dot" style="background:#f43f5e"></span>
-        <span class="sh-lbl">Returns absorbed</span>
-        <span class="sh-val" id="sh_t5">—</span>
+      <div class="shp-legrow">
+        <span class="shp-leg-l"><span class="shp-leg-dot" style="background:var(--red)"></span><span data-t="sh_lbl_ret_abs">Returns absorbed</span></span>
+        <span class="shp-leg-v" id="sh_t5" style="color:var(--red)">—</span>
       </div>
     </div>
-    <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center">
-      <span style="font-size:12px;color:var(--txt3)">Real shipping / delivered order</span>
-      <span style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--c3)" id="sh_t6">—</span>
+    <div class="shp-divider"></div>
+    <div class="shp-bigrow">
+      <span class="shp-bigrow-lbl">Real shipping / delivered order</span>
+      <span class="shp-bigrow-val" id="sh_t6">—</span>
     </div>
-    <div id="sh_alert" class="alert aa" style="margin-top:12px"><span class="alert-icon">◎</span><span id="sh_msg">—</span></div>
+    <div class="shp-note">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+      <span id="sh_msg">—</span>
+    </div>
     <!-- hidden elements kept for JS compat -->
     <span id="sh_t1_h" style="display:none"></span>
     <span id="sh_t4" style="display:none"></span>
@@ -3406,45 +3495,49 @@ input[type=range]::-moz-range-thumb{
     <span id="sh_ret_impact" style="display:none"></span>
     <span id="sh_del_order" style="display:none"></span>
     <span id="sh_ret_order" style="display:none"></span>
+    <span id="sh_alert" style="display:none"></span>
   </div>
 
-  <!-- ── Totals row ── -->
-  <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);padding:16px 20px;margin-bottom:14px">
-    <div style="font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--txt3);margin-bottom:14px" data-t="sh_totals_lbl">TOTALS — ALL STOCK</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--bdr);border-radius:var(--r);overflow:hidden">
-      <div style="padding:14px 16px;border-right:1px solid var(--bdr)">
-        <div style="font-size:11px;color:var(--txt3);margin-bottom:6px" data-t="ov_total_ship">Total shipping cost</div>
-        <div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--c3)" id="sh_tot_real">—</div>
-        <div style="font-size:10px;color:var(--txt3);margin-top:4px" data-t="ov_total_delivered_lbl">All delivered units</div>
+  <!-- ── Totals card ── -->
+  <div class="shp-card" style="margin-bottom:18px">
+    <div class="shp-totals-lbl" data-t="sh_totals_lbl">TOTALS — ALL STOCK</div>
+    <div class="shp-totals-grid">
+      <div class="shp-totals-col">
+        <div class="shp-tot-lbl" data-t="ov_total_ship">Total shipping cost</div>
+        <div class="shp-tot-val" id="sh_tot_real" style="color:var(--green)">—</div>
+        <div class="shp-tot-cap" data-t="ov_total_delivered_lbl">Total delivered</div>
       </div>
-      <div style="padding:14px 16px;border-right:1px solid var(--bdr)">
-        <div style="font-size:11px;color:var(--txt3);margin-bottom:6px" data-t="ov_total_returns">Total return costs</div>
-        <div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--red)" id="sh_tot_ret">—</div>
-        <div style="font-size:10px;color:var(--txt3);margin-top:4px" id="sh_tot_ret_hint">— returns expected</div>
+      <div class="shp-totals-col">
+        <div class="shp-tot-lbl" style="color:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 015 5v3"/></svg><span data-t="ov_total_returns">Total return costs</span></div>
+        <div class="shp-tot-val" id="sh_tot_ret" style="color:var(--red)">—</div>
+        <div class="shp-tot-cap" id="sh_tot_ret_hint">— returns expected</div>
       </div>
-      <div style="padding:14px 16px">
-        <div style="font-size:11px;color:var(--txt3);margin-bottom:6px" data-t="kpi_collected">Collected from customer</div>
-        <div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--c1)" id="sh_tot_collected">—</div>
-        <div style="font-size:10px;margin-top:4px" id="sh_tot_net_hint">Net on you: —</div>
+      <div class="shp-totals-col">
+        <div class="shp-tot-lbl" data-t="kpi_collected">Collected from customer</div>
+        <div class="shp-tot-val" id="sh_tot_collected" style="color:var(--blue)">—</div>
+        <div class="shp-tot-cap" id="sh_tot_net_hint" style="color:var(--red)">Net on you: —</div>
       </div>
     </div>
   </div>
 
-  <!-- ── Charts ── -->
-  <div class="chart-card" style="margin-bottom:14px">
-    <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span><span data-t="chart_sh_sens">If your delivery rate changes — how does net profit move?</span></div>
-    <div style="font-size:11px;color:var(--txt3);margin:-4px 0 10px 18px" data-t="chart_sh_sens_sub">Red line = break-even. Green = profit zone, red = loss zone.</div>
-    <div class="ch-wrap" style="height:220px"><canvas id="ch_sh_profit_sens" role="img" aria-label="Net profit at different delivery rates"></canvas></div>
+  <!-- ── Profit sensitivity chart ── -->
+  <div class="shp-card" style="margin-bottom:18px">
+    <div class="shp-title"><span class="shp-bullet" style="background:var(--purple)"></span><span data-t="chart_sh_sens">If your delivery rate changes — how does net profit move?</span></div>
+    <div class="shp-chart-sub" data-t="chart_sh_sens_sub">Red line = break-even. Green = profit zone, red = loss zone.</div>
+    <div id="ch_sh_profit_sens" role="img" aria-label="Net profit at different delivery rates"></div>
   </div>
 
-  <div class="charts-2">
-    <div class="chart-card">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c3)"></span><span data-t="chart_sh_bar">Delivered vs returned — cost comparison</span></div>
-      <div class="ch-wrap"><canvas id="ch_sh_bar" role="img" aria-label="Bar chart comparing cost of delivered vs returned orders"></canvas></div>
+  <!-- ── Bottom row — two charts ── -->
+  <div class="shp-grid-2">
+    <div class="shp-card">
+      <div class="shp-title"><span class="shp-bullet" style="background:var(--blue)"></span><span data-t="chart_sh_bar">Cost per order — delivered vs returned</span></div>
+      <div id="ch_sh_bar" role="img" aria-label="Bar chart comparing cost of delivered vs returned orders"></div>
+      <div class="shp-cap" data-t="chart_sh_bar_cap">A returned order still costs the courier fee — with zero revenue back.</div>
     </div>
-    <div class="chart-card">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c4)"></span><span data-t="chart_sh_line">Shipping cost at different delivery rates</span></div>
-      <div class="ch-wrap"><canvas id="ch_sh_line" role="img" aria-label="Line chart showing shipping cost at different delivery rates"></canvas></div>
+    <div class="shp-card">
+      <div class="shp-title"><span class="shp-bullet" style="background:var(--amber)"></span><span data-t="chart_sh_line">Shipping cost / delivery rate sensitivity</span></div>
+      <div id="ch_sh_line" role="img" aria-label="Line chart showing shipping cost at different delivery rates"></div>
+      <div class="shp-cap" data-t="chart_sh_line_cap">Lower delivery rates spread returns over fewer orders — real cost / unit climbs fast.</div>
     </div>
   </div>
 
@@ -5346,9 +5439,16 @@ function calc(){
   window._lastActualCPP = actualCPP;
 
   // ── Section 2: Shipping ──
-  set('sh_real',        eg(effShip),          'var(--c3)');
-  set('sh_collected',   eg(shipC),             'var(--c1)');
-  set('sh_net',         eg(netShip),           netShip>0?'var(--red)':'var(--profit)');
+  // Hero cards — number 38px with a smaller currency suffix; color comes from the card accent.
+  const heroNum = (id, n, signed) => {
+    const el = document.getElementById(id); if(!el) return;
+    const v = (Math.round(Math.abs(n)*10)/10).toLocaleString('en',{minimumFractionDigits:1,maximumFractionDigits:1});
+    const sign = signed ? (n>=0 ? '−' : '+') : (n<0 ? '−' : '');
+    el.innerHTML = sign + v + ' <span class="cur">' + CURRENCY + '</span>';
+  };
+  heroNum('sh_real',      effShip);
+  heroNum('sh_collected', shipC);
+  heroNum('sh_net',       netShip, true);  // signed: cost on you shows as negative
   set('sh_ret_impact',  eg(retAbsorbed),       'var(--c4)');
   set('sh_ret_order',   eg(costRet),           'var(--red)');
   set('sh_del_order',   eg(costDel),           'var(--c1)');
@@ -5360,22 +5460,20 @@ function calc(){
   const commPlatTotal = commAmt + platPerOrder;
   const t3t4El = document.getElementById('sh_t3_t4');
   if(t3t4El) t3t4El.textContent = eg(commPlatTotal);
-  // Stacked bar
+  // Stacked bar — flex-grown by value, theme-driven colors (gaps + rounded ends via CSS)
   const stackBar = document.getElementById('sh_stack_bar');
   if(stackBar && effShip > 0){
     const segs = [
-      { val: fulfillDel,  color: '#00e5a0' },
-      { val: courier,     color: '#4f8ff7' },
-      { val: retAbsorbed, color: '#f43f5e' },
+      { val: fulfillDel,  color: 'var(--green)' },
+      { val: courier,     color: 'var(--blue)' },
+      { val: retAbsorbed, color: 'var(--red)' },
     ];
-    const total = segs.reduce((s,x)=>s+x.val,0);
     const _lbl = [T[LANG].sh_lbl_fulfill, T[LANG].sh_lbl_courier, T[LANG].sh_lbl_ret_abs];
     stackBar.innerHTML = segs.map((s,i)=>{
-      const pct = total>0 ? (s.val/total*100).toFixed(1) : 0;
-      return '<div style="width:'+pct+'%;background:'+s.color+';transition:width .4s" title="'+_lbl[i]+': '+Math.round(s.val)+' '+CURRENCY+' ('+pct+'%)"></div>';
+      return '<div style="flex:'+Math.max(s.val,0)+';background:'+s.color+'" title="'+_lbl[i]+': '+Math.round(s.val)+' '+CURRENCY+'"></div>';
     }).join('');
   }
-  set('sh_t5', '+ '+eg(retAbsorbed));
+  set('sh_t5', '+'+eg(retAbsorbed));
   set('sh_t6', eg(effShip)); // shipping only: fulfillment + courier + returns absorbed
 
   // Level 1 — Totals (all stock)
@@ -5389,15 +5487,15 @@ function calc(){
   const totCollected = shipC   * delivUnits;
   const totNetOnYou  = totShipReal - totCollected;
   const fmt0 = n => Math.round(n).toLocaleString('en');
-  set('sh_tot_real',      fmt0(totShipReal)      + ' ' + CURRENCY, 'var(--c3)');
+  set('sh_tot_real',      fmt0(totShipReal)      + ' ' + CURRENCY, 'var(--green)');
   set('sh_tot_ret',       fmt0(totRetCost)       + ' ' + CURRENCY, 'var(--red)');
-  set('sh_tot_collected', fmt0(totCollected)     + ' ' + CURRENCY, 'var(--c1)');
+  set('sh_tot_collected', fmt0(totCollected)     + ' ' + CURRENCY, 'var(--blue)');
   const retHint = document.getElementById('sh_tot_ret_hint');
   if(retHint) retHint.textContent = Math.round(returnUnits).toLocaleString('en') + T[LANG].js_returns_expected;
   const netHint = document.getElementById('sh_tot_net_hint');
   if(netHint){
     netHint.textContent = T[LANG].js_net_on_you + fmt0(totNetOnYou) + ' ' + CURRENCY;
-    netHint.style.color = totNetOnYou > 0 ? 'var(--red)' : 'var(--profit)';
+    netHint.style.color = totNetOnYou > 0 ? 'var(--red)' : 'var(--green)';
   }
   const fracFulfill=(effShip>0?(fulfillDel+courier)/effShip*100:0);
   const fracComm=(effShip>0?(commAmt+platPerOrder)/effShip*100:0);
@@ -5405,16 +5503,14 @@ function calc(){
   set('sh_p1_lbl', pct(fracFulfill)); document.getElementById('sh_p1').style.width=Math.min(fracFulfill,100)+'%';
   set('sh_p2_lbl', pct(fracComm));   document.getElementById('sh_p2').style.width=Math.min(fracComm,100)+'%';
   set('sh_p3_lbl', pct(fracRet));    document.getElementById('sh_p3').style.width=Math.min(fracRet,100)+'%';
-  const shAlert=document.getElementById('sh_alert');
   const overPay=effShip-shipC;
-  shAlert.className='alert '+(overPay>0?'aa':'ag');
   set('sh_msg', overPay>0
     ? `You absorb ${(Math.round(overPay*10)/10).toFixed(1)} ${CURRENCY} per delivered unit in real shipping costs above what you collect.`
     : `Shipping collected covers real cost — no shipping loss.`
   );
-  renderShBar(fulfillDel, courier, retAbsorbed, shipC);
-  renderShLine(fulfillDel, courier, costRet);
-  renderShProfitSens(profitPU, effShip, salary, ads, stock, costDel, costRet);
+  renderShBar(costDel, costRet, effShip);
+  renderShLine(fulfillDel, courier, costRet, delR);
+  renderShProfitSens(profitPU, effShip, salary, ads, stock, costDel, costRet, delR);
 
   // ── Section 3: Overview ──
   set('ov_pu',    (Math.round(profitPU*10)/10).toFixed(1)+' '+CURRENCY, profitPU>=0?'var(--txt-title)':'var(--red)');
@@ -5766,73 +5862,112 @@ function renderCPPLine(confR, profitPU, salaryPU){
   </svg>`;
 }
 
-function renderShBar(fulfill, courier, retAbs, shipC){
-  if(!dk('shb')) return;
-  CH['shb']=new Chart(document.getElementById('ch_sh_bar'),{
-    type:'bar',
-    data:{labels:['Fulfillment','Courier','Return absorbed','Customer pays'],datasets:[{data:[fulfill,courier,retAbs,shipC],backgroundColor:['#f59e0b','#4f8ff7','#f43f5e','#00e5a0'],borderRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc(),font:{size:10}},grid:{display:false}},y:{ticks:{color:tc(),callback:v=>Math.round(v)},grid:{color:gc()}}}}
-  });
+// ── Shipping charts — inline SVG, theme-aware via CSS variables (no chart lib) ──
+
+// Cost per order: delivered vs returned bars + blended reference line.
+function renderShBar(costDel, costRet, blended){
+  const host=document.getElementById('ch_sh_bar'); if(!host) return;
+  const W=460,H=280,PL=44,PR=440,PT=18,PB=234;
+  const yTop=_svgNiceTop(Math.max(costDel,costRet,blended,1));
+  const y=v=>PT+((yTop-v)/yTop)*(PB-PT);
+  const step=_svgNiceStep(yTop/4)||1;
+  let grid='',ylab='';
+  for(let gv=0; gv<=yTop+1e-6; gv+=step){const gy=y(gv);grid+=`<line x1="${PL}" y1="${gy.toFixed(1)}" x2="${PR}" y2="${gy.toFixed(1)}"/>`;ylab+=`<text x="${PL-8}" y="${(gy+4).toFixed(1)}">${_svgAxis(gv)}</text>`;}
+  const bw=88, gap=(PR-PL-2*bw)/3, x1=PL+gap, x2=PL+gap+bw+gap;
+  const bar=(x,v,col)=>{const by=y(Math.max(v,0)),bh=Math.max(PB-by,0);return `<rect x="${x.toFixed(1)}" y="${by.toFixed(1)}" width="${bw}" height="${bh.toFixed(1)}" rx="6" style="fill:${col}"/>`;};
+  const blY=y(blended);
+  host.innerHTML=`<svg class="shp-svg" viewBox="0 0 ${W} ${H}" font-family="Inter">
+    <g style="stroke:var(--grid)" stroke-width="1">${grid}</g>
+    <g style="fill:var(--muted-2)" font-size="11" text-anchor="end">${ylab}</g>
+    ${bar(x1,costDel,'var(--blue)')}${bar(x2,costRet,'var(--red)')}
+    <line x1="${PL}" y1="${blY.toFixed(1)}" x2="${PR}" y2="${blY.toFixed(1)}" style="stroke:var(--green)" stroke-width="1.5" stroke-dasharray="6 5" opacity=".85"/>
+    <text x="${PR}" y="${(blY-6).toFixed(1)}" text-anchor="end" style="fill:var(--green-2)" font-size="11" font-weight="700">Blended ${(Math.round(blended*10)/10).toFixed(1)}</text>
+    <g style="fill:var(--muted-2)" font-size="12" text-anchor="middle">
+      <text x="${(x1+bw/2).toFixed(1)}" y="${PB+22}">Delivered order</text>
+      <text x="${(x2+bw/2).toFixed(1)}" y="${PB+22}">Returned order</text>
+    </g>
+  </svg>`;
 }
 
-function renderShLine(fulfill, courier, costRet){
-  if(!dk('shl')) return;
-  const rates=[10,20,30,40,50,60,70,80,90,100].map(r=>r/100);
+// Real shipping cost / unit vs delivery rate (descending curve + "You" marker).
+function renderShLine(fulfill, courier, costRet, delR){
+  const host=document.getElementById('ch_sh_line'); if(!host) return;
   const costDel=fulfill+courier;
-  CH['shl']=new Chart(document.getElementById('ch_sh_line'),{
-    type:'line',
-    data:{labels:rates.map(r=>Math.round(r*100)+'%'),datasets:[{label:'Real shipping/unit',data:rates.map(r=>(r*costDel+(1-r)*costRet)/r),borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.08)',fill:true,tension:.4,pointRadius:3,pointBackgroundColor:'#f59e0b'}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc()},grid:{color:gc()}},y:{ticks:{color:tc(),callback:v=>Math.round(v)},grid:{color:gc()}}}}
-  });
+  const rates=[10,20,30,40,50,60,70,80,90];
+  const costAt=rp=>{const r=rp/100;return r>0?(r*costDel+(1-r)*costRet)/r:costDel;};
+  const W=460,H=280,PL=46,PR=440,PT=18,PB=234;
+  const yTop=_svgNiceTop(Math.max(...rates.map(costAt)))||1;
+  const x=rp=>PL+((rp-10)/80)*(PR-PL);
+  const y=v=>PT+((yTop-v)/yTop)*(PB-PT);
+  const step=_svgNiceStep(yTop/5)||1;
+  let grid='',ylab='';
+  for(let gv=0; gv<=yTop+1e-6; gv+=step){const gy=y(gv);grid+=`<line x1="${PL}" y1="${gy.toFixed(1)}" x2="${PR}" y2="${gy.toFixed(1)}"/>`;ylab+=`<text x="${PL-8}" y="${(gy+4).toFixed(1)}">${_svgAxis(gv)}</text>`;}
+  const P=rates.map(rp=>({x:x(rp),y:y(costAt(rp))}));
+  const poly=P.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const area=`${poly} ${P[P.length-1].x.toFixed(1)},${PB} ${P[0].x.toFixed(1)},${PB}`;
+  let xlab='';rates.forEach(rp=>{xlab+=`<text x="${x(rp).toFixed(1)}" y="${PB+22}">${rp}%</text>`;});
+  const youRp=Math.max(10,Math.min(90,Math.round(delR*100)));
+  const youX=x(youRp),youY=y(costAt(youRp));
+  host.innerHTML=`<svg class="shp-svg" viewBox="0 0 ${W} ${H}" font-family="Inter">
+    <defs><linearGradient id="shAmberFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" style="stop-color:var(--amber);stop-opacity:.22"/><stop offset="100%" style="stop-color:var(--amber);stop-opacity:0"/></linearGradient></defs>
+    <g style="stroke:var(--grid)" stroke-width="1">${grid}</g>
+    <g style="fill:var(--muted-2)" font-size="11" text-anchor="end">${ylab}</g>
+    <polygon points="${area}" fill="url(#shAmberFill)"/>
+    <polyline points="${poly}" fill="none" style="stroke:var(--amber)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <g style="fill:var(--muted-2)" font-size="11" text-anchor="middle">${xlab}</g>
+    <circle cx="${youX.toFixed(1)}" cy="${youY.toFixed(1)}" r="5" style="fill:var(--surface);stroke:var(--purple)" stroke-width="2.5"/>
+    <text x="${youX.toFixed(1)}" y="${(youY-12).toFixed(1)}" text-anchor="middle" style="fill:var(--purple-2)" font-size="11" font-weight="700">You ${youRp}% · ${Math.round(costAt(youRp))}</text>
+  </svg>`;
 }
 
-function renderShProfitSens(profitPU_base, effShip_base, salary, ads, stock, costDel, costRet){
-  if(!dk('shps')) return;
-  const rates = [10,20,30,40,50,60,70,80,90,100].map(r=>r/100);
-  // For each delivery rate: recalc effShip, adjust profitPU, calc net profit
-  const netProfits = rates.map(delR => {
-    const effShipR = delR > 0 ? (delR*costDel + (1-delR)*costRet)/delR : costDel;
-    const ppuR     = profitPU_base - (effShipR - effShip_base); // only shipping changes
-    return ppuR * stock - salary - ads;
-  });
-
-  CH['shps'] = new Chart(document.getElementById('ch_sh_profit_sens'),{
-    type:'line',
-    data:{
-      labels: rates.map(r=>Math.round(r*100)+'%'),
-      datasets:[
-        {
-          label:'Net profit',
-          data: netProfits,
-          borderColor:'#00e5a0',
-          backgroundColor:'rgba(0,229,160,.07)',
-          fill:true, tension:.4, pointRadius:4,
-          pointBackgroundColor: netProfits.map(v=>v>=0?'#00e5a0':'#f43f5e'),
-          segment:{ borderColor: ctx => netProfits[ctx.p1DataIndex]>=0?'#00e5a0':'#f43f5e' }
-        },
-        {
-          label:'Break-even',
-          data: rates.map(()=>0),
-          borderColor:'rgba(244,63,94,.55)',
-          borderDash:[5,4], pointRadius:0, fill:false
-        }
-      ]
-    },
-    options:{
-      responsive:true, maintainAspectRatio:false,
-      plugins:{
-        legend:{display:false},
-        tooltip:{callbacks:{label: ctx => {
-          const v = ctx.raw;
-          return (v>=0?'+ ':'') + Math.round(v).toLocaleString('en') + ' ' + CURRENCY;
-        }}}
-      },
-      scales:{
-        x:{ ticks:{color:tc()}, grid:{color:gc()} },
-        y:{ ticks:{color:tc(), callback:v=>(v>=0?'':'-')+Math.abs(Math.round(v/1000))+'K'}, grid:{color:gc()} }
-      }
+// Net profit vs delivery rate — red loss zone / green profit zone, break-even line, "You" marker.
+function renderShProfitSens(profitPU_base, effShip_base, salary, ads, stock, costDel, costRet, delR){
+  const host=document.getElementById('ch_sh_profit_sens'); if(!host) return;
+  const rates=[10,20,30,40,50,60,70,80,90,100];
+  const netAt=rp=>{
+    const r=rp/100;
+    const effShipR = r>0 ? (r*costDel+(1-r)*costRet)/r : costDel;
+    const ppuR = profitPU_base - (effShipR - effShip_base); // only shipping changes
+    return ppuR*stock - salary - ads;
+  };
+  const nets=rates.map(netAt);
+  const W=1000,H=360,PL=72,PR=982,PT=26,PB=312;
+  const yTop=_svgNiceTop(Math.max(...nets,0))||1000;
+  const yBot=-(_svgNiceTop(Math.abs(Math.min(...nets,0)))||1000);
+  const x=rp=>PL+((rp-10)/90)*(PR-PL);
+  const y=v=>PT+((yTop-v)/(yTop-yBot))*(PB-PT);
+  const y0=y(0);
+  const step=_svgNiceStep((yTop-yBot)/6)||1000;
+  let grid='',ylab='';
+  for(let gv=Math.ceil(yBot/step)*step; gv<=yTop+1e-6; gv+=step){const gy=y(gv);grid+=`<line x1="${PL}" y1="${gy.toFixed(1)}" x2="${PR}" y2="${gy.toFixed(1)}"/>`;ylab+=`<text x="${PL-12}" y="${(gy+4).toFixed(1)}">${_svgAxis(gv)}</text>`;}
+  // split curve into red(<=0) / green(>0) with a zero crossing
+  const P=rates.map(rp=>({x:x(rp),y:y(netAt(rp)),n:netAt(rp)}));
+  const red=[],grn=[];
+  for(let i=0;i<P.length;i++){
+    (P[i].n<=0?red:grn).push({x:P[i].x,y:P[i].y});
+    if(i<P.length-1 && (P[i].n<=0)!==(P[i+1].n<=0)){
+      const t=(0-P[i].n)/(P[i+1].n-P[i].n);
+      const cx=P[i].x+(P[i+1].x-P[i].x)*t;
+      red.push({x:cx,y:y0}); grn.push({x:cx,y:y0});
     }
-  });
+  }
+  const poly=a=>a.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const areaOf=a=>a.length<2?'':`${poly(a)} ${a[a.length-1].x.toFixed(1)},${y0.toFixed(1)} ${a[0].x.toFixed(1)},${y0.toFixed(1)}`;
+  let xlab='';rates.forEach(rp=>{xlab+=`<text x="${x(rp).toFixed(1)}" y="${PB+26}">${rp}%</text>`;});
+  const youRp=Math.max(10,Math.min(100,Math.round(delR*100)));
+  const youX=x(youRp),youY=y(netAt(youRp));
+  host.innerHTML=`<svg class="shp-svg" viewBox="0 0 ${W} ${H}" font-family="Inter">
+    <g style="stroke:var(--grid)" stroke-width="1">${grid}</g>
+    <g style="fill:var(--muted-2)" font-size="13" text-anchor="end">${ylab}</g>
+    ${grn.length>1?`<polygon points="${areaOf(grn)}" fill="rgba(52,211,153,.12)"/>`:''}
+    ${red.length>1?`<polygon points="${areaOf(red)}" fill="rgba(248,113,113,.12)"/>`:''}
+    <line x1="${PL}" y1="${y0.toFixed(1)}" x2="${PR}" y2="${y0.toFixed(1)}" style="stroke:var(--red)" stroke-width="1.5" stroke-dasharray="7 5" opacity=".75"/>
+    ${red.length>1?`<polyline points="${poly(red)}" fill="none" style="stroke:var(--red)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`:''}
+    ${grn.length>1?`<polyline points="${poly(grn)}" fill="none" style="stroke:var(--green)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`:''}
+    <g style="fill:var(--muted-2)" font-size="13" text-anchor="middle">${xlab}</g>
+    <circle cx="${youX.toFixed(1)}" cy="${youY.toFixed(1)}" r="6" style="fill:var(--surface);stroke:var(--purple)" stroke-width="3"/>
+    <text x="${youX.toFixed(1)}" y="${(youY-14).toFixed(1)}" text-anchor="middle" style="fill:var(--purple-2)" font-size="13" font-weight="700">You · ${youRp}%</text>
+  </svg>`;
 }
 
 // ── Inline-SVG chart helpers ────────────────────────────
@@ -8116,6 +8251,8 @@ const T = {
     chart_cpp_bar:'Actual CPA vs MAX CPA', chart_cpp_line:'MAX CPA sensitivity — delivery rate',
     chart_funnel:'Order funnel', chart_budget:'Budget breakdown',
     chart_sh_bar:'Cost per order — delivered vs returned', chart_sh_line:'Shipping cost / delivery rate sensitivity',
+    chart_sh_bar_cap:'A returned order still costs the courier fee — with zero revenue back.',
+    chart_sh_line_cap:'Lower delivery rates spread returns over fewer orders — real cost / unit climbs fast.',
     chart_sh_table:'Cost breakdown per delivered unit', chart_sh_prog:'Return cost share of shipping',
     chart_wf:'Unit economics waterfall', chart_donut:'Revenue allocation', chart_be:'Break-even curve',
     chart_pl:'Full P&L — all stock',
@@ -8371,6 +8508,8 @@ const T = {
     chart_cpp_bar:'CPA الفعلي مقابل MAX CPA', chart_cpp_line:'حساسية MAX CPA — نسبة التوصيل',
     chart_funnel:'فانل الأوردرات', chart_budget:'توزيع الميزانية',
     chart_sh_bar:'تكلفة الأوردر — محصّل مقابل مرتجع', chart_sh_line:'تكلفة الشحن عند نسب توصيل مختلفة',
+    chart_sh_bar_cap:'الأوردر المرتجع لسه بيكلّفك مصاريف الشحن — من غير أي إيراد راجع.',
+    chart_sh_line_cap:'نِسب التوصيل الأقل بتوزّع المرتجعات على أوردرات أقل — فالتكلفة الحقيقية / وحدة بتطلع بسرعة.',
     chart_sh_table:'تفصيل التكلفة لكل وحدة محصّلة', chart_sh_prog:'نسبة المرتجع من تكلفة الشحن',
     chart_wf:'اقتصاديات الوحدة', chart_donut:'توزيع الإيرادات', chart_be:'منحنى نقطة التعادل',
     chart_pl:'P&L الكامل — المخزون كله',
