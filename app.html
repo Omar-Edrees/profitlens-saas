@@ -5603,7 +5603,8 @@ function renderCPPBar(actual, max){
   // gauge: center (160,160) radius 120, sweeping 180°→0° over the top
   const R = 120;
   const gp = v => { const t=(180-(Math.min(Math.max(v,0),maxScale)/maxScale)*180)*Math.PI/180; return [160+R*Math.cos(t), 160-R*Math.sin(t)]; };
-  const arc = (v0,v1) => { const [x0,y0]=gp(v0),[x1,y1]=gp(v1); const large=((v1-v0)/maxScale>0.5)?1:0; return `M${x0.toFixed(1)},${y0.toFixed(1)} A${R},${R} 0 ${large},1 ${x1.toFixed(1)},${y1.toFixed(1)}`; };
+  // whole gauge is a 180° semicircle, so every sub-arc is ≤180° → large-arc-flag always 0
+  const arc = (v0,v1) => { const [x0,y0]=gp(v0),[x1,y1]=gp(v1); return `M${x0.toFixed(1)},${y0.toFixed(1)} A${R},${R} 0 0,1 ${x1.toFixed(1)},${y1.toFixed(1)}`; };
   const beSeg   = Math.min(max, maxScale);
   const gap     = maxScale*0.02;
   const isOver  = actual > max && max > 0;
