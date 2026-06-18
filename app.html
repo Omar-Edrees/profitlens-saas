@@ -16,26 +16,27 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 :root {
-  --bg:      #0d0f14;
-  --bg2:     #13161e;
-  --surf:    #13161e;
-  --surf2:   #1a1e28;
-  --surf3:   #222738;
-  --bdr:     #2a2f3d;
-  --bdr2:    #3a4055;
-  --c1:      #5b6af5;
-  --c2:      #8b5cf6;
-  --c3:      #22c55e;
-  --c4:      #4f8ff7;
-  --acc:     #5b6af5;
-  --acc2:    #4a58e8;
-  --red:     #ef4444;
-  --grn:     #22c55e;
-  --profit:  #22c55e;
-  --txt:     #e8eaf0;
-  --txt2:    #8890a6;
-  --txt3:    #555e78;
-  --txt-title: #e8eaf0;
+  --bg:      #0D1117;
+  --bg2:     #10151C;
+  --surf:    #161B22;
+  --surf2:   #1C2128;
+  --surf3:   #22272E;
+  --bdr:     rgba(255,255,255,0.06);
+  --bdr2:    rgba(255,255,255,0.10);
+  --c1:      #818CF8;
+  --c1l:     #A5B4FC;
+  --c2:      #A78BFA;
+  --c3:      #34D399;
+  --c4:      #38BDF8;
+  --acc:     #818CF8;
+  --acc2:    #6366F1;
+  --red:     #F87171;
+  --grn:     #34D399;
+  --profit:  #34D399;
+  --txt:     #E6EDF3;
+  --txt2:    #8B949E;
+  --txt3:    #6E7681;
+  --txt-title: #E6EDF3;
   --mono:    'Inter', system-ui, sans-serif; /* numeric text now uses Inter w/ tabular-nums (was JetBrains Mono) */
   --head:    'Inter', system-ui, sans-serif;
   --body:    'Inter', system-ui, sans-serif;
@@ -56,32 +57,28 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .topnav{
   position:sticky;top:0;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 24px;height:54px;
-  background:var(--bg);border-bottom:1px solid var(--bdr);
+  padding:0 24px;height:56px;
+  background:var(--bg);border-bottom:1px solid rgba(255,255,255,0.06);
   transition:background .3s,border-color .3s;
 }
 .brand{display:flex;align-items:center;gap:10px}
 .brand-mark{
-  width:28px;height:28px;border-radius:7px;background:var(--c1);
+  width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,#818CF8,#6366F1);
   display:flex;align-items:center;justify-content:center;
 }
-.brand-mark svg{width:14px;height:14px;fill:none;stroke:#000;stroke-width:2.2;stroke-linecap:round}
-.brand-name{font-family:var(--head);font-size:15px;font-weight:700;letter-spacing:-.3px}
-.brand-badge{font-size:9px;font-family:var(--mono);background:var(--c1);color:#fff;padding:2px 6px;border-radius:3px;font-weight:500}
+.brand-mark svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round}
+.brand-name{font-family:var(--head);font-size:18px;font-weight:600;letter-spacing:-.3px;color:#fff}
+.brand-badge{font-size:11px;font-family:var(--head);background:rgba(129,140,248,0.15);color:#A5B4FC;padding:2px 7px;border-radius:5px;font-weight:600;border:1px solid rgba(129,140,248,0.3)}
 
-.nav-pills{display:flex;gap:0;background:var(--surf);border:1px solid var(--bdr);border-radius:12px;padding:4px;flex:1;max-width:680px;margin:0 24px}
+.nav-pills{display:flex;gap:0;background:rgba(255,255,255,0.05);border:none;border-radius:10px;padding:4px;flex:1;max-width:680px;margin:0 24px}
 .nav-pill{
-  flex:1;padding:7px 18px;border:none;background:transparent;
-  color:var(--txt2);font-family:var(--body);font-size:13px;font-weight:500;
-  cursor:pointer;border-radius:9px;transition:all .18s;white-space:nowrap;
+  flex:1;padding:7px 20px;border:none;background:transparent;
+  color:var(--txt2);font-family:var(--body);font-size:14px;font-weight:500;
+  cursor:pointer;border-radius:8px;transition:all .18s;white-space:nowrap;
   display:flex;align-items:center;justify-content:center;
 }
-.nav-pill:hover{color:var(--txt);background:var(--surf2)}
-.nav-pill.active{background:var(--active-c,var(--c1));color:#fff}
-.nav-pill[data-s="0"].active{--active-c:var(--c1)}
-.nav-pill[data-s="1"].active{--active-c:var(--c2);color:#fff}
-.nav-pill[data-s="2"].active{--active-c:var(--c3);color:#fff}
-.nav-pill[data-s="3"].active{--active-c:var(--c4);color:#fff}
+.nav-pill:hover{color:var(--txt);background:rgba(255,255,255,0.04)}
+.nav-pill.active{background:linear-gradient(135deg,#818CF8,#6366F1);color:#fff;font-weight:600;box-shadow:0 2px 10px rgba(99,102,241,.4)}
 
 .nav-right{display:flex;align-items:center;gap:8px}
 .live{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--c1);font-family:var(--mono)}
@@ -90,13 +87,13 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 /* ─── CURRENCY SELECTOR ─── */
 .curr-selector{position:relative}
 .curr-btn{
-  display:flex;align-items:center;gap:5px;
-  height:30px;padding:0 10px;
-  background:var(--surf);border:1px solid var(--bdr2);border-radius:8px;
-  color:var(--txt);font-family:var(--mono);font-size:11px;font-weight:600;
+  display:flex;align-items:center;gap:6px;
+  height:32px;padding:0 12px;
+  background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:8px;
+  color:var(--txt);font-family:var(--head);font-size:13px;font-weight:600;
   cursor:pointer;transition:background .2s,border-color .2s;white-space:nowrap;
 }
-.curr-btn:hover{background:var(--surf3);border-color:var(--c1)}
+.curr-btn:hover{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.2)}
 .curr-flag{font-size:13px;line-height:1}
 .curr-code{letter-spacing:.04em}
 .curr-arrow{font-size:9px;color:var(--txt3);transition:transform .2s}
@@ -128,21 +125,22 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .curr-opt-check{margin-left:auto;color:var(--c1);font-size:11px;opacity:0}
 .curr-opt.active .curr-opt-check{opacity:1}
 .icon-btn{
-  width:30px;height:30px;border-radius:8px;background:var(--surf);
-  border:1px solid var(--bdr2);cursor:pointer;font-size:13px;
+  height:32px;min-width:32px;padding:0 10px;border-radius:8px;background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);cursor:pointer;font-size:14px;
   display:flex;align-items:center;justify-content:center;color:var(--txt2);
   transition:background .2s;
 }
+.icon-btn:hover{background:rgba(255,255,255,0.1)}
 .icon-btn:hover{background:var(--surf3)}
 
 /* ─── PROFILE MENU ─── */
 .pl-profile{position:relative}
 .pl-avatar{
-  width:30px;height:30px;border-radius:50%;
-  background:linear-gradient(135deg,var(--c1),#8b5cf6);
-  color:#000;border:none;cursor:pointer;flex-shrink:0;
+  width:34px;height:34px;border-radius:50%;
+  background:#34D399;
+  color:#0B0E14;border:none;cursor:pointer;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
-  font-family:var(--head);font-size:13px;font-weight:700;
+  font-family:var(--head);font-size:14px;font-weight:700;
   overflow:hidden;padding:0;transition:box-shadow .15s;
 }
 .pl-avatar:hover{box-shadow:0 0 0 2px var(--c1)}
@@ -274,20 +272,20 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 /* ─── SECTION HEADER ─────────────────── */
 .section-header{margin-bottom:24px}
 .section-eyebrow{
-  font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;
-  margin-bottom:6px;display:flex;align-items:center;gap:8px;color:var(--txt2);
+  font-family:var(--head);font-size:11px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;
+  margin-bottom:8px;display:flex;align-items:center;gap:10px;color:var(--txt3);
 }
 .section-eyebrow .num{
-  width:20px;height:20px;border-radius:5px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:10px;font-weight:500;
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:3px 8px;border-radius:6px;
+  font-size:11px;font-weight:700;letter-spacing:0;
 }
 .s0 .section-eyebrow .num{background:rgba(0,229,160,.15);color:var(--c1)}
-.s1 .section-eyebrow .num{background:rgba(59,130,246,.15);color:var(--c2)}
+.s1 .section-eyebrow .num{background:rgba(129,140,248,.15);color:#A5B4FC}
 .s2 .section-eyebrow .num{background:rgba(245,158,11,.15);color:var(--c3)}
 .s3 .section-eyebrow .num{background:rgba(167,139,250,.15);color:var(--c4)}
-.section-title{font-family:var(--head);font-size:24px;font-weight:700;letter-spacing:-.4px}
-.section-sub{color:var(--txt);font-size:13px;margin-top:4px;opacity:.9}
+.section-title{font-family:var(--head);font-size:28px;font-weight:800;letter-spacing:-.5px;color:#fff}
+.section-sub{color:var(--txt3);font-size:14px;font-weight:400;margin-top:6px}
 
 /* ─── INPUT GRID (section 0) ─────────── */
 .input-groups{display:grid;gap:16px;
@@ -605,15 +603,34 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 
 /* ── KPI Customizer ── */
 .kpi-cbar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.kpi-cbar-info{font-size:11px;color:var(--txt2);font-family:var(--mono);flex:1}
+.kpi-cbar-info{font-size:13px;color:var(--txt3);font-family:var(--head);flex:1}
 .kpi-cbtn{
-  font-size:11px;padding:5px 12px;border-radius:var(--r);
-  border:1px solid var(--bdr2);background:var(--surf2);
-  color:var(--txt2);cursor:pointer;display:flex;align-items:center;gap:5px;
-  font-family:var(--mono);transition:all .15s;
+  font-size:13px;padding:7px 14px;border-radius:8px;
+  border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);
+  color:var(--txt2);cursor:pointer;display:flex;align-items:center;gap:6px;
+  font-family:var(--head);transition:all .15s;
 }
 .kpi-cbtn:hover{background:var(--surf3);color:var(--txt)}
 .kpi-cbtn.on{background:var(--c1);color:var(--surf);border-color:var(--c1)}
+/* ── Ads metric cards (5 per row) ── */
+#s1_kpi_row{grid-template-columns:repeat(5,1fr);gap:14px}
+#s1_kpi_row .kpi{padding:18px}
+#s1_kpi_row .kpi-lbl{font-size:13px;font-weight:500;color:var(--txt2);padding-right:22px}
+#s1_kpi_row .kpi-val{font-size:32px;font-weight:700;letter-spacing:-.5px}
+#s1_kpi_row .kpi--count .kpi-val{font-size:36px}
+#s1_kpi_row .kpi-hint{font-size:12px;color:var(--txt3);opacity:1;font-family:var(--head);margin-top:4px}
+#s1_kpi_row .kpi::before{opacity:.55}
+.kpi-prog{height:4px;border-radius:2px;background:rgba(129,140,248,.15);overflow:hidden;margin-top:12px}
+.kpi-prog-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#818CF8,#A5B4FC);transition:width .6s cubic-bezier(.4,0,.2,1)}
+@media(max-width:1024px){#s1_kpi_row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){
+  #s1_kpi_row{grid-template-columns:repeat(2,1fr);gap:10px}
+  #s1_kpi_row .kpi{padding:14px}
+  #s1_kpi_row .kpi-val{font-size:22px}
+  #s1_kpi_row .kpi--count .kpi-val{font-size:24px}
+  #s1_kpi_row .kpi-lbl{font-size:11px;padding-right:16px}
+  #s1_kpi_row .kpi-hint{font-size:10px}
+}
 .kpi-row--edit .kpi{cursor:grab;user-select:none;overflow:visible!important}
 .kpi-row--edit .kpi:active{cursor:grabbing}
 .kpi-x,.kpi-plus{
@@ -658,6 +675,16 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
   color:var(--txt-title);margin-bottom:12px;display:flex;align-items:center;gap:7px;
 }
 .cdot{width:7px;height:7px;border-radius:2px;display:inline-block}
+/* Inline-SVG charts (Overview) — replace Chart.js, always render */
+.ov-svg-wrap{width:100%}
+.ov-svg-wrap svg{display:block;width:100%;height:auto;font-variant-numeric:tabular-nums}
+.ov-donut-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.ov-donut-svg{flex:0 0 auto;line-height:0}
+.ov-donut-svg svg{display:block;font-variant-numeric:tabular-nums}
+.ov-donut-legend{display:flex;flex-direction:column;gap:9px;flex:1;min-width:130px}
+.ov-donut-legend .li{font-size:12px}
+.ov-donut-legend .li b{color:var(--txt);font-variant-numeric:tabular-nums}
+@media(max-width:480px){.ov-donut-row{justify-content:center}}
 
 /* ─── TABLE ─────────────────────────── */
 .data-table{width:100%;border-collapse:collapse;font-size:12px}
@@ -684,7 +711,20 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 /* ─── ALERT ─────────────────────────── */
 .alert{border-radius:var(--r);padding:11px 14px;font-size:12px;margin-top:12px;display:flex;gap:9px;align-items:flex-start;line-height:1.5}
 .alert-icon{flex-shrink:0;font-size:14px;margin-top:1px}
-.ag{background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.2);color:var(--c1)}
+.ib-num{font-weight:600;color:#fff}
+/* ── Funnel drop-off (Ads) ── */
+.fn-row{display:grid;grid-template-columns:1fr 150px;align-items:center;gap:10px}
+.fn-barwrap{display:flex;justify-content:center;min-width:0}
+.fn-bar{height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.28);transition:width .6s cubic-bezier(.4,0,.2,1);font-variant-numeric:tabular-nums}
+.fn-drop{font-size:13px;font-weight:500;color:#F87171;white-space:nowrap}
+.fn-summary{font-size:13px;color:var(--txt2);margin-top:12px;text-align:center;padding-right:150px}
+/* ── Budget breakdown bars (Ads) ── */
+.bdg-row{display:grid;grid-template-columns:130px 1fr;align-items:center;gap:12px;margin-bottom:12px}
+.bdg-lbl{text-align:right;font-size:12px;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bdg-track{height:22px;border-radius:6px;background:rgba(255,255,255,0.04);overflow:hidden}
+.bdg-fill{height:100%;border-radius:6px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.bdg-axis{display:flex;justify-content:space-between;margin-left:142px;font-size:11px;color:var(--txt3);margin-top:4px;font-variant-numeric:tabular-nums}
+.ag{background:rgba(52,211,153,.07);border:1px solid rgba(52,211,153,.18);color:var(--c3)}
 .ar{background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);color:var(--red)}
 .aa{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:var(--c3)}
 
@@ -734,6 +774,88 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .hkpi-row .hkpi-card{text-align:center;padding:20px 16px}
 .hkpi-rev{text-align:center;padding:20px 40px}
 
+/* ── Premium profit hero (Overview) — glowing dark card ── */
+.hkpi-main{
+  position:relative;overflow:hidden;text-align:center;padding:36px 40px 34px;
+  --hero-glow:var(--profit);
+  background:
+    radial-gradient(125% 85% at 50% -12%, color-mix(in srgb, var(--hero-glow) 18%, transparent), transparent 62%),
+    var(--surf);
+}
+.hkpi-main.is-loss{--hero-glow:var(--red)}
+.hkpi-main::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:58%;height:2px;border-radius:0 0 3px 3px;
+  background:linear-gradient(90deg,transparent,var(--hero-glow),transparent);
+  box-shadow:0 0 24px 3px var(--hero-glow);opacity:.8;
+}
+.hkpi-main .ov2-eyebrow{
+  display:inline-flex;align-items:center;gap:9px;justify-content:center;
+  text-transform:uppercase;letter-spacing:1.7px;font-weight:600;font-family:var(--head);color:var(--txt2);
+}
+.hkpi-main .ov2-eyebrow::before{
+  content:'';width:7px;height:7px;border-radius:50%;
+  background:var(--hero-glow);box-shadow:0 0 9px var(--hero-glow);
+}
+.hkpi-main .ov2-big-number{
+  font-size:64px;letter-spacing:-3px;line-height:1.02;
+  text-shadow:0 0 44px color-mix(in srgb, var(--hero-glow) 50%, transparent);
+}
+.hkpi-main .ov2-cur{font-size:.4em;font-weight:700;letter-spacing:-.5px;margin-left:8px;opacity:.8}
+.hkpi-main .ov2-big-sub{
+  display:inline-flex;align-items:center;gap:11px;margin:18px auto 0;
+  padding:8px 18px;border-radius:999px;font-family:var(--head);font-size:13px;font-weight:600;
+  background:color-mix(in srgb, var(--hero-glow) 13%, transparent);
+  border:1px solid color-mix(in srgb, var(--hero-glow) 34%, transparent);
+  color:var(--hero-glow);
+}
+.hkpi-main .ov2-big-sub::before{
+  content:'✓';font-weight:800;font-size:10px;
+  width:16px;height:16px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;
+  background:color-mix(in srgb, var(--hero-glow) 22%, transparent);
+}
+.hkpi-main.is-loss .ov2-big-sub::before{content:'✕'}
+.hb-sep{width:1px;height:13px;background:currentColor;opacity:.35}
+.hb-pu{opacity:.9;font-variant-numeric:tabular-nums}
+.hero-spark{display:block;width:100%;max-width:480px;height:56px;margin:22px auto 0}
+.hero-spark-line{
+  fill:none;stroke:var(--hero-glow);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;
+  vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 5px color-mix(in srgb, var(--hero-glow) 75%, transparent));
+}
+.hero-spark-area{fill:url(#heroSparkGrad)}
+.hero-spark-stop0{stop-color:var(--hero-glow);stop-opacity:.34}
+.hero-spark-stop1{stop-color:var(--hero-glow);stop-opacity:0}
+@media(max-width:600px){
+  .hkpi-main{padding:26px 20px}
+  .hkpi-main .ov2-big-number{font-size:38px;letter-spacing:-1.5px}
+  .hero-spark{height:42px}
+}
+
+/* ── Overview stat cards: Total margin / Margin per unit / Net per unit ── */
+.hkpi-row .hkpi-card.hstat{position:relative;overflow:hidden;text-align:left;padding:18px 18px 16px;border:1px solid var(--bdr2)}
+.hstat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ic-c,var(--c1))}
+.hstat-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.hstat-ic{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:color-mix(in srgb, var(--ic-c,var(--c1)) 14%, transparent);color:var(--ic-c,var(--c1))}
+.hstat-ic svg{width:16px;height:16px}
+.hstat-lbl{font-size:12px;font-weight:600;color:var(--txt-title)}
+.hkpi-row .hkpi-card.hstat .ov2-stat-val{font-size:28px;font-weight:700;letter-spacing:-.5px;text-align:left}
+.hkpi-row .hkpi-card.hstat .ov2-stat-sub{text-align:left;color:var(--txt2)}
+.hstat-spark{display:block;width:100%;height:30px;margin-top:14px}
+.hstat-spark-line{fill:none;stroke:var(--ic-c,var(--c1));stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke;opacity:.95}
+.hstat-spark-area{fill:var(--ic-c,var(--c1));opacity:.11}
+.hstat-bar{height:6px;border-radius:3px;background:var(--surf3);overflow:hidden;margin-top:18px}
+.hstat-bar-fill{height:100%;border-radius:3px;background:var(--ic-c,var(--c1));transition:width .6s ease}
+
+/* ── Overview Revenue card ── */
+.hkpi-rev{display:flex;align-items:center;justify-content:space-between;gap:24px;text-align:left;flex-wrap:wrap;padding:22px 28px}
+.hrev-lbl{display:inline-flex;align-items:center;gap:9px;margin-bottom:8px;font-size:12px;font-weight:600;color:var(--txt-title)}
+.hrev-toggle{font-size:9px;font-family:var(--head);font-weight:700;padding:2px 8px;border-radius:5px;border:1px solid color-mix(in srgb, var(--c2) 40%, transparent);background:color-mix(in srgb, var(--c2) 14%, transparent);color:var(--c2);cursor:pointer;text-transform:uppercase;letter-spacing:.5px}
+.hrev-val{font-size:32px;font-weight:700;letter-spacing:-.6px;text-align:left}
+.hrev-break{display:flex;gap:40px}
+.hrev-break-lbl{font-size:11px;color:var(--txt2);margin-bottom:5px}
+.hrev-break-val{font-size:18px;font-weight:700;color:var(--txt);font-variant-numeric:tabular-nums}
+@media(max-width:600px){.hkpi-rev{flex-direction:column;align-items:flex-start;gap:18px}.hrev-break{gap:28px}}
+
 /* ── Hero v2 — centered vertical layout (sp_ov_panel) ── */
 .ov2-hero-v{
   display:flex;flex-direction:column;align-items:center;
@@ -760,6 +882,27 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .ov2-hero-rev{
   padding:18px 40px 24px;text-align:center;width:100%;
 }
+
+/* ── Overview: margin + revenue summary cards ── */
+.ovx-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:28px}
+.ovx-card{position:relative;background:var(--surf);border:1px solid var(--bdr);border-radius:16px;padding:28px 28px 24px;overflow:hidden}
+.ovx-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ax,var(--c1))}
+.ovx-head{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.ovx-ic{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:color-mix(in srgb,var(--ic,#818CF8) 15%, transparent);color:var(--ic,#818CF8)}
+.ovx-ic svg{width:16px;height:16px}
+.ovx-lbl{font-size:13px;font-weight:600;color:var(--txt)}
+.ovx-pill{font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#A5B4FC;background:rgba(129,140,248,.15);border:1px solid rgba(129,140,248,.3);padding:3px 9px;border-radius:20px;cursor:pointer;font-family:var(--head)}
+.ovx-cap{margin-left:auto;font-size:12px;color:var(--txt3);text-align:right;white-space:nowrap}
+.ovx-val{font-size:52px;font-weight:800;letter-spacing:-1.5px;line-height:1;font-variant-numeric:tabular-nums;margin-bottom:16px;color:var(--txt)}
+.ovx-cur{font-size:22px;font-weight:700;letter-spacing:-.5px;margin-left:5px}
+.ovx-meta{font-size:13px;color:var(--txt2);display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.ovx-meta b{font-weight:700;color:#C9D1D9;font-variant-numeric:tabular-nums}
+.ovx-divider{width:1px;height:12px;background:var(--bdr2);display:inline-block}
+.ovx-track{height:5px;border-radius:3px;background:rgba(255,255,255,.06);overflow:hidden}
+.ovx-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#818CF8,#A5B4FC);transition:width .6s cubic-bezier(.4,0,.2,1)}
+.ovx-split{display:flex;gap:3px;height:5px;overflow:hidden}
+.ovx-split-seg{border-radius:3px;transition:flex-grow .6s cubic-bezier(.4,0,.2,1);min-width:3px}
+@media(max-width:720px){.ovx-row{grid-template-columns:1fr}.ovx-val{font-size:42px}}
 
 .ov2-insight-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
 .ov2-insight-card{
@@ -794,10 +937,12 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .ov2-ship-arrow{color:var(--txt3);font-size:14px;flex-shrink:0}
 
 /* ── Overview redesign — 3 clean cards ── */
-.ov-cards-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin:20px 0}
+.ov-cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:0 0 18px}
+.pl-num{font-variant-numeric:tabular-nums}
 .ov-card{background:var(--surf2);border-radius:14px;padding:22px}
 .ov-card-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:20px}
 .ov-card-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;margin-top:2px}
+.ov-card-icon svg{width:18px;height:18px}
 .ov-card-title-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
 .ov-card-title{font-size:13px;font-weight:700;color:var(--txt-title)}
 .ov-card-sub{font-size:10px;color:var(--txt2);font-family:var(--mono);margin-top:3px}
@@ -935,16 +1080,17 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 
 /* ─── TARGET PROFIT ──────────────────── */
 .target-profit-card{
-  background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);
-  padding:20px;margin-bottom:20px;
-  border-left:3px solid var(--c1);
+  background:var(--surf);border:1px solid var(--bdr);border-radius:12px;
+  padding:16px 20px;margin-bottom:14px;
 }
 .target-profit-title{
-  font-family:var(--mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;
-  color:var(--c1);display:flex;align-items:center;justify-content:space-between;gap:7px;
+  font-family:var(--head);font-size:12px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;
+  color:var(--txt2);display:flex;align-items:center;justify-content:space-between;gap:7px;
   cursor:pointer;user-select:none;
 }
-.target-profit-title-left{display:flex;align-items:center;gap:7px}
+.target-profit-title-left{display:flex;align-items:center;gap:12px}
+.tp-icon{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:color-mix(in srgb,var(--ic,#818CF8) 14%, transparent);color:var(--ic,#818CF8)}
+.tp-icon svg{width:16px;height:16px}
 .collapsible-body{display:none;margin-top:14px}
 .collapsible-body.show{display:block}
 .target-profit-inputs{
@@ -963,18 +1109,18 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 
 /* ─── SCENARIO ───────────────────────── */
 .scenario-toggle{
-  display:flex;align-items:center;gap:8px;font-size:12px;color:var(--txt2);cursor:pointer;
+  display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt3);cursor:pointer;
 }
 .toggle-track{
-  width:36px;height:20px;border-radius:10px;background:var(--surf3);
-  border:1px solid var(--bdr2);position:relative;transition:background .2s;cursor:pointer;
+  width:36px;height:20px;border-radius:10px;background:rgba(255,255,255,0.1);
+  border:none;position:relative;transition:background .2s;cursor:pointer;
 }
-.toggle-track.on{background:var(--c2)}
+.toggle-track.on{background:rgba(52,211,153,0.3)}
 .toggle-thumb{
-  width:14px;height:14px;border-radius:50%;background:var(--txt3);
-  position:absolute;top:2px;left:2px;transition:all .2s;
+  width:14px;height:14px;border-radius:50%;background:#6B7280;
+  position:absolute;top:3px;left:3px;transition:all .2s;
 }
-.toggle-track.on .toggle-thumb{left:18px;background:#fff}
+.toggle-track.on .toggle-thumb{left:19px;background:#34D399}
 
 /* ─── SHIPPING BREAKDOWN ────────────── */
 .sh-breakdown-row{display:flex;align-items:center;gap:7px;font-size:12px;padding:4px 0}
@@ -1483,8 +1629,8 @@ input[type=range]::-moz-range-thumb{
         <div class="curr-options" id="curr_options"></div>
       </div>
     </div>
-    <button class="icon-btn" onclick="toggleLang()" id="lbtn" title="Toggle language" style="font-size:11px;font-family:var(--mono);width:36px">EN</button>
-    <button class="icon-btn" onclick="toggleTheme()" id="tbtn">☀</button>
+    <button class="icon-btn" onclick="toggleLang()" id="lbtn" title="Toggle language" style="font-size:13px;font-family:var(--head);font-weight:600;color:#fff">EN</button>
+    <button class="icon-btn" onclick="toggleTheme()" id="tbtn" style="font-size:17px">☀</button>
   </div>
 </nav>
 
@@ -2768,40 +2914,40 @@ input[type=range]::-moz-range-thumb{
     <button class="kpi-cbtn" id="kpi_cbtn" onclick="kpiToggleEdit()">⊞ Customize</button>
   </div>
 
-  <div class="kpi-row kpi-row--tiered" id="s1_kpi_row">
+  <div class="kpi-row" id="s1_kpi_row">
     <div class="kpi kpi--hero" style="--kc:var(--c1)">
-      <div class="kpi-lbl">Actual CPA (ads) <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_actual_cpa">Actual cost per Lead from ads.<br>= Ad budget ÷ total leads needed<br>If above Break-even CPA → business is losing.</span></span></div>
-      <div class="kpi-val" id="m_acpp" style="color:var(--c1)">—</div>
+      <div class="kpi-lbl">Actual CPA (ads)<span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_actual_cpa">Actual cost per Lead from ads.<br>= Ad budget ÷ total leads needed<br>If above Break-even CPA → business is losing.</span></span></div>
+      <div class="kpi-val" id="m_acpp" style="color:var(--c1l)">—</div>
       <div class="kpi-hint" data-t="hint_acpp">Budget ÷ total leads</div>
     </div>
-    <div class="kpi kpi--hero" style="--kc:var(--c1)">
+    <div class="kpi" style="--kc:var(--c3)">
       <div class="kpi-lbl">Actual ROAS <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_actual_roas">Actual return on ad spend.<br>= (Selling price + customer shipping) × delivered orders ÷ ad budget<br>If below Break-even ROAS → business is losing.</span></span></div>
-      <div class="kpi-val" id="m_actual_roas" style="color:var(--c1)">—</div>
+      <div class="kpi-val" id="m_actual_roas" style="color:var(--c3)">—</div>
       <div class="kpi-hint" data-t="hint_roas_rev">Revenue ÷ ad spend</div>
     </div>
-    <div class="kpi" style="--kc:var(--c2)">
+    <div class="kpi" style="--kc:rgba(255,255,255,.2)">
       <div class="kpi-lbl">Break-even CPA <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_be_cpa">Max CPA you can pay and still cover all business costs (product + shipping + ads + salary).<br>= (Profit/unit − Salary/unit) × Conf% × Del%<br>If Actual CPA exceeds this → you are losing on the whole business.</span></span></div>
       <div class="kpi-val" id="m_maxcpp" style="color:var(--c2)">—</div>
       <div class="kpi-hint" data-t="hint_be_full">Full business break-even</div>
     </div>
-    <div class="kpi" style="--kc:var(--c4)">
+    <div class="kpi" style="--kc:rgba(255,255,255,.2)">
       <div class="kpi-lbl">Break-even ROAS <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_be_roas">Minimum ROAS needed to cover all business costs.<br>= (Price + ShipC) × Conf% × Del% ÷ Break-even CPA<br>If Actual ROAS is below this → business is losing.</span></span></div>
       <div class="kpi-val" id="m_be_roas" style="color:var(--c4)">—</div>
       <div class="kpi-hint" id="m_roas_hint" data-t="hint_be_min">Min to break even</div>
     </div>
-    <div class="kpi" style="--kc:var(--txt2)">
+    <div class="kpi kpi--count" style="--kc:transparent">
       <div class="kpi-lbl">Leads needed <span style="color:var(--txt3)">(ads)</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_leads_needed">Total leads needed from ads to sell all stock.<br>= Stock ÷ Del% ÷ Conf%</span></span></div>
       <div class="kpi-val" id="m_leads" style="color:var(--txt)">—</div>
       <div class="kpi-hint" data-t="hint_leads">All incoming leads</div>
     </div>
-    <div class="kpi" style="--kc:var(--c3)">
+    <div class="kpi kpi--count" style="--kc:var(--c3)">
       <div class="kpi-lbl"><span data-t="kpi_confirmed">Confirmed orders</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_confirmed">Confirmed orders from leads.<br>= Leads × Confirmation rate</span></span></div>
       <div class="kpi-val" id="m_confirmed" style="color:var(--c3)">—</div>
       <div class="kpi-hint" data-t="hint_confirmed">After confirmation rate</div>
     </div>
-    <div class="kpi" style="--kc:var(--c4)">
+    <div class="kpi kpi--count" style="--kc:var(--c1)">
       <div class="kpi-lbl"><span data-t="kpi_delivered">Delivered orders</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_delivered">Actually delivered orders — your real sold units.<br>= Confirmed × Delivery rate</span></span></div>
-      <div class="kpi-val" id="m_delivered" style="color:var(--c4)">—</div>
+      <div class="kpi-val" id="m_delivered" style="color:var(--c1)">—</div>
       <div class="kpi-hint" data-t="hint_delivered">After delivery rate</div>
     </div>
     <div class="kpi" style="--kc:var(--c1)">
@@ -2814,10 +2960,11 @@ input[type=range]::-moz-range-thumb{
       <div class="kpi-val" id="m_cost_per_del" style="color:var(--c3)">—</div>
       <div class="kpi-hint" data-t="hint_cost_del_s">Ad budget ÷ delivered</div>
     </div>
-    <div class="kpi" style="--kc:var(--c2)">
+    <div class="kpi kpi--count" style="--kc:var(--c1)">
       <div class="kpi-lbl">Lead → Order Rate <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_lead_order">Lead to delivered order conversion — funnel efficiency in one number.<br>= Delivered ÷ Leads × 100<br>= Conf% × Del%<br>Higher is better.</span></span></div>
-      <div class="kpi-val" id="m_l2o_rate" style="color:var(--c2)">—</div>
+      <div class="kpi-val" id="m_l2o_rate" style="color:var(--c1)">—</div>
       <div class="kpi-hint">Conf% × Del%</div>
+      <div class="kpi-prog"><div class="kpi-prog-fill" id="m_l2o_bar" style="width:0%"></div></div>
     </div>
     <div class="kpi" style="--kc:var(--red)">
       <div class="kpi-lbl">Wasted Ad Spend <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_wasted">Portion of ad budget spent on leads that did not convert to delivered orders.<br>= Budget × (1 − Conf% × Del%)<br>Not a total loss — confirmation cost is normal — but lower is better.</span></span></div>
@@ -2839,18 +2986,18 @@ input[type=range]::-moz-range-thumb{
   <!-- ── Ads Health Banner — moved below KPIs ── -->
   <div id="ads_health_banner" style="
     display:none;
-    align-items:flex-start;gap:12px;
-    padding:14px 18px;
-    border-radius:var(--r);
-    border:1px solid var(--ads-banner-border, rgba(0,229,160,.25));
-    background:var(--ads-banner-bg, rgba(0,229,160,.07));
-    margin-top:4px;margin-bottom:0;
-    font-size:13px;line-height:1.5;
+    align-items:flex-start;gap:14px;
+    padding:16px 20px;
+    border-radius:12px;
+    border:1px solid var(--ads-banner-border, rgba(52,211,153,.18));
+    background:var(--ads-banner-bg, rgba(52,211,153,.07));
+    margin-top:4px;margin-bottom:18px;
+    font-size:13px;line-height:1.6;
   ">
-    <span id="ads_health_icon" style="font-size:18px;flex-shrink:0;margin-top:1px">✓</span>
+    <span id="ads_health_icon" style="width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0;background:rgba(52,211,153,.15);color:#34D399">✓</span>
     <div>
-      <div id="ads_health_title" style="font-weight:700;margin-bottom:3px;color:var(--ads-banner-color,var(--c1))">—</div>
-      <div id="ads_health_body" style="color:var(--txt);opacity:.85">—</div>
+      <div id="ads_health_title" style="font-weight:600;font-size:14px;margin-bottom:4px;color:var(--ads-banner-color,#34D399)">—</div>
+      <div id="ads_health_body" style="color:var(--txt2)">—</div>
     </div>
   </div>
   <!-- ── NEW VISUAL ANALYTICS ── -->
@@ -2859,17 +3006,11 @@ input[type=range]::-moz-range-thumb{
   <div class="charts-2">
     <!-- Chart 1: CPA Gauge -->
     <div class="chart-card">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c2)"></span>CPA vs Break-even</div>
-      <div style="position:relative;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:8px">
-        <canvas id="ch_cpa_gauge" style="position:absolute;top:0;left:0;width:100%;height:100%"></canvas>
-        <div style="position:relative;z-index:2;text-align:center;margin-bottom:4px">
-          <div id="gauge_actual_lbl" style="font-size:22px;font-weight:800;font-family:var(--mono);color:var(--c1)">—</div>
-          <div style="font-size:10px;color:var(--txt2);margin-top:2px">Actual CPA</div>
-        </div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-top:4px;padding:0 4px">
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c1);border-radius:2px"></span>CPA vs Break-even</div>
+      <div id="gauge_svg" style="text-align:center;padding:6px 0"></div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--txt3);margin-top:8px;padding:0 4px">
         <span>0</span>
-        <span id="gauge_be_lbl" style="color:var(--c2);font-weight:600">BE: — EGP</span>
+        <span id="gauge_be_lbl" style="color:#A5B4FC;font-weight:600">BE: — EGP</span>
         <span id="gauge_max_lbl">Max</span>
       </div>
       <div id="cpp_alert" class="alert ag" style="margin-top:10px"><span class="alert-icon">✓</span><span id="cpp_msg">—</span></div>
@@ -2877,9 +3018,9 @@ input[type=range]::-moz-range-thumb{
 
     <!-- Chart 2: Budget Waterfall -->
     <div class="chart-card">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span><span data-t="chart_budget_title">Where did your budget go?</span></div>
-      <div class="ch-wrap"><canvas id="ch_budget_waterfall"></canvas></div>
-      <div id="waterfall_summary" style="font-size:11px;color:var(--txt2);margin-top:8px;text-align:center"></div>
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c1);border-radius:2px"></span><span data-t="chart_budget_title">Where did your budget go?</span></div>
+      <div id="budget_bars" style="padding:10px 0 0"></div>
+      <div id="waterfall_summary" style="font-size:13px;color:var(--txt2);margin-top:12px;text-align:center"></div>
     </div>
   </div>
 
@@ -2894,14 +3035,14 @@ input[type=range]::-moz-range-thumb{
     <!-- Chart 4: Sensitivity + You are here -->
     <div class="chart-card">
       <div class="chart-lbl"><span class="cdot" style="background:var(--c3)"></span>BE CPA vs Lead→Order rate — where are you?</div>
-      <div class="ch-wrap"><canvas id="ch_cpp_line"></canvas></div>
+      <div id="cpp_line_svg" style="padding:4px 0"></div>
     </div>
   </div>
 
   <!-- Target Profit Calculator -->
   <div class="target-profit-card">
     <div class="target-profit-title" onclick="toggleSection('tp_body','tp_toggle','tp_toggle_lbl')">
-      <div class="target-profit-title-left"><span>🎯</span> <span data-t="tp_calc_title">Target Profit Calculator</span></div>
+      <div class="target-profit-title-left"><span class="tp-icon" style="--ic:#F87171"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> <span data-t="tp_calc_title">Target Profit Calculator</span></div>
       <div class="scenario-toggle">
         <span id="tp_toggle_lbl">Show</span>
         <div class="toggle-track" id="tp_toggle"><div class="toggle-thumb"></div></div>
@@ -2950,9 +3091,9 @@ input[type=range]::-moz-range-thumb{
   </div>
 
   <!-- ROAS Target Simulator — 4-scenario lock system -->
-  <div class="target-profit-card" style="border-left-color:var(--c2)">
-    <div class="target-profit-title" style="color:var(--c2)" onclick="toggleSection('roas_body','roas_toggle','roas_toggle_lbl')">
-      <div class="target-profit-title-left"><span>📈</span> <span data-t="roas_title">ROAS Target Simulator</span></div>
+  <div class="target-profit-card">
+    <div class="target-profit-title" onclick="toggleSection('roas_body','roas_toggle','roas_toggle_lbl')">
+      <div class="target-profit-title-left"><span class="tp-icon" style="--ic:#818CF8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span> <span data-t="roas_title">ROAS Target Simulator</span></div>
       <div class="scenario-toggle">
         <span id="roas_toggle_lbl">Show</span>
         <div class="toggle-track" id="roas_toggle"><div class="toggle-thumb"></div></div>
@@ -3526,39 +3667,49 @@ input[type=range]::-moz-range-thumb{
   <div class="hkpi-wrap">
 
     <!-- Net Profit card -->
-    <div class="hkpi-card hkpi-main">
+    <div class="hkpi-card hkpi-main" id="ov_hero_card">
       <div class="ov2-eyebrow" data-t="ov_net_profit">Net total profit</div>
       <div class="ov2-big-number" id="ov_total">—</div>
       <div class="ov2-big-sub" id="ov_total_sub">—</div>
+      <svg class="hero-spark" viewBox="0 0 480 60" preserveAspectRatio="none" aria-hidden="true">
+        <defs><linearGradient id="heroSparkGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop class="hero-spark-stop0" offset="0"/><stop class="hero-spark-stop1" offset="1"/>
+        </linearGradient></defs>
+        <path class="hero-spark-area" d="M0 46 L48 41 L96 43 L144 35 L192 37 L240 27 L288 31 L336 21 L384 25 L432 12 L480 7 L480 60 L0 60 Z"/>
+        <polyline class="hero-spark-line" points="0,46 48,41 96,43 144,35 192,37 240,27 288,31 336,21 384,25 432,12 480,7"/>
+      </svg>
     </div>
 
-    <!-- 3 stat cards -->
-    <div class="hkpi-row">
-      <div class="hkpi-card">
-        <div class="ov2-stat-lbl" data-t="ov_total_margin_lbl">Total margin</div>
-        <div class="ov2-stat-val" id="ov_total_margin">—</div>
-        <div class="ov2-stat-sub" data-t="ov_before_fixed">Before fixed costs</div>
+    <!-- Margin + Revenue summary (2 cards) -->
+    <div class="ovx-row">
+      <!-- Card 1: Total gross margin -->
+      <div class="ovx-card" style="--ax:#34D399">
+        <div class="ovx-head">
+          <span class="ovx-ic" style="--ic:#34D399"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>
+          <span class="ovx-lbl">Total gross margin</span>
+          <span class="ovx-cap">Before fixed costs</span>
+        </div>
+        <div class="ovx-val" id="ov_total_margin" style="color:#34D399">—</div>
+        <div class="ovx-meta">Margin / unit <b id="ov_pu">—</b><span class="ovx-divider"></span><b id="ov_margin" style="color:#A5B4FC">—</b> margin</div>
+        <div class="ovx-track"><div class="ovx-fill" id="ov_margin_bar" style="width:0%"></div></div>
       </div>
-      <div class="hkpi-card">
-        <div class="ov2-stat-lbl" data-t="ov_margin_pu_lbl">Margin / unit</div>
-        <div class="ov2-stat-val" id="ov_pu">—</div>
-        <div class="ov2-stat-sub" id="ov_margin">—</div>
-      </div>
-      <div class="hkpi-card">
-        <div class="ov2-stat-lbl" data-t="ov_net_pu_lbl">Net / unit</div>
-        <div class="ov2-stat-val" id="ov_net_pu">—</div>
-        <div class="ov2-stat-sub" data-t="ov_after_ads" id="ov_net_pu_sub">After ads &amp; salary</div>
+      <!-- Card 2: Revenue -->
+      <div class="ovx-card" style="--ax:#818CF8">
+        <div class="ovx-head">
+          <span class="ovx-ic" style="--ic:#818CF8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+          <span class="ovx-lbl" data-t="hero_rev">Revenue</span>
+          <button id="rev_ship_toggle" onclick="toggleRevShipping()" class="ovx-pill" data-t="ov_rev_toggle">+Ship</button>
+          <span class="ovx-cap" id="ov_rev_sub">—</span>
+        </div>
+        <div class="ovx-val" id="ov_rev">—</div>
+        <div class="ovx-meta">Product <b id="ov_rev_prod">—</b><span class="ovx-divider"></span>Shipping <b id="ov_rev_ship">—</b></div>
+        <div class="ovx-split"><div class="ovx-split-seg" id="ov_rev_prod_seg" style="flex-grow:8;background:#818CF8"></div><div class="ovx-split-seg" id="ov_rev_ship_seg" style="flex-grow:1;background:#A78BFA"></div></div>
       </div>
     </div>
 
-    <!-- Revenue card -->
-    <div class="hkpi-card hkpi-rev">
-      <div class="ov2-stat-lbl" style="display:inline-flex;align-items:center;gap:6px;justify-content:center;margin-bottom:8px">
-        <span data-t="hero_rev">Revenue</span>
-        <button id="rev_ship_toggle" onclick="toggleRevShipping()" style="font-size:9px;font-family:var(--mono);padding:1px 5px;border-radius:4px;border:1px solid rgba(167,139,250,.4);background:rgba(167,139,250,.12);color:var(--c4);cursor:pointer" data-t="ov_rev_toggle">+Ship</button>
-      </div>
-      <div class="ov2-stat-val" style="font-size:22px" id="ov_rev">—</div>
-      <div class="ov2-stat-sub" id="ov_rev_sub">—</div>
+    <!-- retained for JS (no longer displayed) -->
+    <div style="display:none">
+      <span id="ov_net_pu">—</span><span id="ov_net_pu_sub">—</span>
     </div>
 
     <!-- hidden IDs required by JS -->
@@ -3567,121 +3718,126 @@ input[type=range]::-moz-range-thumb{
     </div>
   </div>
 
-  <!-- ══ 3 CLEAN CARDS ═════════════════════════════════════════════════ -->
+  <!-- ══ 3 INSIGHT PANELS ═══════════════════════════════════════════════ -->
   <div class="ov-cards-3">
 
-    <!-- Card 1: Advertising -->
-    <div class="ov-card">
-      <div class="ov-card-head">
-        <span class="ov-card-icon" style="background:rgba(59,130,246,.12);color:var(--c2)">📢</span>
-        <div>
-          <div class="ov-card-title-row">
-            <div class="ov-card-title" data-t="ov_ads_title">Advertising</div>
-            <div id="ov_ads_verdict" class="ov2-badge" style="flex-shrink:0">—</div>
+    <!-- PANEL 1: Advertising -->
+    <div style="border-radius:16px;padding:22px;background:#161B22;border:1px solid rgba(255,255,255,0.06)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+        <div style="display:flex;align-items:center;gap:11px">
+          <span style="width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:rgba(248,113,113,0.12)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 11-5.8-1.6"/></svg></span>
+          <div>
+            <div style="font-size:15px;font-weight:600;color:#E6EDF3" data-t="ov_ads_title">Advertising</div>
+            <div style="font-size:12px;color:#6E7681" data-t="ov_ads_card_sub">CPA &amp; ROAS vs break-even</div>
           </div>
-          <div class="ov-card-sub" data-t="ov_ads_card_sub">CPA &amp; ROAS vs break-even</div>
+        </div>
+        <div id="ov_ads_verdict" style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#6EE7B7;background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.28);padding:3px 9px;border-radius:999px;flex-shrink:0">—</div>
+      </div>
+
+      <!-- Block A — Actual CPA -->
+      <div style="margin-bottom:18px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+          <span style="font-size:13px;color:#8B949E">Actual CPA</span>
+          <span class="pl-num" id="ov_actual_cpa" style="font-size:16px;font-weight:700;color:#34D399">—</span>
+        </div>
+        <div style="position:relative;height:6px;border-radius:3px;background:rgba(255,255,255,0.06)">
+          <div id="ov_cpa_gauge" style="width:0%;height:100%;border-radius:3px;background:linear-gradient(90deg,#818CF8,#A5B4FC)"></div>
+          <div style="position:absolute;top:-3px;left:100%;width:2px;height:12px;background:#F87171;transform:translateX(-2px)"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px">
+          <span style="color:#6E7681">0</span>
+          <span class="pl-num" id="ov_be_cpa_lbl" style="color:#8B949E">BE: —</span>
         </div>
       </div>
 
-      <div class="ov-card-metric">
-        <span class="ov-card-lbl">Actual CPA</span>
-        <span class="ov-card-val" id="ov_actual_cpa">—</span>
-      </div>
-      <div class="ov2-gauge-wrap" style="margin:8px 0 16px">
-        <div class="ov2-gauge-track">
-          <div class="ov2-gauge-fill" id="ov_cpa_gauge" style="width:0%"></div>
-          <div class="ov2-gauge-marker" id="ov_cpa_marker" style="left:70%"></div>
+      <!-- Block B — Actual ROAS -->
+      <div style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+          <span style="font-size:13px;color:#8B949E">Actual ROAS</span>
+          <span class="pl-num" id="ov_actual_roas" style="font-size:16px;font-weight:700;color:#A5B4FC">—</span>
         </div>
-        <div class="ov2-gauge-labels"><span>0</span><span id="ov_be_cpa_lbl">BE CPA: —</span></div>
+        <div style="position:relative;height:6px;border-radius:3px;background:rgba(255,255,255,0.06)">
+          <div id="ov_roas_gauge" style="width:0%;height:100%;border-radius:3px;background:linear-gradient(90deg,#818CF8,#A5B4FC)"></div>
+          <div style="position:absolute;top:-3px;left:50%;width:2px;height:12px;background:#34D399"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px">
+          <span style="color:#6E7681">0×</span>
+          <span class="pl-num" id="ov_be_roas_lbl" style="color:#8B949E">BE: —</span>
+        </div>
       </div>
 
-      <div class="ov-card-metric">
-        <span class="ov-card-lbl">Actual ROAS</span>
-        <span class="ov-card-val" id="ov_actual_roas">—</span>
-      </div>
-      <div class="ov2-gauge-wrap" style="margin:8px 0 16px">
-        <div class="ov2-gauge-track">
-          <div class="ov2-gauge-fill ov2-gauge-roas" id="ov_roas_gauge" style="width:0%"></div>
-          <div class="ov2-gauge-marker" id="ov_roas_marker" style="left:50%"></div>
-        </div>
-        <div class="ov2-gauge-labels"><span>0×</span><span id="ov_be_roas_lbl">BE: —</span></div>
-      </div>
-
-      <div style="display:flex;gap:20px">
+      <!-- Footer -->
+      <div style="display:flex;gap:28px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.05)">
         <div>
-          <div class="ov-card-lbl" data-t="ov_total_orders_lbl">Total orders</div>
-          <div class="ov-card-val" style="margin-top:4px" id="ov_orders">—</div>
+          <div style="font-size:11px;color:#6E7681;margin-bottom:4px" data-t="ov_total_orders_lbl">Total orders</div>
+          <div class="pl-num" id="ov_orders" style="font-size:16px;font-weight:700;color:#E6EDF3">—</div>
         </div>
         <div>
-          <div class="ov-card-lbl" data-t="ov_ad_cost_order">Ad cost / order</div>
-          <div class="ov-card-val" style="margin-top:4px" id="ov_ad_per_order">—</div>
+          <div style="font-size:11px;color:#6E7681;margin-bottom:4px" data-t="ov_ad_cost_order">Ad cost / order</div>
+          <div class="pl-num" id="ov_ad_per_order" style="font-size:16px;font-weight:700;color:#E6EDF3">—</div>
         </div>
       </div>
       <!-- hidden IDs required by JS -->
       <div style="display:none"><span id="ov_be_cpa">—</span><span id="ov_be_roas">—</span></div>
     </div>
 
-    <!-- Card 2: Delivery -->
-    <div class="ov-card">
-      <div class="ov-card-head">
-        <span class="ov-card-icon" style="background:rgba(0,229,160,.1);color:var(--c1)">🚚</span>
+    <!-- PANEL 2: Delivery -->
+    <div style="border-radius:16px;padding:22px;background:#161B22;border:1px solid rgba(255,255,255,0.06)">
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:20px">
+        <span style="width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:rgba(56,189,248,0.12)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38BDF8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11" rx="1"/><path d="M15 9h4l3 3v5h-7z"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span>
         <div>
-          <div class="ov-card-title" data-t="ov_delivery_title">Delivery</div>
-          <div class="ov-card-sub" data-t="ov_delivery_sub">Units distribution</div>
+          <div style="font-size:15px;font-weight:600;color:#E6EDF3" data-t="ov_delivery_title">Delivery</div>
+          <div style="font-size:12px;color:#6E7681" data-t="ov_delivery_sub">Units distribution</div>
         </div>
       </div>
 
-      <div class="ov-card-metric">
-        <span class="ov-card-lbl" data-t="ov_del_ret_lbl">Delivered / Returned</span>
-        <span style="font-size:11px;color:var(--txt3);font-family:var(--mono)" id="ov_units_label">—</span>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px">
+        <span style="font-size:13px;color:#8B949E" data-t="ov_del_ret_lbl">Delivered / Returned</span>
+        <span class="pl-num" id="ov_units_label" style="font-size:13px;font-weight:600;color:#C9D1D9">—</span>
       </div>
 
-      <div style="height:10px;border-radius:5px;overflow:hidden;display:flex;margin:12px 0 8px">
-        <div id="ov_del_bar" style="background:var(--c1);height:100%;transition:width .6s ease"></div>
-        <div id="ov_ret_bar" style="background:var(--red);height:100%;opacity:.6;transition:width .6s ease"></div>
+      <div style="display:flex;height:12px;border-radius:4px;overflow:hidden;gap:2px">
+        <div id="ov_del_bar" style="flex:300;background:#38BDF8;border-radius:3px 0 0 3px"></div>
+        <div id="ov_ret_bar" style="flex:129;background:#F87171;border-radius:0 3px 3px 0"></div>
       </div>
-      <div style="display:flex;gap:16px;margin-bottom:20px">
-        <div style="display:flex;align-items:center;gap:5px">
-          <span style="width:8px;height:8px;border-radius:2px;background:var(--c1);flex-shrink:0;display:inline-block"></span>
-          <span style="font-size:10px;color:var(--txt2)"><span data-t="ov_delivered">Delivered</span> <strong id="ov_del_units" style="color:var(--txt)">—</strong></span>
-        </div>
-        <div style="display:flex;align-items:center;gap:5px">
-          <span style="width:8px;height:8px;border-radius:2px;background:var(--red);opacity:.7;flex-shrink:0;display:inline-block"></span>
-          <span style="font-size:10px;color:var(--txt2)"><span data-t="ov_returned">Returned</span> <strong id="ov_ret_units" style="color:var(--txt)">—</strong></span>
-        </div>
+      <div style="display:flex;gap:18px;margin-top:12px;font-size:12px;color:#8B949E">
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:3px;background:#38BDF8"></span><span data-t="ov_delivered">Delivered</span> <b class="pl-num" id="ov_del_units" style="color:#C9D1D9;font-weight:700">—</b></span>
+        <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:9px;height:9px;border-radius:3px;background:#F87171"></span><span data-t="ov_returned">Returned</span> <b class="pl-num" id="ov_ret_units" style="color:#C9D1D9;font-weight:700">—</b></span>
       </div>
 
-      <div class="ov-card-metric">
-        <span class="ov-card-lbl" data-t="ov_total_returns">Total return costs</span>
-        <span class="ov-card-val" style="color:var(--red)" id="ov_ret_loss">—</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding:14px 16px;border-radius:11px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2)">
+        <span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#C9D1D9"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 015 5v3"/></svg><span data-t="ov_total_returns">Total return costs</span></span>
+        <span class="pl-num" id="ov_ret_loss" style="font-size:16px;font-weight:700;color:#F87171">—</span>
       </div>
     </div>
 
-    <!-- Card 3: Shipping costs -->
-    <div class="ov-card">
-      <div class="ov-card-head">
-        <span class="ov-card-icon" style="background:rgba(245,158,11,.12);color:var(--c3)">📦</span>
+    <!-- PANEL 3: Shipping costs -->
+    <div style="border-radius:16px;padding:22px;background:#161B22;border:1px solid rgba(255,255,255,0.06)">
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:24px">
+        <span style="width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:rgba(251,191,36,0.12)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FBBF24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 00-1-1.7l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.7l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><path d="M3.3 7L12 12l8.7-5M12 22V12"/></svg></span>
         <div>
-          <div class="ov-card-title" data-t="ov_ship_title">Shipping costs</div>
-          <div class="ov-card-sub" data-t="ov_ship_sub">Per unit breakdown</div>
+          <div style="font-size:15px;font-weight:600;color:#E6EDF3" data-t="ov_ship_title">Shipping costs</div>
+          <div style="font-size:12px;color:#6E7681" data-t="ov_ship_sub">Per unit breakdown</div>
         </div>
       </div>
 
-      <div class="ov2-ship-compare" style="margin:4px 0 20px">
-        <div class="ov2-ship-item ov2-ship-cost">
-          <div style="font-size:9px;color:var(--txt3);margin-bottom:4px" data-t="ov_you_bear">You bear</div>
-          <div style="font-family:var(--mono);font-size:15px;font-weight:700" id="ov_eff_ship">—</div>
+      <div style="display:flex;align-items:stretch;gap:10px">
+        <div style="flex:1;text-align:center;padding:16px 8px;border-radius:12px;background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.18)">
+          <div style="font-size:11px;color:#8B949E;margin-bottom:8px" data-t="ov_you_bear">You bear</div>
+          <div class="pl-num" id="ov_eff_ship" style="font-size:22px;font-weight:700;color:#F87171">—</div>
+          <div class="ov-ship-cur" style="font-size:10px;color:#6E7681;margin-top:2px">EGP</div>
         </div>
-        <div class="ov2-ship-arrow">→</div>
-        <div class="ov2-ship-item ov2-ship-charged">
-          <div style="font-size:9px;color:var(--txt3);margin-bottom:4px" data-t="ov_customer_pays">Customer pays</div>
-          <div style="font-family:var(--mono);font-size:15px;font-weight:700" id="ov_ship_charged">—</div>
+        <div style="display:grid;place-items:center;color:#6E7681"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></div>
+        <div style="flex:1;text-align:center;padding:16px 8px;border-radius:12px;background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.18)">
+          <div style="font-size:11px;color:#8B949E;margin-bottom:8px" data-t="ov_customer_pays">Customer pays</div>
+          <div class="pl-num" id="ov_ship_charged" style="font-size:22px;font-weight:700;color:#34D399">—</div>
+          <div class="ov-ship-cur" style="font-size:10px;color:#6E7681;margin-top:2px">EGP</div>
         </div>
-        <div class="ov2-ship-arrow">＝</div>
-        <div class="ov2-ship-item">
-          <div style="font-size:9px;color:var(--txt3);margin-bottom:4px" data-t="ov_net">Net</div>
-          <div style="font-family:var(--mono);font-size:15px;font-weight:700" id="ov_ship_net">—</div>
-        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.05)">
+        <span style="font-size:13px;color:#8B949E" data-t="ov_net_ship_impact">Net shipping impact</span>
+        <span class="pl-num" id="ov_ship_net" style="font-size:20px;font-weight:700;color:#F87171">—</span>
       </div>
     </div>
 
@@ -3692,16 +3848,18 @@ input[type=range]::-moz-range-thumb{
   <div class="charts-3">
     <div class="chart-card">
       <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span><span data-t="chart_wf">Unit economics waterfall</span></div>
-      <div class="ch-wrap"><canvas id="ch_wf" role="img" aria-label="Waterfall chart of unit economics"></canvas></div>
+      <div id="ch_wf" class="ov-svg-wrap" role="img" aria-label="Waterfall chart of unit economics"></div>
     </div>
     <div class="chart-card">
       <div class="chart-lbl"><span class="cdot" style="background:var(--c3)"></span><span data-t="chart_donut">Revenue allocation</span></div>
-      <div id="ov_legend" class="legend"></div>
-      <div class="ch-wrap-sm"><canvas id="ch_ov_donut" role="img" aria-label="Donut chart showing revenue allocation"></canvas></div>
+      <div class="ov-donut-row">
+        <div id="ch_ov_donut" class="ov-donut-svg" role="img" aria-label="Donut chart showing revenue allocation"></div>
+        <div id="ov_legend" class="ov-donut-legend"></div>
+      </div>
     </div>
     <div class="chart-card">
       <div class="chart-lbl"><span class="cdot" style="background:var(--c4)"></span><span data-t="chart_be">Break-even curve</span></div>
-      <div class="ch-wrap"><canvas id="ch_ov_be" role="img" aria-label="Break-even curve chart"></canvas></div>
+      <div id="ch_ov_be" class="ov-svg-wrap" role="img" aria-label="Break-even curve chart"></div>
     </div>
   </div>
 
@@ -5069,12 +5227,12 @@ function calc(){
   const adOk    = actualCPP <= beCPP && beCPP > 0;
   const adsAdOk = adOk;
 
-  set('m_maxcpp',  d1(beCPP)+' '+CURRENCY,  beCPP>0?'var(--c2)':'var(--red)');
-  set('m_be_roas', (Math.round(beROAS*100)/100).toFixed(1)+'x', 'var(--c4)');
+  set('m_maxcpp',  d1(beCPP)+' '+CURRENCY,  beCPP>0?'#fff':'var(--red)');
+  set('m_be_roas', (Math.round(beROAS*100)/100).toFixed(1)+'x', '#fff');
   set('m_roas_hint', 'Min to break even: '+(Math.round(beROAS*100)/100).toFixed(1)+'x');
   set('m_acpp',    d1(actualCPP)+' '+CURRENCY, adOk?'var(--c1)':'var(--red)');
   const roasOk = beROAS > 0 && actualROAS >= beROAS;
-  set('m_actual_roas', actualROAS>0 ? (Math.round(actualROAS*100)/100).toFixed(1)+'x' : '—', roasOk?'var(--c1)':'var(--red)');
+  set('m_actual_roas', actualROAS>0 ? (Math.round(actualROAS*100)/100).toFixed(1)+'x' : '—', roasOk?'var(--c3)':'var(--red)');
   set('m_leads',   d1(leadsNeeded));
   set('m_confirmed', d1(confNeeded));
   set('m_delivered', d1(delivNeeded));
@@ -5097,7 +5255,8 @@ function calc(){
   set('m_cost_per_del', costPerDel > 0 ? d1(costPerDel)+' '+CURRENCY : '—', 'var(--c3)');
   // 3. Lead-to-Order Rate
   const l2oRate = confR * delR * 100;
-  set('m_l2o_rate', l2oRate > 0 ? l2oRate.toFixed(1)+'%' : '—', 'var(--c2)');
+  set('m_l2o_rate', l2oRate > 0 ? l2oRate.toFixed(1)+'%' : '—', 'var(--c1)');
+  { const _b=document.getElementById('m_l2o_bar'); if(_b) _b.style.width=Math.max(0,Math.min(100,l2oRate||0))+'%'; }
   // 4. Wasted Ad Spend
   const wastedSpend = ads > 0 ? ads * (1 - confR * delR) : 0;
   set('m_wasted_spend', wastedSpend > 0 ? Math.round(wastedSpend).toLocaleString()+' '+CURRENCY : '—', 'var(--red)');
@@ -5141,18 +5300,20 @@ function calc(){
     }
 
     const colors = {
-      green:  { bg:'rgba(0,229,160,.07)',  border:'rgba(0,229,160,.25)',  color:'var(--c1)' },
-      yellow: { bg:'rgba(245,158,11,.07)', border:'rgba(245,158,11,.3)',  color:'var(--c3)' },
-      red:    { bg:'rgba(244,63,94,.07)',   border:'rgba(244,63,94,.25)',  color:'var(--red)' },
+      green:  { bg:'rgba(52,211,153,.07)',  border:'rgba(52,211,153,.18)', color:'#34D399', iconBg:'rgba(52,211,153,.15)' },
+      yellow: { bg:'rgba(245,158,11,.07)',  border:'rgba(245,158,11,.3)',  color:'#f59e0b', iconBg:'rgba(245,158,11,.15)' },
+      red:    { bg:'rgba(248,113,113,.07)', border:'rgba(248,113,113,.25)', color:'#F87171', iconBg:'rgba(248,113,113,.15)' },
     };
     const c = colors[state];
     banner.style.display      = 'flex';
     banner.style.background   = c.bg;
     banner.style.borderColor  = c.border;
     icon.textContent          = ic;
+    icon.style.background     = c.iconBg;
+    icon.style.color          = c.color;
     title.style.color         = c.color;
     title.textContent         = ttl;
-    body.textContent          = msg;
+    body.innerHTML            = msg.replace(/(\d[\d.,]*\s?(?:EGP|%|x)?)/g, '<b class="ib-num">$1</b>');
   })();
   // ─────────────────────────────────────────────────────────────
 
@@ -5173,6 +5334,7 @@ function calc(){
     ? tfmt('cpp_ok', d1(actualCPP)+' '+CURRENCY, d1(beCPP)+' '+CURRENCY)
     : tfmt('cpp_bad', d1(actualCPP)+' '+CURRENCY, d1(beCPP)+' '+CURRENCY)
   );
+  { const _m=document.getElementById('cpp_msg'); if(_m) _m.innerHTML=_m.textContent.replace(/(\d[\d.,]*\s?(?:EGP|%|x)?)/g,'<b class="ib-num">$1</b>'); }
 
   renderCPPBar(actualCPP, beCPP);
   renderCPPLine(confR, profitPU, salaryPerDelivered);
@@ -5255,12 +5417,18 @@ function calc(){
   renderShProfitSens(profitPU, effShip, salary, ads, stock, costDel, costRet);
 
   // ── Section 3: Overview ──
-  set('ov_pu',    (Math.round(profitPU*10)/10).toFixed(1)+' '+CURRENCY, profitPU>=0?'var(--profit)':'var(--red)');
-  set('ov_margin', pct(marginPct)+' margin');
+  set('ov_pu',    (Math.round(profitPU*10)/10).toFixed(1)+' '+CURRENCY, profitPU>=0?'var(--txt-title)':'var(--red)');
+  set('ov_margin', pct(marginPct));
+  { const _mb=document.getElementById('ov_margin_bar'); if(_mb) _mb.style.width=Math.max(0,Math.min(100,marginPct))+'%'; }
   (function(){
     const _absProf = Math.abs(Math.round(totalProf*10)/10);
-    const _profStr = Math.round(_absProf).toLocaleString('en')+' '+CURRENCY;
-    set('ov_total', (isP?'':'-')+_profStr, pc);
+    const _np = document.getElementById('ov_total');
+    if(_np){
+      _np.innerHTML = (isP?'':'-')+Math.round(_absProf).toLocaleString('en')+' <span class="ov2-cur">'+CURRENCY+'</span>';
+      _np.style.color = pc;
+    }
+    const _hc = document.getElementById('ov_hero_card');
+    if(_hc) _hc.classList.toggle('is-loss', !isP);
   })();
   set('ov_total_sub', isP?'Profitable':'Loss-making');
   set('ov_be', isFinite(beUnits)?Math.ceil(beUnits)+' units':'∞', 'var(--c2)');
@@ -5268,6 +5436,7 @@ function calc(){
   // Cache both revenue modes for the shipping toggle
   window._lastRevInclShip = totalRev;           // stock × (priceNet + shipCNet)
   window._lastRevExclShip = stock * priceNet;   // product only
+  window._lastDelivUnits  = stock;
   _updateRevDisplay();
 
   const soldUnits = delivNeeded||1;
@@ -5322,21 +5491,37 @@ function calc(){
   set('pl_pu_net',  (profitPUNet>=0?'':'-')+eg(Math.abs(profitPUNet)), profitPUNet>=0?'var(--profit)':'var(--red)');
   set('pl_tot_net', (isP?'':'-')+eg(Math.abs(totalProf)), pc);
 
+  // Shared revenue-allocation buckets — drives BOTH the donut (Revenue allocation)
+  // and the P&L "Where your revenue goes" bar, so the two always agree.
+  // Colors follow the Overview design palette.
+  const revBuckets = [
+    { label: T[LANG].lbl_prod_cost, val: stock*cost,           color:'#F87171' },
+    { label: T[LANG].pl_ship_cost,  val: stock*effShip,        color:'#FBBF24' },
+    { label: T[LANG].pl_comm,       val: stock*commAmt,        color:'#F472B6' },
+    { label: T[LANG].lbl_plat_lead, val: stock*platPerOrder,   color:'#38BDF8' },
+    { label: T[LANG].adv_pdr_lbl,   val: stock*pdrCostPerUnit, color:'#A855F7' },
+    { label: T[LANG].pl_ads,        val: ads,                  color:'#818CF8' },
+    { label: T[LANG].pl_salary,     val: salary,               color:'#A78BFA' },
+  ];
   // P&L composition visualization — same cost buckets as the table above
-  renderPLComposition([
-    { label: T[LANG].lbl_prod_cost, val: stock*cost,           color:'#f43f5e' },
-    { label: T[LANG].pl_ship_cost,  val: stock*effShip,        color:'#f59e0b' },
-    { label: T[LANG].pl_comm,       val: stock*commAmt,        color:'#ec4899' },
-    { label: T[LANG].lbl_plat_lead, val: stock*platPerOrder,   color:'#4f8ff7' },
-    { label: T[LANG].adv_pdr_lbl,   val: stock*pdrCostPerUnit, color:'#a855f7' },
-    { label: T[LANG].pl_ads,        val: ads,                  color:'#6366f1' },
-    { label: T[LANG].pl_salary,     val: salary,               color:'#a78bfa' },
-  ], totalProf);
+  renderPLComposition(revBuckets, totalProf);
 
   // ── Hero strip extras ──
   const totalMarginProfit = totalRev - totalVar;   // before fixed costs
   set('ov_net_pu',      (profitPUNet>=0?'':'-')+eg(Math.abs(profitPUNet)), profitPUNet>=0?'var(--profit)':'var(--red)');
-  set('ov_total_margin', eg(totalMarginProfit), totalMarginProfit>=0?'var(--profit)':'var(--red)');
+  { const _tm=document.getElementById('ov_total_margin');
+    if(_tm){ _tm.innerHTML=(totalMarginProfit<0?'-':'')+Math.round(Math.abs(totalMarginProfit)).toLocaleString('en')+' <span class="ovx-cur" style="color:#6EE7B7">'+CURRENCY+'</span>';
+             _tm.style.color=totalMarginProfit>=0?'var(--profit)':'var(--red)'; } }
+  // Hero badge: verdict + net profit / unit (presentation only)
+  (function(){
+    const _sub = document.getElementById('ov_total_sub');
+    if(_sub){
+      const _pu = (profitPUNet>=0?'+':'-')+eg(Math.abs(profitPUNet));
+      _sub.innerHTML = '<span class="hb-verdict">'+(isP?'Profitable':'Loss-making')+'</span>'
+        + '<span class="hb-sep"></span>'
+        + '<span class="hb-pu">'+_pu+' / unit</span>';
+    }
+  })();
 
   const plStat=document.getElementById('pl_status');
   plStat.innerHTML=`<span class="tag ${isP?'tg':'tr'}">${T[LANG][isP?'js_profit_badge':'js_loss_badge']}</span>`;
@@ -5355,38 +5540,43 @@ function calc(){
   const roasOkOv = beROAS > 0 && actualROAS >= beROAS;
   const adPerOrder = delivNeeded > 0 ? ads / delivNeeded : 0;
 
-  set('ov_actual_cpa', actualCPP>0 ? d1(actualCPP)+' '+CURRENCY : '— (not set)', actualCPP>0&&adOkOv?'var(--c1)':actualCPP>0?'var(--red)':'var(--txt3)');
+  set('ov_actual_cpa', actualCPP>0 ? d1(actualCPP)+' '+CURRENCY : '—', actualCPP<=0?'#6E7681':(adOkOv?'#34D399':'#F87171'));
   set('ov_be_cpa',     beCPP>0 ? d1(beCPP)+' '+CURRENCY : '—');
-  set('ov_actual_roas',actualROAS>0 ? (Math.round(actualROAS*100)/100).toFixed(1)+'x' : '— (not set)', actualROAS>0&&roasOkOv?'var(--c1)':actualROAS>0?'var(--red)':'var(--txt3)');
+  set('ov_actual_roas',actualROAS>0 ? (Math.round(actualROAS*100)/100).toFixed(1)+'x' : '—', actualROAS<=0?'#6E7681':(roasOkOv?'#A5B4FC':'#F87171'));
   set('ov_be_roas',    beROAS>0 ? (Math.round(beROAS*100)/100).toFixed(1)+'x' : '—');
-  set('ov_orders',     d1(delivNeeded)+' units');
+  set('ov_orders',     Math.round(delivNeeded).toLocaleString('en')+' units');
   set('ov_ad_per_order', adPerOrder>0 ? eg(adPerOrder) : '—');
 
-  // CPA gauge — fill = actual/BE capped at 150%; marker = BE position
-  if(beCPP>0&&actualCPP>0){
-    const cap=beCPP*1.5;
-    const fillPct=Math.min(actualCPP/cap*100,100);
-    const markerPct=Math.min(beCPP/cap*100,100);
-    const gf=document.getElementById('ov_cpa_gauge'); if(gf){gf.style.width=fillPct+'%';gf.style.background=adOkOv?'var(--c1)':'var(--red)';}
-    const gm=document.getElementById('ov_cpa_marker'); if(gm) gm.style.left=markerPct+'%';
-    const bl=document.getElementById('ov_be_cpa_lbl'); if(bl) bl.textContent=T[LANG].be_label+d1(beCPP);
+  // CPA gauge — fill = actual ÷ break-even (the red tick at 100% marks break-even)
+  {
+    const gf=document.getElementById('ov_cpa_gauge');
+    if(gf) gf.style.width=(beCPP>0&&actualCPP>0?Math.min(actualCPP/beCPP*100,100):0)+'%';
+    const bl=document.getElementById('ov_be_cpa_lbl'); if(bl) bl.textContent=T[LANG].be_label+(beCPP>0?d1(beCPP):'—');
   }
-  // ROAS gauge — fill = actual/max capped; marker = BE ROAS
-  if(beROAS>0&&actualROAS>0){
-    const cap=Math.max(actualROAS,beROAS)*1.4;
-    const fillPct=Math.min(actualROAS/cap*100,100);
-    const markerPct=Math.min(beROAS/cap*100,100);
-    const gf=document.getElementById('ov_roas_gauge'); if(gf){gf.style.width=fillPct+'%';gf.style.background=roasOkOv?'var(--c1)':'var(--red)';}
-    const gm=document.getElementById('ov_roas_marker'); if(gm) gm.style.left=markerPct+'%';
-    const bl=document.getElementById('ov_be_roas_lbl'); if(bl) bl.textContent=T[LANG].be_label+(Math.round(beROAS*100)/100).toFixed(1)+'x';
+  // ROAS gauge — fill = actual ÷ (2×break-even) (the green tick at 50% marks break-even)
+  {
+    const gf=document.getElementById('ov_roas_gauge');
+    if(gf) gf.style.width=(beROAS>0&&actualROAS>0?Math.min(actualROAS/(2*beROAS)*100,100):0)+'%';
+    const bl=document.getElementById('ov_be_roas_lbl'); if(bl) bl.textContent=T[LANG].be_label+(beROAS>0?(Math.round(beROAS*100)/100).toFixed(1)+'x':'—');
   }
 
-  // Verdict badge
+  // Verdict pill — icon + label, colored by state
   const vEl=document.getElementById('ov_ads_verdict');
   if(vEl){
-    if(actualCPP<=0){vEl.textContent=T[LANG].js_enter_cpa;vEl.style.background='var(--surf3)';vEl.style.color='var(--txt3)';}
-    else if(adOkOv){vEl.textContent=T[LANG].js_profitable;vEl.style.background='rgba(34,197,94,.12)';vEl.style.color='var(--profit)';}
-    else{vEl.textContent=T[LANG].js_loss;vEl.style.background='rgba(244,63,94,.12)';vEl.style.color='var(--red)';}
+    const strip = s => (s||'').replace(/^[^\p{L}\d]+/u,'').trim();
+    let label, fg, bg, bd, stroke, icon;
+    if(actualCPP<=0){
+      label=strip(T[LANG].js_enter_cpa); fg='#8B949E'; bg='rgba(255,255,255,0.05)'; bd='rgba(255,255,255,0.12)'; stroke='#8B949E';
+      icon='<circle cx="12" cy="12" r="8"/>';
+    } else if(adOkOv){
+      label=strip(T[LANG].js_profitable); fg='#6EE7B7'; bg='rgba(52,211,153,0.12)'; bd='rgba(52,211,153,0.28)'; stroke='#34D399';
+      icon='<path d="M5 12l5 5L20 7"/>';
+    } else {
+      label=strip(T[LANG].js_loss); fg='#FCA5A5'; bg='rgba(248,113,113,0.12)'; bd='rgba(248,113,113,0.28)'; stroke='#F87171';
+      icon='<path d="M6 6l12 12M18 6L6 18"/>';
+    }
+    vEl.style.color=fg; vEl.style.background=bg; vEl.style.border='1px solid '+bd;
+    vEl.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="'+stroke+'" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">'+icon+'</svg>'+escapeHtml(label);
   }
 
   // ── Overview: Shipping Snapshot ──
@@ -5396,25 +5586,26 @@ function calc(){
   const shipNetPU     = shipC - effShip;
   const retLossTotal  = ovReturned * costRet;
 
-  set('ov_del_units',    Math.round(ovDelivered)+' units');
-  set('ov_ret_units',    Math.round(ovReturned)+' units');
-  set('ov_eff_ship',     eg(effShip));
-  set('ov_ship_charged', eg(shipC));
-  set('ov_ship_net',     (shipNetPU>=0?'+':'')+eg(shipNetPU), shipNetPU>=0?'var(--profit)':'var(--red)');
-  set('ov_ret_loss',     retLossTotal>0?'-'+eg(retLossTotal):'—', 'var(--red)');
+  set('ov_del_units',    Math.round(ovDelivered).toLocaleString('en'));
+  set('ov_ret_units',    Math.round(Math.max(ovReturned,0)).toLocaleString('en'));
+  set('ov_eff_ship',     d1(effShip));
+  set('ov_ship_charged', d1(shipC));
+  set('ov_ship_net',     (shipNetPU>=0?'+':'')+eg(shipNetPU), shipNetPU>=0?'#34D399':'#F87171');
+  set('ov_ret_loss',     retLossTotal>0?'-'+eg(retLossTotal):'—', '#F87171');
+  document.querySelectorAll('.ov-ship-cur').forEach(e=>e.textContent=CURRENCY);
 
   // Delivery bar visualization
   const total = ovDelivered + ovReturned;
   if(total>0){
     const delPct=(ovDelivered/total*100).toFixed(1);
     const retPct=(ovReturned/total*100).toFixed(1);
-    const db=document.getElementById('ov_del_bar'); if(db) db.style.width=delPct+'%';
-    const rb=document.getElementById('ov_ret_bar'); if(rb) rb.style.width=retPct+'%';
+    const db=document.getElementById('ov_del_bar'); if(db) db.style.flexGrow=ovDelivered;
+    const rb=document.getElementById('ov_ret_bar'); if(rb) rb.style.flexGrow=Math.max(ovReturned,0);
     const ul=document.getElementById('ov_units_label'); if(ul) ul.textContent=delPct+'% delivery';
   }
 
-  renderWaterfall(price, cost, effShip, shipC, totalFixed/stock, commAmt);
-  renderOvDonut(stock, cost, effShip, totalFixed, price, shipC, commAmt);
+  renderWaterfall(price+shipC, cost, effShip, commAmt+platPerOrder+pdrCostPerUnit, (ads+salary)/soldUnits);
+  renderOvDonut(revBuckets, totalProf);
   renderBECurve(beUnits, profitPU, totalFixed);
 
   // refresh export preview + master overview if on overview tab
@@ -5437,120 +5628,77 @@ function calc(){
 
 // ── CHARTS ──────────────────────────────────
 
-// Chart 1: CPA Gauge (arc-style using Chart.js doughnut)
+// Chart 1: CPA Gauge — inline SVG semicircle (spec geometry, dynamic)
 function renderCPPBar(actual, max){
-  // Update labels
-  const actLbl = document.getElementById('gauge_actual_lbl');
   const beLbl  = document.getElementById('gauge_be_lbl');
   const maxLbl = document.getElementById('gauge_max_lbl');
-  if(actLbl) actLbl.textContent = actual > 0 ? actual.toFixed(1)+' '+CURRENCY : '—';
-  if(beLbl)  beLbl.textContent  = max > 0    ? T[LANG].be_label+max.toFixed(1)+' '+CURRENCY : T[LANG].be_label+'—';
-  if(actLbl) actLbl.style.color = (actual <= max && max > 0) ? 'var(--c1)' : 'var(--red)';
-
+  const wrap   = document.getElementById('gauge_svg');
+  if(beLbl) beLbl.textContent = max > 0 ? T[LANG].be_label+max.toFixed(1)+' '+CURRENCY : T[LANG].be_label+'—';
   const maxScale = max > 0 ? max * 1.5 : 100;
   if(maxLbl) maxLbl.textContent = Math.round(maxScale)+' '+CURRENCY;
+  if(!wrap) return;
 
-  const clampedActual = Math.min(actual, maxScale);
-  const remaining     = Math.max(maxScale - clampedActual, 0);
-  const beSegEnd      = Math.min(max, maxScale);
-  const safeZone      = beSegEnd;
-  const dangerZone    = maxScale - beSegEnd;
+  // gauge: center (160,160) radius 120, sweeping 180°→0° over the top
+  const R = 120;
+  const gp = v => { const t=(180-(Math.min(Math.max(v,0),maxScale)/maxScale)*180)*Math.PI/180; return [160+R*Math.cos(t), 160-R*Math.sin(t)]; };
+  // whole gauge is a 180° semicircle, so every sub-arc is ≤180° → large-arc-flag always 0
+  const arc = (v0,v1) => { const [x0,y0]=gp(v0),[x1,y1]=gp(v1); return `M${x0.toFixed(1)},${y0.toFixed(1)} A${R},${R} 0 0,1 ${x1.toFixed(1)},${y1.toFixed(1)}`; };
+  const beSeg   = Math.min(max, maxScale);
+  const gap     = maxScale*0.02;
+  const isOver  = actual > max && max > 0;
+  const fill    = isOver ? 'url(#gaugeGradR)' : 'url(#gaugeGrad)';
+  const valCol  = isOver ? '#F87171' : '#A5B4FC';
+  const valTxt  = actual > 0 ? actual.toFixed(1)+' '+CURRENCY : '—';
 
-  // Gauge: green zone (0→BE) | red zone (BE→max) | actual needle overlay
-  if(!dk('gauge')) return;
-  const isOver = actual > max && max > 0;
-  const actColor = isOver ? '#f43f5e' : '#00e5a0';
-
-  CH['gauge'] = new Chart(document.getElementById('ch_cpa_gauge'), {
-    type: 'doughnut',
-    data: {
-      datasets: [
-        // Background track (safe + danger zones)
-        {
-          data: [safeZone, dangerZone],
-          backgroundColor: ['rgba(0,229,160,.15)', 'rgba(244,63,94,.15)'],
-          borderWidth: 0,
-          circumference: 180,
-          rotation: 270,
-          weight: 1,
-        },
-        // Actual CPA fill
-        {
-          data: [clampedActual, maxScale - clampedActual],
-          backgroundColor: [actColor, 'transparent'],
-          borderWidth: 0,
-          circumference: 180,
-          rotation: 270,
-          weight: 0.6,
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '65%',
-      plugins: { legend: { display: false }, tooltip: { enabled: false } },
-      animation: { duration: 600, easing: 'easeOutQuart' }
-    }
-  });
+  wrap.innerHTML = `<svg width="100%" viewBox="0 0 320 190" font-family="Inter" style="max-width:400px">
+    <defs>
+      <linearGradient id="gaugeGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#10B981"/><stop offset="100%" stop-color="#34D399"/></linearGradient>
+      <linearGradient id="gaugeGradR" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#EF4444"/><stop offset="100%" stop-color="#F87171"/></linearGradient>
+    </defs>
+    <path d="${arc(0, beSeg)}" fill="none" stroke="rgba(52,211,153,0.18)" stroke-width="22" stroke-linecap="round"/>
+    <path d="${arc(Math.min(beSeg+gap, maxScale), maxScale)}" fill="none" stroke="rgba(248,113,113,0.2)" stroke-width="22" stroke-linecap="round"/>
+    <path d="${arc(0, Math.min(actual, maxScale))}" fill="none" stroke="${fill}" stroke-width="22" stroke-linecap="round"/>
+    <text x="160" y="120" text-anchor="middle" fill="${valCol}" font-size="32" font-weight="800" letter-spacing="-1" style="font-variant-numeric:tabular-nums">${valTxt}</text>
+    <text x="160" y="142" text-anchor="middle" fill="#6E7681" font-size="12">Actual CPA</text>
+  </svg>`;
 }
 
-// Chart 2: Budget Waterfall — where did the money go?
+// Chart 2: Budget breakdown — HTML/CSS bars (where did the money go?)
 function renderMktDonut(ads, salary, varCost){
-  if(!dk('bwf')) return;
-
-  // confR & delR come from the outer calc() scope via closure — we pass them in
-  // But we need them here — store last known on window
+  const wrap  = document.getElementById('budget_bars');
   const confR = window._lastConfR || 0;
   const delR  = window._lastDelR  || 0;
   const l2o   = confR * delR;
 
-  const deliveredSpend = ads > 0 ? ads * l2o   : 0;   // budget that converted to orders
-  const wastedSpend2   = ads > 0 ? ads * (1 - l2o) : 0; // budget lost to undelivered
+  const deliveredSpend = ads > 0 ? ads * l2o     : 0;   // budget that converted to orders
+  const wastedSpend2   = ads > 0 ? ads * (1-l2o) : 0;   // budget lost to undelivered
+  const maxV = Math.max(ads, salary, 1);
 
-  const labels = ['Ad Budget', '→ Reached Orders', '→ Wasted on Undelivered', 'Salary'];
-  const values  = [ads, deliveredSpend, wastedSpend2, salary];
-  const colors  = ['#4f8ff7', '#00e5a0', '#f43f5e', '#a78bfa'];
+  const rows = [
+    { lbl:'Ad Budget',               v:ads,            grad:'linear-gradient(90deg,#3B82F6,#60A5FA)' },
+    { lbl:'→ Reached Orders',        v:deliveredSpend, grad:'linear-gradient(90deg,#10B981,#34D399)' },
+    { lbl:'→ Wasted on Undelivered', v:wastedSpend2,   grad:'linear-gradient(90deg,#EF4444,#F87171)' },
+    { lbl:'Salary',                  v:salary,         grad:'linear-gradient(90deg,#8B5CF6,#A78BFA)' },
+  ];
+  const f = n => Math.round(n).toLocaleString('en');
 
-  // Summary line
+  if(wrap){
+    const bars = rows.map(r=>{
+      const w = r.v>0 ? Math.max((r.v/maxV)*100, 2) : 0;
+      return `<div class="bdg-row"><div class="bdg-lbl">${r.lbl}</div><div class="bdg-track"><div class="bdg-fill" style="width:${w.toFixed(1)}%;background:${r.grad}" title="${f(r.v)} ${CURRENCY}"></div></div></div>`;
+    }).join('');
+    const ticks = [0, maxV/3, maxV*2/3, maxV].map(v=>Math.round(v/1000)+'K');
+    wrap.innerHTML = bars + `<div class="bdg-axis">${ticks.map(t=>`<span>${t}</span>`).join('')}</div>`;
+  }
+
   const sumEl = document.getElementById('waterfall_summary');
   if(sumEl && ads > 0){
     const effPct = Math.round(l2o * 100);
-    sumEl.innerHTML = `<span style="color:#00e5a0;font-weight:600">${effPct}%</span> ${T[LANG].wf_summary_a} — <span style="color:#f43f5e;font-weight:600">${Math.round(100-effPct)}%</span> ${T[LANG].wf_summary_b}`;
+    sumEl.innerHTML = `<span style="color:#34D399;font-weight:600">${effPct}%</span> ${T[LANG].wf_summary_a} — <span style="color:#F87171;font-weight:600">${Math.round(100-effPct)}%</span> ${T[LANG].wf_summary_b}`;
   }
-
-  CH['bwf'] = new Chart(document.getElementById('ch_budget_waterfall'), {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        data: values,
-        backgroundColor: colors,
-        borderRadius: 6,
-        borderSkipped: false,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      indexAxis: 'y',
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => ' ' + Math.round(ctx.raw).toLocaleString() + ' ' + CURRENCY
-          }
-        }
-      },
-      scales: {
-        x: { ticks: { color: tc(), callback: v => Math.round(v/1000)+'K' }, grid: { color: gc() } },
-        y: { ticks: { color: tc(), font: { size: 11 } }, grid: { display: false } }
-      }
-    }
-  });
 }
 
-// Chart 3: Funnel with drop-off % (SVG-based, no Chart.js)
+// Chart 3: Funnel with drop-off % (HTML/CSS bars)
 function renderFunnel(leads, conf, del){
   const el = document.getElementById('ch_funnel_svg');
   if(!el) return;
@@ -5558,137 +5706,64 @@ function renderFunnel(leads, conf, del){
   const confDrop = leads > 0 ? Math.round((1 - conf/leads)*100) : 0;
   const delDrop  = conf  > 0 ? Math.round((1 - del/conf)*100)  : 0;
   const l2oPct   = leads > 0 ? Math.round(del/leads*100) : 0;
+  const wConf    = leads > 0 ? Math.max(conf/leads*100, 24) : 0;
+  const wDel     = leads > 0 ? Math.max(del/leads*100, 24) : 0;
+  const f = n => Math.round(n).toLocaleString('en');
 
-  const stages = [
-    { label:'Leads',     val: leads, color:'#4f8ff7', pct:100 },
-    { label:'Confirmed', val: conf,  color:'#a78bfa', pct: leads>0?Math.round(conf/leads*100):0 },
-    { label:'Delivered', val: del,   color:'#00e5a0', pct: leads>0?Math.round(del/leads*100):0  },
-  ];
-
-  const W = el.clientWidth || 340;
-  const H = 200;
-  const maxW = W * 0.85;
-  const barH = 42;
-  const gap  = 18;
-
-  let svg = `<svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">`;
-
-  stages.forEach((s, i) => {
-    const barW = maxW * (s.pct / 100);
-    const x    = (W - barW) / 2;
-    const y    = i * (barH + gap) + 10;
-
-    // Bar
-    svg += `<rect x="${x.toFixed(1)}" y="${y}" width="${barW.toFixed(1)}" height="${barH}" rx="6" fill="${s.color}" opacity="0.85"/>`;
-
-    // Label inside
-    svg += `<text x="${(W/2).toFixed(1)}" y="${(y + barH/2 + 5).toFixed(1)}" text-anchor="middle" font-size="13" font-weight="700" fill="white" font-family="system-ui">${s.label}: ${s.val.toLocaleString()}</text>`;
-
-    // Drop-off badge between bars
-    if(i === 0 && confDrop > 0){
-      const badgeY = y + barH + gap/2 - 7;
-      svg += `<text x="${W-2}" y="${badgeY+10}" text-anchor="end" font-size="10" fill="#f43f5e" font-family="Inter,system-ui">↓ ${confDrop}% dropped</text>`;
-    }
-    if(i === 1 && delDrop > 0){
-      const badgeY = y + barH + gap/2 - 7;
-      svg += `<text x="${W-2}" y="${badgeY+10}" text-anchor="end" font-size="10" fill="#f43f5e" font-family="Inter,system-ui">↓ ${delDrop}% dropped</text>`;
-    }
-  });
-
-  // Overall conversion
-  svg += `<text x="${(W/2).toFixed(1)}" y="${H}" text-anchor="middle" font-size="10" fill="var(--txt2)" font-family="system-ui">Overall: ${l2oPct}% of leads → delivered orders</text>`;
-  svg += '</svg>';
-
-  el.innerHTML = svg;
+  el.style.cssText = 'display:flex;flex-direction:column;justify-content:center;gap:12px;min-height:200px;padding:6px 0';
+  el.innerHTML =
+    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:100%;background:linear-gradient(90deg,#3B82F6,#60A5FA)">Leads: '+f(leads)+'</div></div><span></span></div>'+
+    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:'+wConf+'%;background:linear-gradient(90deg,#7C3AED,#A78BFA)">Confirmed: '+f(conf)+'</div></div><span class="fn-drop">↓ '+confDrop+'% dropped</span></div>'+
+    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:'+wDel+'%;background:linear-gradient(90deg,#10B981,#34D399)">Delivered: '+f(del)+'</div></div><span class="fn-drop">↓ '+delDrop+'% dropped</span></div>'+
+    '<div class="fn-summary">Overall: <b style="color:#34D399">'+l2oPct+'%</b> of leads → delivered orders</div>';
 }
 
 // Chart 4: BE CPA Sensitivity + "You are here" marker
+// Chart 4: BE CPA vs Lead→Order rate — inline SVG (spec geometry, dynamic)
 function renderCPPLine(confR, profitPU, salaryPU){
-  if(!dk('cppl')) return;
+  const wrap = document.getElementById('cpp_line_svg');
+  if(!wrap) return;
   const salPU = salaryPU || 0;
-
-  // X-axis = Lead-to-Order Rate (Conf% × Del%) من 5% لـ 50%
-  const l2oRates = [5,10,15,20,25,30,35,40,45,50].map(r => r/100);
-  const beValues = l2oRates.map(r => {
-    const val = r * (profitPU - salPU);
-    return val > 0 ? +val.toFixed(1) : 0;
-  });
+  const slope = profitPU - salPU;            // BE CPA per unit of Lead→Order rate
 
   const currentL2O    = (window._lastConfR || 0) * (window._lastDelR || 0);
   const currentActual = window._lastActualCPP || 0;
-  const currentBE     = +(currentL2O * (profitPU - salPU)).toFixed(1);
+  const currentBE     = Math.max(currentL2O * slope, 0);
 
-  CH['cppl'] = new Chart(document.getElementById('ch_cpp_line'), {
-    type: 'line',
-    data: {
-      labels: l2oRates.map(r => Math.round(r*100)+'%'),
-      datasets: [
-        {
-          label: 'BE CPA',
-          data: beValues,
-          borderColor: '#f59e0b',
-          backgroundColor: 'rgba(245,158,11,.08)',
-          fill: true, tension: .4, pointRadius: 3, pointBackgroundColor: '#f59e0b'
-        },
-        ...(currentActual > 0 ? [{
-          label: 'Your CPA',
-          data: l2oRates.map(() => currentActual),
-          borderColor: currentActual <= currentBE ? '#00e5a0' : '#f43f5e',
-          borderDash: [5,4],
-          borderWidth: 2,
-          pointRadius: 0,
-          fill: false,
-          tension: 0,
-        }] : [])
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => ctx.dataset.label+': '+ctx.raw+' '+CURRENCY } },
-      },
-      scales: {
-        x: {
-          title: { display: true, text: 'Lead → Order Rate (Conf% × Del%)', color: 'var(--txt2)', font: { size: 10 } },
-          ticks: { color: tc() }, grid: { color: gc() }
-        },
-        y: { ticks: { color: tc(), callback: v => Math.round(v) }, grid: { color: gc() } }
-      },
-    },
-    plugins: [{
-      id: 'youMarker',
-      afterDraw(chart) {
-        if(currentL2O <= 0) return;
-        const ctx2  = chart.ctx;
-        const xAxis = chart.scales.x;
-        const yAxis = chart.scales.y;
-        if(!xAxis || !yAxis) return;
+  const rateMax = Math.max(currentL2O, 0.10);
+  const n = 8;
+  const rates  = Array.from({length:n}, (_,i)=> 0.05 + i/(n-1)*(rateMax-0.05));
+  const beVals = rates.map(r => Math.max(r*slope, 0));
+  const maxVal = Math.max(currentBE, currentActual, ...beVals, 1);
+  const niceMax = Math.max(40, Math.ceil(maxVal/40)*40);
 
-        // Interpolate exact X position for currentL2O within [0.05 .. 0.50]
-        const minR = 0.05, maxR = 0.50;
-        const clampedL2O = Math.min(Math.max(currentL2O, minR), maxR);
-        const t = (clampedL2O - minR) / (maxR - minR);
-        const x = xAxis.left + t * (xAxis.right - xAxis.left);
+  const xL=46, xR=450, yTop=30, yBot=202, cxL=60, cxR=440;
+  const xv = i => cxL + i/(n-1)*(cxR-cxL);
+  const yv = v => yBot - (Math.min(Math.max(v,0),niceMax)/niceMax)*(yBot-yTop);
 
-        ctx2.save();
-        ctx2.setLineDash([4,4]);
-        ctx2.strokeStyle = '#94a3b8';
-        ctx2.lineWidth   = 1.5;
-        ctx2.beginPath();
-        ctx2.moveTo(x, yAxis.top);
-        ctx2.lineTo(x, yAxis.bottom);
-        ctx2.stroke();
-        ctx2.setLineDash([]);
-        ctx2.fillStyle = '#f43f5e';
-        ctx2.font = 'bold 10px system-ui';
-        ctx2.textAlign = 'center';
-        ctx2.fillText('▲ You ('+ Math.round(currentL2O*100) +'%)', x, yAxis.bottom + 14);
-        ctx2.restore();
-      }
-    }]
-  });
+  const ticks   = [0,1,2,3,4].map(i => niceMax*i/4);
+  const grid    = ticks.map(t=>`<line x1="${xL}" y1="${yv(t).toFixed(0)}" x2="${xR}" y2="${yv(t).toFixed(0)}"/>`).join('');
+  const ylabels = ticks.map(t=>`<text x="40" y="${(yv(t)+3).toFixed(0)}">${Math.round(t)}</text>`).join('');
+  const pts     = beVals.map((v,i)=>`${xv(i).toFixed(0)},${yv(v).toFixed(1)}`).join(' ');
+  const dots    = beVals.slice(0,-1).map((v,i)=>`<circle cx="${xv(i).toFixed(0)}" cy="${yv(v).toFixed(1)}" r="3.5"/>`).join('');
+  const refY    = yv(currentActual).toFixed(1);
+  const youY    = yv(currentBE).toFixed(1);
+  const xlabs   = [60,160,260,360].map(px=>{
+    const r = 0.05 + (px-cxL)/(cxR-cxL)*(rateMax-0.05);
+    return `<text x="${px}" y="222">${Math.round(r*100)}%</text>`;
+  }).join('') + `<text x="438" y="222" fill="#F87171" font-weight="600">You ${Math.round(currentL2O*100)}%</text>`;
+
+  wrap.innerHTML = `<svg width="100%" viewBox="0 0 460 250" font-family="Inter" style="overflow:visible">
+    <g stroke="rgba(255,255,255,0.06)" stroke-width="1">${grid}</g>
+    <g fill="#6E7681" font-size="10" text-anchor="end" style="font-variant-numeric:tabular-nums">${ylabels}</g>
+    ${currentActual>0?`<line x1="${xL}" y1="${refY}" x2="${xR}" y2="${refY}" stroke="#34D399" stroke-width="1.5" stroke-dasharray="6 5" opacity="0.7"/>`:''}
+    <polyline points="${pts}" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <g fill="#F59E0B">${dots}</g>
+    <line x1="${cxR}" y1="${yTop}" x2="${cxR}" y2="${yBot}" stroke="rgba(248,113,113,0.5)" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <circle cx="${cxR}" cy="${youY}" r="5" fill="#0D1117" stroke="#F87171" stroke-width="2.5"/>
+    <g fill="#6E7681" font-size="10" text-anchor="middle" style="font-variant-numeric:tabular-nums">${xlabs}</g>
+    <text x="250" y="244" text-anchor="middle" fill="#4D5562" font-size="10">Lead → Order Rate (Conf% × Del%)</text>
+  </svg>`;
 }
 
 function renderShBar(fulfill, courier, retAbs, shipC){
@@ -5760,28 +5835,115 @@ function renderShProfitSens(profitPU_base, effShip_base, salary, ads, stock, cos
   });
 }
 
-function renderWaterfall(price, cost, effShip, shipC, fixedPU, commAmt){
-  if(!dk('wf')) return;
-  const comm=commAmt||0;
-  const revenue=price+shipC, profit=revenue-cost-effShip-comm-fixedPU;
-  CH['wf']=new Chart(document.getElementById('ch_wf'),{
-    type:'bar',
-    data:{labels:['Revenue','Product','Shipping','Commission','Fixed/unit','Net profit'],datasets:[{data:[revenue,cost,effShip,comm,fixedPU,profit],backgroundColor:['#00e5a0','#f43f5e','#f59e0b','#ec4899','#a78bfa',profit>=0?'#00e5a0':'#f43f5e'],borderRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc(),font:{size:10}},grid:{display:false}},y:{ticks:{color:tc(),callback:v=>Math.round(v)},grid:{color:gc()}}}}
-  });
+// ── Inline-SVG chart helpers ────────────────────────────
+// "Nice number" rounding so axes land on clean values regardless of currency/scale.
+function _svgNiceStep(rough){
+  if(!isFinite(rough) || rough<=0) return 1;
+  const pow=Math.pow(10,Math.floor(Math.log10(rough)));
+  const n=rough/pow;
+  const m = n<=1?1 : n<=2?2 : n<=2.5?2.5 : n<=5?5 : 10;
+  return m*pow;
+}
+function _svgNiceTop(v){ if(!isFinite(v)||v<=0) return 0; const s=_svgNiceStep(v/3); return Math.ceil(v/s)*s; }
+// Compact axis label: 1.2K style for thousands, plain otherwise.
+function _svgAxis(v){
+  const a=Math.abs(v);
+  if(a>=1000){ const k=v/1000; return (Math.abs(k)>=10?Math.round(k):Math.round(k*10)/10)+'K'; }
+  return String(Math.round(v));
 }
 
-function renderOvDonut(stock, cost, effShip, totalFixed, price, shipC, commAmt){
-  if(!dk('ovd')) return;
-  const totalRev=stock*(price+shipC);
-  const cCost=stock*(commAmt||0);
-  const pCost=stock*cost, sCost=stock*effShip, prof=Math.max(totalRev-pCost-sCost-cCost-totalFixed,0);
-  const labels=['Product cost','Shipping cost','Commission','Fixed costs','Net profit'];
-  const data=[pCost,sCost,cCost,totalFixed,prof];
-  const colors=['#f43f5e','#f59e0b','#ec4899','#a78bfa','#00e5a0'];
-  const total=pCost+sCost+cCost+totalFixed+prof;
-  document.getElementById('ov_legend').innerHTML=labels.map((l,i)=>`<div class="li"><span class="ld" style="background:${colors[i]}"></span>${l} ${total>0?Math.round(data[i]/total*100)+'%':''}</div>`).join('');
-  CH['ovd']=new Chart(document.getElementById('ch_ov_donut'),{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{display:false}}}});
+// ── Unit-economics waterfall (inline SVG) ──────────────────────────────
+// Steps from revenue down through each per-unit cost to the net result.
+function renderWaterfall(revenue, product, shipping, comm, adfixed){
+  const host=document.getElementById('ch_wf'); if(!host) return;
+  const net = revenue - product - shipping - comm - adfixed;
+  if(!(revenue>0)){ host.innerHTML=''; return; }
+
+  const cols=[
+    {label:'Revenue',  val:revenue, color:'#34D399', kind:'total'},
+    {label:'Product',  val:product, color:'#F87171', kind:'drop'},
+    {label:'Shipping', val:shipping,color:'#FBBF24', kind:'drop'},
+    {label:'Comm.',    val:comm,    color:'#38BDF8', kind:'drop'},
+    {label:'Ad+fixed', val:adfixed, color:'#818CF8', kind:'drop'},
+    {label:'Net',      val:net,     color:net>=0?'#6EE7B7':'#F87171', kind:'total'}
+  ];
+
+  const topY=18, baseY=230, W=460;
+  const top=_svgNiceTop(Math.max(revenue, net, 0)) || revenue;
+  const ticks=4, tStep=top/ticks;
+  const y=v=>baseY-(v/top)*(baseY-topY);
+
+  // gridlines + y labels
+  let grid='', ylab='';
+  for(let i=0;i<=ticks;i++){
+    const gv=tStep*i, gy=y(gv);
+    grid+=`<line x1="40" y1="${gy.toFixed(1)}" x2="455" y2="${gy.toFixed(1)}"/>`;
+    ylab+=`<text x="34" y="${(gy+3).toFixed(1)}">${_svgAxis(gv)}</text>`;
+  }
+  grid+=`<line x1="40" y1="${baseY}" x2="455" y2="${baseY}"/>`;
+
+  // bars (running total drives the drops)
+  let bars='', xlab='', running=revenue;
+  cols.forEach((c,i)=>{
+    const cx=52+i*70, bw=46;
+    let ry, rh;
+    if(c.kind==='total'){
+      const v=c.val;
+      ry=Math.min(y(Math.max(v,0)), baseY);
+      rh=Math.abs(y(v)-baseY);
+    } else {
+      const topVal=running, botVal=running-c.val;
+      ry=y(topVal); rh=Math.abs(y(botVal)-y(topVal));
+      running=botVal;
+    }
+    rh=Math.max(rh,2);
+    bars+=`<rect x="${cx}" y="${ry.toFixed(1)}" width="${bw}" height="${rh.toFixed(1)}" rx="3" fill="${c.color}"/>`;
+    xlab+=`<text x="${cx+bw/2}" y="246">${c.label}</text>`;
+  });
+
+  host.innerHTML=
+    `<svg viewBox="0 0 ${W} 270" font-family="Inter">`+
+    `<g stroke="rgba(255,255,255,0.06)" stroke-width="1">${grid}</g>`+
+    `<g fill="#6E7681" font-size="10" text-anchor="end">${ylab}</g>`+
+    bars+
+    `<g fill="#8B949E" font-size="10" text-anchor="middle">${xlab}</g>`+
+    `</svg>`;
+}
+
+// ── Revenue-allocation donut (inline SVG) ──────────────────────────────
+// Driven by the same buckets as the "Where your revenue goes" bar.
+function renderOvDonut(buckets, profitVal){
+  const host=document.getElementById('ch_ov_donut');
+  const leg=document.getElementById('ov_legend');
+  if(!host) return;
+  const profitColor = profitVal>=0 ? '#34D399' : '#F87171';
+  const segs=(buckets||[]).filter(b=>b.val>0).map(b=>({label:b.label,val:b.val,color:b.color}));
+  segs.push({label: profitVal>=0?T[LANG].pl_viz_profit:T[LANG].pl_viz_loss, val:Math.abs(profitVal), color:profitColor, isNet:true});
+  const total=segs.reduce((s,p)=>s+p.val,0);
+  if(total<=0){ host.innerHTML=''; if(leg) leg.innerHTML=''; return; }
+
+  const R=70, C=2*Math.PI*R; // ≈439.82
+  let cum=0, arcs='';
+  segs.forEach(s=>{
+    const frac=s.val/total, len=frac*C, rot=-90+cum*360;
+    arcs+=`<circle cx="90" cy="90" r="${R}" fill="none" stroke="${s.color}" stroke-width="18" stroke-dasharray="${len.toFixed(1)} ${(C-len).toFixed(1)}" transform="rotate(${rot.toFixed(1)} 90 90)"/>`;
+    cum+=frac;
+  });
+  const netPct=Math.round(profitVal/total*100);
+
+  host.innerHTML=
+    `<svg width="150" height="150" viewBox="0 0 180 180">`+
+    `<circle cx="90" cy="90" r="${R}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="18"/>`+
+    arcs+
+    `<text x="90" y="84" text-anchor="middle" fill="#E6EDF3" font-size="22" font-weight="700">${netPct}%</text>`+
+    `<text x="90" y="102" text-anchor="middle" fill="#6E7681" font-size="10">${profitVal>=0?'net profit':'net loss'}</text>`+
+    `</svg>`;
+
+  if(leg) leg.innerHTML=segs.map(s=>{
+    const pct=Math.round(s.val/total*100);
+    const pctCol=s.isNet?'#6EE7B7':'var(--txt3)';
+    return `<div class="li"><span class="ld" style="background:${s.color}"></span>${escapeHtml(s.label)} <b style="color:${pctCol}">${pct}%</b></div>`;
+  }).join('');
 }
 
 // P&L composition — horizontal stacked bar showing where every pound of revenue goes.
@@ -5794,7 +5956,7 @@ function renderPLComposition(parts, profitVal){
   segs.push({
     label: profitVal >= 0 ? T[LANG].pl_viz_profit : T[LANG].pl_viz_loss,
     val:   Math.abs(profitVal),
-    color: profitVal >= 0 ? '#00e5a0' : '#f43f5e'
+    color: profitVal >= 0 ? '#34D399' : '#F87171'
   });
   const sum = segs.reduce((s,p)=>s + Math.max(p.val,0), 0);
   if(sum <= 0){ bar.innerHTML = ''; leg.innerHTML = ''; return; }
@@ -5809,20 +5971,53 @@ function renderPLComposition(parts, profitVal){
   }).join('');
 }
 
+// ── Break-even curve (inline SVG) ──────────────────────────────────────
+// Cumulative profit = units × per-unit margin − fixed costs; crosses zero at break-even.
 function renderBECurve(beU, profPU, totalFixed){
-  if(!dk('bec')) return;
-  const bv=isFinite(beU)&&beU>0?beU:100;
-  const max=Math.ceil(bv*2.5), step=Math.max(1,Math.floor(max/7));
-  const xs=[]; for(let i=0;i<=max;i+=step) xs.push(i);
-  const pu=profPU||1;
-  CH['bec']=new Chart(document.getElementById('ch_ov_be'),{
-    type:'line',
-    data:{labels:xs,datasets:[
-      {label:'Cumulative profit',data:xs.map(x=>x*pu-totalFixed),borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,.08)',fill:true,tension:.4,pointRadius:0},
-      {data:xs.map(()=>0),borderColor:'rgba(244,63,94,.4)',borderDash:[4,4],pointRadius:0,label:'Zero line'}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc(),maxTicksLimit:5,font:{size:10}},grid:{display:false}},y:{ticks:{color:tc(),callback:v=>Math.round(v/1000)+'K',font:{size:10}},grid:{color:gc()}}}}
-  });
+  const host=document.getElementById('ch_ov_be'); if(!host) return;
+  const pu=(isFinite(profPU)&&profPU>0)?profPU:0;
+  if(pu<=0 || !(totalFixed>0)){ host.innerHTML=''; return; }
+  const beVal=(isFinite(beU)&&beU>0)?beU:totalFixed/pu;
+  const xMax=Math.max(beVal*2.14, beVal+1);
+
+  const pAt0=-totalFixed, pAtMax=xMax*pu-totalFixed;
+  // nice y-bounds containing the line, divided evenly into 4 so the curve fills the plot
+  const gTop=_svgNiceTop(pAtMax), gBot=-_svgNiceTop(Math.abs(pAt0));
+  const step=(gTop-gBot)/4;
+
+  const PL=50,PR=450,PT=20,PB=240;
+  const sx=x=>PL+(x/xMax)*(PR-PL);
+  const sy=v=>PT+((gTop-v)/(gTop-gBot))*(PB-PT);
+
+  // gridlines + y labels
+  let grid='', ylab='';
+  for(let i=0;i<=4;i++){
+    const gv=gBot+step*i, gy=sy(gv);
+    grid+=`<line x1="${PL-4}" y1="${gy.toFixed(1)}" x2="${PR}" y2="${gy.toFixed(1)}"/>`;
+    ylab+=`<text x="${PL-8}" y="${(gy+3).toFixed(1)}">${_svgAxis(gv)}</text>`;
+  }
+
+  const x0=sx(0), y0=sy(pAt0), xM=sx(xMax), yM=sy(pAtMax);
+  const yZero=sy(0), xBe=sx(beVal);
+
+  // x labels
+  const xs=[0, Math.round(xMax/3), Math.round(2*xMax/3), Math.round(xMax)];
+  let xlab='';
+  xs.forEach(xv=>{ xlab+=`<text x="${sx(xv).toFixed(0)}" y="262">${xv.toLocaleString('en')}</text>`; });
+
+  host.innerHTML=
+    `<svg viewBox="0 0 460 270" font-family="Inter">`+
+    `<defs><linearGradient id="beFill" x1="0" y1="0" x2="0" y2="1">`+
+    `<stop offset="0%" stop-color="#34D399" stop-opacity="0.18"/><stop offset="100%" stop-color="#34D399" stop-opacity="0"/></linearGradient></defs>`+
+    `<g stroke="rgba(255,255,255,0.06)" stroke-width="1">${grid}</g>`+
+    `<g fill="#6E7681" font-size="10" text-anchor="end">${ylab}</g>`+
+    `<line x1="${PL}" y1="${yZero.toFixed(1)}" x2="${PR}" y2="${yZero.toFixed(1)}" stroke="#F87171" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.6"/>`+
+    `<path d="M${xBe.toFixed(1)},${yZero.toFixed(1)} L${xM.toFixed(1)},${yM.toFixed(1)} L${xM.toFixed(1)},${yZero.toFixed(1)} Z" fill="url(#beFill)"/>`+
+    `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${xM.toFixed(1)}" y2="${yM.toFixed(1)}" stroke="#818CF8" stroke-width="2.5" stroke-linecap="round"/>`+
+    `<circle cx="${xBe.toFixed(1)}" cy="${yZero.toFixed(1)}" r="5" fill="#0D1117" stroke="#34D399" stroke-width="2.5"/>`+
+    `<text x="${xBe.toFixed(1)}" y="${(yZero-12).toFixed(1)}" text-anchor="middle" fill="#6EE7B7" font-size="10" font-weight="600">BE ${Math.round(beVal).toLocaleString('en')}</text>`+
+    `<g fill="#6E7681" font-size="10" text-anchor="middle">${xlab}</g>`+
+    `</svg>`;
 }
 
 // ── NAV ────────────────────────────────────
@@ -7998,7 +8193,7 @@ const T = {
     ov_net_profit:'Net total profit',
     ov_after_ads:'After ads & salary',
     ov_rev_toggle:'+Ship',
-    ov_total_returns:'💸 Total return costs',
+    ov_total_returns:'Total return costs', ov_net_ship_impact:'Net shipping impact',
     export_sub:'All product analytics in one Excel sheet — Inputs, Marketing, Shipping, P&L, and product comparison',
     js_auto_cpa:'★ Target CPA = ',
     js_auto_cpa_suffix:' (30% safety margin)',
@@ -8073,6 +8268,7 @@ const T = {
     ov_delivery_title:'Delivery', ov_delivery_sub:'Units distribution', ov_del_ret_lbl:'Delivered / Returned',
     ov_ship_title:'Shipping costs', ov_ship_sub:'Per unit breakdown', ov_ship_panel_sub:'weighted across all products',
     ov_total_margin_lbl:'Total margin', ov_margin_pu_lbl:'Margin / unit', ov_net_pu_lbl:'Net / unit',
+    ov_rev_prod_lbl:'Product revenue', ov_rev_ship_lbl:'Shipping collected',
     ov_ad_cost_order:'Ad cost / order', ov_total_orders_lbl:'Total orders',
     ov_total_leads_lbl:'Total leads', ov_total_delivered_lbl:'Total delivered',
     lbl_plat_lead:'Platform fee / lead',
@@ -8252,7 +8448,7 @@ const T = {
     ov_net_profit:'صافي الربح الكلي',
     ov_after_ads:'بعد الإعلانات والراتب',
     ov_rev_toggle:'+شحن',
-    ov_total_returns:'💸 إجمالي تكلفة الإرجاعات',
+    ov_total_returns:'إجمالي تكلفة الإرجاعات', ov_net_ship_impact:'صافي أثر الشحن',
     export_sub:'كل أناليسيز المنتجات في شيت Excel واحدة — Inputs، Marketing، Shipping، P&L، ومقارنة المنتجات',
     js_auto_cpa:'★ الـ CPA المستهدف = ',
     js_auto_cpa_suffix:' (هامش أمان 30%)',
@@ -8327,6 +8523,7 @@ const T = {
     ov_delivery_title:'التوصيل', ov_delivery_sub:'توزيع الوحدات', ov_del_ret_lbl:'وصلت / رجعت',
     ov_ship_title:'تكاليف الشحن', ov_ship_sub:'تفصيل لكل وحدة', ov_ship_panel_sub:'موزون عبر كل المنتجات',
     ov_total_margin_lbl:'إجمالي الهامش', ov_margin_pu_lbl:'الهامش / وحدة', ov_net_pu_lbl:'صافي / وحدة',
+    ov_rev_prod_lbl:'إيراد المنتج', ov_rev_ship_lbl:'الشحن المُحصّل',
     ov_ad_cost_order:'تكلفة الإعلان / أوردر', ov_total_orders_lbl:'إجمالي الأوردرات',
     ov_total_leads_lbl:'إجمالي الليدز', ov_total_delivered_lbl:'إجمالي الموصّلات',
     lbl_plat_lead:'رسوم المنصة / ليد',
@@ -8709,22 +8906,31 @@ window._lastRevInclShip = 0;
 window._lastRevExclShip = 0;
 
 function _updateRevDisplay(){
-  const val = REV_INCL_SHIP ? window._lastRevInclShip : window._lastRevExclShip;
+  const incl = window._lastRevInclShip||0, excl = window._lastRevExclShip||0;
+  const units = window._lastDelivUnits||0;
+  const val = REV_INCL_SHIP ? incl : excl;
+  const ship = Math.max(incl-excl,0);
+  const fmtFull = n => Math.round(n).toLocaleString('en')+' '+CURRENCY;
   const el  = document.getElementById('ov_rev');
-  if(el && val > 0) el.textContent = (Math.round(val*10)/10/1000).toFixed(1)+'K '+CURRENCY;
+  if(el && val > 0) el.innerHTML = Math.round(val).toLocaleString('en')+' <span class="ovx-cur" style="color:var(--txt2)">'+CURRENCY+'</span>';
+  const sub = document.getElementById('ov_rev_sub');
+  if(sub && units > 0) sub.textContent = Math.round(units).toLocaleString('en')+' units · '+(Math.round(val/units*10)/10).toLocaleString('en')+' '+CURRENCY;
+  const rp = document.getElementById('ov_rev_prod'); if(rp) rp.textContent = fmtFull(excl);
+  const rs = document.getElementById('ov_rev_ship'); if(rs) rs.textContent = fmtFull(ship);
+  const ps = document.getElementById('ov_rev_prod_seg'); if(ps) ps.style.flexGrow = Math.max(excl,0.0001);
+  const ss = document.getElementById('ov_rev_ship_seg'); if(ss) ss.style.flexGrow = Math.max(ship,0.0001);
 }
 
 function toggleRevShipping(){
   REV_INCL_SHIP = !REV_INCL_SHIP;
   const btn = document.getElementById('rev_ship_toggle');
-  const sub = document.getElementById('ov_rev_sub');
   if(btn){
     btn.textContent      = REV_INCL_SHIP ? '+ Ship' : '− Ship';
-    btn.style.background = REV_INCL_SHIP ? 'rgba(167,139,250,.12)' : 'rgba(167,139,250,.3)';
-    btn.style.borderColor= REV_INCL_SHIP ? 'rgba(167,139,250,.4)' : 'var(--c4)';
-    btn.style.fontWeight = REV_INCL_SHIP ? '400' : '700';
+    btn.style.background = REV_INCL_SHIP ? 'rgba(129,140,248,.3)' : 'rgba(129,140,248,.12)';
+    btn.style.borderColor= REV_INCL_SHIP ? '#818CF8' : 'rgba(129,140,248,.3)';
+    btn.style.color      = '#A5B4FC';
+    btn.style.fontWeight = '700';
   }
-  if(sub) sub.textContent = REV_INCL_SHIP ? 'incl. shipping' : 'product only';
   _updateRevDisplay();
 }
 // ══════════════════════════════════════════════
