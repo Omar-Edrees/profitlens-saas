@@ -675,6 +675,16 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
   color:var(--txt-title);margin-bottom:12px;display:flex;align-items:center;gap:7px;
 }
 .cdot{width:7px;height:7px;border-radius:2px;display:inline-block}
+/* Inline-SVG charts (Overview) — replace Chart.js, always render */
+.ov-svg-wrap{width:100%}
+.ov-svg-wrap svg{display:block;width:100%;height:auto;font-variant-numeric:tabular-nums}
+.ov-donut-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.ov-donut-svg{flex:0 0 auto;line-height:0}
+.ov-donut-svg svg{display:block;font-variant-numeric:tabular-nums}
+.ov-donut-legend{display:flex;flex-direction:column;gap:9px;flex:1;min-width:130px}
+.ov-donut-legend .li{font-size:12px}
+.ov-donut-legend .li b{color:var(--txt);font-variant-numeric:tabular-nums}
+@media(max-width:480px){.ov-donut-row{justify-content:center}}
 
 /* ─── TABLE ─────────────────────────── */
 .data-table{width:100%;border-collapse:collapse;font-size:12px}
@@ -3832,16 +3842,18 @@ input[type=range]::-moz-range-thumb{
   <div class="charts-3">
     <div class="chart-card">
       <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span><span data-t="chart_wf">Unit economics waterfall</span></div>
-      <div class="ch-wrap"><canvas id="ch_wf" role="img" aria-label="Waterfall chart of unit economics"></canvas></div>
+      <div id="ch_wf" class="ov-svg-wrap" role="img" aria-label="Waterfall chart of unit economics"></div>
     </div>
     <div class="chart-card">
       <div class="chart-lbl"><span class="cdot" style="background:var(--c3)"></span><span data-t="chart_donut">Revenue allocation</span></div>
-      <div id="ov_legend" class="legend"></div>
-      <div class="ch-wrap-sm"><canvas id="ch_ov_donut" role="img" aria-label="Donut chart showing revenue allocation"></canvas></div>
+      <div class="ov-donut-row">
+        <div id="ch_ov_donut" class="ov-donut-svg" role="img" aria-label="Donut chart showing revenue allocation"></div>
+        <div id="ov_legend" class="ov-donut-legend"></div>
+      </div>
     </div>
     <div class="chart-card">
       <div class="chart-lbl"><span class="cdot" style="background:var(--c4)"></span><span data-t="chart_be">Break-even curve</span></div>
-      <div class="ch-wrap"><canvas id="ch_ov_be" role="img" aria-label="Break-even curve chart"></canvas></div>
+      <div id="ch_ov_be" class="ov-svg-wrap" role="img" aria-label="Break-even curve chart"></div>
     </div>
   </div>
 
@@ -5473,16 +5485,20 @@ function calc(){
   set('pl_pu_net',  (profitPUNet>=0?'':'-')+eg(Math.abs(profitPUNet)), profitPUNet>=0?'var(--profit)':'var(--red)');
   set('pl_tot_net', (isP?'':'-')+eg(Math.abs(totalProf)), pc);
 
+  // Shared revenue-allocation buckets — drives BOTH the donut (Revenue allocation)
+  // and the P&L "Where your revenue goes" bar, so the two always agree.
+  // Colors follow the Overview design palette.
+  const revBuckets = [
+    { label: T[LANG].lbl_prod_cost, val: stock*cost,           color:'#F87171' },
+    { label: T[LANG].pl_ship_cost,  val: stock*effShip,        color:'#FBBF24' },
+    { label: T[LANG].pl_comm,       val: stock*commAmt,        color:'#F472B6' },
+    { label: T[LANG].lbl_plat_lead, val: stock*platPerOrder,   color:'#38BDF8' },
+    { label: T[LANG].adv_pdr_lbl,   val: stock*pdrCostPerUnit, color:'#A855F7' },
+    { label: T[LANG].pl_ads,        val: ads,                  color:'#818CF8' },
+    { label: T[LANG].pl_salary,     val: salary,               color:'#A78BFA' },
+  ];
   // P&L composition visualization — same cost buckets as the table above
-  renderPLComposition([
-    { label: T[LANG].lbl_prod_cost, val: stock*cost,           color:'#f43f5e' },
-    { label: T[LANG].pl_ship_cost,  val: stock*effShip,        color:'#f59e0b' },
-    { label: T[LANG].pl_comm,       val: stock*commAmt,        color:'#ec4899' },
-    { label: T[LANG].lbl_plat_lead, val: stock*platPerOrder,   color:'#4f8ff7' },
-    { label: T[LANG].adv_pdr_lbl,   val: stock*pdrCostPerUnit, color:'#a855f7' },
-    { label: T[LANG].pl_ads,        val: ads,                  color:'#6366f1' },
-    { label: T[LANG].pl_salary,     val: salary,               color:'#a78bfa' },
-  ], totalProf);
+  renderPLComposition(revBuckets, totalProf);
 
   // ── Hero strip extras ──
   const totalMarginProfit = totalRev - totalVar;   // before fixed costs
@@ -5576,8 +5592,8 @@ function calc(){
     const ul=document.getElementById('ov_units_label'); if(ul) ul.textContent=delPct+'% delivery';
   }
 
-  renderWaterfall(price, cost, effShip, shipC, totalFixed/stock, commAmt);
-  renderOvDonut(stock, cost, effShip, totalFixed, price, shipC, commAmt);
+  renderWaterfall(price+shipC, cost, effShip, commAmt+platPerOrder+pdrCostPerUnit, (ads+salary)/soldUnits);
+  renderOvDonut(revBuckets, totalProf);
   renderBECurve(beUnits, profitPU, totalFixed);
 
   // refresh export preview + master overview if on overview tab
@@ -5807,28 +5823,115 @@ function renderShProfitSens(profitPU_base, effShip_base, salary, ads, stock, cos
   });
 }
 
-function renderWaterfall(price, cost, effShip, shipC, fixedPU, commAmt){
-  if(!dk('wf')) return;
-  const comm=commAmt||0;
-  const revenue=price+shipC, profit=revenue-cost-effShip-comm-fixedPU;
-  CH['wf']=new Chart(document.getElementById('ch_wf'),{
-    type:'bar',
-    data:{labels:['Revenue','Product','Shipping','Commission','Fixed/unit','Net profit'],datasets:[{data:[revenue,cost,effShip,comm,fixedPU,profit],backgroundColor:['#00e5a0','#f43f5e','#f59e0b','#ec4899','#a78bfa',profit>=0?'#00e5a0':'#f43f5e'],borderRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc(),font:{size:10}},grid:{display:false}},y:{ticks:{color:tc(),callback:v=>Math.round(v)},grid:{color:gc()}}}}
-  });
+// ── Inline-SVG chart helpers ────────────────────────────
+// "Nice number" rounding so axes land on clean values regardless of currency/scale.
+function _svgNiceStep(rough){
+  if(!isFinite(rough) || rough<=0) return 1;
+  const pow=Math.pow(10,Math.floor(Math.log10(rough)));
+  const n=rough/pow;
+  const m = n<=1?1 : n<=2?2 : n<=2.5?2.5 : n<=5?5 : 10;
+  return m*pow;
+}
+function _svgNiceTop(v){ if(!isFinite(v)||v<=0) return 0; const s=_svgNiceStep(v/3); return Math.ceil(v/s)*s; }
+// Compact axis label: 1.2K style for thousands, plain otherwise.
+function _svgAxis(v){
+  const a=Math.abs(v);
+  if(a>=1000){ const k=v/1000; return (Math.abs(k)>=10?Math.round(k):Math.round(k*10)/10)+'K'; }
+  return String(Math.round(v));
 }
 
-function renderOvDonut(stock, cost, effShip, totalFixed, price, shipC, commAmt){
-  if(!dk('ovd')) return;
-  const totalRev=stock*(price+shipC);
-  const cCost=stock*(commAmt||0);
-  const pCost=stock*cost, sCost=stock*effShip, prof=Math.max(totalRev-pCost-sCost-cCost-totalFixed,0);
-  const labels=['Product cost','Shipping cost','Commission','Fixed costs','Net profit'];
-  const data=[pCost,sCost,cCost,totalFixed,prof];
-  const colors=['#f43f5e','#f59e0b','#ec4899','#a78bfa','#00e5a0'];
-  const total=pCost+sCost+cCost+totalFixed+prof;
-  document.getElementById('ov_legend').innerHTML=labels.map((l,i)=>`<div class="li"><span class="ld" style="background:${colors[i]}"></span>${l} ${total>0?Math.round(data[i]/total*100)+'%':''}</div>`).join('');
-  CH['ovd']=new Chart(document.getElementById('ch_ov_donut'),{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'66%',plugins:{legend:{display:false}}}});
+// ── Unit-economics waterfall (inline SVG) ──────────────────────────────
+// Steps from revenue down through each per-unit cost to the net result.
+function renderWaterfall(revenue, product, shipping, comm, adfixed){
+  const host=document.getElementById('ch_wf'); if(!host) return;
+  const net = revenue - product - shipping - comm - adfixed;
+  if(!(revenue>0)){ host.innerHTML=''; return; }
+
+  const cols=[
+    {label:'Revenue',  val:revenue, color:'#34D399', kind:'total'},
+    {label:'Product',  val:product, color:'#F87171', kind:'drop'},
+    {label:'Shipping', val:shipping,color:'#FBBF24', kind:'drop'},
+    {label:'Comm.',    val:comm,    color:'#38BDF8', kind:'drop'},
+    {label:'Ad+fixed', val:adfixed, color:'#818CF8', kind:'drop'},
+    {label:'Net',      val:net,     color:net>=0?'#6EE7B7':'#F87171', kind:'total'}
+  ];
+
+  const topY=18, baseY=230, W=460;
+  const top=_svgNiceTop(Math.max(revenue, net, 0)) || revenue;
+  const ticks=4, tStep=top/ticks;
+  const y=v=>baseY-(v/top)*(baseY-topY);
+
+  // gridlines + y labels
+  let grid='', ylab='';
+  for(let i=0;i<=ticks;i++){
+    const gv=tStep*i, gy=y(gv);
+    grid+=`<line x1="40" y1="${gy.toFixed(1)}" x2="455" y2="${gy.toFixed(1)}"/>`;
+    ylab+=`<text x="34" y="${(gy+3).toFixed(1)}">${_svgAxis(gv)}</text>`;
+  }
+  grid+=`<line x1="40" y1="${baseY}" x2="455" y2="${baseY}"/>`;
+
+  // bars (running total drives the drops)
+  let bars='', xlab='', running=revenue;
+  cols.forEach((c,i)=>{
+    const cx=52+i*70, bw=46;
+    let ry, rh;
+    if(c.kind==='total'){
+      const v=c.val;
+      ry=Math.min(y(Math.max(v,0)), baseY);
+      rh=Math.abs(y(v)-baseY);
+    } else {
+      const topVal=running, botVal=running-c.val;
+      ry=y(topVal); rh=Math.abs(y(botVal)-y(topVal));
+      running=botVal;
+    }
+    rh=Math.max(rh,2);
+    bars+=`<rect x="${cx}" y="${ry.toFixed(1)}" width="${bw}" height="${rh.toFixed(1)}" rx="3" fill="${c.color}"/>`;
+    xlab+=`<text x="${cx+bw/2}" y="246">${c.label}</text>`;
+  });
+
+  host.innerHTML=
+    `<svg viewBox="0 0 ${W} 270" font-family="Inter">`+
+    `<g stroke="rgba(255,255,255,0.06)" stroke-width="1">${grid}</g>`+
+    `<g fill="#6E7681" font-size="10" text-anchor="end">${ylab}</g>`+
+    bars+
+    `<g fill="#8B949E" font-size="10" text-anchor="middle">${xlab}</g>`+
+    `</svg>`;
+}
+
+// ── Revenue-allocation donut (inline SVG) ──────────────────────────────
+// Driven by the same buckets as the "Where your revenue goes" bar.
+function renderOvDonut(buckets, profitVal){
+  const host=document.getElementById('ch_ov_donut');
+  const leg=document.getElementById('ov_legend');
+  if(!host) return;
+  const profitColor = profitVal>=0 ? '#34D399' : '#F87171';
+  const segs=(buckets||[]).filter(b=>b.val>0).map(b=>({label:b.label,val:b.val,color:b.color}));
+  segs.push({label: profitVal>=0?T[LANG].pl_viz_profit:T[LANG].pl_viz_loss, val:Math.abs(profitVal), color:profitColor, isNet:true});
+  const total=segs.reduce((s,p)=>s+p.val,0);
+  if(total<=0){ host.innerHTML=''; if(leg) leg.innerHTML=''; return; }
+
+  const R=70, C=2*Math.PI*R; // ≈439.82
+  let cum=0, arcs='';
+  segs.forEach(s=>{
+    const frac=s.val/total, len=frac*C, rot=-90+cum*360;
+    arcs+=`<circle cx="90" cy="90" r="${R}" fill="none" stroke="${s.color}" stroke-width="18" stroke-dasharray="${len.toFixed(1)} ${(C-len).toFixed(1)}" transform="rotate(${rot.toFixed(1)} 90 90)"/>`;
+    cum+=frac;
+  });
+  const netPct=Math.round(profitVal/total*100);
+
+  host.innerHTML=
+    `<svg width="150" height="150" viewBox="0 0 180 180">`+
+    `<circle cx="90" cy="90" r="${R}" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="18"/>`+
+    arcs+
+    `<text x="90" y="84" text-anchor="middle" fill="#E6EDF3" font-size="22" font-weight="700">${netPct}%</text>`+
+    `<text x="90" y="102" text-anchor="middle" fill="#6E7681" font-size="10">${profitVal>=0?'net profit':'net loss'}</text>`+
+    `</svg>`;
+
+  if(leg) leg.innerHTML=segs.map(s=>{
+    const pct=Math.round(s.val/total*100);
+    const pctCol=s.isNet?'#6EE7B7':'var(--txt3)';
+    return `<div class="li"><span class="ld" style="background:${s.color}"></span>${escapeHtml(s.label)} <b style="color:${pctCol}">${pct}%</b></div>`;
+  }).join('');
 }
 
 // P&L composition — horizontal stacked bar showing where every pound of revenue goes.
@@ -5841,7 +5944,7 @@ function renderPLComposition(parts, profitVal){
   segs.push({
     label: profitVal >= 0 ? T[LANG].pl_viz_profit : T[LANG].pl_viz_loss,
     val:   Math.abs(profitVal),
-    color: profitVal >= 0 ? '#00e5a0' : '#f43f5e'
+    color: profitVal >= 0 ? '#34D399' : '#F87171'
   });
   const sum = segs.reduce((s,p)=>s + Math.max(p.val,0), 0);
   if(sum <= 0){ bar.innerHTML = ''; leg.innerHTML = ''; return; }
@@ -5856,20 +5959,53 @@ function renderPLComposition(parts, profitVal){
   }).join('');
 }
 
+// ── Break-even curve (inline SVG) ──────────────────────────────────────
+// Cumulative profit = units × per-unit margin − fixed costs; crosses zero at break-even.
 function renderBECurve(beU, profPU, totalFixed){
-  if(!dk('bec')) return;
-  const bv=isFinite(beU)&&beU>0?beU:100;
-  const max=Math.ceil(bv*2.5), step=Math.max(1,Math.floor(max/7));
-  const xs=[]; for(let i=0;i<=max;i+=step) xs.push(i);
-  const pu=profPU||1;
-  CH['bec']=new Chart(document.getElementById('ch_ov_be'),{
-    type:'line',
-    data:{labels:xs,datasets:[
-      {label:'Cumulative profit',data:xs.map(x=>x*pu-totalFixed),borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,.08)',fill:true,tension:.4,pointRadius:0},
-      {data:xs.map(()=>0),borderColor:'rgba(244,63,94,.4)',borderDash:[4,4],pointRadius:0,label:'Zero line'}
-    ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc(),maxTicksLimit:5,font:{size:10}},grid:{display:false}},y:{ticks:{color:tc(),callback:v=>Math.round(v/1000)+'K',font:{size:10}},grid:{color:gc()}}}}
-  });
+  const host=document.getElementById('ch_ov_be'); if(!host) return;
+  const pu=(isFinite(profPU)&&profPU>0)?profPU:0;
+  if(pu<=0 || !(totalFixed>0)){ host.innerHTML=''; return; }
+  const beVal=(isFinite(beU)&&beU>0)?beU:totalFixed/pu;
+  const xMax=Math.max(beVal*2.14, beVal+1);
+
+  const pAt0=-totalFixed, pAtMax=xMax*pu-totalFixed;
+  // nice y-bounds containing the line, divided evenly into 4 so the curve fills the plot
+  const gTop=_svgNiceTop(pAtMax), gBot=-_svgNiceTop(Math.abs(pAt0));
+  const step=(gTop-gBot)/4;
+
+  const PL=50,PR=450,PT=20,PB=240;
+  const sx=x=>PL+(x/xMax)*(PR-PL);
+  const sy=v=>PT+((gTop-v)/(gTop-gBot))*(PB-PT);
+
+  // gridlines + y labels
+  let grid='', ylab='';
+  for(let i=0;i<=4;i++){
+    const gv=gBot+step*i, gy=sy(gv);
+    grid+=`<line x1="${PL-4}" y1="${gy.toFixed(1)}" x2="${PR}" y2="${gy.toFixed(1)}"/>`;
+    ylab+=`<text x="${PL-8}" y="${(gy+3).toFixed(1)}">${_svgAxis(gv)}</text>`;
+  }
+
+  const x0=sx(0), y0=sy(pAt0), xM=sx(xMax), yM=sy(pAtMax);
+  const yZero=sy(0), xBe=sx(beVal);
+
+  // x labels
+  const xs=[0, Math.round(xMax/3), Math.round(2*xMax/3), Math.round(xMax)];
+  let xlab='';
+  xs.forEach(xv=>{ xlab+=`<text x="${sx(xv).toFixed(0)}" y="262">${xv.toLocaleString('en')}</text>`; });
+
+  host.innerHTML=
+    `<svg viewBox="0 0 460 270" font-family="Inter">`+
+    `<defs><linearGradient id="beFill" x1="0" y1="0" x2="0" y2="1">`+
+    `<stop offset="0%" stop-color="#34D399" stop-opacity="0.18"/><stop offset="100%" stop-color="#34D399" stop-opacity="0"/></linearGradient></defs>`+
+    `<g stroke="rgba(255,255,255,0.06)" stroke-width="1">${grid}</g>`+
+    `<g fill="#6E7681" font-size="10" text-anchor="end">${ylab}</g>`+
+    `<line x1="${PL}" y1="${yZero.toFixed(1)}" x2="${PR}" y2="${yZero.toFixed(1)}" stroke="#F87171" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.6"/>`+
+    `<path d="M${xBe.toFixed(1)},${yZero.toFixed(1)} L${xM.toFixed(1)},${yM.toFixed(1)} L${xM.toFixed(1)},${yZero.toFixed(1)} Z" fill="url(#beFill)"/>`+
+    `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${xM.toFixed(1)}" y2="${yM.toFixed(1)}" stroke="#818CF8" stroke-width="2.5" stroke-linecap="round"/>`+
+    `<circle cx="${xBe.toFixed(1)}" cy="${yZero.toFixed(1)}" r="5" fill="#0D1117" stroke="#34D399" stroke-width="2.5"/>`+
+    `<text x="${xBe.toFixed(1)}" y="${(yZero-12).toFixed(1)}" text-anchor="middle" fill="#6EE7B7" font-size="10" font-weight="600">BE ${Math.round(beVal).toLocaleString('en')}</text>`+
+    `<g fill="#6E7681" font-size="10" text-anchor="middle">${xlab}</g>`+
+    `</svg>`;
 }
 
 // ── NAV ────────────────────────────────────
