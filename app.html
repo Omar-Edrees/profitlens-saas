@@ -696,10 +696,11 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .alert-icon{flex-shrink:0;font-size:14px;margin-top:1px}
 .ib-num{font-weight:600;color:#fff}
 /* ── Funnel drop-off (Ads) ── */
-.fn-row{position:relative;display:flex;align-items:center;justify-content:center}
-.fn-bar{height:50px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,.18);transition:width .6s cubic-bezier(.4,0,.2,1);font-variant-numeric:tabular-nums}
-.fn-drop{position:absolute;right:0;top:50%;transform:translateY(-50%);font-size:13px;font-weight:500;color:#F87171;white-space:nowrap}
-.fn-summary{font-size:13px;color:var(--txt2);margin-top:6px}
+.fn-row{display:grid;grid-template-columns:1fr 150px;align-items:center;gap:10px}
+.fn-barwrap{display:flex;justify-content:center;min-width:0}
+.fn-bar{height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.28);transition:width .6s cubic-bezier(.4,0,.2,1);font-variant-numeric:tabular-nums}
+.fn-drop{font-size:13px;font-weight:500;color:#F87171;white-space:nowrap}
+.fn-summary{font-size:13px;color:var(--txt2);margin-top:12px;text-align:center;padding-right:150px}
 /* ── Budget breakdown bars (Ads) ── */
 .bdg-row{display:grid;grid-template-columns:130px 1fr;align-items:center;gap:12px;margin-bottom:12px}
 .bdg-lbl{text-align:right;font-size:12px;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -5674,9 +5675,9 @@ function renderFunnel(leads, conf, del){
 
   el.style.cssText = 'display:flex;flex-direction:column;justify-content:center;gap:12px;min-height:200px;padding:6px 0';
   el.innerHTML =
-    '<div class="fn-row"><div class="fn-bar" style="width:100%;background:linear-gradient(90deg,#3B82F6,#60A5FA)">Leads: '+f(leads)+'</div></div>'+
-    '<div class="fn-row"><div class="fn-bar" style="width:'+wConf+'%;background:linear-gradient(90deg,#7C3AED,#A78BFA)">Confirmed: '+f(conf)+'</div><span class="fn-drop">↓ '+confDrop+'% dropped</span></div>'+
-    '<div class="fn-row"><div class="fn-bar" style="width:'+wDel+'%;background:linear-gradient(90deg,#10B981,#34D399)">Delivered: '+f(del)+'</div><span class="fn-drop">↓ '+delDrop+'% dropped</span></div>'+
+    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:100%;background:linear-gradient(90deg,#3B82F6,#60A5FA)">Leads: '+f(leads)+'</div></div><span></span></div>'+
+    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:'+wConf+'%;background:linear-gradient(90deg,#7C3AED,#A78BFA)">Confirmed: '+f(conf)+'</div></div><span class="fn-drop">↓ '+confDrop+'% dropped</span></div>'+
+    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:'+wDel+'%;background:linear-gradient(90deg,#10B981,#34D399)">Delivered: '+f(del)+'</div></div><span class="fn-drop">↓ '+delDrop+'% dropped</span></div>'+
     '<div class="fn-summary">Overall: <b style="color:#34D399">'+l2oPct+'%</b> of leads → delivered orders</div>';
 }
 
