@@ -623,7 +623,14 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .kpi-prog{height:4px;border-radius:2px;background:rgba(129,140,248,.15);overflow:hidden;margin-top:12px}
 .kpi-prog-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,#818CF8,#A5B4FC);transition:width .6s cubic-bezier(.4,0,.2,1)}
 @media(max-width:1024px){#s1_kpi_row{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:560px){#s1_kpi_row{grid-template-columns:1fr}}
+@media(max-width:560px){
+  #s1_kpi_row{grid-template-columns:repeat(2,1fr);gap:10px}
+  #s1_kpi_row .kpi{padding:14px}
+  #s1_kpi_row .kpi-val{font-size:22px}
+  #s1_kpi_row .kpi--count .kpi-val{font-size:24px}
+  #s1_kpi_row .kpi-lbl{font-size:11px;padding-right:16px}
+  #s1_kpi_row .kpi-hint{font-size:10px}
+}
 .kpi-row--edit .kpi{cursor:grab;user-select:none;overflow:visible!important}
 .kpi-row--edit .kpi:active{cursor:grabbing}
 .kpi-x,.kpi-plus{
