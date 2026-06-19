@@ -4079,6 +4079,7 @@ let MB_MANUAL_BUDGET = false;
 let MB_MANUAL_CPA    = false;
 let MB_BASE_BUDGET   = 0;
 let MB_CURRENT_MODE  = 'alloc'; // 'alloc' | 'pro' | 'minorders'
+let MB_IN_CALC       = false;   // re-entrancy guard: suppress dCalc() while calc() refreshes the planner
 
 // Toggle Advanced Options panel
 function mbToggleAdvanced(){
@@ -4295,7 +4296,7 @@ function mbAllocRecalc(){
       hintAlloc.style.display = 'none';
     }
   }
-  dCalc();
+  if(!MB_IN_CALC) dCalc();
 }
 
 // ── PER-CHANNEL RATES TOGGLE ──────────────────────────
@@ -4479,6 +4480,7 @@ function mbMORecalc(){
       hint.textContent = T[LANG].js_no_be_cpa2;
     }
   }
+  if(!MB_IN_CALC) dCalc();
 }
 
 function mbMOAddChannel(){
@@ -4606,7 +4608,7 @@ function mbProRecalc(){
     const hint = document.getElementById('mb_pro_cpa_hint');
     if(hint){ hint.style.display='block'; hint.textContent=T[LANG].blended_cpa_hint+blendedCpa.toFixed(1)+' '+CURRENCY; }
   }
-  dCalc();
+  if(!MB_IN_CALC) dCalc();
 }
 
 function mbProAddChannel(){
@@ -5753,6 +5755,11 @@ function calc(){
   persistSave();
   // Update what-if slider baseline values (without moving sliders or resetting positions)
   if(typeof _updateSliderBaseline === 'function') _updateSliderBaseline();
+
+  // Re-render the Campaign Planner cards with the freshly-computed Break-even CPA / profit-per-unit.
+  // Guard prevents infinite recursion (the mb*Recalc functions call dCalc() → calc() otherwise).
+  MB_IN_CALC = true;
+  try { mbRefreshCurrentMode(); } finally { MB_IN_CALC = false; }
 }
 
 // ── CHARTS ──────────────────────────────────
