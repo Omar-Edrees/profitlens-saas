@@ -48,7 +48,14 @@
   --bg:#f5f6fa; --bg2:#eef0f7; --surf:#fff; --surf2:#f0f2f9; --surf3:#e8ebf5;
   --bdr:#dde0ec; --bdr2:#c8cce0; --txt:#0d1018; --txt2:#3a4055; --txt3:#7a82a0;
   --txt-title:#0d1018;
+  /* accent palette darkened for contrast on light surfaces (neon values wash out on white) */
+  --c1:#4f46e5; --c1l:#6366f1; --c2:#7c3aed; --c3:#059669; --c4:#0284c7;
+  --acc:#4f46e5; --acc2:#4338ca; --red:#dc2626; --grn:#059669; --profit:#059669;
 }
+/* light mode: accent backgrounds become dark, so flip their black labels to white */
+body[data-theme="light"] .prod-tab.active{color:#fff}
+body[data-theme="light"] .prod-tab.active .pt-del{color:#fff}
+body[data-theme="light"] .export-btn{color:#fff}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13px;line-height:1.6;transition:background .3s,color .3s;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
