@@ -5351,8 +5351,8 @@ function calc(){
   const adOk    = actualCPP <= beCPP && beCPP > 0;
   const adsAdOk = adOk;
 
-  set('m_maxcpp',  d1(beCPP)+' '+CURRENCY,  beCPP>0?'#fff':'var(--red)');
-  set('m_be_roas', (Math.round(beROAS*100)/100).toFixed(1)+'x', '#fff');
+  set('m_maxcpp',  d1(beCPP)+' '+CURRENCY,  beCPP>0?'var(--txt-title)':'var(--red)');
+  set('m_be_roas', (Math.round(beROAS*100)/100).toFixed(1)+'x', 'var(--txt-title)');
   set('m_roas_hint', 'Min to break even: '+(Math.round(beROAS*100)/100).toFixed(1)+'x');
   set('m_acpp',    d1(actualCPP)+' '+CURRENCY, adOk?'var(--c1)':'var(--red)');
   const roasOk = beROAS > 0 && actualROAS >= beROAS;
