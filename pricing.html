@@ -268,6 +268,14 @@
     .promo-msg { margin-top: 10px; font-size: 12px; text-align: right; display: none; }
     .promo-msg.error   { color: #fca5a5; display: block; }
     .promo-msg.success { color: #86efac; display: block; }
+    .promo-remove {
+      background: none; border: none; cursor: pointer;
+      color: #fca5a5; font-size: 11px; font-family: var(--body);
+      text-decoration: underline; padding: 0; margin-top: 6px;
+      display: block; margin-right: auto;
+    }
+    .promo-remove:hover { color: #f87171; }
+    .promo-remove:disabled { opacity: .5; cursor: not-allowed; }
 
     /* ── TRUST ── */
     .trust {
@@ -443,11 +451,22 @@
     const discount = Math.round((1 - parseInt(PRICE_EGP) / parseInt(PRICE_ORIGINAL)) * 100);
     document.getElementById('price-badge').textContent = '-' + discount + '%';
     document.getElementById('payment-number').textContent = PAYMENT_NUMBER;
-    document.getElementById('wa-btn').href =
-      'https://wa.me/' + WHATSAPP_NUMBER +
-      '?text=' + encodeURIComponent(
-        'مرحبا، عايز أشترك في ProfitLens Pro\n\nإيميلي: '
-      );
+
+    function defaultWaHref() {
+      return 'https://wa.me/' + WHATSAPP_NUMBER +
+        '?text=' + encodeURIComponent(
+          'مرحبا، عايز أشترك في ProfitLens Pro\n\nإيميلي: '
+        );
+    }
+    document.getElementById('wa-btn').href = defaultWaHref();
+
+    // Reset price/CTA back to the default (no coupon) state.
+    function resetPriceToDefault() {
+      document.getElementById('price-amount').textContent    = PRICE_EGP;
+      document.getElementById('price-badge').textContent     = '-' + discount + '%';
+      document.getElementById('pay-step-amount').textContent = PRICE_EGP;
+      document.getElementById('wa-btn').href = defaultWaHref();
+    }
 
     // Apply a promo discount to the price (discount is OFF the base/original price).
     // The customer then pays the discounted amount manually; an admin activates them.
@@ -470,6 +489,54 @@
       return newPrice;
     }
     window.__applyCouponDiscount = applyCouponDiscount;
+
+    // Adds a "remove coupon" link under the promo message (idempotent).
+    function appendPromoRemoveButton() {
+      const msg = document.getElementById('promo-msg');
+      if (msg.querySelector('.promo-remove')) return;
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'promo-remove';
+      removeBtn.textContent = '✕ شيل الكوبون وارجع للسعر الأصلي';
+      removeBtn.onclick = removeCouponCode;
+      msg.appendChild(removeBtn);
+    }
+
+    async function removeCouponCode() {
+      if (!__sb) return;
+      if (!confirm('متأكد إنك عايز تشيل الكوبون؟ السعر هيرجع للسعر الأصلي.')) return;
+
+      const msg = document.getElementById('promo-msg');
+      const removeBtn = msg.querySelector('.promo-remove');
+      if (removeBtn) { removeBtn.disabled = true; removeBtn.textContent = '…جاري الإلغاء'; }
+
+      try {
+        const { data: { session } } = await __sb.auth.getSession();
+        if (!session) { window.location.replace('/'); return; }
+
+        const res = await fetch('/api/redeem-cancel', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + session.access_token }
+        });
+        const json = await res.json();
+        if (!res.ok) {
+          msg.textContent = json.error || 'حصل خطأ، حاول تاني';
+          msg.className = 'promo-msg error';
+          return;
+        }
+
+        resetPriceToDefault();
+        msg.textContent = '';
+        msg.className = 'promo-msg';
+        const input = document.getElementById('promo-input');
+        const pbtn  = document.getElementById('promo-btn');
+        input.disabled = false; input.value = '';
+        pbtn.disabled = false; pbtn.textContent = 'تفعيل';
+      } catch (e) {
+        msg.textContent = 'حصل خطأ، حاول تاني';
+        msg.className = 'promo-msg error';
+      }
+    }
 
     function copyNumber() {
       navigator.clipboard.writeText(PAYMENT_NUMBER).then(() => {
@@ -505,6 +572,7 @@
             m.textContent = 'كوبون ' + profile.redeemed_code + ' متطبّق (خصم ' + profile.redeemed_discount_pct +
               '%). حوّل المبلغ وابعت الإيصال على واتساب.';
             m.className = 'promo-msg success';
+            appendPromoRemoveButton();
             document.getElementById('promo-body').classList.add('open');
             document.querySelector('.promo-toggle-arrow').classList.add('open');
           }
@@ -562,6 +630,7 @@
           msg.textContent = '✓ تم تطبيق الكوبون: خصم ' + json.discount_pct + '% — السعر بقى ' + newPrice +
             ' جنيه. حوّل المبلغ وابعت الإيصال على واتساب وهنفعّلك.';
           msg.className = 'promo-msg success';
+          appendPromoRemoveButton();
         }
       } catch(e) {
         msg.textContent = 'حصل خطأ، حاول تاني';
