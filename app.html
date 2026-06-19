@@ -3814,15 +3814,15 @@ input[type=range]::-moz-range-thumb{
 
     <!-- Margin + Revenue summary (2 cards) -->
     <div class="ovx-row">
-      <!-- Card 1: Total gross margin -->
+      <!-- Card 1: Contribution Margin -->
       <div class="ovx-card" style="--ax:#34D399">
         <div class="ovx-head">
           <span class="ovx-ic" style="--ic:#34D399"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>
-          <span class="ovx-lbl">Total gross margin</span>
-          <span class="ovx-cap">Before fixed costs</span>
+          <span class="ovx-lbl" data-t="ov_cm_lbl">Contribution Margin</span>
+          <span class="ovx-cap" data-t="ov_cm_cap">Before fixed costs</span>
         </div>
         <div class="ovx-val" id="ov_total_margin" style="color:var(--green)">—</div>
-        <div class="ovx-meta">Margin / unit <b id="ov_pu">—</b><span class="ovx-divider"></span><b id="ov_margin" style="color:var(--purple-2)">—</b> margin</div>
+        <div class="ovx-meta"><span data-t="ov_margin_pu_lbl">Margin / unit</span> <b id="ov_pu">—</b><span class="ovx-divider"></span><b id="ov_margin" style="color:var(--purple-2)">—</b> <span data-t="ov_margin_word">margin</span></div>
         <div class="ovx-track"><div class="ovx-fill" id="ov_margin_bar" style="width:0%"></div></div>
       </div>
       <!-- Card 2: Revenue -->
@@ -5573,9 +5573,14 @@ function calc(){
   renderShProfitSens(profitPU, effShip, salary, ads, stock, costDel, costRet, delR);
 
   // ── Section 3: Overview ──
-  set('ov_pu',    (Math.round(profitPU*10)/10).toFixed(1)+' '+CURRENCY, profitPU>=0?'var(--txt-title)':'var(--red)');
-  set('ov_margin', pct(marginPct));
-  { const _mb=document.getElementById('ov_margin_bar'); if(_mb) _mb.style.width=Math.max(0,Math.min(100,marginPct))+'%'; }
+  // Contribution Margin: ads scale with volume (CPA × leads), so they are a
+  // variable cost here too — only salary stays fixed/excluded from this metric.
+  const adsPerUnit = stock>0 ? ads/stock : 0;
+  const cmPU       = profitPU - adsPerUnit;
+  const cmPct      = priceNet>0 ? (cmPU/priceNet)*100 : 0;
+  set('ov_pu',    (Math.round(cmPU*10)/10).toFixed(1)+' '+CURRENCY, cmPU>=0?'var(--txt-title)':'var(--red)');
+  set('ov_margin', pct(cmPct));
+  { const _mb=document.getElementById('ov_margin_bar'); if(_mb) _mb.style.width=Math.max(0,Math.min(100,cmPct))+'%'; }
   (function(){
     const _absProf = Math.abs(Math.round(totalProf*10)/10);
     const _np = document.getElementById('ov_total');
@@ -5663,7 +5668,9 @@ function calc(){
   renderPLComposition(revBuckets, totalProf);
 
   // ── Hero strip extras ──
-  const totalMarginProfit = totalRev - totalVar;   // before fixed costs
+  // Contribution Margin = revenue − all variable costs, including ads (ads scale
+  // with leads/volume, so they're variable, not fixed). Only salary is fixed here.
+  const totalMarginProfit = totalRev - totalVar - ads;
   set('ov_net_pu',      (profitPUNet>=0?'':'-')+eg(Math.abs(profitPUNet)), profitPUNet>=0?'var(--profit)':'var(--red)');
   { const _tm=document.getElementById('ov_total_margin');
     if(_tm){ _tm.innerHTML=(totalMarginProfit<0?'-':'')+Math.round(Math.abs(totalMarginProfit)).toLocaleString('en')+' <span class="ovx-cur" style="color:#6EE7B7">'+CURRENCY+'</span>';
@@ -8471,6 +8478,7 @@ const T = {
     ov_delivery_title:'Delivery', ov_delivery_sub:'Units distribution', ov_del_ret_lbl:'Delivered / Returned',
     ov_ship_title:'Shipping costs', ov_ship_sub:'Per unit breakdown', ov_ship_panel_sub:'weighted across all products',
     ov_total_margin_lbl:'Total margin', ov_margin_pu_lbl:'Margin / unit', ov_net_pu_lbl:'Net / unit',
+    ov_cm_lbl:'Contribution Margin', ov_cm_cap:'Before fixed costs', ov_margin_word:'margin',
     ov_rev_prod_lbl:'Product revenue', ov_rev_ship_lbl:'Shipping collected',
     ov_ad_cost_order:'Ad cost / order', ov_total_orders_lbl:'Total orders',
     ov_total_leads_lbl:'Total leads', ov_total_delivered_lbl:'Total delivered',
@@ -8729,6 +8737,7 @@ const T = {
     ov_delivery_title:'التوصيل', ov_delivery_sub:'توزيع الوحدات', ov_del_ret_lbl:'وصلت / رجعت',
     ov_ship_title:'تكاليف الشحن', ov_ship_sub:'تفصيل لكل وحدة', ov_ship_panel_sub:'موزون عبر كل المنتجات',
     ov_total_margin_lbl:'إجمالي الهامش', ov_margin_pu_lbl:'الهامش / وحدة', ov_net_pu_lbl:'صافي / وحدة',
+    ov_cm_lbl:'هامش المساهمة', ov_cm_cap:'قبل التكاليف الثابتة', ov_margin_word:'هامش',
     ov_rev_prod_lbl:'إيراد المنتج', ov_rev_ship_lbl:'الشحن المُحصّل',
     ov_ad_cost_order:'تكلفة الإعلان / أوردر', ov_total_orders_lbl:'إجمالي الأوردرات',
     ov_total_leads_lbl:'إجمالي الليدز', ov_total_delivered_lbl:'إجمالي الموصّلات',
