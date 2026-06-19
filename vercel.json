@@ -27,8 +27,9 @@
     }
   ],
   "routes": [
-    { "src": "/api/redeem",       "dest": "/api/redeem" },
-    { "src": "/api/admin/promos", "dest": "/api/admin/promos" },
+    { "src": "/api/redeem",        "dest": "/api/redeem" },
+    { "src": "/api/redeem-cancel", "dest": "/api/redeem-cancel" },
+    { "src": "/api/admin/promos",  "dest": "/api/admin/promos" },
     { "src": "/api/(.*)",         "dest": "/api/$1" },
     { "src": "/app",              "dest": "/app.html" },
     { "src": "/admin",            "dest": "/admin.html" },
