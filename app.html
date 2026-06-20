@@ -326,6 +326,12 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
 .input-card-title .ic-dot{width:6px;height:6px;border-radius:50%}
 .field{margin-bottom:10px}
 .field label{font-size:12px;color:var(--txt2);font-weight:500;display:block;margin-bottom:4px}
+.field-pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:10px}
+.field-pair .field{margin-bottom:0;min-width:0}
+.field-pair .field label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.field-pair .f-row{min-width:0}
+.field-pair .f-row input{min-width:0}
+.ff-mode-hint{font-size:11px;color:var(--txt3);margin-top:5px;line-height:1.45}
 .f-row{display:flex}
 .f-row input{
   flex:1;height:34px;padding:0 10px;
@@ -1818,22 +1824,36 @@ input[type=range]::-moz-range-thumb{
         <div id="uo_units_field" class="f-row"><input type="number" id="i_units" value="1" min="0.1" step="0.1" oninput="dCalc()"><span class="unit">units</span></div>
         <div id="uo_aov_field" class="f-row" style="display:none"><input type="number" id="i_aov" value="" min="0" step="0.1" oninput="uoAovInput()" placeholder="e.g. 600"><span class="unit">EGP</span></div>
       </div>
-      <div class="field"><label data-t="lbl_ship_charged">Shipping charged to customer</label><div class="f-row"><input type="number" id="i_ship_c" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
+      <div class="field"><label data-t="lbl_orders_cust">Avg orders per customer <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_orders_cust">Average number of orders a customer places over their lifetime — drives LTV.<br>Leave at 1 if you do not track repeat purchases.</span></span></label><div class="f-row"><input type="number" id="i_orders_per_cust" value="1" min="1" step="0.1" placeholder="1" oninput="dCalc()"><span class="unit" data-t="unit_orders">orders</span></div></div>
     </div>
 
     <div class="input-card">
       <div class="input-card-title"><span class="ic-dot" style="background:var(--c3)"></span><span data-t="card_fulfill">Shipping & Delivery costs</span></div>
-      <div class="field"><label data-t="lbl_ff_del">Fulfillment fee — delivered order</label><div class="f-row"><input type="number" id="i_fulfill_del" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
-      <div class="field"><label data-t="lbl_ff_ret">Total return cost (all-in) <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_ff_ret">Total cost per returned order — includes courier return trip + return fulfillment fee + any other charges.<br>In Egypt, couriers charge for both legs (delivery + return) even if customer refused.<br>Example: 70 EGP courier + 35 EGP return fulfillment = 105 EGP</span></span></label><div class="f-row"><input type="number" id="i_fulfill_ret" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
-      <div class="field"><label data-t="lbl_courier">Avg. shipping cost (your cost)</label><div class="f-row"><input type="number" id="i_courier" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
-      <div style="border-top:1px solid var(--bdr2);margin:12px 0"></div>
       <div class="field">
-        <label data-t="lbl_conf">Confirmation rate</label>
-        <div class="f-row"><input type="number" id="i_conf" value="" min="1" max="100" oninput="dCalc();cfRecalc()"><span class="unit">%</span></div>
+        <div class="mb-io-head">
+          <div class="mb-io-seg">
+            <button type="button" id="ff_seg_fulfill" class="mb-io-seg-btn active" onclick="ffSetMode('fulfill')" data-t="seg_ff_fulfill">Fulfillment fee</button>
+            <button type="button" id="ff_seg_pack" class="mb-io-seg-btn" onclick="ffSetMode('pack')" data-t="seg_ff_pack">Packing cost</button>
+          </div>
+        </div>
+        <div class="f-row"><input type="number" id="i_fulfill_del" value="" oninput="dCalc()"><span class="unit">EGP</span></div>
+        <div id="ff_mode_hint" class="ff-mode-hint">Charged per delivered order — e.g. a 3PL / fulfillment center.</div>
       </div>
-      <div class="field">
-        <label data-t="lbl_del">Delivery rate (of confirmed)</label>
-        <div class="f-row"><input type="number" id="i_del" value="" min="1" max="100" oninput="dCalc();cfRecalc()"><span class="unit">%</span></div>
+      <div class="field"><label data-t="lbl_ff_ret">Total return cost (all-in) <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_ff_ret">Total cost per returned order — includes courier return trip + return fulfillment fee + any other charges.<br>In Egypt, couriers charge for both legs (delivery + return) even if customer refused.<br>Example: 70 EGP courier + 35 EGP return fulfillment = 105 EGP</span></span></label><div class="f-row"><input type="number" id="i_fulfill_ret" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
+      <div class="field-pair">
+        <div class="field"><label data-t="lbl_courier">Avg. shipping cost (your cost)</label><div class="f-row"><input type="number" id="i_courier" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
+        <div class="field"><label data-t="lbl_ship_charged">Shipping charged to customer</label><div class="f-row"><input type="number" id="i_ship_c" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
+      </div>
+      <div style="border-top:1px solid var(--bdr2);margin:12px 0"></div>
+      <div class="field-pair">
+        <div class="field">
+          <label data-t="lbl_conf">Confirmation rate</label>
+          <div class="f-row"><input type="number" id="i_conf" value="" min="1" max="100" oninput="dCalc();cfRecalc()"><span class="unit">%</span></div>
+        </div>
+        <div class="field">
+          <label data-t="lbl_del">Delivery rate (of confirmed)</label>
+          <div class="f-row"><input type="number" id="i_del" value="" min="1" max="100" oninput="dCalc();cfRecalc()"><span class="unit">%</span></div>
+        </div>
       </div>
     </div>
 
@@ -3108,6 +3128,21 @@ input[type=range]::-moz-range-thumb{
       <div class="kpi-val" id="m_spent_delivered" style="color:var(--c1)">—</div>
       <div class="kpi-hint" data-t="hint_spent_s">Budget on real orders</div>
     </div>
+    <div class="kpi" style="--kc:var(--c2)">
+      <div class="kpi-lbl"><span data-t="kpi_cac">CAC</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_cac">Customer Acquisition Cost — ad spend to acquire one paying (delivered) customer.<br>= Ad budget ÷ Delivered orders</span></span></div>
+      <div class="kpi-val" id="m_cac" style="color:var(--c2)">—</div>
+      <div class="kpi-hint" data-t="hint_cac">Ad cost per customer</div>
+    </div>
+    <div class="kpi" style="--kc:var(--c1)">
+      <div class="kpi-lbl"><span data-t="kpi_ltv">LTV</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_ltv">Customer Lifetime Value — total net profit one customer brings over their lifetime.<br>= Net profit per order × Avg orders per customer</span></span></div>
+      <div class="kpi-val" id="m_ltv" style="color:var(--c1)">—</div>
+      <div class="kpi-hint" data-t="hint_ltv">Net profit × repeat</div>
+    </div>
+    <div class="kpi" style="--kc:var(--c3)">
+      <div class="kpi-lbl"><span data-t="kpi_ltv_cac">LTV : CAC</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_ltv_cac">How many times a customer lifetime profit covers their acquisition cost.<br>= LTV ÷ CAC<br>3× or more = healthy, 1–3× = tight, below 1× = loss</span></span></div>
+      <div class="kpi-val" id="m_ltv_cac">—</div>
+      <div class="kpi-hint" data-t="hint_ltv_cac">Target ≥ 3×</div>
+    </div>
   </div>
   <div id="m_net_delivered" style="display:none;font-size:12px;font-family:var(--mono);margin-top:-8px;margin-bottom:12px;padding:8px 12px;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);border-radius:var(--r);color:var(--red)">—</div>
 
@@ -3503,7 +3538,7 @@ input[type=range]::-moz-range-thumb{
     <div id="sh_stack_bar" class="shp-stack"></div>
     <div>
       <div class="shp-legrow">
-        <span class="shp-leg-l"><span class="shp-leg-dot" style="background:var(--green)"></span>Fulfillment fee</span>
+        <span class="shp-leg-l"><span class="shp-leg-dot" style="background:var(--green)"></span><span id="sh_leg_ff">Fulfillment fee</span></span>
         <span class="shp-leg-v" id="sh_t1" style="color:var(--text)">—</span>
       </div>
       <div class="shp-legrow">
@@ -4204,6 +4239,32 @@ function uoOnPrice(){
     if(price > 0) document.getElementById('i_units').value = aov / price;
   }
   dCalc();
+}
+
+// ── Fulfillment fee ⇄ Packing cost toggle ──────────────────────────────────
+// 'fulfill' = 3PL / fulfillment fee charged per DELIVERED order (default, original behaviour).
+// 'pack'    = you pack each order yourself → the cost is incurred for every SHIPPED
+//             order (i.e. every confirmed order), so it also lands on returns — not
+//             only deliveries. Same input value (i_fulfill_del); only where it applies
+//             changes: in 'pack' mode it is added to the per-return cost as well.
+let FF_MODE = 'fulfill';
+function ffSetMode(mode){
+  FF_MODE = (mode === 'pack') ? 'pack' : 'fulfill';
+  const bf = document.getElementById('ff_seg_fulfill');
+  const bp = document.getElementById('ff_seg_pack');
+  if(bf) bf.classList.toggle('active', FF_MODE === 'fulfill');
+  if(bp) bp.classList.toggle('active', FF_MODE === 'pack');
+  ffSyncHint();
+  dCalc();
+}
+// Keep the helper text + chart legend label in sync with the active mode and language.
+function ffSyncHint(){
+  const t = (typeof T !== 'undefined' && T[LANG]) ? T[LANG] : null;
+  if(!t) return;
+  const hint = document.getElementById('ff_mode_hint');
+  if(hint) hint.textContent = (FF_MODE === 'pack') ? t.ff_hint_pack : t.ff_hint_fulfill;
+  const leg = document.getElementById('sh_leg_ff');
+  if(leg) leg.textContent = (FF_MODE === 'pack') ? t.seg_ff_pack : t.seg_ff_fulfill;
 }
 
 // Independent budget/CPA inside Advanced panel
@@ -5318,7 +5379,7 @@ function calc(){
   // Shipping cost per delivered order — commission is NOT a shipping cost; it is shown
   // as its own line in the P&L (moved out of the Shipping analysis tab).
   const costDel     = fulfillDel + courier + cfCustomPerOrder;
-  const costRet     = fulfillRet;
+  const costRet     = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0);
   const effShip     = delR > 0 ? (delR*costDel+(1-delR)*costRet)/delR : costRet;
   const retAbsorbed = effShip-costDel;
   const netShip     = effShip-shipC;
@@ -5419,6 +5480,20 @@ function calc(){
   // 5. Spent on Delivered Orders
   const spentDelivered = ads > 0 ? ads * (confR * delR) : 0;
   set('m_spent_delivered', spentDelivered > 0 ? Math.round(spentDelivered).toLocaleString()+' '+CURRENCY : '—', 'var(--c1)');
+  // 6. Customer economics — CAC, LTV, LTV:CAC
+  const ordersPerCust = Math.max(v('i_orders_per_cust') || 1, 1);
+  const cac    = costPerDel;                 // ad cost to acquire one delivered customer
+  const ltv    = profitPU * ordersPerCust;   // lifetime net profit per customer
+  const ltvCac = cac > 0 ? ltv / cac : 0;
+  set('m_cac', cac > 0 ? d1(cac)+' '+CURRENCY : '—', 'var(--c2)');
+  set('m_ltv', price > 0 ? d1(ltv)+' '+CURRENCY : '—', ltv >= 0 ? 'var(--c1)' : 'var(--red)');
+  { const _e = document.getElementById('m_ltv_cac');
+    if(_e){
+      if(cac > 0 && ltv > 0){
+        _e.textContent = (Math.round(ltvCac*100)/100).toFixed(2)+'×';
+        _e.style.color = ltvCac >= 3 ? 'var(--c1)' : ltvCac >= 1 ? 'var(--c3)' : 'var(--red)';
+      } else { _e.textContent = '—'; _e.style.color = 'var(--txt2)'; }
+    } }
   // ─────────────────────────────────────────────────────────────
 
   // ── Ads Health Banner ────────────────────────────────────────
@@ -6258,6 +6333,7 @@ function resetDef(){
   if(PRODUCTS[ACTIVE_PROD]) PRODUCTS[ACTIVE_PROD].data = {};
   localStorage.removeItem(LS_KEY);
   tpCppTouched = false;
+  ffSetMode('fulfill');
   calc();
 }
 
@@ -6391,7 +6467,7 @@ function _roasInputs(){
   const commAmt      = price * (commPct + gatewayPct);
   // plat is per-lead, NOT per-delivery — must NOT go into costDel
   const costDel      = fulfillDel + courier + commAmt;
-  const costRet      = fulfillRet;
+  const costRet      = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0);
   const effShip      = delR > 0 ? (delR*costDel + (1-delR)*costRet)/delR : costRet;
   // platPerOrder: platform fee/lead × leads per delivered order
   const leadsPerOrder = (confR>0&&delR>0) ? 1/(confR*delR) : 0;
@@ -6732,7 +6808,7 @@ function updateSlider(type){
   const gatewayPct2 = v('i_gateway_fee')/100;
   const commAmt  = price*(commPct+gatewayPct2);
   const costDel  = fulfillDel+courier+commAmt; // plat is per-lead, not per-delivery
-  const costRet  = fulfillRet;
+  const costRet  = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0);
   const effShip  = delR > 0 ? (delR*costDel+(1-delR)*costRet)/delR : costRet;
   const leadsPerOrder2 = (confR>0&&delR>0) ? 1/(confR*delR) : 0;
   const platPerOrder2  = (plat+cfGetTotalPerLead())*leadsPerOrder2;
@@ -6897,7 +6973,7 @@ let ACTIVE_PROD = 0;
 const PROD_COLORS = ['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--red)'];
 const INPUT_IDS = ['i_price','i_cost','i_units','i_ship_c','i_fulfill_del','i_fulfill_ret',
                    'i_courier','i_comm','i_gateway_fee','i_plat','i_ads','i_avg_cpp',
-                   'i_conf','i_del','i_stock'];
+                   'i_conf','i_del','i_stock','i_orders_per_cust'];
 
 function saveCurrentProduct(){
   if(PRODUCTS.length === 0) return;
@@ -7427,7 +7503,8 @@ function persistSave(){
       advCycleDays: document.getElementById('adv_cycle_days')?.value||'',
       advCfDays: document.getElementById('adv_cf_days')?.value||'',
       advCfCash: document.getElementById('adv_cf_cash')?.value||'',
-      globalFixedCost: (document.getElementById('i_salary')?.value || '').replace(/,/g,'')
+      globalFixedCost: (document.getElementById('i_salary')?.value || '').replace(/,/g,''),
+      ffMode: FF_MODE
     };
     localStorage.setItem(LS_KEY, JSON.stringify(state));
   } catch(e){}
@@ -7492,6 +7569,9 @@ function persistLoad(){
       ? state.globalFixedCost
       : (((PRODUCTS.find(p => p.data && p.data.i_salary) || {}).data || {}).i_salary || '');
 
+    // Fulfillment ⇄ Packing mode is business-wide (applied on top of saved DOM later)
+    window.__ffMode = (state.ffMode === 'pack') ? 'pack' : 'fulfill';
+
     return true;
   } catch(e){ return false; }
 }
@@ -7533,7 +7613,7 @@ function _tpInputs(){
   const shipCNet   = shipC / (1 + vatRate);
   const commAmt    = price * (commPct + v('i_gateway_fee')/100);
   const costDel    = fulfillDel + courier + commAmt;
-  const costRet    = fulfillRet;
+  const costRet    = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0);
   const effShip    = delR > 0 ? (delR*costDel + (1-delR)*costRet)/delR : costRet;
   const leadsPerOrderTp = (confR>0&&delR>0) ? 1/(confR*delR) : 0;
   const platPerOrderTp  = (plat+cfGetTotalPerLead()) * leadsPerOrderTp;
@@ -7700,7 +7780,7 @@ function calcProductData(data, salaryRawOverride){
 
   const commAmt    = price * (commPct + n('i_gateway_fee')/100); // uses saved product data, not DOM
   const costDel    = fulfillDel + courier;                       // shipping only — commission is a separate P&L line (plat is per-lead, not per-delivery)
-  const costRet    = fulfillRet;
+  const costRet    = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0);
   const effShip    = delR > 0 ? (delR*costDel+(1-delR)*costRet)/delR : costRet; // guard: delR=0 safe
   const retAbs     = effShip - costDel;
   const netShip    = effShip - shipC;
@@ -8312,6 +8392,17 @@ const T = {
     card_pricing:'Pricing', card_fulfill:'Shipping & Delivery costs', card_media:'Media buying', card_rates:'Rates & stock',
     lbl_sell_price:'Selling price', lbl_prod_cost:'Product cost', lbl_avg_units:'Avg units / order', lbl_ship_charged:'Shipping charged to customer',
     lbl_ff_del:'Fulfillment fee — delivered order', lbl_ff_ret:'Total return cost (all-in)',
+    seg_ff_fulfill:'Fulfillment fee', seg_ff_pack:'Packing cost',
+    ff_hint_fulfill:'Charged per delivered order — e.g. a 3PL / fulfillment center.',
+    ff_hint_pack:'You pack each order yourself — counted on every shipped order (deliveries and returns).',
+    lbl_orders_cust:'Avg orders per customer', unit_orders:'orders',
+    tip_orders_cust:'Average number of orders a customer places over their lifetime — drives LTV.<br>Leave at 1 if you do not track repeat purchases.',
+    kpi_cac:'CAC', hint_cac:'Ad cost per customer',
+    tip_cac:'Customer Acquisition Cost — ad spend to acquire one paying (delivered) customer.<br>= Ad budget ÷ Delivered orders',
+    kpi_ltv:'LTV', hint_ltv:'Net profit × repeat',
+    tip_ltv:'Customer Lifetime Value — total net profit one customer brings over their lifetime.<br>= Net profit per order × Avg orders per customer',
+    kpi_ltv_cac:'LTV : CAC', hint_ltv_cac:'Target ≥ 3×',
+    tip_ltv_cac:'How many times a customer lifetime profit covers their acquisition cost.<br>= LTV ÷ CAC<br>3× or more = healthy, 1–3× = tight, below 1× = loss',
     lbl_courier:'Avg. shipping cost (your cost)', lbl_comm:'Commission on delivered orders', lbl_plat:'Platform fee per order',
     lbl_budget:'Monthly ad budget', lbl_avg_cpp:'Avg CPA from ads', lbl_salary:'Total fixed costs',
     lbl_conf:'Confirmation rate', lbl_del:'Delivery rate (of confirmed)', lbl_stock:'Target delivered stock',
@@ -8571,6 +8662,17 @@ const T = {
     card_pricing:'التسعير', card_fulfill:'تكاليف الشحن والتوصيل', card_media:'الميديا باينج', card_rates:'المعدلات والمخزون',
     lbl_sell_price:'سعر البيع', lbl_prod_cost:'تكلفة المنتج', lbl_avg_units:'متوسط الوحدات / أوردر', lbl_ship_charged:'رسوم الشحن من العميل',
     lbl_ff_del:'فولفلمينت — أوردر محصّل', lbl_ff_ret:'تكلفة المرتجع الكلية (شاملة)',
+    seg_ff_fulfill:'فولفلمينت', seg_ff_pack:'تغليف (باكينج)',
+    ff_hint_fulfill:'بتتحسب على كل أوردر متوصّل — زي شركة فولفلمينت / 3PL.',
+    ff_hint_pack:'بتغلّف كل أوردر بنفسك — بتتحسب على كل أوردر طالع شحن (المتوصّل والمرتجع كمان).',
+    lbl_orders_cust:'متوسط أوردرات العميل', unit_orders:'أوردر',
+    tip_orders_cust:'متوسط عدد الأوردرات اللي العميل بيعملها طول تعامله معاك — بيحدد الـ LTV.<br>سيبه 1 لو مش بتتبع الشراء المتكرر.',
+    kpi_cac:'CAC', hint_cac:'تكلفة إعلان للعميل',
+    tip_cac:'تكلفة اكتساب العميل — مصاريف الإعلان لجذب عميل واحد دافع (موصّل).<br>= ميزانية الإعلانات ÷ الأوردرات الموصّلة',
+    kpi_ltv:'LTV', hint_ltv:'ربح صافي × تكرار',
+    tip_ltv:'قيمة العميل مدى الحياة — إجمالي الربح الصافي اللي العميل بيجيبهولك طول تعامله معاك.<br>= ربح الأوردر الصافي × متوسط أوردرات العميل',
+    kpi_ltv_cac:'LTV : CAC', hint_ltv_cac:'المستهدف ≥ 3×',
+    tip_ltv_cac:'العميل بيرجّعلك كام ضعف اللي دفعته عشان تجيبه.<br>= LTV ÷ CAC<br>3× أو أكتر = ممتاز، 1–3× = ضعيف، أقل من 1× = خسارة',
     lbl_courier:'متوسط تكلفة الشحن (عليك)', lbl_comm:'عمولة الأوردرات المحصّلة', lbl_plat:'رسوم المنصة لكل أوردر',
     lbl_budget:'ميزانية الإعلانات الشهرية', lbl_avg_cpp:'متوسط CPA من الإعلانات', lbl_salary:'إجمالي التكاليف الثابتة',
     lbl_conf:'نسبة التأكيد', lbl_del:'نسبة التوصيل (من المؤكد)', lbl_stock:'المخزون المستهدف توصيله',
@@ -8835,6 +8937,7 @@ function applyLang(){
     const key = el.dataset.tTitle;
     if(T[LANG][key] !== undefined) el.title = T[LANG][key];
   });
+  if(typeof ffSyncHint === 'function') ffSyncHint();
   if(typeof renderExportPreview==='function' && document.getElementById('export_thead')?.children.length){
     renderExportPreview();
   }
@@ -9051,6 +9154,8 @@ window.addEventListener('load', ()=>{
   initProducts();
   applyLang();
   applyCurrencyToUnits();
+  // Restore Fulfillment ⇄ Packing cost mode (business-wide, like the fixed cost)
+  try { ffSetMode(window.__ffMode === 'pack' ? 'pack' : 'fulfill'); } catch(e){}
 
   // ── Restore Advanced Options state from localStorage (if any) ──
   // persistLoad stored pending state on window.__adv* — apply to DOM now
