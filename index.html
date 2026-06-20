@@ -5,224 +5,113 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ProfitLens Pro — Sign In</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #080A11; }
+    @keyframes pl-glow { 0%,100% { opacity: .82; } 50% { opacity: 1; } }
+    input::placeholder { color: #5A6473; }
 
-    :root {
-      --bg:    #0d0f14;
-      --bg2:   #13161e;
-      --bg3:   #1a1e28;
-      --bdr:   #2a2f3d;
-      --bdr2:  #3a4055;
-      --txt:   #e8eaf0;
-      --txt2:  #8890a6;
-      --txt3:  #555e78;
-      --acc:   #5b6af5;
-      --acc2:  #4a58e8;
-      --grn:   #22c55e;
-      --red:   #ef4444;
-      --mono:  'JetBrains Mono', 'Fira Code', monospace;
-      --body:  'Inter', system-ui, sans-serif;
+    .btn-google { transition: filter .2s ease; }
+    .btn-google:hover { filter: brightness(0.96); }
+    .btn-google:disabled { opacity: .6; cursor: not-allowed; }
+
+    .tab-btn { transition: background .2s ease, color .2s ease, box-shadow .2s ease; }
+
+    input[type=email], input[type=password] { transition: border-color .2s ease, box-shadow .2s ease; }
+    input[type=email]:focus, input[type=password]:focus {
+      border-color: rgba(129,140,248,0.6) !important;
+      box-shadow: 0 0 0 3px rgba(129,140,248,0.14);
     }
 
-    body {
-      background: var(--bg);
-      color: var(--txt);
-      font-family: var(--body);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
+    .cta-btn { transition: filter .2s ease; }
+    .cta-btn:hover { filter: brightness(1.07); }
+    .cta-btn:disabled { opacity: .6; cursor: not-allowed; }
 
-    .bg-grid {
-      position: fixed; inset: 0; z-index: 0;
-      background-image:
-        linear-gradient(rgba(91,106,245,.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(91,106,245,.03) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
-    }
-
-    .glow {
-      position: fixed; z-index: 0;
-      width: 600px; height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(91,106,245,.08) 0%, transparent 70%);
-      top: 50%; left: 50%;
-      transform: translate(-50%, -60%);
-      pointer-events: none;
-    }
-
-    .card {
-      position: relative; z-index: 1;
-      background: var(--bg2);
-      border: 1px solid var(--bdr);
-      border-radius: 16px;
-      padding: 40px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 24px 80px rgba(0,0,0,.5);
-    }
-
-    .logo {
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 28px;
-    }
-    .logo-icon {
-      width: 38px; height: 38px;
-      background: linear-gradient(135deg, var(--acc), #8b5cf6);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
-    }
-    .logo-text { font-size: 20px; font-weight: 700; letter-spacing: -.3px; }
-    .logo-text span { color: var(--acc); }
-
-    /* Google button */
-    .btn-google {
-      width: 100%; padding: 11px;
-      background: #fff; color: #1f2937;
-      border: 1px solid #e5e7eb; border-radius: 9px;
-      font-size: 14px; font-weight: 600;
-      cursor: pointer; font-family: var(--body);
-      transition: background .15s, box-shadow .15s;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      margin-bottom: 18px;
-    }
-    .btn-google:hover { background: #f9fafb; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
-    .btn-google:disabled { opacity: .5; cursor: not-allowed; }
-    .google-icon { width: 18px; height: 18px; flex-shrink: 0; }
-
-    .divider {
-      display: flex; align-items: center; gap: 12px;
-      margin-bottom: 18px; color: var(--txt3); font-size: 12px;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--bdr);
-    }
-
-    .tabs {
-      display: flex;
-      background: var(--bg3);
-      border-radius: 10px;
-      padding: 4px;
-      margin-bottom: 20px;
-      gap: 4px;
-    }
-    .tab {
-      flex: 1; padding: 9px;
-      text-align: center; font-size: 13px; font-weight: 500;
-      border-radius: 7px; cursor: pointer;
-      border: none; background: transparent; color: var(--txt2);
-      transition: all .15s;
-    }
-    .tab.active { background: var(--bg2); color: var(--txt); box-shadow: 0 1px 4px rgba(0,0,0,.3); }
-
-    label { display: block; font-size: 12px; color: var(--txt2); margin-bottom: 6px; font-weight: 500; }
-    .field { margin-bottom: 16px; }
-
-    input[type=email], input[type=password] {
-      width: 100%; padding: 10px 14px;
-      background: var(--bg3); border: 1px solid var(--bdr);
-      border-radius: 9px; color: var(--txt); font-size: 14px;
-      font-family: var(--body); outline: none;
-      transition: border-color .15s;
-    }
-    input:focus { border-color: var(--acc); }
-    input::placeholder { color: var(--txt3); }
-
-    .btn {
-      width: 100%; padding: 11px;
-      background: var(--acc); color: #fff;
-      border: none; border-radius: 9px;
-      font-size: 14px; font-weight: 600;
-      cursor: pointer; font-family: var(--body);
-      transition: background .15s, opacity .15s;
-      margin-top: 4px;
-    }
-    .btn:hover { background: var(--acc2); }
-    .btn:disabled { opacity: .5; cursor: not-allowed; }
-
-    .msg {
-      margin-top: 14px; padding: 10px 14px;
-      border-radius: 8px; font-size: 13px; display: none;
-    }
-    .msg.error { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); color: #fca5a5; }
-    .msg.success { background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.3); color: #86efac; }
-    .msg.show { display: block; }
-
-    .terms {
-      margin-top: 20px; font-size: 11px; color: var(--txt3);
-      text-align: center; line-height: 1.5;
-    }
+    .msg { display: none; margin-top: 14px; padding: 10px 14px; border-radius: 10px; font-size: 13px; line-height: 1.5; }
+    .msg.error   { display: block; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: #FCA5A5; }
+    .msg.success { display: block; background: rgba(52,211,153,0.1);  border: 1px solid rgba(52,211,153,0.3);  color: #86EFAC; }
 
     #pane-signup { display: none; }
   </style>
 </head>
 <body>
-  <div class="bg-grid"></div>
-  <div class="glow"></div>
 
-  <div class="card">
-    <div class="logo">
-      <div class="logo-icon">📊</div>
-      <div class="logo-text">Profit<span>Lens</span> Pro</div>
-    </div>
+  <div style="position: relative; min-height: 100vh; display: grid; place-items: center; overflow: hidden; padding: 40px 20px; font-family: 'Inter', system-ui, sans-serif; color: #E6EDF3; -webkit-font-smoothing: antialiased; background:
+      radial-gradient(1000px 720px at 18% 30%, rgba(129,140,248,0.20), transparent 58%),
+      radial-gradient(900px 760px at 88% 16%, rgba(99,102,241,0.14), transparent 60%),
+      radial-gradient(820px 680px at 80% 96%, rgba(56,189,248,0.08), transparent 58%),
+      radial-gradient(1200px 1000px at 50% -10%, rgba(167,139,250,0.07), transparent 55%),
+      #080A11;">
 
-    <!-- Google Sign In -->
-    <button class="btn-google" id="google-btn" onclick="doGoogleSignIn()">
-      <svg class="google-icon" viewBox="0 0 24 24">
-        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-      </svg>
-      Continue with Google
-    </button>
+    <!-- faint grid texture -->
+    <div style="position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px); background-size: 58px 58px; -webkit-mask-image: radial-gradient(circle at 50% 42%, #000 0%, transparent 78%); mask-image: radial-gradient(circle at 50% 42%, #000 0%, transparent 78%);"></div>
+    <!-- vignette -->
+    <div style="position: absolute; inset: 0; pointer-events: none; background: radial-gradient(140% 120% at 50% 40%, transparent 45%, rgba(0,0,0,0.55) 100%);"></div>
 
-    <div class="divider">or use email</div>
+    <!-- ===== CARD (glowing gradient border) ===== -->
+    <div style="position: relative; width: 100%; max-width: 440px; border-radius: 26px; padding: 1.5px; background: linear-gradient(160deg, #818CF8 0%, #6366F1 36%, rgba(99,102,241,0.22) 58%, #38BDF8 100%); box-shadow: 0 0 0 1px rgba(129,140,248,0.1), 0 0 60px -10px rgba(129,140,248,0.45), 0 40px 90px -40px rgba(99,102,241,0.6); animation: pl-glow 4.5s ease-in-out infinite;">
+      <div style="position: relative; overflow: hidden; border-radius: 24px; padding: 34px 34px 30px; background: linear-gradient(180deg, #12161D, #0C0F15);">
+        <div style="position: absolute; top: -70px; left: 50%; transform: translateX(-50%); width: 320px; height: 200px; background: radial-gradient(circle, rgba(129,140,248,0.20), transparent 70%); pointer-events: none;"></div>
 
-    <div class="tabs">
-      <button class="tab active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
-      <button class="tab" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
-    </div>
+        <!-- logo -->
+        <div style="position: relative; display: flex; align-items: center; gap: 12px; margin-bottom: 28px;">
+          <div style="display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(140deg, #818CF8, #6366F1); box-shadow: 0 6px 20px rgba(99,102,241,0.5);">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 3 7-8"/><path d="M16 7h4v4"/></svg>
+          </div>
+          <div style="font-size: 21px; font-weight: 700; letter-spacing: -0.02em;">Profit<span style="color: #818CF8;">Lens</span> <span style="color: #fff;">Pro</span></div>
+        </div>
 
-    <!-- Sign In -->
-    <div id="pane-signin">
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="si-email" placeholder="you@example.com" autocomplete="email">
+        <!-- google -->
+        <button class="btn-google" id="google-btn" onclick="doGoogleSignIn()" style="position: relative; display: flex; align-items: center; justify-content: center; gap: 11px; width: 100%; padding: 14px; border-radius: 13px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; font-size: 15px; font-weight: 600; font-family: inherit; color: #1A1A1A; background: #fff;">
+          <svg width="19" height="19" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0012 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 010-4.2V7.06H2.18a11 11 0 000 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 002.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg>
+          Continue with Google
+        </button>
+
+        <!-- divider -->
+        <div style="position: relative; display: flex; align-items: center; gap: 14px; margin: 22px 0;">
+          <div style="flex: 1; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12));"></div>
+          <span style="font-size: 12.5px; color: #6E7681;">or use email</span>
+          <div style="flex: 1; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.12), transparent);"></div>
+        </div>
+
+        <!-- tabs -->
+        <div style="position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 13px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); margin-bottom: 24px;">
+          <button class="tab-btn" id="tab-signin" onclick="switchTab('signin')" style="padding: 11px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; font-family: inherit; color: #fff; background: rgba(129,140,248,0.18); box-shadow: inset 0 0 0 1px rgba(129,140,248,0.4);">Sign In</button>
+          <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')" style="padding: 11px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; font-family: inherit; color: #8B949E; background: transparent;">Create Account</button>
+        </div>
+
+        <!-- Sign In -->
+        <div id="pane-signin">
+          <label style="position: relative; display: block; font-size: 13px; font-weight: 600; color: #C9D1D9; margin-bottom: 9px;">Email</label>
+          <input type="email" id="si-email" placeholder="you@example.com" autocomplete="email" style="width: 100%; padding: 14px 16px; margin-bottom: 20px; border-radius: 12px; background: #0A0D13; border: 1px solid rgba(255,255,255,0.09); color: #E6EDF3; font-size: 15px; font-family: inherit; outline: none;">
+
+          <label style="position: relative; display: block; font-size: 13px; font-weight: 600; color: #C9D1D9; margin-bottom: 9px;">Password</label>
+          <input type="password" id="si-pass" placeholder="••••••••" autocomplete="current-password" style="width: 100%; padding: 14px 16px; border-radius: 12px; background: #0A0D13; border: 1px solid rgba(255,255,255,0.09); color: #E6EDF3; font-size: 15px; font-family: inherit; outline: none;">
+
+          <button class="cta-btn" id="si-btn" onclick="doSignIn()" style="display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; margin-top: 26px; padding: 16px; border-radius: 14px; border: none; cursor: pointer; font-size: 15.5px; font-weight: 700; font-family: inherit; color: #fff; background: linear-gradient(140deg, #818CF8, #6366F1); box-shadow: 0 0 40px -8px rgba(129,140,248,0.6), 0 14px 30px -12px rgba(99,102,241,0.7);">Sign In</button>
+          <div class="msg" id="si-msg"></div>
+        </div>
+
+        <!-- Sign Up -->
+        <div id="pane-signup">
+          <label style="position: relative; display: block; font-size: 13px; font-weight: 600; color: #C9D1D9; margin-bottom: 9px;">Email</label>
+          <input type="email" id="su-email" placeholder="you@example.com" autocomplete="email" style="width: 100%; padding: 14px 16px; margin-bottom: 20px; border-radius: 12px; background: #0A0D13; border: 1px solid rgba(255,255,255,0.09); color: #E6EDF3; font-size: 15px; font-family: inherit; outline: none;">
+
+          <label style="position: relative; display: block; font-size: 13px; font-weight: 600; color: #C9D1D9; margin-bottom: 9px;">Password</label>
+          <input type="password" id="su-pass" placeholder="Min. 8 characters" autocomplete="new-password" style="width: 100%; padding: 14px 16px; margin-bottom: 20px; border-radius: 12px; background: #0A0D13; border: 1px solid rgba(255,255,255,0.09); color: #E6EDF3; font-size: 15px; font-family: inherit; outline: none;">
+
+          <label style="position: relative; display: block; font-size: 13px; font-weight: 600; color: #C9D1D9; margin-bottom: 9px;">Confirm Password</label>
+          <input type="password" id="su-pass2" placeholder="••••••••" autocomplete="new-password" style="width: 100%; padding: 14px 16px; border-radius: 12px; background: #0A0D13; border: 1px solid rgba(255,255,255,0.09); color: #E6EDF3; font-size: 15px; font-family: inherit; outline: none;">
+
+          <button class="cta-btn" id="su-btn" onclick="doSignUp()" style="display: flex; align-items: center; justify-content: center; gap: 9px; width: 100%; margin-top: 26px; padding: 16px; border-radius: 14px; border: none; cursor: pointer; font-size: 15.5px; font-weight: 700; font-family: inherit; color: #fff; background: linear-gradient(140deg, #818CF8, #6366F1); box-shadow: 0 0 40px -8px rgba(129,140,248,0.6), 0 14px 30px -12px rgba(99,102,241,0.7);">Create Account</button>
+          <div class="msg" id="su-msg"></div>
+        </div>
+
+        <div style="margin-top: 20px; text-align: center; font-size: 12px; line-height: 1.6; color: #6E7681;">By continuing, you agree to our <span style="color: #A5B4FC;">Terms of Service</span> and <span style="color: #A5B4FC;">Privacy Policy</span>.</div>
       </div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="si-pass" placeholder="••••••••" autocomplete="current-password">
-      </div>
-      <button class="btn" id="si-btn" onclick="doSignIn()">Sign In</button>
-      <div class="msg" id="si-msg"></div>
-    </div>
-
-    <!-- Sign Up -->
-    <div id="pane-signup">
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="su-email" placeholder="you@example.com" autocomplete="email">
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="su-pass" placeholder="Min. 8 characters" autocomplete="new-password">
-      </div>
-      <div class="field">
-        <label>Confirm Password</label>
-        <input type="password" id="su-pass2" placeholder="••••••••" autocomplete="new-password">
-      </div>
-      <button class="btn" id="su-btn" onclick="doSignUp()">Create Account</button>
-      <div class="msg" id="su-msg"></div>
-    </div>
-
-    <div class="terms">
-      By continuing, you agree to our Terms of Service and Privacy Policy.
     </div>
   </div>
 
@@ -242,17 +131,20 @@
       } catch(e) {}
     }
 
+    const TAB_ACTIVE = 'padding: 11px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; font-family: inherit; color: #fff; background: rgba(129,140,248,0.18); box-shadow: inset 0 0 0 1px rgba(129,140,248,0.4);';
+    const TAB_IDLE   = 'padding: 11px; border-radius: 10px; border: none; cursor: pointer; font-size: 14px; font-weight: 600; font-family: inherit; color: #8B949E; background: transparent;';
+
     function switchTab(tab) {
       document.getElementById('pane-signin').style.display = tab === 'signin' ? 'block' : 'none';
       document.getElementById('pane-signup').style.display = tab === 'signup' ? 'block' : 'none';
-      document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
-      document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+      document.getElementById('tab-signin').style.cssText = tab === 'signin' ? TAB_ACTIVE : TAB_IDLE;
+      document.getElementById('tab-signup').style.cssText = tab === 'signup' ? TAB_ACTIVE : TAB_IDLE;
     }
 
     function showMsg(id, text, type) {
       const el = document.getElementById(id);
       el.textContent = text;
-      el.className = 'msg ' + type + ' show';
+      el.className = 'msg ' + type;
     }
 
     async function doGoogleSignIn() {
