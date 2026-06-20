@@ -720,6 +720,22 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
   border-top:1px solid var(--bdr2);border-bottom:none;
 }
 
+/* ─── RTL / narrow-viewport overflow guard ──────────────────────────────
+   Grid & flex items default to min-width:auto, so wide content (notably the
+   horizontally-scrollable data tables, which keep a 420px min-width on phones)
+   refuses to shrink and overflows its .section. Because .section uses paint
+   containment, that overflow is CLIPPED instead of scrolled — and in RTL the
+   clipped edge is the side that holds the numbers, so columns get cut off
+   (this was the broken Arabic Overview/Shipping layout on mobile). Letting the
+   items shrink keeps wide tables inside their .data-table-wrap scroller in
+   every writing direction. */
+.charts-2 > *, .charts-3 > *,
+.shp-grid-2 > *, .shp-grid-3 > *,
+.ov-cards-3 > *, .hkpi-row > *,
+.ovx-row > *, .ov2-2col > *, .ov2-insight-row > *,
+.kpi-row > *, .chart-card { min-width: 0; }
+.data-table-wrap { min-width: 0; max-width: 100%; }
+
 /* ─── TAGS ─────────────────────────── */
 .tag{display:inline-block;font-size:10px;font-family:var(--mono);padding:2px 8px;border-radius:4px;font-weight:500}
 .tg{background:rgba(0,229,160,.12);color:var(--c1)}
