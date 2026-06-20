@@ -1381,9 +1381,12 @@ input[type=range]::-moz-range-thumb{
   .ov2-stat-div{display:none}
   .ov2-insight-row{grid-template-columns:1fr}
   /* ov-cards responsive */
-  .ov-cards-3{grid-template-columns:1fr 1fr}
   .ov-card{padding:16px}
   .ov-card-sub{display:none}
+}
+/* tablet only — phones (<=600px) keep the 1-col rule above */
+@media(min-width:601px) and (max-width:800px){
+  .ov-cards-3{grid-template-columns:1fr 1fr}
 }
 
 /* ════════════════════════════════════════
