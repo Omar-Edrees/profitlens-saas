@@ -57,8 +57,15 @@ body[data-theme="light"] .prod-tab.active{color:#fff}
 body[data-theme="light"] .prod-tab.active .pt-del{color:#fff}
 body[data-theme="light"] .export-btn{color:#fff}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13px;line-height:1.6;transition:background .3s,color .3s;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+html{scroll-behavior:smooth;overflow-x:clip}
+/* overflow-x:clip on html+body is a hard guard against horizontal panning on
+   mobile. .section uses contain:paint to clip its overflow, but iOS Safari does
+   NOT honour that clip for RTL inline overflow, so wide content escaped and the
+   whole page could be scrolled sideways (Arabic mode, all tabs). clip is honoured
+   by Safari, keeps the page locked to the viewport width, and — unlike
+   overflow:hidden — does not create a scroll container, so the sticky nav and the
+   horizontally-scrollable .data-table-wrap keep working. */
+body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13px;line-height:1.6;transition:background .3s,color .3s;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip;max-width:100%}
 
 /* ─── NAV ─────────────────────────── */
 .topnav{
