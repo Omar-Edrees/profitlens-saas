@@ -376,6 +376,21 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
   background:var(--surf3);border:1px solid var(--bdr2);border-radius:0 var(--r) var(--r) 0;
   display:flex;align-items:center;font-size:11px;color:var(--txt3);font-family:var(--mono);
 }
+/* Unit picker that completes the input pill (frequency / lifespan) */
+.f-row select.freq-unit{
+  align-self:stretch;padding:0 6px;white-space:nowrap;
+  background:var(--surf3);border:1px solid var(--bdr2);border-radius:0 var(--r) var(--r) 0;
+  font-size:12px;color:var(--txt2);font-family:var(--mono);
+  outline:none;cursor:pointer;
+}
+.f-row select.freq-unit:focus{border-color:var(--c1)}
+/* Inside the Inputs tab the pill border lives on .f-row::before, so the unit
+   picker must be transparent with just a divider — same treatment as .unit. */
+#s0 .f-row select.freq-unit{
+  background:transparent;border:none;border-radius:0;color:var(--txt2);
+  border-inline-start:1px solid rgba(255,255,255,0.07);
+}
+body[data-theme="light"] #s0 .f-row select.freq-unit{ border-inline-start-color:rgba(15,23,42,0.08); color:var(--txt2); }
 .reset-btn{
   margin-top:20px;padding:9px 20px;background:transparent;
   border:1px solid var(--bdr2);border-radius:var(--r);
@@ -1950,7 +1965,39 @@ input[type=range]::-moz-range-thumb{
 
       <!-- Advanced options panel -->
       <div id="pricing_adv_panel" style="display:none;margin-top:12px">
-        <div class="field"><label data-t="lbl_orders_cust">Avg orders per customer <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_orders_cust">Average number of orders a customer places over their lifetime — drives LTV.<br>Leave at 1 if you do not track repeat purchases.</span></span></label><div class="f-row"><input type="number" id="i_orders_per_cust" value="1" min="1" step="0.1" placeholder="1" oninput="dCalc()"><span class="unit" data-t="unit_orders">orders</span></div></div>
+        <!-- How often a customer buys (purchase frequency) -->
+        <div class="field">
+          <label data-t="lbl_buy_freq">How often does a customer buy? <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_buy_freq">How often a returning customer places an order — drives total orders and LTV.</span></span></label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:12px;color:var(--txt3);white-space:nowrap" data-t="lbl_every">every</span>
+            <div class="f-row" style="flex:1;min-width:0">
+              <input type="number" id="i_buy_interval" value="1" min="0.1" step="1" placeholder="1" oninput="ordersFreqRecalc()">
+              <select id="i_buy_unit" class="freq-unit" onchange="ordersFreqRecalc()">
+                <option value="day" data-t="opt_days">days</option>
+                <option value="week" data-t="opt_weeks">weeks</option>
+                <option value="month" selected data-t="opt_months">months</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <!-- How long they stay a customer (lifespan) -->
+        <div class="field">
+          <label data-t="lbl_cust_lifespan">How long do they stay a customer? <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_cust_lifespan">Average time a customer keeps buying from you before they stop.</span></span></label>
+          <div class="f-row" style="min-width:0">
+            <input type="number" id="i_cust_lifespan" value="1" min="0.1" step="1" placeholder="1" oninput="ordersFreqRecalc()">
+            <select id="i_life_unit" class="freq-unit" onchange="ordersFreqRecalc()">
+              <option value="month" selected data-t="opt_months">months</option>
+              <option value="year" data-t="opt_years">years</option>
+            </select>
+          </div>
+        </div>
+        <!-- Derived: lifetime orders per customer → feeds LTV -->
+        <div style="margin-top:8px;padding:9px 11px;border-radius:8px;background:var(--surf2);border:1px solid var(--bdr2);display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <span style="font-size:11px;color:var(--txt3)" data-t="lbl_orders_derived">Orders per customer (lifetime)</span>
+          <span style="font-family:var(--mono);font-weight:700;font-size:13px;color:var(--c1)"><span id="orders_derived_val">1</span> <span data-t="unit_orders">orders</span></span>
+        </div>
+        <!-- Canonical value consumed by the calc (derived from the two inputs above) -->
+        <input type="hidden" id="i_orders_per_cust" value="1">
       </div>
     </div>
 
@@ -5001,6 +5048,57 @@ function pricingSyncAdv(){
   }
 }
 
+// ── Avg orders per customer = purchase frequency × customer lifespan ──────────
+// "Buys every X (day/week/month)" and "stays Y (month/year)" are both converted
+// to months; lifespan ÷ interval gives the lifetime order count that feeds LTV.
+// Written into the hidden #i_orders_per_cust so the calc stays untouched.
+const MONTH_IN_DAYS  = 30.44;   // avg days per month
+const MONTH_IN_WEEKS = 4.345;   // avg weeks per month
+function ordersFreqRecalc(){
+  const interval = v('i_buy_interval');
+  const iUnit = (document.getElementById('i_buy_unit')  || {}).value || 'month';
+  const life  = v('i_cust_lifespan');
+  const lUnit = (document.getElementById('i_life_unit') || {}).value || 'month';
+  let intervalMonths = interval;
+  if(iUnit === 'day')       intervalMonths = interval / MONTH_IN_DAYS;
+  else if(iUnit === 'week') intervalMonths = interval / MONTH_IN_WEEKS;
+  const lifeMonths = (lUnit === 'year') ? life * 12 : life;
+  let orders = (intervalMonths > 0) ? (lifeMonths / intervalMonths) : 1;
+  // Floor at 1: every acquired customer made at least their first order.
+  if(!isFinite(orders) || orders < 1) orders = 1;
+  orders = Math.round(orders * 100) / 100;
+  const hidden = document.getElementById('i_orders_per_cust');
+  if(hidden) hidden.value = orders;
+  const disp = document.getElementById('orders_derived_val');
+  if(disp) disp.textContent = (orders % 1 === 0) ? String(orders) : orders.toFixed(1);
+  if(typeof dCalc === 'function') dCalc();
+}
+
+// Restore/repair the frequency fields on product load. Older saves only carry a
+// flat #i_orders_per_cust — rebuild an "every 1 month for N months" view from it
+// so nothing is lost, then recompute the derived value.
+function ordersInitFreqFields(){
+  const interval = document.getElementById('i_buy_interval');
+  const iUnit    = document.getElementById('i_buy_unit');
+  const life     = document.getElementById('i_cust_lifespan');
+  const lUnit    = document.getElementById('i_life_unit');
+  const opc      = document.getElementById('i_orders_per_cust');
+  if(!interval || !life) return;
+  const hasFreq = interval.value !== '' && iUnit && iUnit.value !== '';
+  if(!hasFreq){
+    const legacy = parseFloat(String((opc && opc.value) || '').replace(/,/g,''));
+    interval.value = '1';
+    if(iUnit) iUnit.value = 'month';
+    life.value = (!isNaN(legacy) && legacy > 0) ? String(Math.round(legacy * 100) / 100) : '1';
+    if(lUnit) lUnit.value = 'month';
+  } else {
+    if(iUnit && !['day','week','month'].includes(iUnit.value)) iUnit.value = 'month';
+    if(lUnit && !['month','year'].includes(lUnit.value))       lUnit.value = 'month';
+    if(life.value === '') life.value = '1';
+  }
+  ordersFreqRecalc();
+}
+
 function fcSetMode(mode){
   FC_MODE = mode;
   document.getElementById('fc_preset_panel').style.display = mode === 'preset' ? 'block' : 'none';
@@ -7124,7 +7222,8 @@ let ACTIVE_PROD = 0;
 const PROD_COLORS = ['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--red)'];
 const INPUT_IDS = ['i_price','i_cost','i_units','i_ship_c','i_fulfill_del','i_fulfill_ret',
                    'i_courier','i_comm','i_gateway_fee','i_plat','i_ads','i_avg_cpp',
-                   'i_conf','i_del','i_stock','i_orders_per_cust'];
+                   'i_conf','i_del','i_stock','i_orders_per_cust',
+                   'i_buy_interval','i_buy_unit','i_cust_lifespan','i_life_unit'];
 
 function saveCurrentProduct(){
   if(PRODUCTS.length === 0) return;
@@ -7145,6 +7244,7 @@ function loadProduct(idx){
     if(el) el.value = pdata[id] !== undefined ? pdata[id] : '';
   });
   if(typeof reformatThousands === 'function') reformatThousands();
+  if(typeof ordersInitFreqFields === 'function') ordersInitFreqFields();
   if(typeof pricingSyncAdv === 'function') pricingSyncAdv();
   calc();
 }
@@ -8549,6 +8649,12 @@ const T = {
     ff_hint_pack:'You pack each order yourself — counted on every shipped order (deliveries and returns).',
     lbl_orders_cust:'Avg orders per customer', unit_orders:'orders',
     tip_orders_cust:'Average number of orders a customer places over their lifetime — drives LTV.<br>Leave at 1 if you do not track repeat purchases.',
+    lbl_buy_freq:'How often does a customer buy?', lbl_every:'every',
+    lbl_cust_lifespan:'How long do they stay a customer?',
+    lbl_orders_derived:'Orders per customer (lifetime)',
+    opt_days:'days', opt_weeks:'weeks', opt_months:'months', opt_years:'years',
+    tip_buy_freq:'How often a returning customer places an order — drives total orders and LTV.',
+    tip_cust_lifespan:'Average time a customer keeps buying from you before they stop.',
     kpi_cac:'CAC', hint_cac:'Ad cost per customer',
     tip_cac:'Customer Acquisition Cost — ad spend to acquire one paying (delivered) customer.<br>= Ad budget ÷ Delivered orders',
     kpi_ltv:'LTV', hint_ltv:'Net profit × repeat',
@@ -8819,6 +8925,12 @@ const T = {
     ff_hint_pack:'بتغلّف كل أوردر بنفسك — بتتحسب على كل أوردر طالع شحن (المتوصّل والمرتجع كمان).',
     lbl_orders_cust:'متوسط أوردرات العميل', unit_orders:'أوردر',
     tip_orders_cust:'متوسط عدد الأوردرات اللي العميل بيعملها طول تعامله معاك — بيحدد الـ LTV.<br>سيبه 1 لو مش بتتبع الشراء المتكرر.',
+    lbl_buy_freq:'العميل بيشتري كل قد إيه؟', lbl_every:'كل',
+    lbl_cust_lifespan:'بيفضل عميل لمدة قد إيه؟',
+    lbl_orders_derived:'عدد أوردرات العميل خلال فترة تعامله',
+    opt_days:'يوم', opt_weeks:'أسبوع', opt_months:'شهر', opt_years:'سنة',
+    tip_buy_freq:'كل قد إيه العميل الراجع بيعمل أوردر — بيحدّد إجمالي الأوردرات والـ LTV.',
+    tip_cust_lifespan:'متوسط المدة اللي العميل يفضل فيها بيشتري منك قبل ما يبطّل.',
     kpi_cac:'CAC', hint_cac:'تكلفة إعلان للعميل',
     tip_cac:'تكلفة اكتساب العميل — مصاريف الإعلان لجذب عميل واحد دافع (موصّل).<br>= ميزانية الإعلانات ÷ الأوردرات الموصّلة',
     kpi_ltv:'LTV', hint_ltv:'ربح صافي × تكرار',
