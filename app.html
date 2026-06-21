@@ -1935,7 +1935,23 @@ input[type=range]::-moz-range-thumb{
         <div id="uo_units_field" class="f-row"><input type="number" id="i_units" value="1" min="0.1" step="0.1" oninput="dCalc()"><span class="unit">units</span></div>
         <div id="uo_aov_field" class="f-row" style="display:none"><input type="number" id="i_aov" value="" min="0" step="0.1" oninput="uoAovInput()" placeholder="e.g. 600"><span class="unit">EGP</span></div>
       </div>
-      <div class="field"><label data-t="lbl_orders_cust">Avg orders per customer <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_orders_cust">Average number of orders a customer places over their lifetime — drives LTV.<br>Leave at 1 if you do not track repeat purchases.</span></span></label><div class="f-row"><input type="number" id="i_orders_per_cust" value="1" min="1" step="0.1" placeholder="1" oninput="dCalc()"><span class="unit" data-t="unit_orders">orders</span></div></div>
+
+      <!-- Advanced options toggle -->
+      <div style="margin-top:10px">
+        <button onclick="pricingToggleAdv()" id="pricing_adv_btn" style="
+          display:flex;align-items:center;gap:6px;
+          background:var(--surf2);border:1px solid var(--bdr2);border-radius:7px;
+          color:var(--txt3);font-size:11px;cursor:pointer;padding:6px 12px;
+          font-family:inherit;width:100%;transition:all .2s;justify-content:center">
+          <span id="pricing_adv_arrow" style="transition:transform .25s;display:inline-block;font-size:9px">▶</span>
+          <span data-t="adv_title">Advanced options</span>
+        </button>
+      </div>
+
+      <!-- Advanced options panel -->
+      <div id="pricing_adv_panel" style="display:none;margin-top:12px">
+        <div class="field"><label data-t="lbl_orders_cust">Avg orders per customer <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_orders_cust">Average number of orders a customer places over their lifetime — drives LTV.<br>Leave at 1 if you do not track repeat purchases.</span></span></label><div class="f-row"><input type="number" id="i_orders_per_cust" value="1" min="1" step="0.1" placeholder="1" oninput="dCalc()"><span class="unit" data-t="unit_orders">orders</span></div></div>
+      </div>
     </div>
 
     <div class="input-card">
@@ -4961,6 +4977,30 @@ function fcToggleAdv(){
   arrow.style.transform = open ? 'rotate(90deg)' : '';
 }
 
+// Pricing card → Advanced options (holds Avg orders per customer)
+function pricingToggleAdv(){
+  const panel = document.getElementById('pricing_adv_panel');
+  const arrow = document.getElementById('pricing_adv_arrow');
+  if(!panel) return;
+  const open = panel.style.display === 'none';
+  panel.style.display = open ? 'block' : 'none';
+  if(arrow) arrow.style.transform = open ? 'rotate(90deg)' : '';
+}
+
+// Auto-reveal the Pricing → Advanced panel when a non-default value is present
+// (e.g. restored from a saved product) so the value is never hidden from view.
+function pricingSyncAdv(){
+  const el = document.getElementById('i_orders_per_cust');
+  const panel = document.getElementById('pricing_adv_panel');
+  if(!el || !panel) return;
+  const val = parseFloat(String(el.value).replace(/,/g,''));
+  if(!isNaN(val) && val !== 1 && panel.style.display === 'none'){
+    panel.style.display = 'block';
+    const arrow = document.getElementById('pricing_adv_arrow');
+    if(arrow) arrow.style.transform = 'rotate(90deg)';
+  }
+}
+
 function fcSetMode(mode){
   FC_MODE = mode;
   document.getElementById('fc_preset_panel').style.display = mode === 'preset' ? 'block' : 'none';
@@ -7105,6 +7145,7 @@ function loadProduct(idx){
     if(el) el.value = pdata[id] !== undefined ? pdata[id] : '';
   });
   if(typeof reformatThousands === 'function') reformatThousands();
+  if(typeof pricingSyncAdv === 'function') pricingSyncAdv();
   calc();
 }
 
