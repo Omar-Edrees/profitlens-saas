@@ -16,7 +16,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 :root {
-  --bg:      #0D1117;
+  --bg:      #080A11;
   --bg2:     #10151C;
   --surf:    #161B22;
   --surf2:   #1C2128;
@@ -57,8 +57,37 @@ body[data-theme="light"] .prod-tab.active{color:#fff}
 body[data-theme="light"] .prod-tab.active .pt-del{color:#fff}
 body[data-theme="light"] .export-btn{color:#fff}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13px;line-height:1.6;transition:background .3s,color .3s;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+html{scroll-behavior:smooth;overflow-x:clip}
+/* overflow-x:clip on html+body is a hard guard against horizontal panning on
+   mobile. .section uses contain:paint to clip its overflow, but iOS Safari does
+   NOT honour that clip for RTL inline overflow, so wide content escaped and the
+   whole page could be scrolled sideways (Arabic mode, all tabs). clip is honoured
+   by Safari, keeps the page locked to the viewport width, and — unlike
+   overflow:hidden — does not create a scroll container, so the sticky nav and the
+   horizontally-scrollable .data-table-wrap keep working. */
+body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13px;line-height:1.6;transition:background .3s,color .3s;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip;max-width:100%}
+
+/* ===== Global app background — deep-navy glow + faint grid (matches the
+   reference). Fixed layers sit behind ALL content (z-index:-1) so every tab
+   shows the same glowing navy backdrop, not just Inputs. Dark mode only. ===== */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(1100px 780px at 16% 12%, rgba(129,140,248,0.20), transparent 56%),
+    radial-gradient(1000px 820px at 92% 4%, rgba(99,102,241,0.14), transparent 60%),
+    radial-gradient(900px 760px at 88% 92%, rgba(56,189,248,0.08), transparent 58%),
+    radial-gradient(1300px 1100px at 50% -10%, rgba(167,139,250,0.07), transparent 55%);
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+  background-size:58px 58px;
+  -webkit-mask-image:radial-gradient(circle at 40% 18%, #000 0%, transparent 80%);
+          mask-image:radial-gradient(circle at 40% 18%, #000 0%, transparent 80%);
+}
+body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none }
 
 /* ─── NAV ─────────────────────────── */
 .topnav{
@@ -720,6 +749,22 @@ body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13p
   border-top:1px solid var(--bdr2);border-bottom:none;
 }
 
+/* ─── RTL / narrow-viewport overflow guard ──────────────────────────────
+   Grid & flex items default to min-width:auto, so wide content (notably the
+   horizontally-scrollable data tables, which keep a 420px min-width on phones)
+   refuses to shrink and overflows its .section. Because .section uses paint
+   containment, that overflow is CLIPPED instead of scrolled — and in RTL the
+   clipped edge is the side that holds the numbers, so columns get cut off
+   (this was the broken Arabic Overview/Shipping layout on mobile). Letting the
+   items shrink keeps wide tables inside their .data-table-wrap scroller in
+   every writing direction. */
+.charts-2 > *, .charts-3 > *,
+.shp-grid-2 > *, .shp-grid-3 > *,
+.ov-cards-3 > *, .hkpi-row > *,
+.ovx-row > *, .ov2-2col > *, .ov2-insight-row > *,
+.kpi-row > *, .chart-card { min-width: 0; }
+.data-table-wrap { min-width: 0; max-width: 100%; }
+
 /* ─── TAGS ─────────────────────────── */
 .tag{display:inline-block;font-size:10px;font-family:var(--mono);padding:2px 8px;border-radius:4px;font-weight:500}
 .tg{background:rgba(0,229,160,.12);color:var(--c1)}
@@ -1023,6 +1068,72 @@ body[data-theme="light"] #s1, body[data-theme="light"] #s3{
 .s1 .section-eyebrow, .s3 .section-eyebrow{color:var(--muted-2)}
 .s1 .section-eyebrow .num{background:rgba(129,140,248,.15);color:var(--purple-2)}
 .s3 .section-eyebrow .num{background:rgba(167,139,250,.15);color:var(--purple-2)}
+
+/* ═══════ INPUTS TAB (#s0) — REDESIGN: full reference look (glow) ═══════ */
+/* The dark palette already matches the reference; this adds the reference's
+   distinctive *color style* scoped to #s0 only — navy glow background,
+   gradient-glow input fields, gradient-glow cards, and the purple header.
+   Colors / visual style only: no layout, structure, or content changes. */
+
+/* section background is now provided globally (body::before/::after + --bg),
+   so every tab shares the same navy glow — see the global rule near the top. */
+
+/* — section header: purple badge + big H1 (match reference / other tabs) — */
+#s0 .section-eyebrow .num{background:rgba(129,140,248,.14);border:1px solid rgba(129,140,248,.26);color:var(--c1l)}
+#s0 .section-eyebrow{letter-spacing:.16em;color:var(--txt3)}
+#s0 .section-title{font-size:34px;letter-spacing:-.03em}
+#s0 .section-sub{font-size:15px;color:var(--txt2)}
+@media(max-width:860px){ #s0 .section-title{font-size:26px} }
+@media(max-width:480px){ #s0 .section-title{font-size:20px} }
+
+/* — input cards: gradient-glow border + soft indigo shadow — */
+#s0 .input-card{
+  position:relative;border:0;
+  box-shadow:0 2px 18px rgba(99,102,241,0.10), 0 18px 50px -34px rgba(99,102,241,0.45);
+}
+#s0 .input-card::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1.3px;
+  background:linear-gradient(135deg, rgba(96,135,255,0.62) 0%, rgba(167,139,250,0.42) 48%, rgba(244,114,182,0.5) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  pointer-events:none; z-index:0;
+}
+body[data-theme="light"] #s0 .input-card{ box-shadow:0 2px 14px rgba(99,102,241,0.07); }
+body[data-theme="light"] #s0 .input-card::before{
+  background:linear-gradient(135deg, rgba(99,102,241,0.5) 0%, rgba(167,139,250,0.34) 48%, rgba(244,114,182,0.4) 100%);
+}
+
+/* — input fields (.f-row): gradient-glow pill, transparent input + unit — */
+#s0 .f-row{
+  position:relative; border-radius:var(--r); overflow:hidden;
+  background:linear-gradient(135deg, rgba(46,52,100,0.55) 0%, rgba(30,28,56,0.34) 48%, rgba(52,34,68,0.48) 100%);
+  box-shadow:0 2px 10px rgba(99,102,241,0.10), inset 0 1px 0 rgba(255,255,255,0.025);
+}
+#s0 .f-row::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+  background:linear-gradient(135deg, rgba(96,135,255,0.62) 0%, rgba(167,139,250,0.5) 48%, rgba(244,114,182,0.46) 100%);
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  pointer-events:none; z-index:0;
+}
+#s0 .f-row input{ background:transparent; border:none; border-radius:0; }
+#s0 .f-row input:focus{ border:none; }
+#s0 .f-row input.invalid-rate{ background:rgba(244,63,94,.08); }
+#s0 .f-row .unit{ background:transparent; border:none; border-radius:0; border-inline-start:1px solid rgba(255,255,255,0.07); }
+#s0 .f-row:focus-within{ box-shadow:0 0 0 3px rgba(96,135,255,0.28), 0 0 28px rgba(96,135,255,0.30); }
+#s0 .f-row:focus-within::before{ background:linear-gradient(135deg, rgba(120,160,255,1) 0%, rgba(150,150,255,0.92) 100%); }
+#s0 .f-row:has(input.invalid-rate)::before{ background:#F87171; }
+#s0 .f-row:has(input.invalid-rate){ box-shadow:0 0 0 2px rgba(244,63,94,.28); }
+body[data-theme="light"] #s0 .f-row{
+  background:linear-gradient(135deg, rgba(99,102,241,0.07) 0%, rgba(167,139,250,0.04) 50%, rgba(244,114,182,0.05) 100%);
+  box-shadow:0 1px 2px rgba(15,23,42,0.06);
+}
+body[data-theme="light"] #s0 .f-row::before{
+  background:linear-gradient(135deg, rgba(99,102,241,0.55) 0%, rgba(167,139,250,0.4) 48%, rgba(244,114,182,0.42) 100%); opacity:0.7;
+}
+body[data-theme="light"] #s0 .f-row .unit{ border-inline-start-color:rgba(15,23,42,0.08); }
 
 #sp_ship_panel{color:var(--text)}
 .shp-grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:18px}
