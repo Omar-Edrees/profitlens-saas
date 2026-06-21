@@ -16,7 +16,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 :root {
-  --bg:      #0D1117;
+  --bg:      #080A11;
   --bg2:     #10151C;
   --surf:    #161B22;
   --surf2:   #1C2128;
@@ -66,6 +66,28 @@ html{scroll-behavior:smooth;overflow-x:clip}
    overflow:hidden — does not create a scroll container, so the sticky nav and the
    horizontally-scrollable .data-table-wrap keep working. */
 body{font-family:var(--body);background:var(--bg);color:var(--txt);font-size:13px;line-height:1.6;transition:background .3s,color .3s;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;overflow-x:clip;max-width:100%}
+
+/* ===== Global app background — deep-navy glow + faint grid (matches the
+   reference). Fixed layers sit behind ALL content (z-index:-1) so every tab
+   shows the same glowing navy backdrop, not just Inputs. Dark mode only. ===== */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(1100px 780px at 16% 12%, rgba(129,140,248,0.20), transparent 56%),
+    radial-gradient(1000px 820px at 92% 4%, rgba(99,102,241,0.14), transparent 60%),
+    radial-gradient(900px 760px at 88% 92%, rgba(56,189,248,0.08), transparent 58%),
+    radial-gradient(1300px 1100px at 50% -10%, rgba(167,139,250,0.07), transparent 55%);
+}
+body::after{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+  background-size:58px 58px;
+  -webkit-mask-image:radial-gradient(circle at 40% 18%, #000 0%, transparent 80%);
+          mask-image:radial-gradient(circle at 40% 18%, #000 0%, transparent 80%);
+}
+body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none }
 
 /* ─── NAV ─────────────────────────── */
 .topnav{
@@ -1053,20 +1075,8 @@ body[data-theme="light"] #s1, body[data-theme="light"] #s3{
    gradient-glow input fields, gradient-glow cards, and the purple header.
    Colors / visual style only: no layout, structure, or content changes. */
 
-/* — section background: deep navy + radial glows + faint grid (dark) — */
-#s0{
-  background-color:#080A11;
-  background-image:
-    radial-gradient(1100px 780px at 16% 12%, rgba(129,140,248,0.20), transparent 56%),
-    radial-gradient(1000px 820px at 92% 4%, rgba(99,102,241,0.14), transparent 60%),
-    radial-gradient(900px 760px at 88% 92%, rgba(56,189,248,0.08), transparent 58%),
-    radial-gradient(1300px 1100px at 50% -10%, rgba(167,139,250,0.07), transparent 55%),
-    linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
-  background-size:auto,auto,auto,auto,58px 58px,58px 58px;
-  background-repeat:no-repeat,no-repeat,no-repeat,no-repeat,repeat,repeat;
-}
-body[data-theme="light"] #s0{ background-color:#EEF1F5; background-image:none; }
+/* section background is now provided globally (body::before/::after + --bg),
+   so every tab shares the same navy glow — see the global rule near the top. */
 
 /* — section header: purple badge + big H1 (match reference / other tabs) — */
 #s0 .section-eyebrow .num{background:rgba(129,140,248,.14);border:1px solid rgba(129,140,248,.26);color:var(--c1l)}
