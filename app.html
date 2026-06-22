@@ -3431,6 +3431,46 @@ input[type=range]::-moz-range-thumb{
     </div><!-- /tp_body -->
   </div>
 
+  <!-- Reality Check Simulator — actuals → am I profitable right now? -->
+  <div class="target-profit-card" id="rc_card">
+    <div class="target-profit-title" onclick="toggleSection('rc_body','rc_toggle','rc_toggle_lbl')">
+      <div class="target-profit-title-left"><span class="tp-icon" style="--ic:#34D399"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span> <span data-t="rc_title">Reality check — am I profitable now?</span></div>
+      <div class="scenario-toggle">
+        <span id="rc_toggle_lbl">Hide</span>
+        <div class="toggle-track on" id="rc_toggle"><div class="toggle-thumb"></div></div>
+      </div>
+    </div>
+    <div class="collapsible-body show" id="rc_body">
+      <div data-t="rc_sub" style="font-size:12px;color:var(--txt3);margin-bottom:12px;line-height:1.5">Enter what actually happened — the leads you got and their CPA — and see right away whether you are winning. Product economics and rates come from your inputs.</div>
+      <!-- Actual inputs -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="field" style="margin:0">
+          <label style="font-size:11px;margin:0 0 4px;color:var(--c1);display:block" data-t="rc_leads_lbl">Leads I got from ads</label>
+          <div class="f-row"><input type="number" id="rc_leads" min="0" placeholder="e.g. 100" oninput="rcRecalc()"><span class="unit" data-t="unit_leads">leads</span></div>
+        </div>
+        <div class="field" style="margin:0">
+          <label style="font-size:11px;margin:0 0 4px;color:var(--c1);display:block" data-t="rc_cpa_lbl">CPA per lead (what I paid)</label>
+          <div class="f-row"><input type="number" id="rc_cpa" min="0" placeholder="e.g. 45" oninput="rcRecalc()"><span class="unit">EGP</span></div>
+        </div>
+      </div>
+      <!-- Results -->
+      <div class="target-profit-results">
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_spend_lbl">Ad spend</div><div class="tp-kpi-val" id="rc_spend" style="color:var(--c2)">—</div><div class="tp-kpi-sub" data-t="rc_spend_sub">Leads × CPA</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="kpi_delivered">Delivered orders</div><div class="tp-kpi-val" id="rc_delivered" style="color:var(--c1)">—</div><div class="tp-kpi-sub" data-t="rc_funnel_sub">After Conf% × Del%</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_rev_lbl">Revenue</div><div class="tp-kpi-val" id="rc_rev" style="color:var(--c4)">—</div><div class="tp-kpi-sub" data-t="rc_rev_sub">Total incl. shipping</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_gross_lbl">Profit before ads</div><div class="tp-kpi-val" id="rc_gross" style="color:var(--c3)">—</div><div class="tp-kpi-sub" data-t="rc_gross_sub">Delivered × profit/order</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_net_lbl">Net profit</div><div class="tp-kpi-val" id="rc_net" style="color:var(--profit)">—</div><div class="tp-kpi-sub" data-t="rc_net_sub">After ad spend</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_margin_lbl">Profit margin</div><div class="tp-kpi-val" id="rc_margin" style="color:var(--c1)">—</div><div class="tp-kpi-sub" data-t="rc_margin_sub">Net ÷ Revenue</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_becpa_lbl">Break-even CPA</div><div class="tp-kpi-val" id="rc_becpa" style="color:var(--c2)">—</div><div class="tp-kpi-sub" id="rc_becpa_sub">—</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_netfix_lbl">Net after fixed costs</div><div class="tp-kpi-val" id="rc_netfix" style="color:var(--c3)">—</div><div class="tp-kpi-sub" data-t="rc_netfix_sub">Minus monthly fixed</div></div>
+      </div>
+      <!-- Verdict -->
+      <div id="rc_verdict" class="alert ag" style="margin-top:12px;display:none">
+        <span class="alert-icon" id="rc_verdict_icon">✓</span><span id="rc_verdict_msg">—</span>
+      </div>
+    </div>
+  </div>
+
   <!-- ROAS Target Simulator — 4-scenario lock system -->
   <div class="target-profit-card">
     <div class="target-profit-title" onclick="toggleSection('roas_body','roas_toggle','roas_toggle_lbl')">
@@ -5686,6 +5726,7 @@ function calc(){
   window.LAST_BE_CPA   = beCPP; // expose for Min Orders mode
   window.LAST_PROFIT_PU = profitPU; // profit per delivered unit
   window.LAST_PRICE_NET = priceNet;  // net revenue per unit
+  window.LAST_SHIPC_NET = shipCNet;  // net shipping charged per unit (for Reality Check sim)
 
   // Break-even ROAS (full business)
   // Correct formula: ROAS = (price+shipC) × confR × delR / CPP  (beCPP is cost per lead)
@@ -6109,6 +6150,8 @@ function calc(){
   calcTargetProfit();
   // update ROAS simulator
   simResolve();
+  // update Reality Check simulator
+  if(typeof rcRecalc === 'function') rcRecalc();
 
   // auto-save to localStorage
   saveCurrentProduct();
@@ -6913,6 +6956,76 @@ function simResolve(){
 }
 
 const dSimResolve = debounce(() => simResolve(), 150);
+
+// ── Reality Check Simulator ───────────────────────────────────────────────
+// "I got N leads at CPA X — am I profitable right now?" Reuses the live product
+// economics (LAST_PROFIT_PU etc.) and the product's Conf%/Del%. Shows both the
+// contribution profit (before monthly fixed costs) and the net after fixed costs.
+function rcRecalc(){
+  const card = document.getElementById('rc_card');
+  if(!card) return;
+  const leads = v('rc_leads');
+  const cpa   = v('rc_cpa');
+  const confR = (v('i_conf') || 0) / 100;
+  const delR  = (v('i_del')  || 0) / 100;
+  const profitPU = window.LAST_PROFIT_PU || 0;   // profit per delivered order (before ad & fixed)
+  const priceNet = window.LAST_PRICE_NET || 0;
+  const shipCNet = window.LAST_SHIPC_NET || 0;
+  const beCpaFull = window.LAST_BE_CPA   || 0;   // full break-even CPA per lead (incl fixed)
+  const Tn = T[LANG];
+
+  const adSpend     = leads * cpa;
+  const delivered   = leads * confR * delR;
+  const revenue     = delivered * (priceNet + shipCNet);
+  const grossProfit = delivered * profitPU;          // before ads, before fixed
+  const netContribution = grossProfit - adSpend;     // before fixed
+  const salary = (v('i_salary') || 0) * advDurMonths();
+  const netAfterFixed = netContribution - salary;
+  const margin = revenue > 0 ? (netContribution / revenue * 100) : 0;
+
+  const has = leads > 0 && cpa > 0 && profitPU !== 0;
+  const money = n => (n < 0 ? '-' : '') + Math.round(Math.abs(n)).toLocaleString('en') + ' ' + CURRENCY;
+  const setv = (id, val, color) => { const el = document.getElementById(id); if(el){ el.textContent = val; if(color !== undefined) el.style.color = color; } };
+
+  setv('rc_spend',     has ? money(adSpend) : '—');
+  setv('rc_delivered', has ? Math.round(delivered).toLocaleString('en') : '—');
+  setv('rc_rev',       has ? money(revenue) : '—');
+  setv('rc_gross',     has ? money(grossProfit) : '—');
+  setv('rc_net',       has ? (netContribution >= 0 ? '+' : '') + money(netContribution) : '—', netContribution >= 0 ? 'var(--profit)' : 'var(--red)');
+  setv('rc_margin',    has ? margin.toFixed(1) + '%' : '—');
+  setv('rc_becpa',     (has && beCpaFull > 0) ? money(beCpaFull) : '—');
+  { const sub = document.getElementById('rc_becpa_sub');
+    if(sub){
+      sub.textContent = has ? ((Tn.rc_yours || 'yours') + ': ' + money(cpa)) : '—';
+      sub.style.color = (has && beCpaFull > 0 && cpa > beCpaFull) ? 'var(--red)' : 'var(--txt3)';
+    } }
+  setv('rc_netfix',    has ? (netAfterFixed >= 0 ? '+' : '') + money(netAfterFixed) : '—', netAfterFixed >= 0 ? 'var(--c3)' : 'var(--red)');
+
+  // Verdict — 3 states: losing / contribution-positive-but-fixed-eats-it / winning
+  const verdict = document.getElementById('rc_verdict');
+  const icon = document.getElementById('rc_verdict_icon');
+  const msg  = document.getElementById('rc_verdict_msg');
+  if(!verdict) return;
+  if(!has){ verdict.style.display = 'none'; return; }
+  verdict.style.display = 'flex';
+  verdict.style.background = ''; verdict.style.border = ''; verdict.style.color = '';   // clear inline overrides
+  if(netContribution < 0){
+    verdict.className = 'alert ar';
+    icon.textContent = '✖';
+    msg.textContent = (Tn.rc_v_loss || 'Losing') + ' ' + money(Math.abs(netContribution)) + ' — ' + (Tn.rc_v_loss2 || 'your CPA is above break-even, every order loses money.');
+  } else if(netAfterFixed < 0){
+    verdict.className = 'alert';
+    verdict.style.background = 'rgba(251,191,36,.08)';
+    verdict.style.border = '1px solid rgba(251,191,36,.28)';
+    verdict.style.color = '#FBBF24';
+    icon.textContent = '⚠️';
+    msg.textContent = (Tn.rc_v_warn || 'Orders are profitable') + ' (+' + money(netContribution) + ') ' + (Tn.rc_v_warn2 || 'but monthly fixed costs make the month negative') + ' (' + money(netAfterFixed) + ').';
+  } else {
+    verdict.className = 'alert ag';
+    icon.textContent = '✓';
+    msg.textContent = (Tn.rc_v_win || 'Winning!') + ' +' + money(netContribution) + ' ' + (Tn.rc_v_win2 || 'after ads') + (salary > 0 ? (' • ' + (Tn.rc_v_win3 || 'after fixed costs') + ': +' + money(netAfterFixed)) : '') + '.';
+  }
+}
 
 // ── TARGET ROAS أو Revenue اتغيّر ──
 function calcRoas(){ simResolve(); }
@@ -8656,6 +8769,19 @@ const T = {
     opt_days:'days', opt_weeks:'weeks', opt_months:'months', opt_years:'years',
     tip_buy_freq:'How often a returning customer places an order — drives total orders and LTV.',
     tip_cust_lifespan:'Average time a customer keeps buying from you before they stop.',
+    rc_title:'Reality check — am I profitable now?',
+    rc_sub:'Enter what actually happened — the leads you got and their CPA — and see right away whether you are winning. Product economics and rates come from your inputs.',
+    rc_leads_lbl:'Leads I got from ads', rc_cpa_lbl:'CPA per lead (what I paid)', unit_leads:'leads',
+    rc_spend_lbl:'Ad spend', rc_spend_sub:'Leads × CPA', rc_funnel_sub:'After Conf% × Del%',
+    rc_rev_lbl:'Revenue', rc_rev_sub:'Total incl. shipping',
+    rc_gross_lbl:'Profit before ads', rc_gross_sub:'Delivered × profit/order',
+    rc_net_lbl:'Net profit', rc_net_sub:'After ad spend',
+    rc_margin_lbl:'Profit margin', rc_margin_sub:'Net ÷ Revenue',
+    rc_becpa_lbl:'Break-even CPA', rc_netfix_lbl:'Net after fixed costs', rc_netfix_sub:'Minus monthly fixed',
+    rc_yours:'yours',
+    rc_v_win:'Winning!', rc_v_win2:'after ads', rc_v_win3:'after fixed costs',
+    rc_v_warn:'Orders are profitable', rc_v_warn2:'but monthly fixed costs make the month negative',
+    rc_v_loss:'Losing', rc_v_loss2:'your CPA is above break-even, every order loses money.',
     kpi_cac:'CAC', hint_cac:'Ad cost per customer',
     tip_cac:'Customer Acquisition Cost — ad spend to acquire one paying (delivered) customer.<br>= Ad budget ÷ Delivered orders',
     kpi_ltv:'LTV', hint_ltv:'Net profit × repeat',
@@ -8932,6 +9058,19 @@ const T = {
     opt_days:'يوم', opt_weeks:'أسبوع', opt_months:'شهر', opt_years:'سنة',
     tip_buy_freq:'كل قد إيه العميل الراجع بيعمل أوردر — بيحدّد إجمالي الأوردرات والـ LTV.',
     tip_cust_lifespan:'متوسط المدة اللي العميل يفضل فيها بيشتري منك قبل ما يبطّل.',
+    rc_title:'فحص الواقع — أنا رابح دلوقتي؟',
+    rc_sub:'دخّل اللي حصل فعلًا — الليدز اللي جبتها والـ CPA بتاعها — وشوف على طول إنت كسبان ولا لأ. أرقام المنتج والنسب بتتسحب من الإنبوتس.',
+    rc_leads_lbl:'الليدز اللي جبتها من الإعلانات', rc_cpa_lbl:'الـ CPA لكل ليد (اللي دفعته)', unit_leads:'ليد',
+    rc_spend_lbl:'الإنفاق الإعلاني', rc_spend_sub:'ليدز × CPA', rc_funnel_sub:'بعد Conf% × Del%',
+    rc_rev_lbl:'الإيراد', rc_rev_sub:'الإجمالي شامل الشحن',
+    rc_gross_lbl:'الربح قبل الإعلان', rc_gross_sub:'متوصّل × ربح/أوردر',
+    rc_net_lbl:'صافي الربح', rc_net_sub:'بعد الإنفاق الإعلاني',
+    rc_margin_lbl:'هامش الربح', rc_margin_sub:'الصافي ÷ الإيراد',
+    rc_becpa_lbl:'CPA التعادل', rc_netfix_lbl:'الصافي بعد المصاريف الثابتة', rc_netfix_sub:'ناقص الثابتة الشهرية',
+    rc_yours:'بتاعك',
+    rc_v_win:'كسبان! 🎉', rc_v_win2:'بعد الإعلان', rc_v_win3:'بعد المصاريف الثابتة',
+    rc_v_warn:'الأوردرات نفسها رابحة', rc_v_warn2:'بس المصاريف الشهرية الثابتة بتخلّي الشهر خسران',
+    rc_v_loss:'خسران', rc_v_loss2:'الـ CPA بتاعك فوق حد التعادل، كل أوردر بيخسر.',
     kpi_cac:'CAC', hint_cac:'تكلفة إعلان للعميل',
     tip_cac:'تكلفة اكتساب العميل — مصاريف الإعلان لجذب عميل واحد دافع (موصّل).<br>= ميزانية الإعلانات ÷ الأوردرات الموصّلة',
     kpi_ltv:'LTV', hint_ltv:'ربح صافي × تكرار',
