@@ -4308,10 +4308,11 @@ function mbToggleAdvanced(){
   const open  = panel.style.display === 'none';
   panel.style.display = open ? 'block' : 'none';
   arrow.style.transform = open ? 'rotate(90deg)' : '';
-  // Dim basic fields when advanced is open — only budget & CPA are overridden
-  // by the advanced planner. Target delivered stock stays editable (it always
-  // feeds the calc regardless of advanced mode).
-  const basicFields = ['i_ads','i_avg_cpp'];
+  // Dim basic fields when advanced is open — budget, CPA *and* target stock are
+  // all overridden by the advanced planner: it derives its own orders, which
+  // replace i_stock (see calc: `if(advOrders > 0) stock = advOrders`). Dimming +
+  // disabling them signals they're ignored while Advanced drives the numbers.
+  const basicFields = ['i_ads','i_avg_cpp','i_stock'];
   basicFields.forEach(id => {
     const el = document.getElementById(id);
     if(!el) return;
