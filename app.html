@@ -7425,7 +7425,7 @@ function renderProdTabs(){
     </button>` : '') +
     // individual product tabs
     PRODUCTS.map((p, i) => `
-    <button class="prod-tab ${!SHOW_ALL_PRODUCTS && i===ACTIVE_PROD?'active':''}" onclick="switchProduct(${i})">
+    <button class="prod-tab ${!SHOW_ALL_PRODUCTS && i===ACTIVE_PROD?'active':''}" data-prod-idx="${i}" onclick="switchProduct(${i})">
       <span class="pt-dot" style="background:${PROD_COLORS[i%PROD_COLORS.length]}"></span>
       <span class="pt-name">${escapeHtml(p.name)}</span>
       ${PRODUCTS.length > 1 ? `<span class="pt-del" onclick="event.stopPropagation();deleteProduct(${i})">×</span>` : ''}
@@ -7441,18 +7441,20 @@ function renderProdTabs(){
 
   // Right-click context menu + long press (mobile) for rename
   let _lpTimer = null;
-  document.querySelectorAll('.prod-tab').forEach((tab, i) => {
+  document.querySelectorAll('.prod-tab').forEach(tab => {
     const nameEl = tab.querySelector('.pt-name');
-    if(!nameEl) return;
+    if(!nameEl) return;                         // skips the "All Products" tab (no .pt-name)
+    const idx = parseInt(tab.dataset.prodIdx, 10);
+    if(isNaN(idx)) return;                       // real product index, not the NodeList position
     // Right-click → rename
     tab.addEventListener('contextmenu', e => {
       e.preventDefault();
       e.stopPropagation();
-      showRenameMenu(e.clientX, e.clientY, nameEl, i);
+      showRenameMenu(e.clientX, e.clientY, nameEl, idx);
     });
     // Long press (mobile)
     tab.addEventListener('touchstart', e => {
-      _lpTimer = setTimeout(() => { showRenameMenu(null, null, nameEl, i); }, 600);
+      _lpTimer = setTimeout(() => { showRenameMenu(null, null, nameEl, idx); }, 600);
     }, {passive:true});
     tab.addEventListener('touchend',  () => clearTimeout(_lpTimer));
     tab.addEventListener('touchmove', () => clearTimeout(_lpTimer));
