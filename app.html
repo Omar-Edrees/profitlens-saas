@@ -695,8 +695,7 @@ body[data-theme="light"] #s0 .f-row select.freq-unit{ border-inline-start-color:
   #s1_kpi_row .kpi-lbl{font-size:11px;padding-right:16px}
   #s1_kpi_row .kpi-hint{font-size:10px}
 }
-.kpi-row--edit .kpi{cursor:grab;user-select:none;overflow:visible!important}
-.kpi-row--edit .kpi:active{cursor:grabbing}
+.kpi-row--edit .kpi{user-select:none;overflow:visible!important}
 .kpi-x,.kpi-plus{
   display:none;position:absolute;top:-7px;right:-7px;
   width:20px;height:20px;border-radius:50%;
@@ -9760,7 +9759,6 @@ function toggleRevShipping(){
     r.classList.toggle('kpi-row--edit', editing);
     if(btn){btn.classList.toggle('on',editing);btn.textContent=editing?T[LANG].kpi_done:T[LANG].kpi_customize;}
     if(p) p.classList.toggle('show', editing&&poolCards().length>0);
-    cards().forEach(c=>c.setAttribute('draggable',editing?'true':'false'));
     if(!editing) save();
   };
 
@@ -9776,51 +9774,41 @@ function toggleRevShipping(){
     if(c&&r){r.appendChild(c);if(!poolCards().length)p.classList.remove('show');save();}
   };
 
-  function onDragStart(e){dragCard=this;this.classList.add('kpi-dragging');e.dataTransfer.effectAllowed='move';}
-  function onDragOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';this.classList.add('kpi-drop');}
-  function onDragLeave(){this.classList.remove('kpi-drop');}
-  function onDrop(e){
-    e.preventDefault();this.classList.remove('kpi-drop');
-    if(!dragCard||dragCard===this) return;
-    const r=row(), all=[...r.querySelectorAll('.kpi[data-kid]')];
-    const si=all.indexOf(dragCard), ti=all.indexOf(this);
-    if(si<ti) r.insertBefore(dragCard,this.nextSibling);
-    else r.insertBefore(dragCard,this);
-    save();
-  }
-  function onDragEnd(){this.classList.remove('kpi-dragging');document.querySelectorAll('.kpi-drop').forEach(c=>c.classList.remove('kpi-drop'));}
-
-  // ── Touch reordering (mobile) — HTML5 drag events never fire on touchscreens,
-  // so we drive the same reorder logic from a dedicated drag handle (.kpi-grip).
-  // The card body stays scrollable; only the grip captures the drag gesture.
-  function gripTouchStart(e){
+  // ── Reordering via Pointer Events — one code path for mouse + touch.
+  // HTML5 drag is mouse-only, and iOS turns draggable=true into its own native
+  // drag that hijacks the gesture. Pointer events + setPointerCapture avoid all
+  // that. Dragging is driven from the handle (.kpi-grip, touch-action:none); the
+  // card body stays free to scroll.
+  function gripPointerDown(e){
     if(!editing) return;
-    e.preventDefault(); e.stopPropagation();   // also stops native drag / page scroll starting on the grip
+    e.preventDefault();
     dragCard=this.closest('.kpi[data-kid]');
-    if(dragCard) dragCard.classList.add('kpi-dragging');
+    if(!dragCard) return;
+    dragCard.classList.add('kpi-dragging');
+    try{ this.setPointerCapture(e.pointerId); }catch(_){}
   }
-  function gripTouchMove(e){
+  function gripPointerMove(e){
     if(!dragCard) return;
     e.preventDefault();
-    const t=e.touches[0]; if(!t) return;
     // edge auto-scroll so long lists remain reachable on a small screen
     const vh=window.innerHeight||document.documentElement.clientHeight;
-    if(t.clientY<70)       window.scrollBy(0,-10);
-    else if(t.clientY>vh-70) window.scrollBy(0,10);
-    const el=document.elementFromPoint(t.clientX,t.clientY);
+    if(e.clientY<70)         window.scrollBy(0,-10);
+    else if(e.clientY>vh-70) window.scrollBy(0,10);
+    const el=document.elementFromPoint(e.clientX,e.clientY);
     const target=el?el.closest('.kpi[data-kid]'):null;
     if(!target||target===dragCard) return;
-    const r=row(); if(!r||target.parentNode!==r) return;   // only reorder within the visible row
+    const r=row(); if(!r||target.parentNode!==r) return;   // reorder only within the visible row
     const all=[...r.querySelectorAll('.kpi[data-kid]')];
     const si=all.indexOf(dragCard), ti=all.indexOf(target);
     if(si<0||ti<0) return;
     if(si<ti) r.insertBefore(dragCard,target.nextSibling);
     else      r.insertBefore(dragCard,target);
   }
-  function gripTouchEnd(){
+  function gripPointerUp(e){
     if(!dragCard) return;
     dragCard.classList.remove('kpi-dragging');
     dragCard=null;
+    try{ this.releasePointerCapture(e.pointerId); }catch(_){}
     save();
   }
 
@@ -9839,15 +9827,10 @@ function toggleRevShipping(){
     grip.className='kpi-grip';grip.title=T[LANG].drag_card||'Drag to reorder';
     grip.innerHTML='<svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><circle cx="5" cy="3" r="1.5"/><circle cx="11" cy="3" r="1.5"/><circle cx="5" cy="8" r="1.5"/><circle cx="11" cy="8" r="1.5"/><circle cx="5" cy="13" r="1.5"/><circle cx="11" cy="13" r="1.5"/></svg>';
     c.appendChild(grip);
-    grip.addEventListener('touchstart',gripTouchStart,{passive:false});
-    grip.addEventListener('touchmove',gripTouchMove,{passive:false});
-    grip.addEventListener('touchend',gripTouchEnd);
-    grip.addEventListener('touchcancel',gripTouchEnd);
-    c.addEventListener('dragstart',onDragStart);
-    c.addEventListener('dragover',onDragOver);
-    c.addEventListener('dragleave',onDragLeave);
-    c.addEventListener('drop',onDrop);
-    c.addEventListener('dragend',onDragEnd);
+    grip.addEventListener('pointerdown',gripPointerDown);
+    grip.addEventListener('pointermove',gripPointerMove);
+    grip.addEventListener('pointerup',gripPointerUp);
+    grip.addEventListener('pointercancel',gripPointerUp);
   }
 
   function init(){
