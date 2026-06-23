@@ -707,6 +707,18 @@ body[data-theme="light"] #s0 .f-row select.freq-unit{ border-inline-start-color:
 .kpi-x{background:var(--red);color:#fff}
 .kpi-plus{background:var(--c1);color:var(--surf)}
 .kpi-row--edit .kpi-x{display:block}
+/* Drag handle — the touch-friendly way to reorder (HTML5 drag doesn't fire on touchscreens) */
+.kpi-grip{
+  display:none;position:absolute;top:-7px;left:-7px;
+  width:22px;height:22px;border-radius:50%;
+  align-items:center;justify-content:center;
+  cursor:grab;border:none;z-index:3;padding:0;
+  background:var(--c2);color:#fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.25);
+  touch-action:none;-webkit-user-select:none;user-select:none;
+}
+.kpi-grip:active{cursor:grabbing}
+.kpi-row--edit .kpi-grip{display:flex}
 .kpi.kpi-dragging{opacity:.3;border-style:dashed}
 .kpi.kpi-drop{box-shadow:inset 0 0 0 2px var(--c2)}
 .kpi-pool{
@@ -8951,7 +8963,7 @@ const T = {
     ap_of:'of', ap_products_profitable:'products profitable',
     blended_cpa_hint:'→ Blended CPA: ',
     excel_profitable:'Profitable', excel_loss:'Loss',
-    hide_card:'Hide card', show_card:'Show card',
+    hide_card:'Hide card', show_card:'Show card', drag_card:'Drag to reorder',
     enter_market_cpa:'Enter Market CPA',
     income_tag:'Income', fixed_tag:'Fixed', variable_tag:'Variable', tax_tag:'Tax',
     pl_salary:'Fixed cost',
@@ -9012,6 +9024,7 @@ const T = {
     roas_margin_lbl:'Profit margin', roas_after_costs_lbl:'after all costs',
     kpi_done:'✓ Done', kpi_customize:'⊞ Customize',
     kpi_showing:'Showing {0} of {1} cards',
+    kpi_reorder_hint:'Drag the handle (top-left of each card) to reorder',
     plat_fee_hint:'(enter Conf% and Del% to calculate Platform fee)',
     m_net_del_lbl:'▸ Net delivered (after returns): ',
     adv_override_hint:'Overridden by Advanced options',
@@ -9245,7 +9258,7 @@ const T = {
     ap_of:'من', ap_products_profitable:'منتج رابح',
     blended_cpa_hint:'→ Blended CPA: ',
     excel_profitable:'رابح', excel_loss:'خسارة',
-    hide_card:'إخفاء', show_card:'إظهار',
+    hide_card:'إخفاء', show_card:'إظهار', drag_card:'اسحب لإعادة الترتيب',
     enter_market_cpa:'أدخل Market CPA',
     income_tag:'دخل', fixed_tag:'ثابت', variable_tag:'متغير', tax_tag:'ضريبة',
     pl_salary:'التكلفة الثابتة',
@@ -9306,6 +9319,7 @@ const T = {
     roas_margin_lbl:'هامش الربح', roas_after_costs_lbl:'بعد كل التكاليف',
     kpi_done:'✓ تم', kpi_customize:'⊞ تخصيص',
     kpi_showing:'عرض {0} من {1} بطاقات',
+    kpi_reorder_hint:'اسحب المقبض (فوق على شمال كل بطاقة) لإعادة الترتيب',
     plat_fee_hint:'(أدخل % التأكيد و% التوصيل لحساب رسوم المنصة)',
     m_net_del_lbl:'▸ صافي الموصّل (بعد المرتجعات): ',
     adv_override_hint:'مُلغى بواسطة الخيارات المتقدمة',
@@ -9730,7 +9744,11 @@ function toggleRevShipping(){
   function updateInfo(){
     const v=cards().length, h=poolCards().length;
     const el=document.getElementById('kpi_cbar_info');
-    if(el) el.textContent=h>0?tfmt('kpi_showing',v,(v+h)):'';
+    if(el){
+      const count = h>0 ? tfmt('kpi_showing',v,(v+h)) : '';
+      // While editing, surface how to reorder — the touch drag handle isn't obvious otherwise
+      el.textContent = editing ? ((T[LANG].kpi_reorder_hint||'Drag the handle to reorder') + (count ? ' • '+count : '')) : count;
+    }
     const p=pool();
     if(p) p.classList.toggle('show', h>0&&editing);
   }
@@ -9772,6 +9790,40 @@ function toggleRevShipping(){
   }
   function onDragEnd(){this.classList.remove('kpi-dragging');document.querySelectorAll('.kpi-drop').forEach(c=>c.classList.remove('kpi-drop'));}
 
+  // ── Touch reordering (mobile) — HTML5 drag events never fire on touchscreens,
+  // so we drive the same reorder logic from a dedicated drag handle (.kpi-grip).
+  // The card body stays scrollable; only the grip captures the drag gesture.
+  function gripTouchStart(e){
+    if(!editing) return;
+    e.preventDefault(); e.stopPropagation();   // also stops native drag / page scroll starting on the grip
+    dragCard=this.closest('.kpi[data-kid]');
+    if(dragCard) dragCard.classList.add('kpi-dragging');
+  }
+  function gripTouchMove(e){
+    if(!dragCard) return;
+    e.preventDefault();
+    const t=e.touches[0]; if(!t) return;
+    // edge auto-scroll so long lists remain reachable on a small screen
+    const vh=window.innerHeight||document.documentElement.clientHeight;
+    if(t.clientY<70)       window.scrollBy(0,-10);
+    else if(t.clientY>vh-70) window.scrollBy(0,10);
+    const el=document.elementFromPoint(t.clientX,t.clientY);
+    const target=el?el.closest('.kpi[data-kid]'):null;
+    if(!target||target===dragCard) return;
+    const r=row(); if(!r||target.parentNode!==r) return;   // only reorder within the visible row
+    const all=[...r.querySelectorAll('.kpi[data-kid]')];
+    const si=all.indexOf(dragCard), ti=all.indexOf(target);
+    if(si<0||ti<0) return;
+    if(si<ti) r.insertBefore(dragCard,target.nextSibling);
+    else      r.insertBefore(dragCard,target);
+  }
+  function gripTouchEnd(){
+    if(!dragCard) return;
+    dragCard.classList.remove('kpi-dragging');
+    dragCard=null;
+    save();
+  }
+
   function initCard(c,kid){
     c.dataset.kid=kid;
     const x=document.createElement('button');
@@ -9782,6 +9834,15 @@ function toggleRevShipping(){
     plus.className='kpi-plus';plus.textContent='+';plus.title=T[LANG].show_card;
     plus.onclick=e=>{e.stopPropagation();kpiShow(kid);};
     c.appendChild(plus);
+    // Drag handle for touch reordering
+    const grip=document.createElement('button');
+    grip.className='kpi-grip';grip.title=T[LANG].drag_card||'Drag to reorder';
+    grip.innerHTML='<svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><circle cx="5" cy="3" r="1.5"/><circle cx="11" cy="3" r="1.5"/><circle cx="5" cy="8" r="1.5"/><circle cx="11" cy="8" r="1.5"/><circle cx="5" cy="13" r="1.5"/><circle cx="11" cy="13" r="1.5"/></svg>';
+    c.appendChild(grip);
+    grip.addEventListener('touchstart',gripTouchStart,{passive:false});
+    grip.addEventListener('touchmove',gripTouchMove,{passive:false});
+    grip.addEventListener('touchend',gripTouchEnd);
+    grip.addEventListener('touchcancel',gripTouchEnd);
     c.addEventListener('dragstart',onDragStart);
     c.addEventListener('dragover',onDragOver);
     c.addEventListener('dragleave',onDragLeave);
