@@ -4158,6 +4158,10 @@ input[type=range]::-moz-range-thumb{
           <div style="font-size:11px;color:var(--muted-2);margin-bottom:4px" data-t="ov_ad_cost_order">Ad cost / order</div>
           <div class="pl-num" id="ov_ad_per_order" style="font-size:16px;font-weight:700;color:var(--text)">—</div>
         </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted-2);margin-bottom:4px" data-t="ov_be_orders_lbl">Break-even orders</div>
+          <div class="pl-num" id="ov_be_orders" style="font-size:16px;font-weight:700;color:var(--text)">—</div>
+        </div>
       </div>
       <!-- hidden IDs required by JS -->
       <div style="display:none"><span id="ov_be_cpa">—</span><span id="ov_be_roas">—</span></div>
@@ -6077,6 +6081,7 @@ function calc(){
   set('ov_be_roas',    beROAS>0 ? (Math.round(beROAS*100)/100).toFixed(1)+'x' : '—');
   set('ov_orders',     Math.round(delivNeeded).toLocaleString('en')+' units');
   set('ov_ad_per_order', adPerOrder>0 ? eg(adPerOrder) : '—');
+  set('ov_be_orders',  isFinite(beUnits) ? Math.ceil(beUnits).toLocaleString('en')+' units' : '—');
 
   // CPA gauge — fill = actual ÷ break-even (the red tick at 100% marks break-even)
   {
@@ -8960,7 +8965,7 @@ const T = {
     ov_total_margin_lbl:'Total margin', ov_margin_pu_lbl:'Margin / unit', ov_net_pu_lbl:'Net / unit',
     ov_cm_lbl:'Contribution Margin', ov_cm_cap:'Before fixed costs', ov_margin_word:'margin',
     ov_rev_prod_lbl:'Product revenue', ov_rev_ship_lbl:'Shipping collected',
-    ov_ad_cost_order:'Ad cost / order', ov_total_orders_lbl:'Total orders',
+    ov_ad_cost_order:'Ad cost / order', ov_total_orders_lbl:'Total orders', ov_be_orders_lbl:'Break-even orders',
     ov_total_leads_lbl:'Total leads', ov_total_delivered_lbl:'Total delivered',
     lbl_plat_lead:'Platform fee / lead',
     sl_del_lbl:'Delivery rate', sl_conf_lbl:'Confirmation rate',
@@ -9252,7 +9257,7 @@ const T = {
     ov_total_margin_lbl:'إجمالي الهامش', ov_margin_pu_lbl:'الهامش / وحدة', ov_net_pu_lbl:'صافي / وحدة',
     ov_cm_lbl:'هامش المساهمة', ov_cm_cap:'قبل التكاليف الثابتة', ov_margin_word:'هامش',
     ov_rev_prod_lbl:'إيراد المنتج', ov_rev_ship_lbl:'الشحن المُحصّل',
-    ov_ad_cost_order:'تكلفة الإعلان / أوردر', ov_total_orders_lbl:'إجمالي الأوردرات',
+    ov_ad_cost_order:'تكلفة الإعلان / أوردر', ov_total_orders_lbl:'إجمالي الأوردرات', ov_be_orders_lbl:'أوردرات التعادل',
     ov_total_leads_lbl:'إجمالي الليدز', ov_total_delivered_lbl:'إجمالي الموصّلات',
     lbl_plat_lead:'رسوم المنصة / ليد',
     sl_del_lbl:'نسبة التوصيل', sl_conf_lbl:'نسبة التأكيد',
