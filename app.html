@@ -3455,14 +3455,12 @@ input[type=range]::-moz-range-thumb{
       </div>
       <!-- Results -->
       <div class="target-profit-results">
-        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_spend_lbl">Ad spend</div><div class="tp-kpi-val" id="rc_spend" style="color:var(--c2)">—</div><div class="tp-kpi-sub" data-t="rc_spend_sub">Leads × CPA</div></div>
-        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="kpi_delivered">Delivered orders</div><div class="tp-kpi-val" id="rc_delivered" style="color:var(--c1)">—</div><div class="tp-kpi-sub" data-t="rc_funnel_sub">After Conf% × Del%</div></div>
-        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_rev_lbl">Revenue</div><div class="tp-kpi-val" id="rc_rev" style="color:var(--c4)">—</div><div class="tp-kpi-sub" data-t="rc_rev_sub">Total incl. shipping</div></div>
-        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_gross_lbl">Profit before ads</div><div class="tp-kpi-val" id="rc_gross" style="color:var(--c3)">—</div><div class="tp-kpi-sub" data-t="rc_gross_sub">Delivered × profit/order</div></div>
-        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_net_lbl">Net profit</div><div class="tp-kpi-val" id="rc_net" style="color:var(--profit)">—</div><div class="tp-kpi-sub" data-t="rc_net_sub">After ad spend</div></div>
-        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_margin_lbl">Profit margin</div><div class="tp-kpi-val" id="rc_margin" style="color:var(--c1)">—</div><div class="tp-kpi-sub" data-t="rc_margin_sub">Net ÷ Revenue</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_nettotal_lbl">Net total profit</div><div class="tp-kpi-val" id="rc_net_total" style="color:var(--profit)">—</div><div class="tp-kpi-sub" data-t="rc_nettotal_sub">After all costs incl. fixed</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_beffix_lbl">Profit before fixed costs</div><div class="tp-kpi-val" id="rc_profit_beffix" style="color:var(--c3)">—</div><div class="tp-kpi-sub" data-t="rc_beffix_sub">After ads, before fixed</div></div>
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_becpa_lbl">Break-even CPA</div><div class="tp-kpi-val" id="rc_becpa" style="color:var(--c2)">—</div><div class="tp-kpi-sub" id="rc_becpa_sub">—</div></div>
-        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_netfix_lbl">Net after fixed costs</div><div class="tp-kpi-val" id="rc_netfix" style="color:var(--c3)">—</div><div class="tp-kpi-sub" data-t="rc_netfix_sub">Minus monthly fixed</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_aroas_lbl">Actual ROAS</div><div class="tp-kpi-val" id="rc_aroas" style="color:var(--c1)">—</div><div class="tp-kpi-sub" data-t="hint_roas_rev">Revenue ÷ ad spend</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_beroas_lbl">Break-even ROAS</div><div class="tp-kpi-val" id="rc_beroas" style="color:var(--c2)">—</div><div class="tp-kpi-sub" data-t="hint_be_min">Min to break even</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="kpi_delivered">Delivered orders</div><div class="tp-kpi-val" id="rc_delivered" style="color:var(--c1)">—</div><div class="tp-kpi-sub" data-t="rc_funnel_sub">After Conf% × Del%</div></div>
       </div>
       <!-- Verdict -->
       <div id="rc_verdict" class="alert ag" style="margin-top:12px;display:none">
@@ -5731,6 +5729,7 @@ function calc(){
   // Break-even ROAS (full business)
   // Correct formula: ROAS = (price+shipC) × confR × delR / CPP  (beCPP is cost per lead)
   const beROAS = beCPP > 0 ? (price + shipC) * confR * delR / beCPP : 0;
+  window.LAST_BE_ROAS = beROAS;  // expose for Reality Check sim
 
   const adOk    = actualCPP <= beCPP && beCPP > 0;
   const adsAdOk = adOk;
@@ -6969,37 +6968,36 @@ function rcRecalc(){
   const confR = (v('i_conf') || 0) / 100;
   const delR  = (v('i_del')  || 0) / 100;
   const profitPU = window.LAST_PROFIT_PU || 0;   // profit per delivered order (before ad & fixed)
-  const priceNet = window.LAST_PRICE_NET || 0;
-  const shipCNet = window.LAST_SHIPC_NET || 0;
   const beCpaFull = window.LAST_BE_CPA   || 0;   // full break-even CPA per lead (incl fixed)
   const Tn = T[LANG];
 
   const adSpend     = leads * cpa;
   const delivered   = leads * confR * delR;
-  const revenue     = delivered * (priceNet + shipCNet);
   const grossProfit = delivered * profitPU;          // before ads, before fixed
-  const netContribution = grossProfit - adSpend;     // before fixed
+  const netContribution = grossProfit - adSpend;     // profit before fixed costs
   const salary = (v('i_salary') || 0) * advDurMonths();
-  const netAfterFixed = netContribution - salary;
-  const margin = revenue > 0 ? (netContribution / revenue * 100) : 0;
+  const netAfterFixed = netContribution - salary;    // net total profit (after fixed)
+  const price = v('i_price'), shipC = v('i_ship_c');
+  const actualROAS = adSpend > 0 ? (price + shipC) * delivered / adSpend : 0;
+  const beROAS = window.LAST_BE_ROAS || 0;
+  const roasOk = beROAS > 0 && actualROAS >= beROAS;
 
   const has = leads > 0 && cpa > 0 && profitPU !== 0;
   const money = n => (n < 0 ? '-' : '') + Math.round(Math.abs(n)).toLocaleString('en') + ' ' + CURRENCY;
+  const r2 = x => (Math.round(x * 100) / 100).toFixed(2) + '×';
   const setv = (id, val, color) => { const el = document.getElementById(id); if(el){ el.textContent = val; if(color !== undefined) el.style.color = color; } };
 
-  setv('rc_spend',     has ? money(adSpend) : '—');
-  setv('rc_delivered', has ? Math.round(delivered).toLocaleString('en') : '—');
-  setv('rc_rev',       has ? money(revenue) : '—');
-  setv('rc_gross',     has ? money(grossProfit) : '—');
-  setv('rc_net',       has ? (netContribution >= 0 ? '+' : '') + money(netContribution) : '—', netContribution >= 0 ? 'var(--profit)' : 'var(--red)');
-  setv('rc_margin',    has ? margin.toFixed(1) + '%' : '—');
-  setv('rc_becpa',     (has && beCpaFull > 0) ? money(beCpaFull) : '—');
+  setv('rc_net_total',     has ? (netAfterFixed >= 0 ? '+' : '') + money(netAfterFixed) : '—', netAfterFixed >= 0 ? 'var(--profit)' : 'var(--red)');
+  setv('rc_profit_beffix', has ? (netContribution >= 0 ? '+' : '') + money(netContribution) : '—', netContribution >= 0 ? 'var(--c3)' : 'var(--red)');
+  setv('rc_becpa',         (has && beCpaFull > 0) ? money(beCpaFull) : '—');
   { const sub = document.getElementById('rc_becpa_sub');
     if(sub){
       sub.textContent = has ? ((Tn.rc_yours || 'yours') + ': ' + money(cpa)) : '—';
       sub.style.color = (has && beCpaFull > 0 && cpa > beCpaFull) ? 'var(--red)' : 'var(--txt3)';
     } }
-  setv('rc_netfix',    has ? (netAfterFixed >= 0 ? '+' : '') + money(netAfterFixed) : '—', netAfterFixed >= 0 ? 'var(--c3)' : 'var(--red)');
+  setv('rc_aroas',         (has && actualROAS > 0) ? r2(actualROAS) : '—', (has && actualROAS > 0) ? (roasOk ? 'var(--c3)' : 'var(--red)') : undefined);
+  setv('rc_beroas',        beROAS > 0 ? r2(beROAS) : '—');
+  setv('rc_delivered',     has ? Math.round(delivered).toLocaleString('en') : '—');
 
   // Verdict — 3 states: losing / contribution-positive-but-fixed-eats-it / winning
   const verdict = document.getElementById('rc_verdict');
@@ -8778,6 +8776,9 @@ const T = {
     rc_net_lbl:'Net profit', rc_net_sub:'After ad spend',
     rc_margin_lbl:'Profit margin', rc_margin_sub:'Net ÷ Revenue',
     rc_becpa_lbl:'Break-even CPA', rc_netfix_lbl:'Net after fixed costs', rc_netfix_sub:'Minus monthly fixed',
+    rc_nettotal_lbl:'Net total profit', rc_nettotal_sub:'After all costs incl. fixed',
+    rc_beffix_lbl:'Profit before fixed costs', rc_beffix_sub:'After ads, before fixed',
+    rc_aroas_lbl:'Actual ROAS', rc_beroas_lbl:'Break-even ROAS',
     rc_yours:'yours',
     rc_v_win:'Winning!', rc_v_win2:'after ads', rc_v_win3:'after fixed costs',
     rc_v_warn:'Orders are profitable', rc_v_warn2:'but monthly fixed costs make the month negative',
@@ -9067,6 +9068,9 @@ const T = {
     rc_net_lbl:'صافي الربح', rc_net_sub:'بعد الإنفاق الإعلاني',
     rc_margin_lbl:'هامش الربح', rc_margin_sub:'الصافي ÷ الإيراد',
     rc_becpa_lbl:'CPA التعادل', rc_netfix_lbl:'الصافي بعد المصاريف الثابتة', rc_netfix_sub:'ناقص الثابتة الشهرية',
+    rc_nettotal_lbl:'صافي الربح الكلي', rc_nettotal_sub:'بعد كل التكاليف شامل الثابتة',
+    rc_beffix_lbl:'الربح قبل المصاريف الثابتة', rc_beffix_sub:'بعد الإعلان، قبل الثابتة',
+    rc_aroas_lbl:'الـ ROAS الفعلي', rc_beroas_lbl:'ROAS التعادل',
     rc_yours:'بتاعك',
     rc_v_win:'كسبان! 🎉', rc_v_win2:'بعد الإعلان', rc_v_win3:'بعد المصاريف الثابتة',
     rc_v_warn:'الأوردرات نفسها رابحة', rc_v_warn2:'بس المصاريف الشهرية الثابتة بتخلّي الشهر خسران',
