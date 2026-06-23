@@ -2014,6 +2014,7 @@ input[type=range]::-moz-range-thumb{
         <div id="ff_mode_hint" class="ff-mode-hint">Charged per delivered order — e.g. a 3PL / fulfillment center.</div>
       </div>
       <div class="field"><label data-t="lbl_ff_ret">Total return cost (all-in) <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_ff_ret">Total cost per returned order — includes courier return trip + return fulfillment fee + any other charges.<br>In Egypt, couriers charge for both legs (delivery + return) even if customer refused.<br>Example: 70 EGP courier + 35 EGP return fulfillment = 105 EGP</span></span></label><div class="f-row"><input type="number" id="i_fulfill_ret" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
+      <div class="field"><label data-t="lbl_ret_damaged">% of returns damaged (lose product cost) <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_ret_damaged">Of every returned order — whether it failed delivery (RTO) or came back after the customer received it — this percentage can't be resold, so you lose the full product cost on it. Applies to both pre-delivery and post-delivery returns. Leave at 0 if all returns come back resellable.</span></span></label><div class="f-row"><input type="number" id="i_ret_damaged_pct" value="" min="0" max="100" step="1" placeholder="e.g. 10" oninput="dCalc()"><span class="unit">%</span></div></div>
       <div class="field-pair">
         <div class="field"><label data-t="lbl_courier">Avg. shipping cost (your cost)</label><div class="f-row"><input type="number" id="i_courier" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
         <div class="field"><label data-t="lbl_ship_charged">Shipping charged to customer</label><div class="f-row"><input type="number" id="i_ship_c" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
@@ -3111,7 +3112,7 @@ input[type=range]::-moz-range-thumb{
           </div>
           <button class="adv-lock-btn" id="adv_pdr_lock" onclick="toggleAdvLock('pdr')" title="Unlock to enable">🔒</button>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:4px" id="adv_pdr_fields">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px" id="adv_pdr_fields">
           <div>
             <div style="font-size:11px;color:var(--txt2);margin-bottom:4px" data-t="adv_pdr_rate_lbl">Return rate (% of delivered)</div>
             <div style="display:flex;align-items:center;gap:6px">
@@ -3126,16 +3127,8 @@ input[type=range]::-moz-range-thumb{
               <span style="color:var(--txt3);font-size:12px;font-family:var(--mono)">EGP</span>
             </div>
           </div>
-          <div>
-            <div style="font-size:11px;color:var(--txt2);margin-bottom:4px" data-t="adv_pdr_damaged_lbl">Product damaged? (lose product cost)</div>
-            <div style="display:flex;align-items:center;gap:8px;height:34px">
-              <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--txt2)">
-                <input type="checkbox" id="adv_pdr_damaged" disabled onchange="dCalc()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--red)">
-                Yes
-              </label>
-            </div>
-          </div>
         </div>
+        <div style="font-size:11px;color:var(--txt3);margin-top:8px" data-t="adv_pdr_damaged_note">💡 Damaged-product loss is set once in "% of returns damaged" under Shipping & Delivery costs — it applies to these returns too.</div>
         <div class="adv-item-hint" id="adv_pdr_hint" data-t="adv_pdr_hint_off">Locked → no post-delivery returns in calculations</div>
       </div>
 
@@ -5259,8 +5252,17 @@ function advPDR(){
   if(ADV_PDR_LOCKED) return null;
   const rate    = parseFloat(document.getElementById('adv_pdr_rate').value) || 0;
   const ship    = parseFloat(document.getElementById('adv_pdr_ship').value) || 0;
-  const damaged = document.getElementById('adv_pdr_damaged').checked;
-  return { rate: rate / 100, ship, damaged };
+  return { rate: rate / 100, ship };
+}
+
+// Shared fraction (0..1) of ANY returned order that comes back damaged and
+// unsellable → lose full product cost. Applies to BOTH pre-delivery (RTO) and
+// post-delivery returns. Lives in the always-on Shipping & Delivery card so it
+// works even when the Post-Delivery Return advanced item is locked.
+function returnDamageFrac(){
+  const el = document.getElementById('i_ret_damaged_pct');
+  const pct = el ? (parseFloat(String(el.value).replace(/,/g,'')) || 0) : 0;
+  return Math.max(0, Math.min(pct, 100)) / 100;
 }
 
 function toggleAdvanced(){
@@ -5323,7 +5325,7 @@ function toggleAdvLock(which){
     const btn    = document.getElementById('adv_pdr_lock');
     const item   = document.getElementById('adv_pdr_item');
     const hint   = document.getElementById('adv_pdr_hint');
-    const fields = ['adv_pdr_rate','adv_pdr_ship','adv_pdr_damaged'];
+    const fields = ['adv_pdr_rate','adv_pdr_ship'];
     if(ADV_PDR_LOCKED){
       btn.textContent = '🔒';
       btn.classList.remove('unlocked');
@@ -5670,18 +5672,22 @@ function calc(){
   const platPerOrder   = (plat + cfGetTotalPerLead()) * leadsPerOrder;
   // Shipping cost per delivered order — commission is NOT a shipping cost; it is shown
   // as its own line in the P&L (moved out of the Shipping analysis tab).
+  // Shared damaged-return loss per returned unit (% of returns that can't be resold)
+  const dmgFrac     = returnDamageFrac();
   const costDel     = fulfillDel + courier + cfCustomPerOrder;
-  const costRet     = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0);
+  // Pre-delivery (RTO) returns: add product-cost loss on the damaged fraction
+  const costRet     = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0) + dmgFrac * cost;
   const effShip     = delR > 0 ? (delR*costDel+(1-delR)*costRet)/delR : costRet;
   const retAbsorbed = effShip-costDel;
   const netShip     = effShip-shipC;
 
   // ── Post-Delivery Return (PDR) ──────────────────────────────────────────
   // pdr.rate = % of delivered orders returned AFTER the customer receives the item
-  // Cost per delivered unit = pdr.rate × (shipCost + optional productCost if damaged)
+  // Cost per delivered unit = pdr.rate × (shipCost + dmgFrac × productCost)
+  // dmgFrac = shared % of returns that come back damaged/unsellable
   const pdr = advPDR();
   const pdrCostPerUnit = pdr
-    ? pdr.rate * (pdr.ship + (pdr.damaged ? cost : 0))
+    ? pdr.rate * (pdr.ship + dmgFrac * cost)
     : 0;
   // Net delivered rate after post-delivery returns
   const netDelR = pdr ? delR * (1 - pdr.rate) : delR;
@@ -6763,15 +6769,16 @@ function _roasInputs(){
   const gatewayPct   = v('i_gateway_fee')/100;
   const commAmt      = price * (commPct + gatewayPct);
   // plat is per-lead, NOT per-delivery — must NOT go into costDel
+  const dmgFrac      = returnDamageFrac();
   const costDel      = fulfillDel + courier + commAmt;
-  const costRet      = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0);
+  const costRet      = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0) + dmgFrac * cost;
   const effShip      = delR > 0 ? (delR*costDel + (1-delR)*costRet)/delR : costRet;
   // platPerOrder: platform fee/lead × leads per delivered order
   const leadsPerOrder = (confR>0&&delR>0) ? 1/(confR*delR) : 0;
   const platPerOrder  = (plat + cfGetTotalPerLead()) * leadsPerOrder;
   // ── PDR support — mirror main calc logic ──────────────────────────────────
   const pdr2 = (typeof advPDR === 'function') ? advPDR() : null;
-  const pdrCostPerUnit = pdr2 ? pdr2.rate * (pdr2.ship + (pdr2.damaged ? cost : 0)) : 0;
+  const pdrCostPerUnit = pdr2 ? pdr2.rate * (pdr2.ship + dmgFrac * cost) : 0;
   const netDelR = pdr2 ? delR * (1 - pdr2.rate) : delR;
   const profitPU     = priceNet - costNet - (effShip - shipCNet) - platPerOrder - pdrCostPerUnit;
   return {price, cost, shipC, priceNet, costNet, shipCNet, salary, confR, delR, netDelR, effShip, profitPU, platPerOrder, pdrCostPerUnit};
@@ -7173,13 +7180,14 @@ function updateSlider(type){
 
   const gatewayPct2 = v('i_gateway_fee')/100;
   const commAmt  = price*(commPct+gatewayPct2);
+  const dmgFracSl = returnDamageFrac();
   const costDel  = fulfillDel+courier+commAmt; // plat is per-lead, not per-delivery
-  const costRet  = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0);
+  const costRet  = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0) + dmgFracSl * cost;
   const effShip  = delR > 0 ? (delR*costDel+(1-delR)*costRet)/delR : costRet;
   const leadsPerOrder2 = (confR>0&&delR>0) ? 1/(confR*delR) : 0;
   const platPerOrder2  = (plat+cfGetTotalPerLead())*leadsPerOrder2;
   const pdrSl = (typeof advPDR==='function') ? advPDR() : null;
-  const pdrCostSl = pdrSl ? pdrSl.rate*(pdrSl.ship+(pdrSl.damaged?cost:0)) : 0;
+  const pdrCostSl = pdrSl ? pdrSl.rate*(pdrSl.ship+dmgFracSl*cost) : 0;
   const profitPU  = priceNet - costNet - (effShip - shipCNet) - platPerOrder2 - pdrCostSl;
 
   // BE CPA = same formula as Ads tab: salary spread over delivered units first
@@ -7338,6 +7346,7 @@ const PRODUCTS = [];
 let ACTIVE_PROD = 0;
 const PROD_COLORS = ['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--red)'];
 const INPUT_IDS = ['i_price','i_cost','i_units','i_ship_c','i_fulfill_del','i_fulfill_ret',
+                   'i_ret_damaged_pct',
                    'i_courier','i_comm','i_gateway_fee','i_plat','i_ads','i_avg_cpp',
                    'i_conf','i_del','i_stock','i_orders_per_cust',
                    'i_buy_interval','i_buy_unit','i_cust_lifespan','i_life_unit'];
@@ -7867,7 +7876,6 @@ function persistSave(){
       advVatVal: document.getElementById('adv_vat') ? document.getElementById('adv_vat').value : '',
       advPdrRate: document.getElementById('adv_pdr_rate') ? document.getElementById('adv_pdr_rate').value : '',
       advPdrShip: document.getElementById('adv_pdr_ship') ? document.getElementById('adv_pdr_ship').value : '',
-      advPdrDamaged: document.getElementById('adv_pdr_damaged') ? document.getElementById('adv_pdr_damaged').checked : false,
       advBundleRows:(()=>{const r=[];document.querySelectorAll('#adv_bundle_list .bundle-card').forEach(card=>{r.push({units:card.querySelector('.b-units')?.value||'2',price:card.querySelector('.b-price')?.value||'',freeShip:card.querySelector('.mini-toggle')?.classList.contains('on')||false,orders:card.querySelector('.b-orders')?.value||''});});return r;})(),
       advCycleDays: document.getElementById('adv_cycle_days')?.value||'',
       advCfDays: document.getElementById('adv_cf_days')?.value||'',
@@ -7930,7 +7938,6 @@ function persistLoad(){
     window.__advVatVal    = state.advVatVal || '';
     window.__advPdrRate   = state.advPdrRate || '';
     window.__advPdrShip   = state.advPdrShip || '';
-    window.__advPdrDamaged= state.advPdrDamaged || false;
 
     // Fixed costs are now business-wide (shared across products). Migrate older
     // per-product saves by falling back to whichever product carried a value.
@@ -7981,13 +7988,14 @@ function _tpInputs(){
   const costNet    = cost  / (1 + vatRate);
   const shipCNet   = shipC / (1 + vatRate);
   const commAmt    = price * (commPct + v('i_gateway_fee')/100);
+  const dmgFracTp  = returnDamageFrac();
   const costDel    = fulfillDel + courier + commAmt;
-  const costRet    = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0);
+  const costRet    = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0) + dmgFracTp * cost;
   const effShip    = delR > 0 ? (delR*costDel + (1-delR)*costRet)/delR : costRet;
   const leadsPerOrderTp = (confR>0&&delR>0) ? 1/(confR*delR) : 0;
   const platPerOrderTp  = (plat+cfGetTotalPerLead()) * leadsPerOrderTp;
   const pdrTp = (typeof advPDR==='function') ? advPDR() : null;
-  const pdrCostTp = pdrTp ? pdrTp.rate*(pdrTp.ship+(pdrTp.damaged?cost:0)) : 0;
+  const pdrCostTp = pdrTp ? pdrTp.rate*(pdrTp.ship+dmgFracTp*cost) : 0;
   const profitPU   = priceNet - costNet - (effShip - shipCNet) - platPerOrderTp - pdrCostTp;
   return {price,cost,shipC,priceNet,costNet,shipCNet,salary,confR,delR,effShip,profitPU};
 }
@@ -8148,8 +8156,10 @@ function calcProductData(data, salaryRawOverride){
   }
 
   const commAmt    = price * (commPct + n('i_gateway_fee')/100); // uses saved product data, not DOM
+  // Damaged-return loss — per-product saved value (not DOM), so the overview is accurate per product
+  const dmgFrac3   = Math.max(0, Math.min(n('i_ret_damaged_pct'), 100)) / 100;
   const costDel    = fulfillDel + courier;                       // shipping only — commission is a separate P&L line (plat is per-lead, not per-delivery)
-  const costRet    = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0);
+  const costRet    = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0) + dmgFrac3 * cost;
   const effShip    = delR > 0 ? (delR*costDel+(1-delR)*costRet)/delR : costRet; // guard: delR=0 safe
   const retAbs     = effShip - costDel;
   const netShip    = effShip - shipC;
@@ -8157,7 +8167,7 @@ function calcProductData(data, salaryRawOverride){
   const platPerOrderEx  = (plat+cfGetTotalPerLead()) * leadsPerOrderEx;
   // PDR — mirror main calc logic
   const pdr3 = (typeof advPDR === 'function') ? advPDR() : null;
-  const pdrCostPerUnit3 = pdr3 ? pdr3.rate * (pdr3.ship + (pdr3.damaged ? cost : 0)) : 0;
+  const pdrCostPerUnit3 = pdr3 ? pdr3.rate * (pdr3.ship + dmgFrac3 * cost) : 0;
   const profitPU   = priceNet - costNet - (effShip - shipCNet) - platPerOrderEx - pdrCostPerUnit3 - commAmt;
   const marginPct  = priceNet > 0 ? (profitPU/priceNet*100) : 0;
   const confNeeded = leadsNeeded * confR;
@@ -8840,6 +8850,9 @@ const T = {
     adv_pdr_rate_lbl:'Return rate (% of delivered)',
     adv_pdr_ship_lbl:'Return shipping cost',
     adv_pdr_damaged_lbl:'Product damaged? (lose product cost)',
+    adv_pdr_damaged_note:'💡 Damaged-product loss is set once in "% of returns damaged" under Shipping & Delivery costs — it applies to these returns too.',
+    lbl_ret_damaged:'% of returns damaged (lose product cost)',
+    tip_ret_damaged:'Of every returned order — whether it failed delivery (RTO) or came back after the customer received it — this percentage can\'t be resold, so you lose the full product cost on it. Applies to both pre-delivery and post-delivery returns. Leave at 0 if all returns come back resellable.',
     tip_ff_ret:'Total cost per returned order — includes courier return trip + return fulfillment fee + any other charges.<br>In Egypt, couriers charge for both legs (delivery + return) even if customer refused.<br>Example: 70 EGP courier + 35 EGP return fulfillment = 105 EGP',
     tip_comm:'Commission % charged on every delivered order — e.g. shipping company or marketplace commission.',
     tip_gateway:'% taken by the payment gateway on every delivered order — e.g. Paymob, Stripe, PayTabs.',
@@ -9132,6 +9145,9 @@ const T = {
     adv_pdr_rate_lbl:'نسبة المرتجع (% من الموصّل)',
     adv_pdr_ship_lbl:'تكلفة شحن المرتجع',
     adv_pdr_damaged_lbl:'المنتج بيتتلف؟ (خسارة تكلفة المنتج)',
+    adv_pdr_damaged_note:'💡 خسارة المنتج التالف بتتحدد مرة واحدة في "% المرتجع التالف" تحت تكاليف الشحن والتوصيل — وبتتطبّق على المرتجعات دي كمان.',
+    lbl_ret_damaged:'% المرتجع التالف (خسارة تكلفة المنتج)',
+    tip_ret_damaged:'من كل أوردر مرتجع — سواء رجع قبل التسليم (RTO) أو رجع بعد ما العميل استلمه — النسبة دي مبتتباعش تاني، فبتخسر تكلفة المنتج كاملة عليها. بتتطبّق على المرتجعات قبل وبعد التسليم. سيبها 0 لو كل المرتجعات بترجع صالحة للبيع.',
     tip_ff_ret:'التكلفة الكلية لكل أوردر مرتجع — شاملة رحلة الكورير للإرجاع + الـ fulfillment fee للمرتجع + أي رسوم تانية.<br>في مصر، شركات الشحن بتحاسبك على الرحلتين (تسليم + إرجاع) حتى لو العميل رفض.<br>مثال: لو الكورير 70 للتسليم + 35 fulfillment للمرتجع = 105 EGP',
     tip_comm:'نسبة عمولة بتتحسب على كل أوردر موصّل — مثال: عمولة شركة شحن أو marketplace.',
     tip_gateway:'نسبة بيأخذها بوابة الدفع على كل أوردر موصّل — مثال: Paymob, Stripe, PayTabs.',
@@ -9591,10 +9607,8 @@ window.addEventListener('load', ()=>{
     // Restore PDR state
     const pdrRate    = document.getElementById('adv_pdr_rate');
     const pdrShip    = document.getElementById('adv_pdr_ship');
-    const pdrDamaged = document.getElementById('adv_pdr_damaged');
     if(pdrRate)    pdrRate.value = window.__advPdrRate || '';
     if(pdrShip)    pdrShip.value = window.__advPdrShip || '';
-    if(pdrDamaged) pdrDamaged.checked = window.__advPdrDamaged || false;
     if(window.__advPdrLocked === false && ADV_PDR_LOCKED === true){
       toggleAdvLock('pdr');
     }
