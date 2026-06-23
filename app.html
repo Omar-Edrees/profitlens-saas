@@ -376,6 +376,21 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
   background:var(--surf3);border:1px solid var(--bdr2);border-radius:0 var(--r) var(--r) 0;
   display:flex;align-items:center;font-size:11px;color:var(--txt3);font-family:var(--mono);
 }
+/* Unit picker that completes the input pill (frequency / lifespan) */
+.f-row select.freq-unit{
+  align-self:stretch;padding:0 6px;white-space:nowrap;
+  background:var(--surf3);border:1px solid var(--bdr2);border-radius:0 var(--r) var(--r) 0;
+  font-size:12px;color:var(--txt2);font-family:var(--mono);
+  outline:none;cursor:pointer;
+}
+.f-row select.freq-unit:focus{border-color:var(--c1)}
+/* Inside the Inputs tab the pill border lives on .f-row::before, so the unit
+   picker must be transparent with just a divider — same treatment as .unit. */
+#s0 .f-row select.freq-unit{
+  background:transparent;border:none;border-radius:0;color:var(--txt2);
+  border-inline-start:1px solid rgba(255,255,255,0.07);
+}
+body[data-theme="light"] #s0 .f-row select.freq-unit{ border-inline-start-color:rgba(15,23,42,0.08); color:var(--txt2); }
 .reset-btn{
   margin-top:20px;padding:9px 20px;background:transparent;
   border:1px solid var(--bdr2);border-radius:var(--r);
@@ -680,8 +695,7 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
   #s1_kpi_row .kpi-lbl{font-size:11px;padding-right:16px}
   #s1_kpi_row .kpi-hint{font-size:10px}
 }
-.kpi-row--edit .kpi{cursor:grab;user-select:none;overflow:visible!important}
-.kpi-row--edit .kpi:active{cursor:grabbing}
+.kpi-row--edit .kpi{user-select:none;overflow:visible!important}
 .kpi-x,.kpi-plus{
   display:none;position:absolute;top:-7px;right:-7px;
   width:20px;height:20px;border-radius:50%;
@@ -692,6 +706,18 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 .kpi-x{background:var(--red);color:#fff}
 .kpi-plus{background:var(--c1);color:var(--surf)}
 .kpi-row--edit .kpi-x{display:block}
+/* Drag handle — the touch-friendly way to reorder (HTML5 drag doesn't fire on touchscreens) */
+.kpi-grip{
+  display:none;position:absolute;top:-7px;left:-7px;
+  width:22px;height:22px;border-radius:50%;
+  align-items:center;justify-content:center;
+  cursor:grab;border:none;z-index:3;padding:0;
+  background:var(--c2);color:#fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.25);
+  touch-action:none;-webkit-user-select:none;user-select:none;
+}
+.kpi-grip:active{cursor:grabbing}
+.kpi-row--edit .kpi-grip{display:flex}
 .kpi.kpi-dragging{opacity:.3;border-style:dashed}
 .kpi.kpi-drop{box-shadow:inset 0 0 0 2px var(--c2)}
 .kpi-pool{
@@ -1935,7 +1961,55 @@ input[type=range]::-moz-range-thumb{
         <div id="uo_units_field" class="f-row"><input type="number" id="i_units" value="1" min="0.1" step="0.1" oninput="dCalc()"><span class="unit">units</span></div>
         <div id="uo_aov_field" class="f-row" style="display:none"><input type="number" id="i_aov" value="" min="0" step="0.1" oninput="uoAovInput()" placeholder="e.g. 600"><span class="unit">EGP</span></div>
       </div>
-      <div class="field"><label data-t="lbl_orders_cust">Avg orders per customer <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_orders_cust">Average number of orders a customer places over their lifetime — drives LTV.<br>Leave at 1 if you do not track repeat purchases.</span></span></label><div class="f-row"><input type="number" id="i_orders_per_cust" value="1" min="1" step="0.1" placeholder="1" oninput="dCalc()"><span class="unit" data-t="unit_orders">orders</span></div></div>
+
+      <!-- Advanced options toggle -->
+      <div style="margin-top:10px">
+        <button onclick="pricingToggleAdv()" id="pricing_adv_btn" style="
+          display:flex;align-items:center;gap:6px;
+          background:var(--surf2);border:1px solid var(--bdr2);border-radius:7px;
+          color:var(--txt3);font-size:11px;cursor:pointer;padding:6px 12px;
+          font-family:inherit;width:100%;transition:all .2s;justify-content:center">
+          <span id="pricing_adv_arrow" style="transition:transform .25s;display:inline-block;font-size:9px">▶</span>
+          <span data-t="adv_title">Advanced options</span>
+        </button>
+      </div>
+
+      <!-- Advanced options panel -->
+      <div id="pricing_adv_panel" style="display:none;margin-top:12px">
+        <!-- How often a customer buys (purchase frequency) -->
+        <div class="field">
+          <label data-t="lbl_buy_freq">How often does a customer buy? <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_buy_freq">How often a returning customer places an order — drives total orders and LTV.</span></span></label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span style="font-size:12px;color:var(--txt3);white-space:nowrap" data-t="lbl_every">every</span>
+            <div class="f-row" style="flex:1;min-width:0">
+              <input type="number" id="i_buy_interval" value="1" min="0.1" step="1" placeholder="1" oninput="ordersFreqRecalc()">
+              <select id="i_buy_unit" class="freq-unit" onchange="ordersFreqRecalc()">
+                <option value="day" data-t="opt_days">days</option>
+                <option value="week" data-t="opt_weeks">weeks</option>
+                <option value="month" selected data-t="opt_months">months</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <!-- How long they stay a customer (lifespan) -->
+        <div class="field">
+          <label data-t="lbl_cust_lifespan">How long do they stay a customer? <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_cust_lifespan">Average time a customer keeps buying from you before they stop.</span></span></label>
+          <div class="f-row" style="min-width:0">
+            <input type="number" id="i_cust_lifespan" value="1" min="0.1" step="1" placeholder="1" oninput="ordersFreqRecalc()">
+            <select id="i_life_unit" class="freq-unit" onchange="ordersFreqRecalc()">
+              <option value="month" selected data-t="opt_months">months</option>
+              <option value="year" data-t="opt_years">years</option>
+            </select>
+          </div>
+        </div>
+        <!-- Derived: lifetime orders per customer → feeds LTV -->
+        <div style="margin-top:8px;padding:9px 11px;border-radius:8px;background:var(--surf2);border:1px solid var(--bdr2);display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <span style="font-size:11px;color:var(--txt3)" data-t="lbl_orders_derived">Orders per customer (lifetime)</span>
+          <span style="font-family:var(--mono);font-weight:700;font-size:13px;color:var(--c1)"><span id="orders_derived_val">1</span> <span data-t="unit_orders">orders</span></span>
+        </div>
+        <!-- Canonical value consumed by the calc (derived from the two inputs above) -->
+        <input type="hidden" id="i_orders_per_cust" value="1">
+      </div>
     </div>
 
     <div class="input-card">
@@ -3064,12 +3138,10 @@ input[type=range]::-moz-range-thumb{
             </div>
           </div>
           <div>
-            <div style="font-size:11px;color:var(--txt2);margin-bottom:4px" data-t="adv_pdr_damaged_lbl">Product damaged? (lose product cost)</div>
-            <div style="display:flex;align-items:center;gap:8px;height:34px">
-              <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--txt2)">
-                <input type="checkbox" id="adv_pdr_damaged" disabled onchange="dCalc()" style="width:15px;height:15px;cursor:pointer;accent-color:var(--red)">
-                Yes
-              </label>
+            <div style="font-size:11px;color:var(--txt2);margin-bottom:4px" data-t="lbl_ret_damaged">% of returns damaged (lose product cost) <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_ret_damaged">Of every returned order — whether it failed delivery (RTO) or came back after the customer received it — this percentage can't be resold, so you lose the full product cost on it. Applies to both pre-delivery and post-delivery returns. Leave at 0 if all returns come back resellable.</span></span></div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <input type="number" id="adv_pdr_damaged_pct" placeholder="e.g. 10" min="0" max="100" step="1" disabled oninput="dCalc()" style="flex:1;height:34px;padding:0 10px;background:var(--surf2);border:1px solid var(--bdr2);border-radius:var(--r);color:var(--txt);font-family:var(--mono);font-size:13px;outline:none">
+              <span style="color:var(--txt3);font-size:12px;font-family:var(--mono)">%</span>
             </div>
           </div>
         </div>
@@ -3366,6 +3438,44 @@ input[type=range]::-moz-range-thumb{
       <span class="alert-icon">✓</span><span id="tp_msg">—</span>
     </div>
     </div><!-- /tp_body -->
+  </div>
+
+  <!-- Reality Check Simulator — actuals → am I profitable right now? -->
+  <div class="target-profit-card" id="rc_card">
+    <div class="target-profit-title" onclick="toggleSection('rc_body','rc_toggle','rc_toggle_lbl')">
+      <div class="target-profit-title-left"><span class="tp-icon" style="--ic:#34D399"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span> <span data-t="rc_title">Reality check — am I profitable now?</span></div>
+      <div class="scenario-toggle">
+        <span id="rc_toggle_lbl">Show</span>
+        <div class="toggle-track" id="rc_toggle"><div class="toggle-thumb"></div></div>
+      </div>
+    </div>
+    <div class="collapsible-body" id="rc_body">
+      <div data-t="rc_sub" style="font-size:12px;color:var(--txt3);margin-bottom:12px;line-height:1.5">Enter what actually happened — the leads you got and their CPA — and see right away whether you are winning. Product economics and rates come from your inputs.</div>
+      <!-- Actual inputs -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="field" style="margin:0">
+          <label style="font-size:11px;margin:0 0 4px;color:var(--c1);display:block" data-t="rc_leads_lbl">Leads I got from ads</label>
+          <div class="f-row"><input type="number" id="rc_leads" min="0" placeholder="e.g. 100" oninput="rcRecalc()"><span class="unit" data-t="unit_leads">leads</span></div>
+        </div>
+        <div class="field" style="margin:0">
+          <label style="font-size:11px;margin:0 0 4px;color:var(--c1);display:block" data-t="rc_cpa_lbl">CPA per lead (what I paid)</label>
+          <div class="f-row"><input type="number" id="rc_cpa" min="0" placeholder="e.g. 45" oninput="rcRecalc()"><span class="unit">EGP</span></div>
+        </div>
+      </div>
+      <!-- Results -->
+      <div class="target-profit-results">
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_nettotal_lbl">Net total profit</div><div class="tp-kpi-val" id="rc_net_total" style="color:var(--profit)">—</div><div class="tp-kpi-sub" data-t="rc_nettotal_sub">After all costs incl. fixed</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_beffix_lbl">Profit before fixed costs</div><div class="tp-kpi-val" id="rc_profit_beffix" style="color:var(--c3)">—</div><div class="tp-kpi-sub" data-t="rc_beffix_sub">After ads, before fixed</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_becpa_lbl">Break-even CPA</div><div class="tp-kpi-val" id="rc_becpa" style="color:var(--c2)">—</div><div class="tp-kpi-sub" id="rc_becpa_sub">—</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_aroas_lbl">Actual ROAS</div><div class="tp-kpi-val" id="rc_aroas" style="color:var(--c1)">—</div><div class="tp-kpi-sub" data-t="hint_roas_rev">Revenue ÷ ad spend</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="rc_beroas_lbl">Break-even ROAS</div><div class="tp-kpi-val" id="rc_beroas" style="color:var(--c2)">—</div><div class="tp-kpi-sub" data-t="hint_be_min">Min to break even</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="kpi_delivered">Delivered orders</div><div class="tp-kpi-val" id="rc_delivered" style="color:var(--c1)">—</div><div class="tp-kpi-sub" data-t="rc_funnel_sub">After Conf% × Del%</div></div>
+      </div>
+      <!-- Verdict -->
+      <div id="rc_verdict" class="alert ag" style="margin-top:12px;display:none">
+        <span class="alert-icon" id="rc_verdict_icon">✓</span><span id="rc_verdict_msg">—</span>
+      </div>
+    </div>
   </div>
 
   <!-- ROAS Target Simulator — 4-scenario lock system -->
@@ -4057,6 +4167,10 @@ input[type=range]::-moz-range-thumb{
           <div style="font-size:11px;color:var(--muted-2);margin-bottom:4px" data-t="ov_ad_cost_order">Ad cost / order</div>
           <div class="pl-num" id="ov_ad_per_order" style="font-size:16px;font-weight:700;color:var(--text)">—</div>
         </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted-2);margin-bottom:4px" data-t="ov_be_orders_lbl">Break-even orders</div>
+          <div class="pl-num" id="ov_be_orders" style="font-size:16px;font-weight:700;color:var(--text)">—</div>
+        </div>
       </div>
       <!-- hidden IDs required by JS -->
       <div style="display:none"><span id="ov_be_cpa">—</span><span id="ov_be_roas">—</span></div>
@@ -4245,10 +4359,11 @@ function mbToggleAdvanced(){
   const open  = panel.style.display === 'none';
   panel.style.display = open ? 'block' : 'none';
   arrow.style.transform = open ? 'rotate(90deg)' : '';
-  // Dim basic fields when advanced is open — only budget & CPA are overridden
-  // by the advanced planner. Target delivered stock stays editable (it always
-  // feeds the calc regardless of advanced mode).
-  const basicFields = ['i_ads','i_avg_cpp'];
+  // Dim basic fields when advanced is open — budget, CPA *and* target stock are
+  // all overridden by the advanced planner: it derives its own orders, which
+  // replace i_stock (see calc: `if(advOrders > 0) stock = advOrders`). Dimming +
+  // disabling them signals they're ignored while Advanced drives the numbers.
+  const basicFields = ['i_ads','i_avg_cpp','i_stock'];
   basicFields.forEach(id => {
     const el = document.getElementById(id);
     if(!el) return;
@@ -4961,6 +5076,81 @@ function fcToggleAdv(){
   arrow.style.transform = open ? 'rotate(90deg)' : '';
 }
 
+// Pricing card → Advanced options (holds Avg orders per customer)
+function pricingToggleAdv(){
+  const panel = document.getElementById('pricing_adv_panel');
+  const arrow = document.getElementById('pricing_adv_arrow');
+  if(!panel) return;
+  const open = panel.style.display === 'none';
+  panel.style.display = open ? 'block' : 'none';
+  if(arrow) arrow.style.transform = open ? 'rotate(90deg)' : '';
+}
+
+// Auto-reveal the Pricing → Advanced panel when a non-default value is present
+// (e.g. restored from a saved product) so the value is never hidden from view.
+function pricingSyncAdv(){
+  const el = document.getElementById('i_orders_per_cust');
+  const panel = document.getElementById('pricing_adv_panel');
+  if(!el || !panel) return;
+  const val = parseFloat(String(el.value).replace(/,/g,''));
+  if(!isNaN(val) && val !== 1 && panel.style.display === 'none'){
+    panel.style.display = 'block';
+    const arrow = document.getElementById('pricing_adv_arrow');
+    if(arrow) arrow.style.transform = 'rotate(90deg)';
+  }
+}
+
+// ── Avg orders per customer = purchase frequency × customer lifespan ──────────
+// "Buys every X (day/week/month)" and "stays Y (month/year)" are both converted
+// to months; lifespan ÷ interval gives the lifetime order count that feeds LTV.
+// Written into the hidden #i_orders_per_cust so the calc stays untouched.
+const MONTH_IN_DAYS  = 30.44;   // avg days per month
+const MONTH_IN_WEEKS = 4.345;   // avg weeks per month
+function ordersFreqRecalc(){
+  const interval = v('i_buy_interval');
+  const iUnit = (document.getElementById('i_buy_unit')  || {}).value || 'month';
+  const life  = v('i_cust_lifespan');
+  const lUnit = (document.getElementById('i_life_unit') || {}).value || 'month';
+  let intervalMonths = interval;
+  if(iUnit === 'day')       intervalMonths = interval / MONTH_IN_DAYS;
+  else if(iUnit === 'week') intervalMonths = interval / MONTH_IN_WEEKS;
+  const lifeMonths = (lUnit === 'year') ? life * 12 : life;
+  let orders = (intervalMonths > 0) ? (lifeMonths / intervalMonths) : 1;
+  // Floor at 1: every acquired customer made at least their first order.
+  if(!isFinite(orders) || orders < 1) orders = 1;
+  orders = Math.round(orders * 100) / 100;
+  const hidden = document.getElementById('i_orders_per_cust');
+  if(hidden) hidden.value = orders;
+  const disp = document.getElementById('orders_derived_val');
+  if(disp) disp.textContent = (orders % 1 === 0) ? String(orders) : orders.toFixed(1);
+  if(typeof dCalc === 'function') dCalc();
+}
+
+// Restore/repair the frequency fields on product load. Older saves only carry a
+// flat #i_orders_per_cust — rebuild an "every 1 month for N months" view from it
+// so nothing is lost, then recompute the derived value.
+function ordersInitFreqFields(){
+  const interval = document.getElementById('i_buy_interval');
+  const iUnit    = document.getElementById('i_buy_unit');
+  const life     = document.getElementById('i_cust_lifespan');
+  const lUnit    = document.getElementById('i_life_unit');
+  const opc      = document.getElementById('i_orders_per_cust');
+  if(!interval || !life) return;
+  const hasFreq = interval.value !== '' && iUnit && iUnit.value !== '';
+  if(!hasFreq){
+    const legacy = parseFloat(String((opc && opc.value) || '').replace(/,/g,''));
+    interval.value = '1';
+    if(iUnit) iUnit.value = 'month';
+    life.value = (!isNaN(legacy) && legacy > 0) ? String(Math.round(legacy * 100) / 100) : '1';
+    if(lUnit) lUnit.value = 'month';
+  } else {
+    if(iUnit && !['day','week','month'].includes(iUnit.value)) iUnit.value = 'month';
+    if(lUnit && !['month','year'].includes(lUnit.value))       lUnit.value = 'month';
+    if(life.value === '') life.value = '1';
+  }
+  ordersFreqRecalc();
+}
+
 function fcSetMode(mode){
   FC_MODE = mode;
   document.getElementById('fc_preset_panel').style.display = mode === 'preset' ? 'block' : 'none';
@@ -5078,8 +5268,18 @@ function advPDR(){
   if(ADV_PDR_LOCKED) return null;
   const rate    = parseFloat(document.getElementById('adv_pdr_rate').value) || 0;
   const ship    = parseFloat(document.getElementById('adv_pdr_ship').value) || 0;
-  const damaged = document.getElementById('adv_pdr_damaged').checked;
-  return { rate: rate / 100, ship, damaged };
+  return { rate: rate / 100, ship };
+}
+
+// Shared fraction (0..1) of ANY returned order that comes back damaged and
+// unsellable → lose full product cost. Applies to BOTH pre-delivery (RTO) and
+// post-delivery returns. Lives inside the Post-Delivery Return advanced card,
+// so — by design — it only applies while that card is unlocked.
+function returnDamageFrac(){
+  if(ADV_PDR_LOCKED) return 0;
+  const el = document.getElementById('adv_pdr_damaged_pct');
+  const pct = el ? (parseFloat(String(el.value).replace(/,/g,'')) || 0) : 0;
+  return Math.max(0, Math.min(pct, 100)) / 100;
 }
 
 function toggleAdvanced(){
@@ -5142,7 +5342,7 @@ function toggleAdvLock(which){
     const btn    = document.getElementById('adv_pdr_lock');
     const item   = document.getElementById('adv_pdr_item');
     const hint   = document.getElementById('adv_pdr_hint');
-    const fields = ['adv_pdr_rate','adv_pdr_ship','adv_pdr_damaged'];
+    const fields = ['adv_pdr_rate','adv_pdr_ship','adv_pdr_damaged_pct'];
     if(ADV_PDR_LOCKED){
       btn.textContent = '🔒';
       btn.classList.remove('unlocked');
@@ -5489,18 +5689,22 @@ function calc(){
   const platPerOrder   = (plat + cfGetTotalPerLead()) * leadsPerOrder;
   // Shipping cost per delivered order — commission is NOT a shipping cost; it is shown
   // as its own line in the P&L (moved out of the Shipping analysis tab).
+  // Shared damaged-return loss per returned unit (% of returns that can't be resold)
+  const dmgFrac     = returnDamageFrac();
   const costDel     = fulfillDel + courier + cfCustomPerOrder;
-  const costRet     = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0);
+  // Pre-delivery (RTO) returns: add product-cost loss on the damaged fraction
+  const costRet     = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0) + dmgFrac * cost;
   const effShip     = delR > 0 ? (delR*costDel+(1-delR)*costRet)/delR : costRet;
   const retAbsorbed = effShip-costDel;
   const netShip     = effShip-shipC;
 
   // ── Post-Delivery Return (PDR) ──────────────────────────────────────────
   // pdr.rate = % of delivered orders returned AFTER the customer receives the item
-  // Cost per delivered unit = pdr.rate × (shipCost + optional productCost if damaged)
+  // Cost per delivered unit = pdr.rate × (shipCost + dmgFrac × productCost)
+  // dmgFrac = shared % of returns that come back damaged/unsellable
   const pdr = advPDR();
   const pdrCostPerUnit = pdr
-    ? pdr.rate * (pdr.ship + (pdr.damaged ? cost : 0))
+    ? pdr.rate * (pdr.ship + dmgFrac * cost)
     : 0;
   // Net delivered rate after post-delivery returns
   const netDelR = pdr ? delR * (1 - pdr.rate) : delR;
@@ -5547,10 +5751,12 @@ function calc(){
   window.LAST_BE_CPA   = beCPP; // expose for Min Orders mode
   window.LAST_PROFIT_PU = profitPU; // profit per delivered unit
   window.LAST_PRICE_NET = priceNet;  // net revenue per unit
+  window.LAST_SHIPC_NET = shipCNet;  // net shipping charged per unit (for Reality Check sim)
 
   // Break-even ROAS (full business)
   // Correct formula: ROAS = (price+shipC) × confR × delR / CPP  (beCPP is cost per lead)
   const beROAS = beCPP > 0 ? (price + shipC) * confR * delR / beCPP : 0;
+  window.LAST_BE_ROAS = beROAS;  // expose for Reality Check sim
 
   const adOk    = actualCPP <= beCPP && beCPP > 0;
   const adsAdOk = adOk;
@@ -5898,6 +6104,7 @@ function calc(){
   set('ov_be_roas',    beROAS>0 ? (Math.round(beROAS*100)/100).toFixed(1)+'x' : '—');
   set('ov_orders',     Math.round(delivNeeded).toLocaleString('en')+' units');
   set('ov_ad_per_order', adPerOrder>0 ? eg(adPerOrder) : '—');
+  set('ov_be_orders',  isFinite(beUnits) ? Math.ceil(beUnits).toLocaleString('en')+' units' : '—');
 
   // CPA gauge — fill = actual ÷ break-even (the red tick at 100% marks break-even)
   {
@@ -5970,6 +6177,8 @@ function calc(){
   calcTargetProfit();
   // update ROAS simulator
   simResolve();
+  // update Reality Check simulator
+  if(typeof rcRecalc === 'function') rcRecalc();
 
   // auto-save to localStorage
   saveCurrentProduct();
@@ -6577,15 +6786,16 @@ function _roasInputs(){
   const gatewayPct   = v('i_gateway_fee')/100;
   const commAmt      = price * (commPct + gatewayPct);
   // plat is per-lead, NOT per-delivery — must NOT go into costDel
+  const dmgFrac      = returnDamageFrac();
   const costDel      = fulfillDel + courier + commAmt;
-  const costRet      = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0);
+  const costRet      = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0) + dmgFrac * cost;
   const effShip      = delR > 0 ? (delR*costDel + (1-delR)*costRet)/delR : costRet;
   // platPerOrder: platform fee/lead × leads per delivered order
   const leadsPerOrder = (confR>0&&delR>0) ? 1/(confR*delR) : 0;
   const platPerOrder  = (plat + cfGetTotalPerLead()) * leadsPerOrder;
   // ── PDR support — mirror main calc logic ──────────────────────────────────
   const pdr2 = (typeof advPDR === 'function') ? advPDR() : null;
-  const pdrCostPerUnit = pdr2 ? pdr2.rate * (pdr2.ship + (pdr2.damaged ? cost : 0)) : 0;
+  const pdrCostPerUnit = pdr2 ? pdr2.rate * (pdr2.ship + dmgFrac * cost) : 0;
   const netDelR = pdr2 ? delR * (1 - pdr2.rate) : delR;
   const profitPU     = priceNet - costNet - (effShip - shipCNet) - platPerOrder - pdrCostPerUnit;
   return {price, cost, shipC, priceNet, costNet, shipCNet, salary, confR, delR, netDelR, effShip, profitPU, platPerOrder, pdrCostPerUnit};
@@ -6775,6 +6985,75 @@ function simResolve(){
 
 const dSimResolve = debounce(() => simResolve(), 150);
 
+// ── Reality Check Simulator ───────────────────────────────────────────────
+// "I got N leads at CPA X — am I profitable right now?" Reuses the live product
+// economics (LAST_PROFIT_PU etc.) and the product's Conf%/Del%. Shows both the
+// contribution profit (before monthly fixed costs) and the net after fixed costs.
+function rcRecalc(){
+  const card = document.getElementById('rc_card');
+  if(!card) return;
+  const leads = v('rc_leads');
+  const cpa   = v('rc_cpa');
+  const confR = (v('i_conf') || 0) / 100;
+  const delR  = (v('i_del')  || 0) / 100;
+  const profitPU = window.LAST_PROFIT_PU || 0;   // profit per delivered order (before ad & fixed)
+  const beCpaFull = window.LAST_BE_CPA   || 0;   // full break-even CPA per lead (incl fixed)
+  const Tn = T[LANG];
+
+  const adSpend     = leads * cpa;
+  const delivered   = leads * confR * delR;
+  const grossProfit = delivered * profitPU;          // before ads, before fixed
+  const netContribution = grossProfit - adSpend;     // profit before fixed costs
+  const salary = (v('i_salary') || 0) * advDurMonths();
+  const netAfterFixed = netContribution - salary;    // net total profit (after fixed)
+  const price = v('i_price'), shipC = v('i_ship_c');
+  const actualROAS = adSpend > 0 ? (price + shipC) * delivered / adSpend : 0;
+  const beROAS = window.LAST_BE_ROAS || 0;
+  const roasOk = beROAS > 0 && actualROAS >= beROAS;
+
+  const has = leads > 0 && cpa > 0 && profitPU !== 0;
+  const money = n => (n < 0 ? '-' : '') + Math.round(Math.abs(n)).toLocaleString('en') + ' ' + CURRENCY;
+  const r2 = x => (Math.round(x * 100) / 100).toFixed(2) + '×';
+  const setv = (id, val, color) => { const el = document.getElementById(id); if(el){ el.textContent = val; if(color !== undefined) el.style.color = color; } };
+
+  setv('rc_net_total',     has ? (netAfterFixed >= 0 ? '+' : '') + money(netAfterFixed) : '—', netAfterFixed >= 0 ? 'var(--profit)' : 'var(--red)');
+  setv('rc_profit_beffix', has ? (netContribution >= 0 ? '+' : '') + money(netContribution) : '—', netContribution >= 0 ? 'var(--c3)' : 'var(--red)');
+  setv('rc_becpa',         (has && beCpaFull > 0) ? money(beCpaFull) : '—');
+  { const sub = document.getElementById('rc_becpa_sub');
+    if(sub){
+      sub.textContent = has ? ((Tn.rc_yours || 'yours') + ': ' + money(cpa)) : '—';
+      sub.style.color = (has && beCpaFull > 0 && cpa > beCpaFull) ? 'var(--red)' : 'var(--txt3)';
+    } }
+  setv('rc_aroas',         (has && actualROAS > 0) ? r2(actualROAS) : '—', (has && actualROAS > 0) ? (roasOk ? 'var(--c3)' : 'var(--red)') : undefined);
+  setv('rc_beroas',        beROAS > 0 ? r2(beROAS) : '—');
+  setv('rc_delivered',     has ? Math.round(delivered).toLocaleString('en') : '—');
+
+  // Verdict — 3 states: losing / contribution-positive-but-fixed-eats-it / winning
+  const verdict = document.getElementById('rc_verdict');
+  const icon = document.getElementById('rc_verdict_icon');
+  const msg  = document.getElementById('rc_verdict_msg');
+  if(!verdict) return;
+  if(!has){ verdict.style.display = 'none'; return; }
+  verdict.style.display = 'flex';
+  verdict.style.background = ''; verdict.style.border = ''; verdict.style.color = '';   // clear inline overrides
+  if(netContribution < 0){
+    verdict.className = 'alert ar';
+    icon.textContent = '✖';
+    msg.textContent = (Tn.rc_v_loss || 'Losing') + ' ' + money(Math.abs(netContribution)) + ' — ' + (Tn.rc_v_loss2 || 'your CPA is above break-even, every order loses money.');
+  } else if(netAfterFixed < 0){
+    verdict.className = 'alert';
+    verdict.style.background = 'rgba(251,191,36,.08)';
+    verdict.style.border = '1px solid rgba(251,191,36,.28)';
+    verdict.style.color = '#FBBF24';
+    icon.textContent = '⚠️';
+    msg.textContent = (Tn.rc_v_warn || 'Orders are profitable') + ' (+' + money(netContribution) + ') ' + (Tn.rc_v_warn2 || 'but monthly fixed costs make the month negative') + ' (' + money(netAfterFixed) + ').';
+  } else {
+    verdict.className = 'alert ag';
+    icon.textContent = '✓';
+    msg.textContent = (Tn.rc_v_win || 'Winning!') + ' +' + money(netContribution) + ' ' + (Tn.rc_v_win2 || 'after ads') + (salary > 0 ? (' • ' + (Tn.rc_v_win3 || 'after fixed costs') + ': +' + money(netAfterFixed)) : '') + '.';
+  }
+}
+
 // ── TARGET ROAS أو Revenue اتغيّر ──
 function calcRoas(){ simResolve(); }
 
@@ -6918,13 +7197,14 @@ function updateSlider(type){
 
   const gatewayPct2 = v('i_gateway_fee')/100;
   const commAmt  = price*(commPct+gatewayPct2);
+  const dmgFracSl = returnDamageFrac();
   const costDel  = fulfillDel+courier+commAmt; // plat is per-lead, not per-delivery
-  const costRet  = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0);
+  const costRet  = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0) + dmgFracSl * cost;
   const effShip  = delR > 0 ? (delR*costDel+(1-delR)*costRet)/delR : costRet;
   const leadsPerOrder2 = (confR>0&&delR>0) ? 1/(confR*delR) : 0;
   const platPerOrder2  = (plat+cfGetTotalPerLead())*leadsPerOrder2;
   const pdrSl = (typeof advPDR==='function') ? advPDR() : null;
-  const pdrCostSl = pdrSl ? pdrSl.rate*(pdrSl.ship+(pdrSl.damaged?cost:0)) : 0;
+  const pdrCostSl = pdrSl ? pdrSl.rate*(pdrSl.ship+dmgFracSl*cost) : 0;
   const profitPU  = priceNet - costNet - (effShip - shipCNet) - platPerOrder2 - pdrCostSl;
 
   // BE CPA = same formula as Ads tab: salary spread over delivered units first
@@ -7084,7 +7364,8 @@ let ACTIVE_PROD = 0;
 const PROD_COLORS = ['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--red)'];
 const INPUT_IDS = ['i_price','i_cost','i_units','i_ship_c','i_fulfill_del','i_fulfill_ret',
                    'i_courier','i_comm','i_gateway_fee','i_plat','i_ads','i_avg_cpp',
-                   'i_conf','i_del','i_stock','i_orders_per_cust'];
+                   'i_conf','i_del','i_stock','i_orders_per_cust',
+                   'i_buy_interval','i_buy_unit','i_cust_lifespan','i_life_unit'];
 
 function saveCurrentProduct(){
   if(PRODUCTS.length === 0) return;
@@ -7105,6 +7386,8 @@ function loadProduct(idx){
     if(el) el.value = pdata[id] !== undefined ? pdata[id] : '';
   });
   if(typeof reformatThousands === 'function') reformatThousands();
+  if(typeof ordersInitFreqFields === 'function') ordersInitFreqFields();
+  if(typeof pricingSyncAdv === 'function') pricingSyncAdv();
   calc();
 }
 
@@ -7142,7 +7425,7 @@ function renderProdTabs(){
     </button>` : '') +
     // individual product tabs
     PRODUCTS.map((p, i) => `
-    <button class="prod-tab ${!SHOW_ALL_PRODUCTS && i===ACTIVE_PROD?'active':''}" onclick="switchProduct(${i})">
+    <button class="prod-tab ${!SHOW_ALL_PRODUCTS && i===ACTIVE_PROD?'active':''}" data-prod-idx="${i}" onclick="switchProduct(${i})">
       <span class="pt-dot" style="background:${PROD_COLORS[i%PROD_COLORS.length]}"></span>
       <span class="pt-name">${escapeHtml(p.name)}</span>
       ${PRODUCTS.length > 1 ? `<span class="pt-del" onclick="event.stopPropagation();deleteProduct(${i})">×</span>` : ''}
@@ -7158,18 +7441,20 @@ function renderProdTabs(){
 
   // Right-click context menu + long press (mobile) for rename
   let _lpTimer = null;
-  document.querySelectorAll('.prod-tab').forEach((tab, i) => {
+  document.querySelectorAll('.prod-tab').forEach(tab => {
     const nameEl = tab.querySelector('.pt-name');
-    if(!nameEl) return;
+    if(!nameEl) return;                         // skips the "All Products" tab (no .pt-name)
+    const idx = parseInt(tab.dataset.prodIdx, 10);
+    if(isNaN(idx)) return;                       // real product index, not the NodeList position
     // Right-click → rename
     tab.addEventListener('contextmenu', e => {
       e.preventDefault();
       e.stopPropagation();
-      showRenameMenu(e.clientX, e.clientY, nameEl, i);
+      showRenameMenu(e.clientX, e.clientY, nameEl, idx);
     });
     // Long press (mobile)
     tab.addEventListener('touchstart', e => {
-      _lpTimer = setTimeout(() => { showRenameMenu(null, null, nameEl, i); }, 600);
+      _lpTimer = setTimeout(() => { showRenameMenu(null, null, nameEl, idx); }, 600);
     }, {passive:true});
     tab.addEventListener('touchend',  () => clearTimeout(_lpTimer));
     tab.addEventListener('touchmove', () => clearTimeout(_lpTimer));
@@ -7609,7 +7894,7 @@ function persistSave(){
       advVatVal: document.getElementById('adv_vat') ? document.getElementById('adv_vat').value : '',
       advPdrRate: document.getElementById('adv_pdr_rate') ? document.getElementById('adv_pdr_rate').value : '',
       advPdrShip: document.getElementById('adv_pdr_ship') ? document.getElementById('adv_pdr_ship').value : '',
-      advPdrDamaged: document.getElementById('adv_pdr_damaged') ? document.getElementById('adv_pdr_damaged').checked : false,
+      advPdrDamagedPct: document.getElementById('adv_pdr_damaged_pct') ? document.getElementById('adv_pdr_damaged_pct').value : '',
       advBundleRows:(()=>{const r=[];document.querySelectorAll('#adv_bundle_list .bundle-card').forEach(card=>{r.push({units:card.querySelector('.b-units')?.value||'2',price:card.querySelector('.b-price')?.value||'',freeShip:card.querySelector('.mini-toggle')?.classList.contains('on')||false,orders:card.querySelector('.b-orders')?.value||''});});return r;})(),
       advCycleDays: document.getElementById('adv_cycle_days')?.value||'',
       advCfDays: document.getElementById('adv_cf_days')?.value||'',
@@ -7672,7 +7957,7 @@ function persistLoad(){
     window.__advVatVal    = state.advVatVal || '';
     window.__advPdrRate   = state.advPdrRate || '';
     window.__advPdrShip   = state.advPdrShip || '';
-    window.__advPdrDamaged= state.advPdrDamaged || false;
+    window.__advPdrDamagedPct = state.advPdrDamagedPct || '';
 
     // Fixed costs are now business-wide (shared across products). Migrate older
     // per-product saves by falling back to whichever product carried a value.
@@ -7723,13 +8008,14 @@ function _tpInputs(){
   const costNet    = cost  / (1 + vatRate);
   const shipCNet   = shipC / (1 + vatRate);
   const commAmt    = price * (commPct + v('i_gateway_fee')/100);
+  const dmgFracTp  = returnDamageFrac();
   const costDel    = fulfillDel + courier + commAmt;
-  const costRet    = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0);
+  const costRet    = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0) + dmgFracTp * cost;
   const effShip    = delR > 0 ? (delR*costDel + (1-delR)*costRet)/delR : costRet;
   const leadsPerOrderTp = (confR>0&&delR>0) ? 1/(confR*delR) : 0;
   const platPerOrderTp  = (plat+cfGetTotalPerLead()) * leadsPerOrderTp;
   const pdrTp = (typeof advPDR==='function') ? advPDR() : null;
-  const pdrCostTp = pdrTp ? pdrTp.rate*(pdrTp.ship+(pdrTp.damaged?cost:0)) : 0;
+  const pdrCostTp = pdrTp ? pdrTp.rate*(pdrTp.ship+dmgFracTp*cost) : 0;
   const profitPU   = priceNet - costNet - (effShip - shipCNet) - platPerOrderTp - pdrCostTp;
   return {price,cost,shipC,priceNet,costNet,shipCNet,salary,confR,delR,effShip,profitPU};
 }
@@ -7890,8 +8176,10 @@ function calcProductData(data, salaryRawOverride){
   }
 
   const commAmt    = price * (commPct + n('i_gateway_fee')/100); // uses saved product data, not DOM
+  // Damaged-return loss — lives in the PDR card (global, DOM), mirroring how PDR rate/ship are read here
+  const dmgFrac3   = (typeof returnDamageFrac === 'function') ? returnDamageFrac() : 0;
   const costDel    = fulfillDel + courier;                       // shipping only — commission is a separate P&L line (plat is per-lead, not per-delivery)
-  const costRet    = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0);
+  const costRet    = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0) + dmgFrac3 * cost;
   const effShip    = delR > 0 ? (delR*costDel+(1-delR)*costRet)/delR : costRet; // guard: delR=0 safe
   const retAbs     = effShip - costDel;
   const netShip    = effShip - shipC;
@@ -7899,7 +8187,7 @@ function calcProductData(data, salaryRawOverride){
   const platPerOrderEx  = (plat+cfGetTotalPerLead()) * leadsPerOrderEx;
   // PDR — mirror main calc logic
   const pdr3 = (typeof advPDR === 'function') ? advPDR() : null;
-  const pdrCostPerUnit3 = pdr3 ? pdr3.rate * (pdr3.ship + (pdr3.damaged ? cost : 0)) : 0;
+  const pdrCostPerUnit3 = pdr3 ? pdr3.rate * (pdr3.ship + dmgFrac3 * cost) : 0;
   const profitPU   = priceNet - costNet - (effShip - shipCNet) - platPerOrderEx - pdrCostPerUnit3 - commAmt;
   const marginPct  = priceNet > 0 ? (profitPU/priceNet*100) : 0;
   const confNeeded = leadsNeeded * confR;
@@ -8508,6 +8796,28 @@ const T = {
     ff_hint_pack:'You pack each order yourself — counted on every shipped order (deliveries and returns).',
     lbl_orders_cust:'Avg orders per customer', unit_orders:'orders',
     tip_orders_cust:'Average number of orders a customer places over their lifetime — drives LTV.<br>Leave at 1 if you do not track repeat purchases.',
+    lbl_buy_freq:'How often does a customer buy?', lbl_every:'every',
+    lbl_cust_lifespan:'How long do they stay a customer?',
+    lbl_orders_derived:'Orders per customer (lifetime)',
+    opt_days:'days', opt_weeks:'weeks', opt_months:'months', opt_years:'years',
+    tip_buy_freq:'How often a returning customer places an order — drives total orders and LTV.',
+    tip_cust_lifespan:'Average time a customer keeps buying from you before they stop.',
+    rc_title:'Reality check — am I profitable now?',
+    rc_sub:'Enter what actually happened — the leads you got and their CPA — and see right away whether you are winning. Product economics and rates come from your inputs.',
+    rc_leads_lbl:'Leads I got from ads', rc_cpa_lbl:'CPA per lead (what I paid)', unit_leads:'leads',
+    rc_spend_lbl:'Ad spend', rc_spend_sub:'Leads × CPA', rc_funnel_sub:'After Conf% × Del%',
+    rc_rev_lbl:'Revenue', rc_rev_sub:'Total incl. shipping',
+    rc_gross_lbl:'Profit before ads', rc_gross_sub:'Delivered × profit/order',
+    rc_net_lbl:'Net profit', rc_net_sub:'After ad spend',
+    rc_margin_lbl:'Profit margin', rc_margin_sub:'Net ÷ Revenue',
+    rc_becpa_lbl:'Break-even CPA', rc_netfix_lbl:'Net after fixed costs', rc_netfix_sub:'Minus monthly fixed',
+    rc_nettotal_lbl:'Net total profit', rc_nettotal_sub:'After all costs incl. fixed',
+    rc_beffix_lbl:'Profit before fixed costs', rc_beffix_sub:'After ads, before fixed',
+    rc_aroas_lbl:'Actual ROAS', rc_beroas_lbl:'Break-even ROAS',
+    rc_yours:'yours',
+    rc_v_win:'Winning!', rc_v_win2:'after ads', rc_v_win3:'after fixed costs',
+    rc_v_warn:'Orders are profitable', rc_v_warn2:'but monthly fixed costs make the month negative',
+    rc_v_loss:'Losing', rc_v_loss2:'your CPA is above break-even, every order loses money.',
     kpi_cac:'CAC', hint_cac:'Ad cost per customer',
     tip_cac:'Customer Acquisition Cost — ad spend to acquire one paying (delivered) customer.<br>= Ad budget ÷ Delivered orders',
     kpi_ltv:'LTV', hint_ltv:'Net profit × repeat',
@@ -8560,6 +8870,8 @@ const T = {
     adv_pdr_rate_lbl:'Return rate (% of delivered)',
     adv_pdr_ship_lbl:'Return shipping cost',
     adv_pdr_damaged_lbl:'Product damaged? (lose product cost)',
+    lbl_ret_damaged:'% of returns damaged (lose product cost)',
+    tip_ret_damaged:'Of every returned order — whether it failed delivery (RTO) or came back after the customer received it — this percentage can\'t be resold, so you lose the full product cost on it. Applies to both pre-delivery and post-delivery returns. Leave at 0 if all returns come back resellable.',
     tip_ff_ret:'Total cost per returned order — includes courier return trip + return fulfillment fee + any other charges.<br>In Egypt, couriers charge for both legs (delivery + return) even if customer refused.<br>Example: 70 EGP courier + 35 EGP return fulfillment = 105 EGP',
     tip_comm:'Commission % charged on every delivered order — e.g. shipping company or marketplace commission.',
     tip_gateway:'% taken by the payment gateway on every delivered order — e.g. Paymob, Stripe, PayTabs.',
@@ -8652,7 +8964,7 @@ const T = {
     ap_of:'of', ap_products_profitable:'products profitable',
     blended_cpa_hint:'→ Blended CPA: ',
     excel_profitable:'Profitable', excel_loss:'Loss',
-    hide_card:'Hide card', show_card:'Show card',
+    hide_card:'Hide card', show_card:'Show card', drag_card:'Drag to reorder',
     enter_market_cpa:'Enter Market CPA',
     income_tag:'Income', fixed_tag:'Fixed', variable_tag:'Variable', tax_tag:'Tax',
     pl_salary:'Fixed cost',
@@ -8685,7 +8997,7 @@ const T = {
     ov_total_margin_lbl:'Total margin', ov_margin_pu_lbl:'Margin / unit', ov_net_pu_lbl:'Net / unit',
     ov_cm_lbl:'Contribution Margin', ov_cm_cap:'Before fixed costs', ov_margin_word:'margin',
     ov_rev_prod_lbl:'Product revenue', ov_rev_ship_lbl:'Shipping collected',
-    ov_ad_cost_order:'Ad cost / order', ov_total_orders_lbl:'Total orders',
+    ov_ad_cost_order:'Ad cost / order', ov_total_orders_lbl:'Total orders', ov_be_orders_lbl:'Break-even orders',
     ov_total_leads_lbl:'Total leads', ov_total_delivered_lbl:'Total delivered',
     lbl_plat_lead:'Platform fee / lead',
     sl_del_lbl:'Delivery rate', sl_conf_lbl:'Confirmation rate',
@@ -8713,6 +9025,7 @@ const T = {
     roas_margin_lbl:'Profit margin', roas_after_costs_lbl:'after all costs',
     kpi_done:'✓ Done', kpi_customize:'⊞ Customize',
     kpi_showing:'Showing {0} of {1} cards',
+    kpi_reorder_hint:'Drag the handle (top-left of each card) to reorder',
     plat_fee_hint:'(enter Conf% and Del% to calculate Platform fee)',
     m_net_del_lbl:'▸ Net delivered (after returns): ',
     adv_override_hint:'Overridden by Advanced options',
@@ -8778,6 +9091,28 @@ const T = {
     ff_hint_pack:'بتغلّف كل أوردر بنفسك — بتتحسب على كل أوردر طالع شحن (المتوصّل والمرتجع كمان).',
     lbl_orders_cust:'متوسط أوردرات العميل', unit_orders:'أوردر',
     tip_orders_cust:'متوسط عدد الأوردرات اللي العميل بيعملها طول تعامله معاك — بيحدد الـ LTV.<br>سيبه 1 لو مش بتتبع الشراء المتكرر.',
+    lbl_buy_freq:'العميل بيشتري كل قد إيه؟', lbl_every:'كل',
+    lbl_cust_lifespan:'بيفضل عميل لمدة قد إيه؟',
+    lbl_orders_derived:'عدد أوردرات العميل خلال فترة تعامله',
+    opt_days:'يوم', opt_weeks:'أسبوع', opt_months:'شهر', opt_years:'سنة',
+    tip_buy_freq:'كل قد إيه العميل الراجع بيعمل أوردر — بيحدّد إجمالي الأوردرات والـ LTV.',
+    tip_cust_lifespan:'متوسط المدة اللي العميل يفضل فيها بيشتري منك قبل ما يبطّل.',
+    rc_title:'فحص الواقع — أنا رابح دلوقتي؟',
+    rc_sub:'دخّل اللي حصل فعلًا — الليدز اللي جبتها والـ CPA بتاعها — وشوف على طول إنت كسبان ولا لأ. أرقام المنتج والنسب بتتسحب من الإنبوتس.',
+    rc_leads_lbl:'الليدز اللي جبتها من الإعلانات', rc_cpa_lbl:'الـ CPA لكل ليد (اللي دفعته)', unit_leads:'ليد',
+    rc_spend_lbl:'الإنفاق الإعلاني', rc_spend_sub:'ليدز × CPA', rc_funnel_sub:'بعد Conf% × Del%',
+    rc_rev_lbl:'الإيراد', rc_rev_sub:'الإجمالي شامل الشحن',
+    rc_gross_lbl:'الربح قبل الإعلان', rc_gross_sub:'متوصّل × ربح/أوردر',
+    rc_net_lbl:'صافي الربح', rc_net_sub:'بعد الإنفاق الإعلاني',
+    rc_margin_lbl:'هامش الربح', rc_margin_sub:'الصافي ÷ الإيراد',
+    rc_becpa_lbl:'CPA التعادل', rc_netfix_lbl:'الصافي بعد المصاريف الثابتة', rc_netfix_sub:'ناقص الثابتة الشهرية',
+    rc_nettotal_lbl:'صافي الربح الكلي', rc_nettotal_sub:'بعد كل التكاليف شامل الثابتة',
+    rc_beffix_lbl:'الربح قبل المصاريف الثابتة', rc_beffix_sub:'بعد الإعلان، قبل الثابتة',
+    rc_aroas_lbl:'الـ ROAS الفعلي', rc_beroas_lbl:'ROAS التعادل',
+    rc_yours:'بتاعك',
+    rc_v_win:'كسبان! 🎉', rc_v_win2:'بعد الإعلان', rc_v_win3:'بعد المصاريف الثابتة',
+    rc_v_warn:'الأوردرات نفسها رابحة', rc_v_warn2:'بس المصاريف الشهرية الثابتة بتخلّي الشهر خسران',
+    rc_v_loss:'خسران', rc_v_loss2:'الـ CPA بتاعك فوق حد التعادل، كل أوردر بيخسر.',
     kpi_cac:'CAC', hint_cac:'تكلفة إعلان للعميل',
     tip_cac:'تكلفة اكتساب العميل — مصاريف الإعلان لجذب عميل واحد دافع (موصّل).<br>= ميزانية الإعلانات ÷ الأوردرات الموصّلة',
     kpi_ltv:'LTV', hint_ltv:'ربح صافي × تكرار',
@@ -8830,6 +9165,8 @@ const T = {
     adv_pdr_rate_lbl:'نسبة المرتجع (% من الموصّل)',
     adv_pdr_ship_lbl:'تكلفة شحن المرتجع',
     adv_pdr_damaged_lbl:'المنتج بيتتلف؟ (خسارة تكلفة المنتج)',
+    lbl_ret_damaged:'% المرتجع التالف (خسارة تكلفة المنتج)',
+    tip_ret_damaged:'من كل أوردر مرتجع — سواء رجع قبل التسليم (RTO) أو رجع بعد ما العميل استلمه — النسبة دي مبتتباعش تاني، فبتخسر تكلفة المنتج كاملة عليها. بتتطبّق على المرتجعات قبل وبعد التسليم. سيبها 0 لو كل المرتجعات بترجع صالحة للبيع.',
     tip_ff_ret:'التكلفة الكلية لكل أوردر مرتجع — شاملة رحلة الكورير للإرجاع + الـ fulfillment fee للمرتجع + أي رسوم تانية.<br>في مصر، شركات الشحن بتحاسبك على الرحلتين (تسليم + إرجاع) حتى لو العميل رفض.<br>مثال: لو الكورير 70 للتسليم + 35 fulfillment للمرتجع = 105 EGP',
     tip_comm:'نسبة عمولة بتتحسب على كل أوردر موصّل — مثال: عمولة شركة شحن أو marketplace.',
     tip_gateway:'نسبة بيأخذها بوابة الدفع على كل أوردر موصّل — مثال: Paymob, Stripe, PayTabs.',
@@ -8922,7 +9259,7 @@ const T = {
     ap_of:'من', ap_products_profitable:'منتج رابح',
     blended_cpa_hint:'→ Blended CPA: ',
     excel_profitable:'رابح', excel_loss:'خسارة',
-    hide_card:'إخفاء', show_card:'إظهار',
+    hide_card:'إخفاء', show_card:'إظهار', drag_card:'اسحب لإعادة الترتيب',
     enter_market_cpa:'أدخل Market CPA',
     income_tag:'دخل', fixed_tag:'ثابت', variable_tag:'متغير', tax_tag:'ضريبة',
     pl_salary:'التكلفة الثابتة',
@@ -8955,7 +9292,7 @@ const T = {
     ov_total_margin_lbl:'إجمالي الهامش', ov_margin_pu_lbl:'الهامش / وحدة', ov_net_pu_lbl:'صافي / وحدة',
     ov_cm_lbl:'هامش المساهمة', ov_cm_cap:'قبل التكاليف الثابتة', ov_margin_word:'هامش',
     ov_rev_prod_lbl:'إيراد المنتج', ov_rev_ship_lbl:'الشحن المُحصّل',
-    ov_ad_cost_order:'تكلفة الإعلان / أوردر', ov_total_orders_lbl:'إجمالي الأوردرات',
+    ov_ad_cost_order:'تكلفة الإعلان / أوردر', ov_total_orders_lbl:'إجمالي الأوردرات', ov_be_orders_lbl:'أوردرات التعادل',
     ov_total_leads_lbl:'إجمالي الليدز', ov_total_delivered_lbl:'إجمالي الموصّلات',
     lbl_plat_lead:'رسوم المنصة / ليد',
     sl_del_lbl:'نسبة التوصيل', sl_conf_lbl:'نسبة التأكيد',
@@ -8983,6 +9320,7 @@ const T = {
     roas_margin_lbl:'هامش الربح', roas_after_costs_lbl:'بعد كل التكاليف',
     kpi_done:'✓ تم', kpi_customize:'⊞ تخصيص',
     kpi_showing:'عرض {0} من {1} بطاقات',
+    kpi_reorder_hint:'اسحب المقبض (فوق على شمال كل بطاقة) لإعادة الترتيب',
     plat_fee_hint:'(أدخل % التأكيد و% التوصيل لحساب رسوم المنصة)',
     m_net_del_lbl:'▸ صافي الموصّل (بعد المرتجعات): ',
     adv_override_hint:'مُلغى بواسطة الخيارات المتقدمة',
@@ -9289,10 +9627,10 @@ window.addEventListener('load', ()=>{
     // Restore PDR state
     const pdrRate    = document.getElementById('adv_pdr_rate');
     const pdrShip    = document.getElementById('adv_pdr_ship');
-    const pdrDamaged = document.getElementById('adv_pdr_damaged');
+    const pdrDmg     = document.getElementById('adv_pdr_damaged_pct');
     if(pdrRate)    pdrRate.value = window.__advPdrRate || '';
     if(pdrShip)    pdrShip.value = window.__advPdrShip || '';
-    if(pdrDamaged) pdrDamaged.checked = window.__advPdrDamaged || false;
+    if(pdrDmg)     pdrDmg.value  = window.__advPdrDamagedPct || '';
     if(window.__advPdrLocked === false && ADV_PDR_LOCKED === true){
       toggleAdvLock('pdr');
     }
@@ -9407,7 +9745,11 @@ function toggleRevShipping(){
   function updateInfo(){
     const v=cards().length, h=poolCards().length;
     const el=document.getElementById('kpi_cbar_info');
-    if(el) el.textContent=h>0?tfmt('kpi_showing',v,(v+h)):'';
+    if(el){
+      const count = h>0 ? tfmt('kpi_showing',v,(v+h)) : '';
+      // While editing, surface how to reorder — the touch drag handle isn't obvious otherwise
+      el.textContent = editing ? ((T[LANG].kpi_reorder_hint||'Drag the handle to reorder') + (count ? ' • '+count : '')) : count;
+    }
     const p=pool();
     if(p) p.classList.toggle('show', h>0&&editing);
   }
@@ -9419,7 +9761,6 @@ function toggleRevShipping(){
     r.classList.toggle('kpi-row--edit', editing);
     if(btn){btn.classList.toggle('on',editing);btn.textContent=editing?T[LANG].kpi_done:T[LANG].kpi_customize;}
     if(p) p.classList.toggle('show', editing&&poolCards().length>0);
-    cards().forEach(c=>c.setAttribute('draggable',editing?'true':'false'));
     if(!editing) save();
   };
 
@@ -9435,19 +9776,43 @@ function toggleRevShipping(){
     if(c&&r){r.appendChild(c);if(!poolCards().length)p.classList.remove('show');save();}
   };
 
-  function onDragStart(e){dragCard=this;this.classList.add('kpi-dragging');e.dataTransfer.effectAllowed='move';}
-  function onDragOver(e){e.preventDefault();e.dataTransfer.dropEffect='move';this.classList.add('kpi-drop');}
-  function onDragLeave(){this.classList.remove('kpi-drop');}
-  function onDrop(e){
-    e.preventDefault();this.classList.remove('kpi-drop');
-    if(!dragCard||dragCard===this) return;
-    const r=row(), all=[...r.querySelectorAll('.kpi[data-kid]')];
-    const si=all.indexOf(dragCard), ti=all.indexOf(this);
-    if(si<ti) r.insertBefore(dragCard,this.nextSibling);
-    else r.insertBefore(dragCard,this);
+  // ── Reordering via Pointer Events — one code path for mouse + touch.
+  // HTML5 drag is mouse-only, and iOS turns draggable=true into its own native
+  // drag that hijacks the gesture. Pointer events + setPointerCapture avoid all
+  // that. Dragging is driven from the handle (.kpi-grip, touch-action:none); the
+  // card body stays free to scroll.
+  function gripPointerDown(e){
+    if(!editing) return;
+    e.preventDefault();
+    dragCard=this.closest('.kpi[data-kid]');
+    if(!dragCard) return;
+    dragCard.classList.add('kpi-dragging');
+    try{ this.setPointerCapture(e.pointerId); }catch(_){}
+  }
+  function gripPointerMove(e){
+    if(!dragCard) return;
+    e.preventDefault();
+    // edge auto-scroll so long lists remain reachable on a small screen
+    const vh=window.innerHeight||document.documentElement.clientHeight;
+    if(e.clientY<70)         window.scrollBy(0,-10);
+    else if(e.clientY>vh-70) window.scrollBy(0,10);
+    const el=document.elementFromPoint(e.clientX,e.clientY);
+    const target=el?el.closest('.kpi[data-kid]'):null;
+    if(!target||target===dragCard) return;
+    const r=row(); if(!r||target.parentNode!==r) return;   // reorder only within the visible row
+    const all=[...r.querySelectorAll('.kpi[data-kid]')];
+    const si=all.indexOf(dragCard), ti=all.indexOf(target);
+    if(si<0||ti<0) return;
+    if(si<ti) r.insertBefore(dragCard,target.nextSibling);
+    else      r.insertBefore(dragCard,target);
+  }
+  function gripPointerUp(e){
+    if(!dragCard) return;
+    dragCard.classList.remove('kpi-dragging');
+    dragCard=null;
+    try{ this.releasePointerCapture(e.pointerId); }catch(_){}
     save();
   }
-  function onDragEnd(){this.classList.remove('kpi-dragging');document.querySelectorAll('.kpi-drop').forEach(c=>c.classList.remove('kpi-drop'));}
 
   function initCard(c,kid){
     c.dataset.kid=kid;
@@ -9459,11 +9824,15 @@ function toggleRevShipping(){
     plus.className='kpi-plus';plus.textContent='+';plus.title=T[LANG].show_card;
     plus.onclick=e=>{e.stopPropagation();kpiShow(kid);};
     c.appendChild(plus);
-    c.addEventListener('dragstart',onDragStart);
-    c.addEventListener('dragover',onDragOver);
-    c.addEventListener('dragleave',onDragLeave);
-    c.addEventListener('drop',onDrop);
-    c.addEventListener('dragend',onDragEnd);
+    // Drag handle for touch reordering
+    const grip=document.createElement('button');
+    grip.className='kpi-grip';grip.title=T[LANG].drag_card||'Drag to reorder';
+    grip.innerHTML='<svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><circle cx="5" cy="3" r="1.5"/><circle cx="11" cy="3" r="1.5"/><circle cx="5" cy="8" r="1.5"/><circle cx="11" cy="8" r="1.5"/><circle cx="5" cy="13" r="1.5"/><circle cx="11" cy="13" r="1.5"/></svg>';
+    c.appendChild(grip);
+    grip.addEventListener('pointerdown',gripPointerDown);
+    grip.addEventListener('pointermove',gripPointerMove);
+    grip.addEventListener('pointerup',gripPointerUp);
+    grip.addEventListener('pointercancel',gripPointerUp);
   }
 
   function init(){
