@@ -78,7 +78,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   details p { margin: 0 0 18px; font-size: 14px; line-height: 1.9; color: #9BA6B4; }
 
   /* whatsapp floating */
-  .wa-float { position: fixed; bottom: 22px; left: 22px; z-index: 60; display: flex; align-items: center; gap: 10px; padding: 13px 18px; border-radius: 999px; background: linear-gradient(140deg, #34D399, #10B981); color: #052E16; font-weight: 700; font-size: 14px; box-shadow: 0 12px 34px -8px rgba(16,185,129,0.7); animation: pl-float 3.5s ease-in-out infinite; }
+  .wa-float { position: fixed; bottom: 22px; left: 22px; z-index: 60; display: flex; align-items: center; gap: 10px; padding: 13px 18px; border-radius: 999px; background: linear-gradient(140deg, #34D399, #10B981); color: #052E16; font-weight: 700; font-size: 14px; box-shadow: 0 12px 34px -8px rgba(16,185,129,0.7); animation: pl-float 3.5s ease-in-out infinite; opacity: 0; pointer-events: none; transform: translateY(12px); transition: opacity .35s ease, transform .35s ease; }
+  .wa-float.wa-visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
   .wa-float:hover { filter: brightness(1.05); }
 
   /* mockup */
@@ -411,7 +412,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </section>
 
 <!-- ===== OFFER ===== -->
-<section class="section">
+<section id="offer-section" class="section">
   <div class="wrap" style="max-width: 720px;">
     <div style="position: relative; overflow:hidden; border-radius: 24px; padding: 1.5px; background: linear-gradient(160deg, #818CF8, #6366F1 40%, rgba(99,102,241,0.25) 60%, #38BDF8); box-shadow: 0 40px 90px -40px rgba(99,102,241,0.6);">
       <div style="border-radius: 23px; padding: 44px 40px; background: linear-gradient(180deg, #12161D, #0C0F15); text-align:center;">
@@ -537,6 +538,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   });
 
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ===== Show WA float when offer section enters viewport =====
+  (function(){
+    var offerEl = document.getElementById('offer-section');
+    var waEl    = document.getElementById('wa-floating');
+    if (!offerEl || !waEl) return;
+    var observer = new IntersectionObserver(function(entries){
+      if (entries[0].isIntersecting) {
+        waEl.classList.add('wa-visible');
+      }
+    }, { threshold: 0.1 });
+    observer.observe(offerEl);
+  })();
 </script>
 
 </body>
