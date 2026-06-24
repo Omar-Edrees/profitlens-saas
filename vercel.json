@@ -15,7 +15,7 @@
         { "key": "Cross-Origin-Resource-Policy", "value": "same-origin" },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://*.supabase.io; frame-ancestors 'none'; object-src 'none'; base-uri 'self';"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net https://analytics.tiktok.com https://*.tiktok.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co https://*.supabase.io https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://stats.g.doubleclick.net https://www.facebook.com https://connect.facebook.net https://analytics.tiktok.com https://*.tiktok.com https://www.google.com https://googleads.g.doubleclick.net https://*.g.doubleclick.net; frame-src 'self' https://www.googletagmanager.com https://td.doubleclick.net https://www.facebook.com https://*.tiktok.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self';"
         }
       ]
     },
@@ -34,6 +34,7 @@
     { "src": "/app",              "dest": "/app.html" },
     { "src": "/admin",            "dest": "/admin.html" },
     { "src": "/pricing",          "dest": "/pricing.html" },
+    { "src": "/lp",               "dest": "/lp.html" },
     { "src": "/",                 "dest": "/index.html" }
   ]
 }
