@@ -1934,12 +1934,12 @@ input[type=range]::-moz-range-thumb{
   <div id="all_products_panel" style="display:none">
     <div class="master-ov" style="margin-bottom:20px">
       <div class="rank-title" style="margin-bottom:12px">
-        <span>Products ranked by Total Net Profit</span>
+        <span data-t="ap_ranked_by">Products ranked by Total Net Profit</span>
         <span class="rank-sep"></span>
         <span id="ap_prod_count" class="master-ov-badge">— products</span>
       </div>
       <div id="ap_ranking_wrap">
-        <div class="master-empty">Please enter at least one product.</div>
+        <div class="master-empty" data-t="master_empty">Please enter at least one product.</div>
       </div>
     </div>
   </div>
@@ -1954,11 +1954,11 @@ input[type=range]::-moz-range-thumb{
       <div class="field">
         <div class="mb-io-head">
           <div class="mb-io-seg">
-            <button type="button" id="uo_seg_units" class="mb-io-seg-btn active" onclick="uoSetMode('units')">Avg units / order</button>
+            <button type="button" id="uo_seg_units" class="mb-io-seg-btn active" data-t="cf_seg_units" onclick="uoSetMode('units')">Avg units / order</button>
             <button type="button" id="uo_seg_aov" class="mb-io-seg-btn" onclick="uoSetMode('aov')">AOV</button>
           </div>
         </div>
-        <div id="uo_units_field" class="f-row"><input type="number" id="i_units" value="1" min="0.1" step="0.1" oninput="dCalc()"><span class="unit">units</span></div>
+        <div id="uo_units_field" class="f-row"><input type="number" id="i_units" value="1" min="0.1" step="0.1" oninput="dCalc()"><span class="unit" data-t="unit_units_word">units</span></div>
         <div id="uo_aov_field" class="f-row" style="display:none"><input type="number" id="i_aov" value="" min="0" step="0.1" oninput="uoAovInput()" placeholder="e.g. 600"><span class="unit">EGP</span></div>
       </div>
 
@@ -2072,12 +2072,12 @@ input[type=range]::-moz-range-thumb{
       <!-- Custom fees -->
       <div style="border-top:1px solid var(--bdr2);margin:12px 0 8px"></div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <span style="font-size:11px;color:var(--txt3);font-weight:600;letter-spacing:.04em">CUSTOM FEES</span>
-        <button onclick="cfAddRow()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px dashed var(--bdr2);background:transparent;color:var(--c2);cursor:pointer;font-family:inherit">+ Add fee</button>
+        <span style="font-size:11px;color:var(--txt3);font-weight:600;letter-spacing:.04em" data-t="cf_custom_fees">CUSTOM FEES</span>
+        <button onclick="cfAddRow()" style="font-size:11px;padding:3px 10px;border-radius:6px;border:1px dashed var(--bdr2);background:transparent;color:var(--c2);cursor:pointer;font-family:inherit"><span data-t="cf_add_fee">+ Add fee</span></button>
       </div>
       <div id="cf_custom_rows"></div>
       <div id="cf_total_row" style="margin-top:10px;padding-top:8px;border-top:1px solid var(--bdr2);display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:11px;font-weight:600;color:var(--txt2)">Total fees per order (all-in)</span>
+        <span style="font-size:11px;font-weight:600;color:var(--txt2)" data-t="cf_total_label">Total fees per order (all-in)</span>
         <span id="cf_total_val" style="color:var(--c3);font-weight:700;font-size:13px">0.0 EGP</span>
       </div>
     </div>
@@ -2088,15 +2088,15 @@ input[type=range]::-moz-range-thumb{
       <!-- Target stock (moved above budget/CPA) -->
       <div class="field" id="stock_basic_field">
         <label data-t="lbl_stock">Target delivered stock</label>
-        <div class="f-row"><input type="number" id="i_stock" value="" oninput="dCalc()" placeholder="e.g. 500"><span class="unit">units</span></div>
+        <div class="f-row"><input type="number" id="i_stock" value="" oninput="dCalc()" placeholder="e.g. 500"><span class="unit" data-t="unit_units_word">units</span></div>
       </div>
 
       <!-- Ad spend — Total Budget / CPP per order (toggle = UI only, no calc change) -->
       <div class="field" style="margin-top:28px">
         <div class="mb-io-head">
           <div class="mb-io-seg">
-            <button type="button" id="mbio_seg_cpa" class="mb-io-seg-btn" onclick="mbSetInputMode('cpa')">CPA / Order</button>
-            <button type="button" id="mbio_seg_budget" class="mb-io-seg-btn active" onclick="mbSetInputMode('budget')">Total Budget</button>
+            <button type="button" id="mbio_seg_cpa" class="mb-io-seg-btn" data-t="mb_seg_cpa_order" onclick="mbSetInputMode('cpa')">CPA / Order</button>
+            <button type="button" id="mbio_seg_budget" class="mb-io-seg-btn active" data-t="mb_seg_total_budget" onclick="mbSetInputMode('budget')">Total Budget</button>
           </div>
         </div>
 
@@ -2132,7 +2132,7 @@ input[type=range]::-moz-range-thumb{
 
         <!-- Mode selector -->
         <div style="margin-bottom:14px">
-          <div style="font-size:10px;font-weight:700;letter-spacing:.07em;color:var(--txt3);text-transform:uppercase;margin-bottom:8px">How do you plan your campaigns?</div>
+          <div style="font-size:10px;font-weight:700;letter-spacing:.07em;color:var(--txt3);text-transform:uppercase;margin-bottom:8px" data-t="mb_plan_q">How do you plan your campaigns?</div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
             <button onclick="mbSetMode('alloc')" id="mb_mode_alloc" class="mb-mode-btn mb-mode-active" style="
               padding:8px 4px;border-radius:8px;border:1px solid var(--c2);
@@ -2141,7 +2141,7 @@ input[type=range]::-moz-range-thumb{
               display:flex;flex-direction:column;align-items:center;gap:4px;
               transition:all .2s;line-height:1.3;text-align:center">
               <span style="font-size:18px">📐</span>
-              <span>% Allocation<br>→ Budget</span>
+              <span><span data-t="mb_seg_alloc">% Allocation</span><br><span data-t="mb_seg_to_budget">→ Budget</span></span>
             </button>
             <button onclick="mbSetMode('pro')" id="mb_mode_pro" class="mb-mode-btn" style="
               padding:8px 4px;border-radius:8px;border:1px solid var(--bdr2);
@@ -2150,7 +2150,7 @@ input[type=range]::-moz-range-thumb{
               display:flex;flex-direction:column;align-items:center;gap:4px;
               transition:all .2s;line-height:1.3;text-align:center">
               <span style="font-size:18px">📊</span>
-              <span>Per-Channel<br>CPA</span>
+              <span><span data-t="mb_seg_perch">Per-Channel</span><br>CPA</span>
             </button>
             <button onclick="mbSetMode('minorders')" id="mb_mode_minorders" class="mb-mode-btn" style="
               padding:8px 4px;border-radius:8px;border:1px solid var(--bdr2);
@@ -2159,7 +2159,7 @@ input[type=range]::-moz-range-thumb{
               display:flex;flex-direction:column;align-items:center;gap:4px;
               transition:all .2s;line-height:1.3;text-align:center">
               <span style="font-size:18px">🎯</span>
-              <span>Min Orders<br>→ Budget</span>
+              <span><span data-t="mb_min_orders">Min Orders</span><br><span data-t="mb_seg_to_budget">→ Budget</span></span>
             </button>
           </div>
         </div>
@@ -2167,16 +2167,16 @@ input[type=range]::-moz-range-thumb{
                 <!-- MODE: ALLOC -->
         <div id="mb_panel_alloc">
           <div class="field" style="margin-bottom:12px">
-            <label style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);display:block;margin-bottom:5px">Total ad budget</label>
+            <label style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);display:block;margin-bottom:5px" data-t="mb_total_ad_budget">Total ad budget</label>
             <div class="f-row"><input type="number" id="mb_alloc_budget" placeholder="e.g. 70000" min="0" oninput="mbAllocRecalc()" style="font-size:14px;font-weight:700"><span class="unit">EGP</span></div>
           </div>
           <div class="field" style="margin-bottom:12px">
-            <label style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);display:block;margin-bottom:5px">Target CPA efficiency <span class="tip"><span class="tip-icon">?</span><span class="tip-box">How aggressively you plan to buy, relative to your break-even CPA.<br>Lower % = safer (bigger margin); higher % = more aggressive (closer to break-even).<br>Default 70% keeps a 30% safety margin.</span></span></label>
+            <label style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);display:block;margin-bottom:5px"><span data-t="mb_target_cpa_eff">Target CPA efficiency</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_cpa_eff_target">How aggressively you plan to buy, relative to your break-even CPA.<br>Lower % = safer (bigger margin); higher % = more aggressive (closer to break-even).<br>Default 70% keeps a 30% safety margin.</span></span></label>
             <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
               <div class="mb-io-seg">
-                <button type="button" class="mb-io-seg-btn mb-alloc-preset" data-pct="90" onclick="mbSetAllocTarget(90)">Aggressive</button>
-                <button type="button" class="mb-io-seg-btn mb-alloc-preset active" data-pct="70" onclick="mbSetAllocTarget(70)">Realistic</button>
-                <button type="button" class="mb-io-seg-btn mb-alloc-preset" data-pct="55" onclick="mbSetAllocTarget(55)">Safe</button>
+                <button type="button" class="mb-io-seg-btn mb-alloc-preset" data-pct="90" data-t="mb_preset_aggressive" onclick="mbSetAllocTarget(90)">Aggressive</button>
+                <button type="button" class="mb-io-seg-btn mb-alloc-preset active" data-pct="70" data-t="mb_preset_realistic" onclick="mbSetAllocTarget(70)">Realistic</button>
+                <button type="button" class="mb-io-seg-btn mb-alloc-preset" data-pct="55" data-t="mb_preset_safe" onclick="mbSetAllocTarget(55)">Safe</button>
               </div>
               <div class="f-row" style="max-width:120px"><input type="number" id="mb_alloc_target_pct" value="70" min="10" max="100" step="5" oninput="mbAllocTargetInput()"><span class="unit">% of BE</span></div>
             </div>
@@ -2188,48 +2188,48 @@ input[type=range]::-moz-range-thumb{
               </div>
               <div class="mb-card-inputs">
                 <div class="mb-card-inp-group">
-                  <label>% Allocation</label>
+                  <label data-t="mb_pct_alloc">% Allocation</label>
                   <div class="f-row"><input type="number" placeholder="%" min="0" max="100" class="mb-alloc-pct" oninput="mbAllocRecalc()"><span class="unit">%</span></div>
                 </div>
               </div>
               <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
-                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+                <span style="font-size:9px">▶</span> <span data-t="mb_custom_rates">Custom Conf% / Del% rates</span>
               </button>
               <div class="mb-rates-panel">
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Conf %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_conf_pct">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Del %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_del_pct">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                 </div>
               </div>
               <div class="mb-card-results">
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Budget</span>
+                  <span class="mb-card-result-label" data-t="mb_res_budget">Budget</span>
                   <span class="mb-card-result-val val-budget mb-alloc-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Target CPA</span>
+                  <span class="mb-card-result-label" data-t="mb_res_target_cpa">Target CPA</span>
                   <span class="mb-card-result-val val-cpa mb-alloc-cpa">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Leads</span>
+                  <span class="mb-card-result-label" data-t="mb_res_leads">Leads</span>
                   <span class="mb-card-result-val val-leads mb-alloc-leads">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Orders</span>
+                  <span class="mb-card-result-label" data-t="mb_res_orders">Orders</span>
                   <span class="mb-card-result-val val-orders mb-alloc-orders">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Net Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_net">Net Profit</span>
                   <span class="mb-card-result-val mb-alloc-netprofit" style="color:var(--profit)">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Margin Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_margin">Margin Profit</span>
                   <span class="mb-card-result-val mb-alloc-margin" style="color:var(--c3)">—</span>
                 </div>
               </div>
@@ -2240,48 +2240,48 @@ input[type=range]::-moz-range-thumb{
               </div>
               <div class="mb-card-inputs">
                 <div class="mb-card-inp-group">
-                  <label>% Allocation</label>
+                  <label data-t="mb_pct_alloc">% Allocation</label>
                   <div class="f-row"><input type="number" placeholder="%" min="0" max="100" class="mb-alloc-pct" oninput="mbAllocRecalc()"><span class="unit">%</span></div>
                 </div>
               </div>
               <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
-                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+                <span style="font-size:9px">▶</span> <span data-t="mb_custom_rates">Custom Conf% / Del% rates</span>
               </button>
               <div class="mb-rates-panel">
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Conf %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_conf_pct">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Del %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_del_pct">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                 </div>
               </div>
               <div class="mb-card-results">
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Budget</span>
+                  <span class="mb-card-result-label" data-t="mb_res_budget">Budget</span>
                   <span class="mb-card-result-val val-budget mb-alloc-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Target CPA</span>
+                  <span class="mb-card-result-label" data-t="mb_res_target_cpa">Target CPA</span>
                   <span class="mb-card-result-val val-cpa mb-alloc-cpa">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Leads</span>
+                  <span class="mb-card-result-label" data-t="mb_res_leads">Leads</span>
                   <span class="mb-card-result-val val-leads mb-alloc-leads">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Orders</span>
+                  <span class="mb-card-result-label" data-t="mb_res_orders">Orders</span>
                   <span class="mb-card-result-val val-orders mb-alloc-orders">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Net Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_net">Net Profit</span>
                   <span class="mb-card-result-val mb-alloc-netprofit" style="color:var(--profit)">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Margin Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_margin">Margin Profit</span>
                   <span class="mb-card-result-val mb-alloc-margin" style="color:var(--c3)">—</span>
                 </div>
               </div>
@@ -2292,48 +2292,48 @@ input[type=range]::-moz-range-thumb{
               </div>
               <div class="mb-card-inputs">
                 <div class="mb-card-inp-group">
-                  <label>% Allocation</label>
+                  <label data-t="mb_pct_alloc">% Allocation</label>
                   <div class="f-row"><input type="number" placeholder="%" min="0" max="100" class="mb-alloc-pct" oninput="mbAllocRecalc()"><span class="unit">%</span></div>
                 </div>
               </div>
               <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
-                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+                <span style="font-size:9px">▶</span> <span data-t="mb_custom_rates">Custom Conf% / Del% rates</span>
               </button>
               <div class="mb-rates-panel">
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Conf %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_conf_pct">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Del %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_del_pct">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                 </div>
               </div>
               <div class="mb-card-results">
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Budget</span>
+                  <span class="mb-card-result-label" data-t="mb_res_budget">Budget</span>
                   <span class="mb-card-result-val val-budget mb-alloc-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Target CPA</span>
+                  <span class="mb-card-result-label" data-t="mb_res_target_cpa">Target CPA</span>
                   <span class="mb-card-result-val val-cpa mb-alloc-cpa">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Leads</span>
+                  <span class="mb-card-result-label" data-t="mb_res_leads">Leads</span>
                   <span class="mb-card-result-val val-leads mb-alloc-leads">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Orders</span>
+                  <span class="mb-card-result-label" data-t="mb_res_orders">Orders</span>
                   <span class="mb-card-result-val val-orders mb-alloc-orders">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Net Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_net">Net Profit</span>
                   <span class="mb-card-result-val mb-alloc-netprofit" style="color:var(--profit)">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Margin Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_margin">Margin Profit</span>
                   <span class="mb-card-result-val mb-alloc-margin" style="color:var(--c3)">—</span>
                 </div>
               </div>
@@ -2344,73 +2344,73 @@ input[type=range]::-moz-range-thumb{
               </div>
               <div class="mb-card-inputs">
                 <div class="mb-card-inp-group">
-                  <label>% Allocation</label>
+                  <label data-t="mb_pct_alloc">% Allocation</label>
                   <div class="f-row"><input type="number" placeholder="%" min="0" max="100" class="mb-alloc-pct" oninput="mbAllocRecalc()"><span class="unit">%</span></div>
                 </div>
               </div>
               <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
-                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+                <span style="font-size:9px">▶</span> <span data-t="mb_custom_rates">Custom Conf% / Del% rates</span>
               </button>
               <div class="mb-rates-panel">
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Conf %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_conf_pct">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Del %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_del_pct">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                 </div>
               </div>
               <div class="mb-card-results">
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Budget</span>
+                  <span class="mb-card-result-label" data-t="mb_res_budget">Budget</span>
                   <span class="mb-card-result-val val-budget mb-alloc-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Target CPA</span>
+                  <span class="mb-card-result-label" data-t="mb_res_target_cpa">Target CPA</span>
                   <span class="mb-card-result-val val-cpa mb-alloc-cpa">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Leads</span>
+                  <span class="mb-card-result-label" data-t="mb_res_leads">Leads</span>
                   <span class="mb-card-result-val val-leads mb-alloc-leads">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Orders</span>
+                  <span class="mb-card-result-label" data-t="mb_res_orders">Orders</span>
                   <span class="mb-card-result-val val-orders mb-alloc-orders">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Net Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_net">Net Profit</span>
                   <span class="mb-card-result-val mb-alloc-netprofit" style="color:var(--profit)">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Margin Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_margin">Margin Profit</span>
                   <span class="mb-card-result-val mb-alloc-margin" style="color:var(--c3)">—</span>
                 </div>
               </div>
             </div>
           </div>
-          <button onclick="mbAllocAddChannel()" class="mb-add-ch-btn">+ Add channel</button>
+          <button onclick="mbAllocAddChannel()" class="mb-add-ch-btn"><span data-t="mb_add_channel">+ Add channel</span></button>
           <div class="mb-totals-bar" style="margin-top:10px">
             <div class="mb-totals-bar-row">
-              <span class="mb-totals-bar-label">% allocated</span>
+              <span class="mb-totals-bar-label" data-t="mb_tot_alloc">% allocated</span>
               <span class="mb-totals-bar-val" id="mb_alloc_total_pct">—</span>
             </div>
             <div class="mb-totals-bar-row">
-              <span class="mb-totals-bar-label">Total leads</span>
+              <span class="mb-totals-bar-label" data-t="mb_tot_leads">Total leads</span>
               <span class="mb-totals-bar-val val-leads" id="mb_alloc_total_leads">—</span>
             </div>
             <div class="mb-totals-bar-row">
-              <span class="mb-totals-bar-label">Total orders</span>
+              <span class="mb-totals-bar-label" data-t="mb_tot_orders">Total orders</span>
               <span class="mb-totals-bar-val val-orders" id="mb_alloc_total_orders">—</span>
             </div>
             <div class="mb-totals-bar-row">
-              <span class="mb-totals-bar-label">Total Net Profit</span>
+              <span class="mb-totals-bar-label" data-t="mb_tot_net">Total Net Profit</span>
               <span class="mb-totals-bar-val" id="mb_alloc_total_netprofit" style="color:var(--profit)">—</span>
             </div>
             <div class="mb-totals-bar-row">
-              <span class="mb-totals-bar-label">Total Margin Profit</span>
+              <span class="mb-totals-bar-label" data-t="mb_tot_margin">Total Margin Profit</span>
               <span class="mb-totals-bar-val" id="mb_alloc_total_margin" style="color:var(--c3)">—</span>
             </div>
           </div>
@@ -2420,7 +2420,7 @@ input[type=range]::-moz-range-thumb{
                 <!-- MODE: PRO -->
         <div id="mb_panel_pro" style="display:none">
           <div class="field" style="margin-bottom:12px">
-            <label style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);display:block;margin-bottom:5px">Total ad budget</label>
+            <label style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);display:block;margin-bottom:5px" data-t="mb_total_ad_budget">Total ad budget</label>
             <div class="f-row"><input type="number" id="mb_pro_budget" placeholder="e.g. 70000" min="0" oninput="mbProRecalc()" style="font-size:14px;font-weight:700"><span class="unit">EGP</span></div>
           </div>
           <div id="mb_pro_channels">
@@ -2430,7 +2430,7 @@ input[type=range]::-moz-range-thumb{
               </div>
               <div class="mb-card-inputs">
                 <div class="mb-card-inp-group">
-                  <label>% Allocation</label>
+                  <label data-t="mb_pct_alloc">% Allocation</label>
                   <div class="f-row"><input type="number" placeholder="%" min="0" max="100" class="mb-pro-pct" oninput="mbProRecalc()"><span class="unit">%</span></div>
                 </div>
                 <div class="mb-card-inp-group">
@@ -2439,39 +2439,39 @@ input[type=range]::-moz-range-thumb{
                 </div>
               </div>
               <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
-                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+                <span style="font-size:9px">▶</span> <span data-t="mb_custom_rates">Custom Conf% / Del% rates</span>
               </button>
               <div class="mb-rates-panel">
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Conf %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_conf_pct">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Del %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_del_pct">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                 </div>
               </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr 1fr">
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Budget</span>
+                  <span class="mb-card-result-label" data-t="mb_res_budget">Budget</span>
                   <span class="mb-card-result-val val-budget mb-pro-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Leads</span>
+                  <span class="mb-card-result-label" data-t="mb_res_leads">Leads</span>
                   <span class="mb-card-result-val val-leads mb-pro-leads">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Orders</span>
+                  <span class="mb-card-result-label" data-t="mb_res_orders">Orders</span>
                   <span class="mb-card-result-val val-orders mb-pro-orders">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Net Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_net">Net Profit</span>
                   <span class="mb-card-result-val mb-pro-netprofit" style="color:var(--profit)">—</span>
                 </div>
                 <div class="mb-card-result-item" style="grid-column:span 2">
-                  <span class="mb-card-result-label">Margin Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_margin">Margin Profit</span>
                   <span class="mb-card-result-val mb-pro-margin" style="color:var(--c3)">—</span>
                 </div>
               </div>
@@ -2482,7 +2482,7 @@ input[type=range]::-moz-range-thumb{
               </div>
               <div class="mb-card-inputs">
                 <div class="mb-card-inp-group">
-                  <label>% Allocation</label>
+                  <label data-t="mb_pct_alloc">% Allocation</label>
                   <div class="f-row"><input type="number" placeholder="%" min="0" max="100" class="mb-pro-pct" oninput="mbProRecalc()"><span class="unit">%</span></div>
                 </div>
                 <div class="mb-card-inp-group">
@@ -2491,39 +2491,39 @@ input[type=range]::-moz-range-thumb{
                 </div>
               </div>
               <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
-                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+                <span style="font-size:9px">▶</span> <span data-t="mb_custom_rates">Custom Conf% / Del% rates</span>
               </button>
               <div class="mb-rates-panel">
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Conf %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_conf_pct">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Del %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_del_pct">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                 </div>
               </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr 1fr">
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Budget</span>
+                  <span class="mb-card-result-label" data-t="mb_res_budget">Budget</span>
                   <span class="mb-card-result-val val-budget mb-pro-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Leads</span>
+                  <span class="mb-card-result-label" data-t="mb_res_leads">Leads</span>
                   <span class="mb-card-result-val val-leads mb-pro-leads">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Orders</span>
+                  <span class="mb-card-result-label" data-t="mb_res_orders">Orders</span>
                   <span class="mb-card-result-val val-orders mb-pro-orders">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Net Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_net">Net Profit</span>
                   <span class="mb-card-result-val mb-pro-netprofit" style="color:var(--profit)">—</span>
                 </div>
                 <div class="mb-card-result-item" style="grid-column:span 2">
-                  <span class="mb-card-result-label">Margin Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_margin">Margin Profit</span>
                   <span class="mb-card-result-val mb-pro-margin" style="color:var(--c3)">—</span>
                 </div>
               </div>
@@ -2534,7 +2534,7 @@ input[type=range]::-moz-range-thumb{
               </div>
               <div class="mb-card-inputs">
                 <div class="mb-card-inp-group">
-                  <label>% Allocation</label>
+                  <label data-t="mb_pct_alloc">% Allocation</label>
                   <div class="f-row"><input type="number" placeholder="%" min="0" max="100" class="mb-pro-pct" oninput="mbProRecalc()"><span class="unit">%</span></div>
                 </div>
                 <div class="mb-card-inp-group">
@@ -2543,39 +2543,39 @@ input[type=range]::-moz-range-thumb{
                 </div>
               </div>
               <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
-                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+                <span style="font-size:9px">▶</span> <span data-t="mb_custom_rates">Custom Conf% / Del% rates</span>
               </button>
               <div class="mb-rates-panel">
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Conf %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_conf_pct">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Del %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_del_pct">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                 </div>
               </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr 1fr">
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Budget</span>
+                  <span class="mb-card-result-label" data-t="mb_res_budget">Budget</span>
                   <span class="mb-card-result-val val-budget mb-pro-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Leads</span>
+                  <span class="mb-card-result-label" data-t="mb_res_leads">Leads</span>
                   <span class="mb-card-result-val val-leads mb-pro-leads">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Orders</span>
+                  <span class="mb-card-result-label" data-t="mb_res_orders">Orders</span>
                   <span class="mb-card-result-val val-orders mb-pro-orders">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Net Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_net">Net Profit</span>
                   <span class="mb-card-result-val mb-pro-netprofit" style="color:var(--profit)">—</span>
                 </div>
                 <div class="mb-card-result-item" style="grid-column:span 2">
-                  <span class="mb-card-result-label">Margin Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_margin">Margin Profit</span>
                   <span class="mb-card-result-val mb-pro-margin" style="color:var(--c3)">—</span>
                 </div>
               </div>
@@ -2586,7 +2586,7 @@ input[type=range]::-moz-range-thumb{
               </div>
               <div class="mb-card-inputs">
                 <div class="mb-card-inp-group">
-                  <label>% Allocation</label>
+                  <label data-t="mb_pct_alloc">% Allocation</label>
                   <div class="f-row"><input type="number" placeholder="%" min="0" max="100" class="mb-pro-pct" oninput="mbProRecalc()"><span class="unit">%</span></div>
                 </div>
                 <div class="mb-card-inp-group">
@@ -2595,64 +2595,64 @@ input[type=range]::-moz-range-thumb{
                 </div>
               </div>
               <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
-                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+                <span style="font-size:9px">▶</span> <span data-t="mb_custom_rates">Custom Conf% / Del% rates</span>
               </button>
               <div class="mb-rates-panel">
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Conf %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_conf_pct">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Del %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_del_pct">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                 </div>
               </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr 1fr">
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Budget</span>
+                  <span class="mb-card-result-label" data-t="mb_res_budget">Budget</span>
                   <span class="mb-card-result-val val-budget mb-pro-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Leads</span>
+                  <span class="mb-card-result-label" data-t="mb_res_leads">Leads</span>
                   <span class="mb-card-result-val val-leads mb-pro-leads">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Orders</span>
+                  <span class="mb-card-result-label" data-t="mb_res_orders">Orders</span>
                   <span class="mb-card-result-val val-orders mb-pro-orders">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Net Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_net">Net Profit</span>
                   <span class="mb-card-result-val mb-pro-netprofit" style="color:var(--profit)">—</span>
                 </div>
                 <div class="mb-card-result-item" style="grid-column:span 2">
-                  <span class="mb-card-result-label">Margin Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_margin">Margin Profit</span>
                   <span class="mb-card-result-val mb-pro-margin" style="color:var(--c3)">—</span>
                 </div>
               </div>
             </div>
           </div>
-          <button onclick="mbProAddChannel()" class="mb-add-ch-btn">+ Add channel</button>
+          <button onclick="mbProAddChannel()" class="mb-add-ch-btn"><span data-t="mb_add_channel">+ Add channel</span></button>
           <div class="mb-totals-bar" style="margin-top:10px">
             <div class="mb-totals-bar-row">
-              <span class="mb-totals-bar-label">% allocated</span>
+              <span class="mb-totals-bar-label" data-t="mb_tot_alloc">% allocated</span>
               <span class="mb-totals-bar-val" id="mb_pro_total_pct">—</span>
             </div>
             <div class="mb-totals-bar-row">
-              <span class="mb-totals-bar-label">Total leads</span>
+              <span class="mb-totals-bar-label" data-t="mb_tot_leads">Total leads</span>
               <span class="mb-totals-bar-val val-leads" id="mb_pro_total_leads">—</span>
             </div>
             <div class="mb-totals-bar-row">
-              <span class="mb-totals-bar-label">Total orders</span>
+              <span class="mb-totals-bar-label" data-t="mb_tot_orders">Total orders</span>
               <span class="mb-totals-bar-val val-orders" id="mb_pro_total_orders">—</span>
             </div>
             <div class="mb-totals-bar-row">
-              <span class="mb-totals-bar-label">Total Net Profit</span>
+              <span class="mb-totals-bar-label" data-t="mb_tot_net">Total Net Profit</span>
               <span class="mb-totals-bar-val" id="mb_pro_total_netprofit" style="color:var(--profit)">—</span>
             </div>
             <div class="mb-totals-bar-row">
-              <span class="mb-totals-bar-label">Total Margin Profit</span>
+              <span class="mb-totals-bar-label" data-t="mb_tot_margin">Total Margin Profit</span>
               <span class="mb-totals-bar-val" id="mb_pro_total_margin" style="color:var(--c3)">—</span>
             </div>
           </div>
@@ -2669,44 +2669,44 @@ input[type=range]::-moz-range-thumb{
               </div>
               <div class="mb-card-inputs">
                 <div class="mb-card-inp-group">
-                  <label>Min Orders</label>
-                  <div class="f-row"><input type="number" placeholder="e.g. 200" min="0" class="mb-mo-orders" oninput="mbMORecalc()"><span class="unit" style="font-size:10px">orders</span></div>
+                  <label data-t="mb_min_orders">Min Orders</label>
+                  <div class="f-row"><input type="number" placeholder="e.g. 200" min="0" class="mb-mo-orders" oninput="mbMORecalc()"><span class="unit" style="font-size:10px" data-t="unit_orders">orders</span></div>
                 </div>
                 <div class="mb-card-inp-group">
-                  <label>Market CPA <span style="font-weight:400;opacity:.7">(optional)</span></label>
+                  <label><span data-t="mb_market_cpa">Market CPA</span> <span style="font-weight:400;opacity:.7" data-t="mb_optional">(optional)</span></label>
                   <div class="f-row"><input type="number" placeholder="or BE CPA" min="0" class="mb-mo-cpa" oninput="mbMORecalc()"><span class="unit">EGP</span></div>
                 </div>
               </div>
               <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
-                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+                <span style="font-size:9px">▶</span> <span data-t="mb_custom_rates">Custom Conf% / Del% rates</span>
               </button>
               <div class="mb-rates-panel">
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Conf %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_conf_pct">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Del %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_del_pct">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                 </div>
               </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr">
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Budget needed</span>
+                  <span class="mb-card-result-label" data-t="mb_res_budget_needed">Budget needed</span>
                   <span class="mb-card-result-val val-budget mb-mo-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Leads needed</span>
+                  <span class="mb-card-result-label" data-t="mb_res_leads_needed">Leads needed</span>
                   <span class="mb-card-result-val val-leads mb-mo-leads">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Net Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_net">Net Profit</span>
                   <span class="mb-card-result-val mb-mo-netprofit" style="color:var(--profit)">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Margin Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_margin">Margin Profit</span>
                   <span class="mb-card-result-val mb-mo-margin" style="color:var(--c3)">—</span>
                 </div>
               </div>
@@ -2718,44 +2718,44 @@ input[type=range]::-moz-range-thumb{
               </div>
               <div class="mb-card-inputs">
                 <div class="mb-card-inp-group">
-                  <label>Min Orders</label>
-                  <div class="f-row"><input type="number" placeholder="e.g. 200" min="0" class="mb-mo-orders" oninput="mbMORecalc()"><span class="unit" style="font-size:10px">orders</span></div>
+                  <label data-t="mb_min_orders">Min Orders</label>
+                  <div class="f-row"><input type="number" placeholder="e.g. 200" min="0" class="mb-mo-orders" oninput="mbMORecalc()"><span class="unit" style="font-size:10px" data-t="unit_orders">orders</span></div>
                 </div>
                 <div class="mb-card-inp-group">
-                  <label>Market CPA <span style="font-weight:400;opacity:.7">(optional)</span></label>
+                  <label><span data-t="mb_market_cpa">Market CPA</span> <span style="font-weight:400;opacity:.7" data-t="mb_optional">(optional)</span></label>
                   <div class="f-row"><input type="number" placeholder="or BE CPA" min="0" class="mb-mo-cpa" oninput="mbMORecalc()"><span class="unit">EGP</span></div>
                 </div>
               </div>
               <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
-                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+                <span style="font-size:9px">▶</span> <span data-t="mb_custom_rates">Custom Conf% / Del% rates</span>
               </button>
               <div class="mb-rates-panel">
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Conf %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_conf_pct">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Del %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_del_pct">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                 </div>
               </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr">
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Budget needed</span>
+                  <span class="mb-card-result-label" data-t="mb_res_budget_needed">Budget needed</span>
                   <span class="mb-card-result-val val-budget mb-mo-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Leads needed</span>
+                  <span class="mb-card-result-label" data-t="mb_res_leads_needed">Leads needed</span>
                   <span class="mb-card-result-val val-leads mb-mo-leads">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Net Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_net">Net Profit</span>
                   <span class="mb-card-result-val mb-mo-netprofit" style="color:var(--profit)">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Margin Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_margin">Margin Profit</span>
                   <span class="mb-card-result-val mb-mo-margin" style="color:var(--c3)">—</span>
                 </div>
               </div>
@@ -2767,44 +2767,44 @@ input[type=range]::-moz-range-thumb{
               </div>
               <div class="mb-card-inputs">
                 <div class="mb-card-inp-group">
-                  <label>Min Orders</label>
-                  <div class="f-row"><input type="number" placeholder="e.g. 200" min="0" class="mb-mo-orders" oninput="mbMORecalc()"><span class="unit" style="font-size:10px">orders</span></div>
+                  <label data-t="mb_min_orders">Min Orders</label>
+                  <div class="f-row"><input type="number" placeholder="e.g. 200" min="0" class="mb-mo-orders" oninput="mbMORecalc()"><span class="unit" style="font-size:10px" data-t="unit_orders">orders</span></div>
                 </div>
                 <div class="mb-card-inp-group">
-                  <label>Market CPA <span style="font-weight:400;opacity:.7">(optional)</span></label>
+                  <label><span data-t="mb_market_cpa">Market CPA</span> <span style="font-weight:400;opacity:.7" data-t="mb_optional">(optional)</span></label>
                   <div class="f-row"><input type="number" placeholder="or BE CPA" min="0" class="mb-mo-cpa" oninput="mbMORecalc()"><span class="unit">EGP</span></div>
                 </div>
               </div>
               <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
-                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+                <span style="font-size:9px">▶</span> <span data-t="mb_custom_rates">Custom Conf% / Del% rates</span>
               </button>
               <div class="mb-rates-panel">
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Conf %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_conf_pct">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Del %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_del_pct">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                 </div>
               </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr">
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Budget needed</span>
+                  <span class="mb-card-result-label" data-t="mb_res_budget_needed">Budget needed</span>
                   <span class="mb-card-result-val val-budget mb-mo-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Leads needed</span>
+                  <span class="mb-card-result-label" data-t="mb_res_leads_needed">Leads needed</span>
                   <span class="mb-card-result-val val-leads mb-mo-leads">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Net Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_net">Net Profit</span>
                   <span class="mb-card-result-val mb-mo-netprofit" style="color:var(--profit)">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Margin Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_margin">Margin Profit</span>
                   <span class="mb-card-result-val mb-mo-margin" style="color:var(--c3)">—</span>
                 </div>
               </div>
@@ -2816,69 +2816,69 @@ input[type=range]::-moz-range-thumb{
               </div>
               <div class="mb-card-inputs">
                 <div class="mb-card-inp-group">
-                  <label>Min Orders</label>
-                  <div class="f-row"><input type="number" placeholder="e.g. 200" min="0" class="mb-mo-orders" oninput="mbMORecalc()"><span class="unit" style="font-size:10px">orders</span></div>
+                  <label data-t="mb_min_orders">Min Orders</label>
+                  <div class="f-row"><input type="number" placeholder="e.g. 200" min="0" class="mb-mo-orders" oninput="mbMORecalc()"><span class="unit" style="font-size:10px" data-t="unit_orders">orders</span></div>
                 </div>
                 <div class="mb-card-inp-group">
-                  <label>Market CPA <span style="font-weight:400;opacity:.7">(optional)</span></label>
+                  <label><span data-t="mb_market_cpa">Market CPA</span> <span style="font-weight:400;opacity:.7" data-t="mb_optional">(optional)</span></label>
                   <div class="f-row"><input type="number" placeholder="or BE CPA" min="0" class="mb-mo-cpa" oninput="mbMORecalc()"><span class="unit">EGP</span></div>
                 </div>
               </div>
               <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
-                <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+                <span style="font-size:9px">▶</span> <span data-t="mb_custom_rates">Custom Conf% / Del% rates</span>
               </button>
               <div class="mb-rates-panel">
                 <div style="display:flex;gap:8px;flex-wrap:wrap">
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Conf %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_conf_pct">Conf %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                   <div class="mb-card-inp-group">
-                    <label style="font-size:10px">Del %</label>
-                    <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+                    <label style="font-size:10px" data-t="mb_del_pct">Del %</label>
+                    <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
                   </div>
                 </div>
               </div>
               <div class="mb-card-results" style="grid-template-columns:1fr 1fr">
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Budget needed</span>
+                  <span class="mb-card-result-label" data-t="mb_res_budget_needed">Budget needed</span>
                   <span class="mb-card-result-val val-budget mb-mo-budget">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Leads needed</span>
+                  <span class="mb-card-result-label" data-t="mb_res_leads_needed">Leads needed</span>
                   <span class="mb-card-result-val val-leads mb-mo-leads">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Net Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_net">Net Profit</span>
                   <span class="mb-card-result-val mb-mo-netprofit" style="color:var(--profit)">—</span>
                 </div>
                 <div class="mb-card-result-item">
-                  <span class="mb-card-result-label">Margin Profit</span>
+                  <span class="mb-card-result-label" data-t="mb_res_margin">Margin Profit</span>
                   <span class="mb-card-result-val mb-mo-margin" style="color:var(--c3)">—</span>
                 </div>
               </div>
             </div>
           </div>
-          <button onclick="mbMOAddChannel()" class="mb-add-ch-btn">+ Add channel</button>
+          <button onclick="mbMOAddChannel()" class="mb-add-ch-btn"><span data-t="mb_add_channel">+ Add channel</span></button>
           <div class="mb-totals-bar" style="margin-top:10px">
             <div class="mb-totals-bar-row">
-              <span class="mb-totals-bar-label">Total budget needed</span>
+              <span class="mb-totals-bar-label" data-t="mb_tot_budget_needed">Total budget needed</span>
               <span class="mb-totals-bar-val val-budget" id="mb_mo_total_budget">—</span>
             </div>
             <div class="mb-totals-bar-row">
-              <span class="mb-totals-bar-label">Total leads needed</span>
+              <span class="mb-totals-bar-label" data-t="mb_tot_leads_needed">Total leads needed</span>
               <span class="mb-totals-bar-val val-leads" id="mb_mo_total_leads">—</span>
             </div>
             <div class="mb-totals-bar-row">
-              <span class="mb-totals-bar-label">Total delivered orders</span>
+              <span class="mb-totals-bar-label" data-t="mb_tot_del_orders">Total delivered orders</span>
               <span class="mb-totals-bar-val val-orders" id="mb_mo_total_orders">—</span>
             </div>
             <div class="mb-totals-bar-row">
-              <span class="mb-totals-bar-label">Total Net Profit</span>
+              <span class="mb-totals-bar-label" data-t="mb_tot_net">Total Net Profit</span>
               <span class="mb-totals-bar-val" id="mb_mo_total_netprofit" style="color:var(--profit)">—</span>
             </div>
             <div class="mb-totals-bar-row">
-              <span class="mb-totals-bar-label">Total Margin Profit</span>
+              <span class="mb-totals-bar-label" data-t="mb_tot_margin">Total Margin Profit</span>
               <span class="mb-totals-bar-val" id="mb_mo_total_margin" style="color:var(--c3)">—</span>
             </div>
             <div id="mb_mo_be_hint" style="margin-top:6px;font-size:11px;color:var(--c3);font-style:italic"></div>
@@ -2898,7 +2898,7 @@ input[type=range]::-moz-range-thumb{
       <div class="field">
         <label data-t="lbl_salary">Total fixed costs <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_salary">All monthly fixed costs — salaries, rent, subscriptions, tools, production...<br>For more detail open the Advanced breakdown below.</span></span></label>
         <div class="f-row"><input type="number" id="i_salary" value="" min="0" placeholder="e.g. 5000" oninput="fcManualInput()"><span class="unit">EGP</span></div>
-        <div style="margin-top:4px;font-size:11px;color:var(--txt3);font-family:var(--mono)">↳ Business-wide — shared across all products (split by orders)</div>
+        <div style="margin-top:4px;font-size:11px;color:var(--txt3);font-family:var(--mono)" data-t="biz_wide_note">↳ Business-wide — shared across all products (split by orders)</div>
       </div>
 
       <!-- Advanced breakdown toggle -->
@@ -2909,7 +2909,7 @@ input[type=range]::-moz-range-thumb{
           color:var(--txt3);font-size:11px;cursor:pointer;padding:6px 12px;
           font-family:inherit;width:100%;transition:all .2s;justify-content:center">
           <span id="fc_adv_arrow" style="transition:transform .25s;display:inline-block;font-size:9px">▶</span>
-          <span>Advanced breakdown</span>
+          <span data-t="fc_advanced_breakdown">Advanced breakdown</span>
         </button>
       </div>
 
@@ -2922,13 +2922,13 @@ input[type=range]::-moz-range-thumb{
             flex:1;padding:8px;border-radius:8px;font-size:11px;cursor:pointer;
             border:1px solid var(--c2);background:rgba(59,130,246,.12);color:var(--c2);
             font-family:inherit;transition:all .2s">
-            📋 Preset categories
+            <span data-t="fc_mode_preset">📋 Preset categories</span>
           </button>
           <button onclick="fcSetMode('custom')" id="fc_btn_custom" style="
             flex:1;padding:8px;border-radius:8px;font-size:11px;cursor:pointer;
             border:1px solid var(--bdr2);background:var(--surf3);color:var(--txt3);
             font-family:inherit;transition:all .2s">
-            ✏️ Custom table
+            <span data-t="fc_mode_custom">✏️ Custom table</span>
           </button>
         </div>
 
@@ -2937,106 +2937,106 @@ input[type=range]::-moz-range-thumb{
           <!-- each category -->
           <div class="fc-cat" data-cat="ops">
             <div class="fc-cat-header" onclick="fcToggleCat('ops')">
-              <span>🏢 Operations &amp; Admin</span>
+              <span data-t="fc_cat_ops">🏢 Operations &amp; Admin</span>
               <div style="display:flex;align-items:center;gap:8px">
                 <span class="fc-cat-total" id="fc_cat_ops_total" style="font-family:var(--mono);font-size:12px;color:var(--txt3)"></span>
                 <span class="fc-cat-arrow" id="fc_arrow_ops">▶</span>
               </div>
             </div>
             <div class="fc-sub" id="fc_sub_ops" style="display:none">
-              <div class="fc-sub-item"><label>Office / warehouse rent</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('ops')"><span class="unit">EGP</span></div></div>
-              <div class="fc-sub-item"><label>Utilities (electricity, internet, phone)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('ops')"><span class="unit">EGP</span></div></div>
-              <div class="fc-sub-item"><label>Admin &amp; accounting fees</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('ops')"><span class="unit">EGP</span></div></div>
-              <div class="fc-sub-item"><label>Social insurance</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('ops')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_ops_rent">Office / warehouse rent</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('ops')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_ops_utils">Utilities (electricity, internet, phone)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('ops')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_ops_admin">Admin &amp; accounting fees</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('ops')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_ops_insurance">Social insurance</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('ops')"><span class="unit">EGP</span></div></div>
               <div class="fc-sub-item fc-custom-row"><label><input type="text" placeholder="+ custom item name" class="fc-custom-name" oninput="fcSubInput('ops')"></label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('ops')"><span class="unit">EGP</span></div></div>
             </div>
           </div>
 
           <div class="fc-cat" data-cat="team">
             <div class="fc-cat-header" onclick="fcToggleCat('team')">
-              <span>👥 Team &amp; Payroll</span>
+              <span data-t="fc_cat_team">👥 Team &amp; Payroll</span>
               <div style="display:flex;align-items:center;gap:8px">
                 <span class="fc-cat-total" id="fc_cat_team_total" style="font-family:var(--mono);font-size:12px;color:var(--txt3)"></span>
                 <span class="fc-cat-arrow" id="fc_arrow_team">▶</span>
               </div>
             </div>
             <div class="fc-sub" id="fc_sub_team" style="display:none">
-              <div class="fc-sub-item"><label>Employee salaries</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('team')"><span class="unit">EGP</span></div></div>
-              <div class="fc-sub-item"><label>Fixed bonuses &amp; commissions</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('team')"><span class="unit">EGP</span></div></div>
-              <div class="fc-sub-item"><label>Freelancers (monthly retainer)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('team')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_team_salaries">Employee salaries</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('team')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_team_bonus">Fixed bonuses &amp; commissions</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('team')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_team_freelance">Freelancers (monthly retainer)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('team')"><span class="unit">EGP</span></div></div>
               <div class="fc-sub-item fc-custom-row"><label><input type="text" placeholder="+ custom item name" class="fc-custom-name" oninput="fcSubInput('team')"></label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('team')"><span class="unit">EGP</span></div></div>
             </div>
           </div>
 
           <div class="fc-cat" data-cat="tech">
             <div class="fc-cat-header" onclick="fcToggleCat('tech')">
-              <span>💻 Tech &amp; Tools</span>
+              <span data-t="fc_cat_tech">💻 Tech &amp; Tools</span>
               <div style="display:flex;align-items:center;gap:8px">
                 <span class="fc-cat-total" id="fc_cat_tech_total" style="font-family:var(--mono);font-size:12px;color:var(--txt3)"></span>
                 <span class="fc-cat-arrow" id="fc_arrow_tech">▶</span>
               </div>
             </div>
             <div class="fc-sub" id="fc_sub_tech" style="display:none">
-              <div class="fc-sub-item"><label>CMS / Store (Shopify, WooCommerce...)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('tech')"><span class="unit">EGP</span></div></div>
-              <div class="fc-sub-item"><label>Hosting + domain</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('tech')"><span class="unit">EGP</span></div></div>
-              <div class="fc-sub-item"><label>Automation tools (Zapier, Make...)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('tech')"><span class="unit">EGP</span></div></div>
-              <div class="fc-sub-item"><label>Design software (Adobe, Canva...)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('tech')"><span class="unit">EGP</span></div></div>
-              <div class="fc-sub-item"><label>CRM / Customer service (Freshdesk...)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('tech')"><span class="unit">EGP</span></div></div>
-              <div class="fc-sub-item"><label>Analytics &amp; tracking tools</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('tech')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_tech_cms">CMS / Store (Shopify, WooCommerce...)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('tech')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_tech_hosting">Hosting + domain</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('tech')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_tech_automation">Automation tools (Zapier, Make...)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('tech')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_tech_design">Design software (Adobe, Canva...)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('tech')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_tech_crm">CRM / Customer service (Freshdesk...)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('tech')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_tech_analytics">Analytics &amp; tracking tools</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('tech')"><span class="unit">EGP</span></div></div>
               <div class="fc-sub-item fc-custom-row"><label><input type="text" placeholder="+ custom item name" class="fc-custom-name" oninput="fcSubInput('tech')"></label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('tech')"><span class="unit">EGP</span></div></div>
             </div>
           </div>
 
           <div class="fc-cat" data-cat="mktg">
             <div class="fc-cat-header" onclick="fcToggleCat('mktg')">
-              <span>📣 Marketing Fixed</span>
+              <span data-t="fc_cat_mktg">📣 Marketing Fixed</span>
               <div style="display:flex;align-items:center;gap:8px">
                 <span class="fc-cat-total" id="fc_cat_mktg_total" style="font-family:var(--mono);font-size:12px;color:var(--txt3)"></span>
                 <span class="fc-cat-arrow" id="fc_arrow_mktg">▶</span>
               </div>
             </div>
             <div class="fc-sub" id="fc_sub_mktg" style="display:none">
-              <div class="fc-sub-item"><label>Creative production costs</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('mktg')"><span class="unit">EGP</span></div></div>
-              <div class="fc-sub-item"><label>Influencers &amp; bloggers</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('mktg')"><span class="unit">EGP</span></div></div>
-              <div class="fc-sub-item"><label>SMS / Email marketing subscription</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('mktg')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_mktg_creative">Creative production costs</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('mktg')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_mktg_influencers">Influencers &amp; bloggers</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('mktg')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_mktg_sms">SMS / Email marketing subscription</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('mktg')"><span class="unit">EGP</span></div></div>
               <div class="fc-sub-item fc-custom-row"><label><input type="text" placeholder="+ custom item name" class="fc-custom-name" oninput="fcSubInput('mktg')"></label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('mktg')"><span class="unit">EGP</span></div></div>
             </div>
           </div>
 
           <div class="fc-cat" data-cat="fulfill">
             <div class="fc-cat-header" onclick="fcToggleCat('fulfill')">
-              <span>📦 Fulfillment Fixed</span>
+              <span data-t="fc_cat_fulfill">📦 Fulfillment Fixed</span>
               <div style="display:flex;align-items:center;gap:8px">
                 <span class="fc-cat-total" id="fc_cat_fulfill_total" style="font-family:var(--mono);font-size:12px;color:var(--txt3)"></span>
                 <span class="fc-cat-arrow" id="fc_arrow_fulfill">▶</span>
               </div>
             </div>
             <div class="fc-sub" id="fc_sub_fulfill" style="display:none">
-              <div class="fc-sub-item"><label>Warehouse / storage rent</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('fulfill')"><span class="unit">EGP</span></div></div>
-              <div class="fc-sub-item"><label>Warehouse software (WMS)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('fulfill')"><span class="unit">EGP</span></div></div>
-              <div class="fc-sub-item"><label>Packaging &amp; fixed supplies</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('fulfill')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_fulfill_rent">Warehouse / storage rent</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('fulfill')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_fulfill_wms">Warehouse software (WMS)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('fulfill')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_fulfill_packaging">Packaging &amp; fixed supplies</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('fulfill')"><span class="unit">EGP</span></div></div>
               <div class="fc-sub-item fc-custom-row"><label><input type="text" placeholder="+ custom item name" class="fc-custom-name" oninput="fcSubInput('fulfill')"></label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('fulfill')"><span class="unit">EGP</span></div></div>
             </div>
           </div>
 
           <div class="fc-cat" data-cat="cs">
             <div class="fc-cat-header" onclick="fcToggleCat('cs')">
-              <span>🎯 Customer Service</span>
+              <span data-t="fc_cat_cs">🎯 Customer Service</span>
               <div style="display:flex;align-items:center;gap:8px">
                 <span class="fc-cat-total" id="fc_cat_cs_total" style="font-family:var(--mono);font-size:12px;color:var(--txt3)"></span>
                 <span class="fc-cat-arrow" id="fc_arrow_cs">▶</span>
               </div>
             </div>
             <div class="fc-sub" id="fc_sub_cs" style="display:none">
-              <div class="fc-sub-item"><label>Call center (outsourced)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('cs')"><span class="unit">EGP</span></div></div>
-              <div class="fc-sub-item"><label>Ticketing &amp; chat tools</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('cs')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_cs_callcenter">Call center (outsourced)</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('cs')"><span class="unit">EGP</span></div></div>
+              <div class="fc-sub-item"><label data-t="fc_cs_ticketing">Ticketing &amp; chat tools</label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('cs')"><span class="unit">EGP</span></div></div>
               <div class="fc-sub-item fc-custom-row"><label><input type="text" placeholder="+ custom item name" class="fc-custom-name" oninput="fcSubInput('cs')"></label><div class="f-row"><input type="number" placeholder="0" oninput="fcSubInput('cs')"><span class="unit">EGP</span></div></div>
             </div>
           </div>
 
           <!-- Preset total -->
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--bdr2)">
-            <span style="font-size:12px;color:var(--txt2)">Total</span>
+            <span style="font-size:12px;color:var(--txt2)" data-t="gen_total">Total</span>
             <span id="fc_preset_total" style="font-family:var(--mono);font-size:13px;color:var(--c1);font-weight:700">0 EGP</span>
           </div>
         </div>
@@ -3055,10 +3055,10 @@ input[type=range]::-moz-range-thumb{
             border:1px dashed var(--bdr2);background:none;
             color:var(--txt3);font-size:11px;cursor:pointer;
             width:100%;transition:border-color .2s,color .2s">
-            + Add item
+            <span data-t="fc_add_item">+ Add item</span>
           </button>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:10px;border-top:1px solid var(--bdr2)">
-            <span style="font-size:12px;color:var(--txt2);font-weight:600">Total</span>
+            <span style="font-size:12px;color:var(--txt2);font-weight:600" data-t="gen_total">Total</span>
             <span id="fc_custom_total" style="font-family:var(--mono);font-size:13px;color:var(--c1);font-weight:700">0 EGP</span>
           </div>
         </div>
@@ -3118,7 +3118,7 @@ input[type=range]::-moz-range-thumb{
         <div class="adv-item-header">
           <div class="adv-item-title">
             📦 <span data-t="adv_pdr_lbl">Post-delivery return rate</span>
-            <span class="tip"><span class="tip-icon">?</span><span class="tip-box">Customer received the product then requested a return. Affects Net Delivered Orders and profitPU via additional shipping cost and optional product loss.</span></span>
+            <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_pdr_info">Customer received the product then requested a return. Affects Net Delivered Orders and profitPU via additional shipping cost and optional product loss.</span></span>
           </div>
           <button class="adv-lock-btn" id="adv_pdr_lock" onclick="toggleAdvLock('pdr')" title="Unlock to enable">🔒</button>
         </div>
@@ -3149,13 +3149,13 @@ input[type=range]::-moz-range-thumb{
       </div>
 
       <div class="adv-item locked" id="adv_bundle_item" style="grid-column:1/-1">
-        <div class="adv-item-header"><div class="adv-item-title">&#x1F381; Bundle Pricing<span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_bundle">Enter each bundle and order count. Tool auto-calculates blended avg price and shipping.</span></span></div><button class="adv-lock-btn" id="adv_bundle_lock" onclick="toggleAdvLock('bundle')" title="Unlock">&#x1F512;</button></div>
+        <div class="adv-item-header"><div class="adv-item-title"><span data-t="bundle_pricing_title">&#x1F381; Bundle Pricing</span><span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_bundle">Enter each bundle and order count. Tool auto-calculates blended avg price and shipping.</span></span></div><button class="adv-lock-btn" id="adv_bundle_lock" onclick="toggleAdvLock('bundle')" title="Unlock">&#x1F512;</button></div>
         <div id="adv_bundle_list"></div>
-        <button class="bundle-add-btn" id="adv_bundle_add" onclick="bundleAddRow()" disabled>+ Add Bundle</button>
+        <button class="bundle-add-btn" id="adv_bundle_add" onclick="bundleAddRow()" disabled><span data-t="bundle_add_btn2">+ Add Bundle</span></button>
         <div class="bundle-blended" id="adv_bundle_blended" style="display:none">
-          <div class="bundle-blended-item"><div class="bundle-blended-lbl">Avg price / unit</div><div class="bundle-blended-val" id="bld_avg_price">&#x2014;</div></div>
-          <div class="bundle-blended-item"><div class="bundle-blended-lbl">Avg ship / order</div><div class="bundle-blended-val" id="bld_avg_ship">&#x2014;</div></div>
-          <div class="bundle-blended-item"><div class="bundle-blended-lbl">Single orders (auto)</div><div class="bundle-blended-val" id="bld_singles">&#x2014;</div></div>
+          <div class="bundle-blended-item"><div class="bundle-blended-lbl" data-t="bundle_avg_price">Avg price / unit</div><div class="bundle-blended-val" id="bld_avg_price">&#x2014;</div></div>
+          <div class="bundle-blended-item"><div class="bundle-blended-lbl" data-t="bundle_avg_ship">Avg ship / order</div><div class="bundle-blended-val" id="bld_avg_ship">&#x2014;</div></div>
+          <div class="bundle-blended-item"><div class="bundle-blended-lbl" data-t="bundle_singles">Single orders (auto)</div><div class="bundle-blended-val" id="bld_singles">&#x2014;</div></div>
         </div>
         <div class="adv-item-hint" id="adv_bundle_hint">Locked → single price used in calculations</div>
       </div>
@@ -3163,20 +3163,20 @@ input[type=range]::-moz-range-thumb{
 
       <div class="adv-item" id="adv_ops_item" style="grid-column:1/-1;cursor:default;opacity:1">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-          <div class="adv-item-title" style="opacity:.5">⚙️ Operations &amp; Cash Flow</div>
-          <span style="font-size:10px;font-family:var(--mono);font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(245,158,11,.12);color:var(--c3);letter-spacing:.5px;border:1px solid rgba(245,158,11,.25)">COMING SOON</span>
+          <div class="adv-item-title" style="opacity:.5" data-t="adv_cashflow_title">⚙️ Operations &amp; Cash Flow</div>
+          <span style="font-size:10px;font-family:var(--mono);font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(245,158,11,.12);color:var(--c3);letter-spacing:.5px;border:1px solid rgba(245,158,11,.25)"><span data-t="coming_soon">COMING SOON</span></span>
         </div>
         <div style="padding:28px 20px;background:var(--surf2);border-radius:var(--r);border:1px dashed var(--bdr2);text-align:center">
           <div style="font-size:28px;margin-bottom:10px">🚧</div>
-          <div style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--txt);margin-bottom:6px">Cash Flow Simulation</div>
-          <div style="font-size:11px;color:var(--txt3);line-height:1.7;max-width:380px;margin:0 auto">
+          <div style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--txt);margin-bottom:6px" data-t="cashflow_sim_title">Cash Flow Simulation</div>
+          <div style="font-size:11px;color:var(--txt3);line-height:1.7;max-width:380px;margin:0 auto" data-t="cashflow_desc">
             Based on CCC and available capital — calculates max daily budget, ad scenarios, and days to sell out stock
           </div>
           <div style="margin-top:16px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
-            <span style="font-size:10px;font-family:var(--mono);padding:4px 10px;border-radius:6px;background:var(--surf3);color:var(--txt2)">⏱ CCC Calculator</span>
-            <span style="font-size:10px;font-family:var(--mono);padding:4px 10px;border-radius:6px;background:var(--surf3);color:var(--txt2)">💰 Working Capital</span>
-            <span style="font-size:10px;font-family:var(--mono);padding:4px 10px;border-radius:6px;background:var(--surf3);color:var(--txt2)">📊 3 Scenarios</span>
-            <span style="font-size:10px;font-family:var(--mono);padding:4px 10px;border-radius:6px;background:var(--surf3);color:var(--txt2)">📦 Stock Simulation</span>
+            <span style="font-size:10px;font-family:var(--mono);padding:4px 10px;border-radius:6px;background:var(--surf3);color:var(--txt2)" data-t="cashflow_ccc">⏱ CCC Calculator</span>
+            <span style="font-size:10px;font-family:var(--mono);padding:4px 10px;border-radius:6px;background:var(--surf3);color:var(--txt2)" data-t="cashflow_wc">💰 Working Capital</span>
+            <span style="font-size:10px;font-family:var(--mono);padding:4px 10px;border-radius:6px;background:var(--surf3);color:var(--txt2)" data-t="cashflow_3sc">📊 3 Scenarios</span>
+            <span style="font-size:10px;font-family:var(--mono);padding:4px 10px;border-radius:6px;background:var(--surf3);color:var(--txt2)" data-t="cashflow_stocksim">📦 Stock Simulation</span>
           </div>
         </div>
       </div>
@@ -3196,15 +3196,15 @@ input[type=range]::-moz-range-thumb{
   <div class="section-header">
     <div class="section-eyebrow"><span class="num">02</span><span data-t="sec1_eye">Ad analytics</span></div>
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-      <div class="section-title" id="s1_title">Ad spend & CPA analysis</div>
+      <div class="section-title" id="s1_title" data-t="sec1_title">Ad spend & CPA analysis</div>
       <div style="display:flex;align-items:center;gap:8px">
         <div id="prod_indicator_s1" class="prod-indicator"></div>
         <div class="prod-switcher" id="prod_switcher_s1" style="display:none;position:relative">
           <button class="prod-indicator show" onclick="toggleProdSwitcher(event,'s1')" id="prod_switch_btn_s1" style="cursor:pointer;gap:6px">
-            <span style="font-size:11px">📦</span><span style="font-size:11px">Switch to...</span><span style="font-size:9px;opacity:.5">▾</span>
+            <span style="font-size:11px">📦</span><span style="font-size:11px" data-t="nav_switch_to">Switch to...</span><span style="font-size:9px;opacity:.5">▾</span>
           </button>
           <div class="curr-menu" id="prod_switch_menu_s1" style="right:0;left:auto">
-            <div class="curr-menu-title">Go to product</div>
+            <div class="curr-menu-title" data-t="curr_go_to_product">Go to product</div>
             <div class="curr-options" id="prod_switch_options_s1"></div>
           </div>
         </div>
@@ -3246,32 +3246,32 @@ input[type=range]::-moz-range-thumb{
 
   <div class="kpi-cbar">
     <span class="kpi-cbar-info" id="kpi_cbar_info"></span>
-    <button class="kpi-cbtn" id="kpi_cbtn" onclick="kpiToggleEdit()">⊞ Customize</button>
+    <button class="kpi-cbtn" id="kpi_cbtn" data-t="kpi_customize" onclick="kpiToggleEdit()">⊞ Customize</button>
   </div>
 
   <div class="kpi-row" id="s1_kpi_row">
     <div class="kpi kpi--hero" style="--kc:var(--c1)">
-      <div class="kpi-lbl">Actual CPA (ads)<span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_actual_cpa">Actual cost per Lead from ads.<br>= Ad budget ÷ total leads needed<br>If above Break-even CPA → business is losing.</span></span></div>
+      <div class="kpi-lbl"><span data-t="kpi_actual_cpa">Actual CPA (ads)</span><span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_actual_cpa">Actual cost per Lead from ads.<br>= Ad budget ÷ total leads needed<br>If above Break-even CPA → business is losing.</span></span></div>
       <div class="kpi-val" id="m_acpp" style="color:var(--c1l)">—</div>
       <div class="kpi-hint" data-t="hint_acpp">Budget ÷ total leads</div>
     </div>
     <div class="kpi" style="--kc:var(--c3)">
-      <div class="kpi-lbl">Actual ROAS <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_actual_roas">Actual return on ad spend.<br>= (Selling price + customer shipping) × delivered orders ÷ ad budget<br>If below Break-even ROAS → business is losing.</span></span></div>
+      <div class="kpi-lbl"><span data-t="m_actual_roas">Actual ROAS</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_actual_roas">Actual return on ad spend.<br>= (Selling price + customer shipping) × delivered orders ÷ ad budget<br>If below Break-even ROAS → business is losing.</span></span></div>
       <div class="kpi-val" id="m_actual_roas" style="color:var(--c3)">—</div>
       <div class="kpi-hint" data-t="hint_roas_rev">Revenue ÷ ad spend</div>
     </div>
     <div class="kpi" style="--kc:var(--muted-2)">
-      <div class="kpi-lbl">Break-even CPA <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_be_cpa">Max CPA you can pay and still cover all business costs (product + shipping + ads + salary).<br>= (Profit/unit − Salary/unit) × Conf% × Del%<br>If Actual CPA exceeds this → you are losing on the whole business.</span></span></div>
+      <div class="kpi-lbl"><span data-t="lbl_be_cpp">Break-even CPA</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_be_cpa">Max CPA you can pay and still cover all business costs (product + shipping + ads + salary).<br>= (Profit/unit − Salary/unit) × Conf% × Del%<br>If Actual CPA exceeds this → you are losing on the whole business.</span></span></div>
       <div class="kpi-val" id="m_maxcpp" style="color:var(--c2)">—</div>
       <div class="kpi-hint" data-t="hint_be_full">Full business break-even</div>
     </div>
     <div class="kpi" style="--kc:var(--muted-2)">
-      <div class="kpi-lbl">Break-even ROAS <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_be_roas">Minimum ROAS needed to cover all business costs.<br>= (Price + ShipC) × Conf% × Del% ÷ Break-even CPA<br>If Actual ROAS is below this → business is losing.</span></span></div>
+      <div class="kpi-lbl"><span data-t="lbl_be_roas">Break-even ROAS</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_be_roas">Minimum ROAS needed to cover all business costs.<br>= (Price + ShipC) × Conf% × Del% ÷ Break-even CPA<br>If Actual ROAS is below this → business is losing.</span></span></div>
       <div class="kpi-val" id="m_be_roas" style="color:var(--c4)">—</div>
       <div class="kpi-hint" id="m_roas_hint" data-t="hint_be_min">Min to break even</div>
     </div>
     <div class="kpi kpi--count" style="--kc:transparent">
-      <div class="kpi-lbl">Leads needed <span style="color:var(--txt3)">(ads)</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_leads_needed">Total leads needed from ads to sell all stock.<br>= Stock ÷ Del% ÷ Conf%</span></span></div>
+      <div class="kpi-lbl"><span data-t="kpi_leads_needed">Leads needed</span> <span style="color:var(--txt3)" data-t="kpi_ads_paren">(ads)</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_leads_needed">Total leads needed from ads to sell all stock.<br>= Stock ÷ Del% ÷ Conf%</span></span></div>
       <div class="kpi-val" id="m_leads" style="color:var(--txt)">—</div>
       <div class="kpi-hint" data-t="hint_leads">All incoming leads</div>
     </div>
@@ -3286,28 +3286,28 @@ input[type=range]::-moz-range-thumb{
       <div class="kpi-hint" data-t="hint_delivered">After delivery rate</div>
     </div>
     <div class="kpi" style="--kc:var(--c1)">
-      <div class="kpi-lbl">CPA Efficiency <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_cpa_eff">Current CPA efficiency vs max allowed.<br>= (BE CPA − Actual CPA) ÷ BE CPA × 100<br>Closer to 100% → safer.<br>Negative → CPA exceeded break-even, you are losing.</span></span></div>
+      <div class="kpi-lbl"><span data-t="kpi_cpa_eff">CPA Efficiency</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_cpa_eff">Current CPA efficiency vs max allowed.<br>= (BE CPA − Actual CPA) ÷ BE CPA × 100<br>Closer to 100% → safer.<br>Negative → CPA exceeded break-even, you are losing.</span></span></div>
       <div class="kpi-val" id="m_cpa_eff">—</div>
       <div class="kpi-hint" data-t="hint_cpa_eff_s">vs break-even limit</div>
     </div>
     <div class="kpi" style="--kc:var(--c3)">
-      <div class="kpi-lbl">Cost / Delivered Order <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_cost_del">Ad cost per actually delivered order.<br>= Ad budget ÷ Delivered Orders<br>This is the real commercial CPA — not per lead.</span></span></div>
+      <div class="kpi-lbl"><span data-t="kpi_cost_del">Cost / Delivered Order</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_cost_del">Ad cost per actually delivered order.<br>= Ad budget ÷ Delivered Orders<br>This is the real commercial CPA — not per lead.</span></span></div>
       <div class="kpi-val" id="m_cost_per_del" style="color:var(--c3)">—</div>
       <div class="kpi-hint" data-t="hint_cost_del_s">Ad budget ÷ delivered</div>
     </div>
     <div class="kpi kpi--count" style="--kc:var(--c1)">
-      <div class="kpi-lbl">Lead → Order Rate <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_lead_order">Lead to delivered order conversion — funnel efficiency in one number.<br>= Delivered ÷ Leads × 100<br>= Conf% × Del%<br>Higher is better.</span></span></div>
+      <div class="kpi-lbl"><span data-t="kpi_lead_order_rate">Lead → Order Rate</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_lead_order">Lead to delivered order conversion — funnel efficiency in one number.<br>= Delivered ÷ Leads × 100<br>= Conf% × Del%<br>Higher is better.</span></span></div>
       <div class="kpi-val" id="m_l2o_rate" style="color:var(--c1)">—</div>
       <div class="kpi-hint">Conf% × Del%</div>
       <div class="kpi-prog"><div class="kpi-prog-fill" id="m_l2o_bar" style="width:0%"></div></div>
     </div>
     <div class="kpi" style="--kc:var(--red)">
-      <div class="kpi-lbl">Wasted Ad Spend <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_wasted">Portion of ad budget spent on leads that did not convert to delivered orders.<br>= Budget × (1 − Conf% × Del%)<br>Not a total loss — confirmation cost is normal — but lower is better.</span></span></div>
+      <div class="kpi-lbl"><span data-t="kpi_wasted">Wasted Ad Spend</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_wasted">Portion of ad budget spent on leads that did not convert to delivered orders.<br>= Budget × (1 − Conf% × Del%)<br>Not a total loss — confirmation cost is normal — but lower is better.</span></span></div>
       <div class="kpi-val" id="m_wasted_spend" style="color:var(--red)">—</div>
       <div class="kpi-hint" data-t="hint_wasted_s">Lost to undelivered leads</div>
     </div>
     <div class="kpi" style="--kc:var(--c1)">
-      <div class="kpi-lbl">Spent on Delivered <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_spent_del">Portion of ad budget that produced actually delivered orders.<br>= Budget × (Conf% × Del%)<br>This is productive spend — higher is better.</span></span></div>
+      <div class="kpi-lbl"><span data-t="kpi_spent_del">Spent on Delivered</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_spent_del">Portion of ad budget that produced actually delivered orders.<br>= Budget × (Conf% × Del%)<br>This is productive spend — higher is better.</span></span></div>
       <div class="kpi-val" id="m_spent_delivered" style="color:var(--c1)">—</div>
       <div class="kpi-hint" data-t="hint_spent_s">Budget on real orders</div>
     </div>
@@ -3356,12 +3356,12 @@ input[type=range]::-moz-range-thumb{
   <div class="charts-2">
     <!-- Chart 1: CPA Gauge -->
     <div class="chart-card">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c1);border-radius:2px"></span>CPA vs Break-even</div>
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c1);border-radius:2px"></span><span data-t="chart_cpa_vs_be">CPA vs Break-even</span></div>
       <div id="gauge_svg" style="text-align:center;padding:6px 0"></div>
       <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--txt3);margin-top:8px;padding:0 4px">
         <span>0</span>
         <span id="gauge_be_lbl" style="color:var(--purple-2);font-weight:600">BE: — EGP</span>
-        <span id="gauge_max_lbl">Max</span>
+        <span id="gauge_max_lbl" data-t="gauge_max">Max</span>
       </div>
       <div id="cpp_alert" class="alert ag" style="margin-top:10px"><span class="alert-icon">✓</span><span id="cpp_msg">—</span></div>
     </div>
@@ -3378,13 +3378,13 @@ input[type=range]::-moz-range-thumb{
   <div class="charts-2">
     <!-- Chart 3: Funnel with drop-off % -->
     <div class="chart-card">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c4)"></span>Funnel drop-off</div>
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c4)"></span><span data-t="chart_funnel_drop">Funnel drop-off</span></div>
       <div id="ch_funnel_svg" style="height:200px;display:flex;align-items:center;justify-content:center"></div>
     </div>
 
     <!-- Chart 4: Sensitivity + You are here -->
     <div class="chart-card">
-      <div class="chart-lbl"><span class="cdot" style="background:var(--c3)"></span>BE CPA vs Lead→Order rate — where are you?</div>
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c3)"></span><span data-t="chart_be_lead_order">BE CPA vs Lead→Order rate — where are you?</span></div>
       <div id="cpp_line_svg" style="padding:4px 0"></div>
     </div>
   </div>
@@ -3394,7 +3394,7 @@ input[type=range]::-moz-range-thumb{
     <div class="target-profit-title" onclick="toggleSection('tp_body','tp_toggle','tp_toggle_lbl')">
       <div class="target-profit-title-left"><span class="tp-icon" style="--ic:#F87171"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span> <span data-t="tp_calc_title">Target Profit Calculator</span></div>
       <div class="scenario-toggle">
-        <span id="tp_toggle_lbl">Show</span>
+        <span id="tp_toggle_lbl" data-t="adv_show">Show</span>
         <div class="toggle-track" id="tp_toggle"><div class="toggle-thumb"></div></div>
       </div>
     </div>
@@ -3410,7 +3410,7 @@ input[type=range]::-moz-range-thumb{
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
       <div class="field" style="margin:0">
-        <label style="color:var(--c2);font-size:11px">✏ Planned CPA <span style="font-size:10px;color:var(--txt3)"><span data-t="lbl_planned_cpa_sub">change it ← Stock recalculates</span></span></label>
+        <label style="color:var(--c2);font-size:11px"><span data-t="lbl_planned_cpa">✏ Planned CPA</span> <span style="font-size:10px;color:var(--txt3)"><span data-t="lbl_planned_cpa_sub">change it ← Stock recalculates</span></span></label>
         <div class="f-row">
           <input type="number" id="tp_cpp" placeholder="e.g. 50" oninput="tpCppTouched=true; dOnTpCpp()"
             style="flex:1;height:34px;padding:0 10px;background:var(--surf2);border:1px solid var(--bdr2);border-right:none;border-radius:var(--r) 0 0 var(--r);color:var(--txt);font-family:var(--mono);font-size:13px;outline:none;-moz-appearance:textfield;">
@@ -3418,20 +3418,20 @@ input[type=range]::-moz-range-thumb{
         </div>
       </div>
       <div class="field" style="margin:0">
-        <label style="color:var(--c1);font-size:11px">✏ Stock needed <span style="font-size:10px;color:var(--txt3)"><span data-t="lbl_stock_needed_sub">change it ← CPA recalculates</span></span></label>
+        <label style="color:var(--c1);font-size:11px"><span data-t="lbl_stock_needed">✏ Stock needed</span> <span style="font-size:10px;color:var(--txt3)"><span data-t="lbl_stock_needed_sub">change it ← CPA recalculates</span></span></label>
         <div class="f-row">
           <input type="number" id="tp_stock_input" placeholder="units" oninput="dOnTpStock()"
             style="flex:1;height:34px;padding:0 10px;background:var(--surf2);border:1px solid var(--bdr2);border-right:none;border-radius:var(--r) 0 0 var(--r);color:var(--txt);font-family:var(--mono);font-size:13px;outline:none;-moz-appearance:textfield;">
-          <span class="unit">units</span>
+          <span class="unit" data-t="unit_units_word">units</span>
         </div>
       </div>
     </div>
 
     <div class="target-profit-results">
-      <div class="tp-kpi"><div class="tp-kpi-lbl">Leads needed</div><div class="tp-kpi-val" id="tp_leads" style="color:var(--c3)">—</div><div class="tp-kpi-sub">total incoming</div></div>
-      <div class="tp-kpi"><div class="tp-kpi-lbl">Revenue expected</div><div class="tp-kpi-val" id="tp_rev" style="color:var(--c4)">—</div><div class="tp-kpi-sub">incl. shipping</div></div>
-      <div class="tp-kpi"><div class="tp-kpi-lbl">Break-even CPA</div><div class="tp-kpi-val" id="tp_becpp" style="color:var(--c1)">—</div><div class="tp-kpi-sub">max you can pay</div></div>
-      <div class="tp-kpi"><div class="tp-kpi-lbl">Break-even ROAS</div><div class="tp-kpi-val" id="tp_be_roas" style="color:var(--c4)">—</div><div class="tp-kpi-sub">min to not lose</div></div>
+      <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="si_leads_lbl">Leads needed</div><div class="tp-kpi-val" id="tp_leads" style="color:var(--c3)">—</div><div class="tp-kpi-sub" data-t="tp_sub_incoming">total incoming</div></div>
+      <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="tp_rev_expected">Revenue expected</div><div class="tp-kpi-val" id="tp_rev" style="color:var(--c4)">—</div><div class="tp-kpi-sub" data-t="tp_sub_incl_ship">incl. shipping</div></div>
+      <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="lbl_be_cpp">Break-even CPA</div><div class="tp-kpi-val" id="tp_becpp" style="color:var(--c1)">—</div><div class="tp-kpi-sub" data-t="tp_sub_max_pay">max you can pay</div></div>
+      <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="lbl_be_roas">Break-even ROAS</div><div class="tp-kpi-val" id="tp_be_roas" style="color:var(--c4)">—</div><div class="tp-kpi-sub" data-t="tp_sub_min_lose">min to not lose</div></div>
     </div>
 
     <div id="tp_alert" class="alert ag" style="margin-top:12px;display:none">
@@ -3445,7 +3445,7 @@ input[type=range]::-moz-range-thumb{
     <div class="target-profit-title" onclick="toggleSection('rc_body','rc_toggle','rc_toggle_lbl')">
       <div class="target-profit-title-left"><span class="tp-icon" style="--ic:#34D399"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span> <span data-t="rc_title">Reality check — am I profitable now?</span></div>
       <div class="scenario-toggle">
-        <span id="rc_toggle_lbl">Show</span>
+        <span id="rc_toggle_lbl" data-t="adv_show">Show</span>
         <div class="toggle-track" id="rc_toggle"><div class="toggle-thumb"></div></div>
       </div>
     </div>
@@ -3483,7 +3483,7 @@ input[type=range]::-moz-range-thumb{
     <div class="target-profit-title" onclick="toggleSection('roas_body','roas_toggle','roas_toggle_lbl')">
       <div class="target-profit-title-left"><span class="tp-icon" style="--ic:#818CF8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></span> <span data-t="roas_title">ROAS Target Simulator</span></div>
       <div class="scenario-toggle">
-        <span id="roas_toggle_lbl">Show</span>
+        <span id="roas_toggle_lbl" data-t="adv_show">Show</span>
         <div class="toggle-track" id="roas_toggle"><div class="toggle-thumb"></div></div>
       </div>
     </div>
@@ -3553,7 +3553,7 @@ input[type=range]::-moz-range-thumb{
         <div class="f-row">
           <input type="number" id="roas_stock" placeholder="units" oninput="dSimResolve()"
             style="flex:1;height:34px;padding:0 10px;background:var(--surf2);border:1px solid var(--bdr2);border-right:none;border-radius:var(--r) 0 0 var(--r);color:var(--txt);font-family:var(--mono);font-size:13px;outline:none;-moz-appearance:textfield;">
-          <span class="unit">units</span>
+          <span class="unit" data-t="unit_units_word">units</span>
         </div>
       </div>
 
@@ -3562,11 +3562,11 @@ input[type=range]::-moz-range-thumb{
     <!-- Results -->
     <div class="target-profit-results">
       <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="roas_leads_lbl">Leads needed (ads)</div><div class="tp-kpi-val" id="roas_leads" style="color:var(--c3)">—</div><div class="tp-kpi-sub" data-t="hint_leads">All incoming leads</div></div>
-      <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="si_budget_lbl">Ad budget needed</div><div class="tp-kpi-val" id="roas_ad_budget" style="color:var(--c2)">—</div><div class="tp-kpi-sub">Revenue ÷ ROAS</div></div>
+      <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="si_budget_lbl">Ad budget needed</div><div class="tp-kpi-val" id="roas_ad_budget" style="color:var(--c2)">—</div><div class="tp-kpi-sub" data-t="roas_sub_rev_roas">Revenue ÷ ROAS</div></div>
       <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="roas_net_lbl">Net profit</div><div class="tp-kpi-val" id="roas_netprofit" style="color:var(--profit)">—</div><div class="tp-kpi-sub" data-t="roas_after_costs_lbl">after all costs</div></div>
-      <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="roas_margin_lbl">Profit margin</div><div class="tp-kpi-val" id="roas_margin_pct" style="color:var(--c1)">—</div><div class="tp-kpi-sub">Net ÷ Revenue</div></div>
-      <div class="tp-kpi"><div class="tp-kpi-lbl">Break-even CPA</div><div class="tp-kpi-val" id="roas_becpp" style="color:var(--c1)">—</div><div class="tp-kpi-sub" data-t="hint_be_full">Full business break-even</div></div>
-      <div class="tp-kpi"><div class="tp-kpi-lbl">Break-even ROAS</div><div class="tp-kpi-val" id="roas_beroas" style="color:var(--c2)">—</div><div class="tp-kpi-sub" data-t="hint_be_min">Min to break even</div></div>
+      <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="roas_margin_lbl">Profit margin</div><div class="tp-kpi-val" id="roas_margin_pct" style="color:var(--c1)">—</div><div class="tp-kpi-sub" data-t="roas_sub_net_rev">Net ÷ Revenue</div></div>
+      <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="lbl_be_cpp">Break-even CPA</div><div class="tp-kpi-val" id="roas_becpp" style="color:var(--c1)">—</div><div class="tp-kpi-sub" data-t="hint_be_full">Full business break-even</div></div>
+      <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="lbl_be_roas">Break-even ROAS</div><div class="tp-kpi-val" id="roas_beroas" style="color:var(--c2)">—</div><div class="tp-kpi-sub" data-t="hint_be_min">Min to break even</div></div>
       <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="roas_rev_lbl">Expected revenue</div><div class="tp-kpi-val" id="roas_rev" style="color:var(--c4)">—</div><div class="tp-kpi-sub" data-t="hero_rev_sub">Total incl. shipping</div></div>
     </div>
 
@@ -3583,7 +3583,7 @@ input[type=range]::-moz-range-thumb{
     <div class="slider-card-header" onclick="toggleSection('sl_body','sl_toggle','sl_toggle_lbl')" style="cursor:pointer">
       <div class="chart-lbl" style="margin:0"><span class="cdot" style="background:var(--c1)"></span> <span data-t="slider_title">What-if sliders — adjust live</span></div>
       <div class="scenario-toggle">
-        <span id="sl_toggle_lbl">Show</span>
+        <span id="sl_toggle_lbl" data-t="adv_show">Show</span>
         <div class="toggle-track" id="sl_toggle"><div class="toggle-thumb"></div></div>
       </div>
     </div>
@@ -3659,7 +3659,7 @@ input[type=range]::-moz-range-thumb{
     <!-- Row 3: Break-even CPA + Ad budget needed -->
     <div class="slider-impact-row2" style="margin-top:8px">
       <div class="si">
-        <div class="si-lbl">Break-even CPA</div>
+        <div class="si-lbl" data-t="lbl_be_cpp">Break-even CPA</div>
         <div class="si-val" id="si_maxcpp" style="color:var(--c2)">—</div>
         <div class="si-sub" id="si_maxcpp_delta"></div>
       </div>
@@ -3696,10 +3696,10 @@ input[type=range]::-moz-range-thumb{
         <div id="prod_indicator_s2" class="prod-indicator"></div>
         <div class="prod-switcher" id="prod_switcher_s2" style="display:none;position:relative">
           <button class="prod-indicator show" onclick="toggleProdSwitcher(event,'s2')" id="prod_switch_btn_s2" style="cursor:pointer;gap:6px">
-            <span style="font-size:11px">📦</span><span style="font-size:11px">Switch to...</span><span style="font-size:9px;opacity:.5">▾</span>
+            <span style="font-size:11px">📦</span><span style="font-size:11px" data-t="nav_switch_to">Switch to...</span><span style="font-size:9px;opacity:.5">▾</span>
           </button>
           <div class="curr-menu" id="prod_switch_menu_s2" style="right:0;left:auto">
-            <div class="curr-menu-title">Go to product</div>
+            <div class="curr-menu-title" data-t="curr_go_to_product">Go to product</div>
             <div class="curr-options" id="prod_switch_options_s2"></div>
           </div>
         </div>
@@ -3713,7 +3713,7 @@ input[type=range]::-moz-range-thumb{
     <div class="kpi-row">
       <div class="kpi" style="--kc:var(--c3)"><div class="kpi-lbl" data-t="ap_sh_real_lbl">Avg Real Shipping / unit</div><div class="kpi-val" id="ap_sh_real" style="color:var(--c3)">—</div><div class="kpi-hint" data-t="ap_sh_weighted_hint">Weighted across products</div></div>
       <div class="kpi" style="--kc:var(--c1)"><div class="kpi-lbl" data-t="ap_sh_collected_lbl">Avg Collected / unit</div><div class="kpi-val" id="ap_sh_collected" style="color:var(--c1)">—</div><div class="kpi-hint" data-t="ap_sh_weighted_hint">Weighted across products</div></div>
-      <div class="kpi" style="--kc:var(--red)"><div class="kpi-lbl" data-t="ap_sh_net_lbl">Avg Net Shipping on you</div><div class="kpi-val" id="ap_sh_net" style="color:var(--red)">—</div><div class="kpi-hint">Real − Collected</div></div>
+      <div class="kpi" style="--kc:var(--red)"><div class="kpi-lbl" data-t="ap_sh_net_lbl">Avg Net Shipping on you</div><div class="kpi-val" id="ap_sh_net" style="color:var(--red)">—</div><div class="kpi-hint" data-t="sh_hint_real_collected">Real − Collected</div></div>
       <div class="kpi" style="--kc:var(--c4)"><div class="kpi-lbl" data-t="ap_sh_total_lbl">Total Shipping Cost</div><div class="kpi-val" id="ap_sh_total" style="color:var(--c4)">—</div><div class="kpi-hint" data-t="ap_sh_all_hint">All products combined</div></div>
     </div>
     <div class="chart-card" style="margin-top:16px">
@@ -3759,11 +3759,11 @@ input[type=range]::-moz-range-thumb{
     <div id="sh_stack_bar" class="shp-stack"></div>
     <div>
       <div class="shp-legrow">
-        <span class="shp-leg-l"><span class="shp-leg-dot" style="background:var(--green)"></span><span id="sh_leg_ff">Fulfillment fee</span></span>
+        <span class="shp-leg-l"><span class="shp-leg-dot" style="background:var(--green)"></span><span id="sh_leg_ff" data-t="seg_ff_fulfill">Fulfillment fee</span></span>
         <span class="shp-leg-v" id="sh_t1" style="color:var(--text)">—</span>
       </div>
       <div class="shp-legrow">
-        <span class="shp-leg-l"><span class="shp-leg-dot" style="background:var(--blue)"></span>Courier cost</span>
+        <span class="shp-leg-l"><span class="shp-leg-dot" style="background:var(--blue)"></span><span data-t="sh_courier_cost">Courier cost</span></span>
         <span class="shp-leg-v" id="sh_t2" style="color:var(--text)">—</span>
       </div>
       <div class="shp-legrow">
@@ -3773,7 +3773,7 @@ input[type=range]::-moz-range-thumb{
     </div>
     <div class="shp-divider"></div>
     <div class="shp-bigrow">
-      <span class="shp-bigrow-lbl">Real shipping / delivered order</span>
+      <span class="shp-bigrow-lbl" data-t="sh_real_per_del">Real shipping / delivered order</span>
       <span class="shp-bigrow-val" id="sh_t6">—</span>
     </div>
     <div class="shp-note">
@@ -3852,16 +3852,16 @@ input[type=range]::-moz-range-thumb{
         <div id="prod_indicator_s3" class="prod-indicator"></div>
         <div class="prod-switcher" id="prod_switcher_s3" style="display:none;position:relative">
           <button class="prod-indicator show" onclick="toggleProdSwitcher(event,'s3')" id="prod_switch_btn_s3" style="cursor:pointer;gap:6px">
-            <span style="font-size:11px">📦</span><span style="font-size:11px">Switch to...</span><span style="font-size:9px;opacity:.5">▾</span>
+            <span style="font-size:11px">📦</span><span style="font-size:11px" data-t="nav_switch_to">Switch to...</span><span style="font-size:9px;opacity:.5">▾</span>
           </button>
           <div class="curr-menu" id="prod_switch_menu_s3" style="right:0;left:auto">
-            <div class="curr-menu-title">Go to product</div>
+            <div class="curr-menu-title" data-t="curr_go_to_product">Go to product</div>
             <div class="curr-options" id="prod_switch_options_s3"></div>
           </div>
         </div>
       </div>
     </div>
-    <div class="section-sub">End-to-end P&L — revenue, costs, profit, and break-even.</div>
+    <div class="section-sub" data-t="sec3_sub">End-to-end P&L — revenue, costs, profit, and break-even.</div>
   </div>
 
   <!-- ALL PRODUCTS — Overview Summary -->
@@ -4033,7 +4033,7 @@ input[type=range]::-moz-range-thumb{
       <div class="chart-lbl"><span class="cdot" style="background:var(--c3)"></span><span data-t="ap_pl_summary_chart">Full Business P&L Summary</span></div>
       <div class="data-table-wrap">
         <table class="data-table" id="ap_pl_table">
-          <thead><tr><th>Line item</th><th style="text-align:right">Total</th><th style="text-align:right">Status</th></tr></thead>
+          <thead><tr><th data-t="th_line">Line item</th><th style="text-align:right" data-t="gen_total">Total</th><th style="text-align:right" data-t="th_status">Status</th></tr></thead>
           <tbody id="ap_pl_tbody"></tbody>
         </table>
       </div>
@@ -4093,7 +4093,7 @@ input[type=range]::-moz-range-thumb{
           <span class="ovx-cap" id="ov_rev_sub">—</span>
         </div>
         <div class="ovx-val" id="ov_rev">—</div>
-        <div class="ovx-meta">Product <b id="ov_rev_prod">—</b><span class="ovx-divider"></span>Shipping <b id="ov_rev_ship">—</b></div>
+        <div class="ovx-meta"><span data-t="rank_product">Product</span> <b id="ov_rev_prod">—</b><span class="ovx-divider"></span><span data-t="nav_shipping">Shipping</span> <b id="ov_rev_ship">—</b></div>
         <div class="ovx-split"><div class="ovx-split-seg" id="ov_rev_prod_seg" style="flex-grow:8;background:#818CF8"></div><div class="ovx-split-seg" id="ov_rev_ship_seg" style="flex-grow:1;background:#A78BFA"></div></div>
       </div>
     </div>
@@ -4128,7 +4128,7 @@ input[type=range]::-moz-range-thumb{
       <!-- Block A — Actual CPA -->
       <div style="margin-bottom:18px">
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
-          <span style="font-size:13px;color:var(--muted)">Actual CPA</span>
+          <span style="font-size:13px;color:var(--muted)" data-t="m_actual_cpa">Actual CPA</span>
           <span class="pl-num" id="ov_actual_cpa" style="font-size:16px;font-weight:700;color:var(--green)">—</span>
         </div>
         <div style="position:relative;height:6px;border-radius:3px;background:var(--track)">
@@ -4144,7 +4144,7 @@ input[type=range]::-moz-range-thumb{
       <!-- Block B — Actual ROAS -->
       <div style="margin-bottom:20px">
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
-          <span style="font-size:13px;color:var(--muted)">Actual ROAS</span>
+          <span style="font-size:13px;color:var(--muted)" data-t="m_actual_roas">Actual ROAS</span>
           <span class="pl-num" id="ov_actual_roas" style="font-size:16px;font-weight:700;color:var(--purple-2)">—</span>
         </div>
         <div style="position:relative;height:6px;border-radius:3px;background:var(--track)">
@@ -4272,7 +4272,7 @@ input[type=range]::-moz-range-thumb{
           <tr><td data-t="pl_ship_cost">Real shipping cost</td><td id="pl_pu_ship">—</td><td id="pl_tot_ship">—</td><td><span class="tag tr" data-t="variable_tag">Variable</span></td></tr>
           <tr id="pl_comm_row" style="display:none"><td data-t="pl_comm">Commission &amp; fees</td><td id="pl_pu_comm">—</td><td id="pl_tot_comm">—</td><td><span class="tag tr" data-t="variable_tag">Variable</span></td></tr>
           <tr id="pl_plat_row"><td data-t="lbl_plat_lead">Platform fee / lead</td><td id="pl_pu_plat">—</td><td id="pl_tot_plat">—</td><td><span class="tag tr" data-t="variable_tag">Variable</span></td></tr>
-          <tr id="pl_pdr_row" style="display:none"><td data-t="adv_pdr_lbl">Post-delivery return</td><td id="pl_pu_pdr">—</td><td id="pl_tot_pdr">—</td><td><span class="tag tr">Variable</span></td></tr>
+          <tr id="pl_pdr_row" style="display:none"><td data-t="adv_pdr_lbl">Post-delivery return</td><td id="pl_pu_pdr">—</td><td id="pl_tot_pdr">—</td><td><span class="tag tr" data-t="variable_tag">Variable</span></td></tr>
           <tr><td data-t="pl_ads">Ad budget</td><td id="pl_pu_ads">—</td><td id="pl_tot_ads">—</td><td><span class="tag ta" data-t="fixed_tag">Fixed</span></td></tr>
           <tr><td data-t="pl_salary">Fixed cost</td><td id="pl_pu_sal">—</td><td id="pl_tot_sal">—</td><td><span class="tag ta" data-t="fixed_tag">Fixed</span></td></tr>
           <tr id="pl_vat_row" style="display:none"><td data-t="pl_vat">VAT payable (net)</td><td id="pl_pu_vat">—</td><td id="pl_tot_vat">—</td><td><span class="tag ta" data-t="tax_tag">Tax</span></td></tr>
@@ -4309,13 +4309,13 @@ input[type=range]::-moz-range-thumb{
     <div class="export-preview">
       <div class="export-preview-header">
         <div class="export-tabs" id="export_tabs">
-          <button class="export-tab-btn active" onclick="showExportTab('inputs')">📋 Inputs</button>
-          <button class="export-tab-btn" onclick="showExportTab('marketing')">📢 Marketing</button>
-          <button class="export-tab-btn" onclick="showExportTab('shipping')">🚚 Shipping</button>
+          <button class="export-tab-btn active" onclick="showExportTab('inputs')" data-t="exp_tab_inputs">📋 Inputs</button>
+          <button class="export-tab-btn" onclick="showExportTab('marketing')" data-t="exp_tab_marketing">📢 Marketing</button>
+          <button class="export-tab-btn" onclick="showExportTab('shipping')" data-t="exp_tab_shipping">🚚 Shipping</button>
           <button class="export-tab-btn" onclick="showExportTab('pl')">💰 P&L</button>
-          <button class="export-tab-btn" onclick="showExportTab('compare')">⚖️ Compare</button>
+          <button class="export-tab-btn" onclick="showExportTab('compare')" data-t="exp_tab_compare">⚖️ Compare</button>
         </div>
-        <span style="color:var(--txt3);font-size:10px">Preview</span>
+        <span style="color:var(--txt3);font-size:10px" data-t="exp_preview">Preview</span>
       </div>
       <div class="export-table-wrap">
         <table class="export-table" id="export_preview_table">
@@ -4326,7 +4326,7 @@ input[type=range]::-moz-range-thumb{
     </div>
     <button class="export-btn" onclick="exportToExcel()">
       <svg viewBox="0 0 16 16"><path d="M8 1v9M4 6l4 4 4-4M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>
-      Download Excel Report
+      <span data-t="export_download_btn">Download Excel Report</span>
     </button>
   </div>
   </div><!-- /sp_ov_panel -->
@@ -4638,59 +4638,60 @@ function mbAllocAddChannel(){
   card.innerHTML = `
     <div class="mb-ch-card-header">
       <div class="mb-ch-card-name">
-        <input type="text" placeholder="Channel name" class="mb-ch-name-inp" style="font-size:12px;font-weight:600;background:none;border:none;border-bottom:1px dashed var(--bdr2);color:var(--txt);outline:none;max-width:140px">
+        <input type="text" placeholder="Channel name" data-t-ph="mb_channel_name_ph" class="mb-ch-name-inp" style="font-size:12px;font-weight:600;background:none;border:none;border-bottom:1px dashed var(--bdr2);color:var(--txt);outline:none;max-width:140px">
       </div>
       <button onclick="this.closest('.mb-alloc-card').remove();mbAllocRecalc()" class="fc-del-btn" style="font-size:16px">×</button>
     </div>
     <div class="mb-card-inputs">
       <div class="mb-card-inp-group">
-        <label>% Allocation</label>
+        <label data-t="mb_pct_alloc">% Allocation</label>
         <div class="f-row"><input type="number" placeholder="%" min="0" max="100" class="mb-alloc-pct" oninput="mbAllocRecalc()"><span class="unit">%</span></div>
       </div>
       <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
-        <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+        <span style="font-size:9px">▶</span> <span data-t="mb_custom_rates">Custom Conf% / Del% rates</span>
       </button>
       <div class="mb-rates-panel">
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <div class="mb-card-inp-group">
-            <label style="font-size:10px">Conf %</label>
-            <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+            <label style="font-size:10px" data-t="mb_conf_pct">Conf %</label>
+            <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
           </div>
           <div class="mb-card-inp-group">
-            <label style="font-size:10px">Del %</label>
-            <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+            <label style="font-size:10px" data-t="mb_del_pct">Del %</label>
+            <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
           </div>
         </div>
       </div>
     </div>
     <div class="mb-card-results">
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">Budget</span>
+        <span class="mb-card-result-label" data-t="mb_res_budget">Budget</span>
         <span class="mb-card-result-val val-budget mb-alloc-budget">—</span>
       </div>
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">Target CPA</span>
+        <span class="mb-card-result-label" data-t="mb_res_target_cpa">Target CPA</span>
         <span class="mb-card-result-val val-cpa mb-alloc-cpa">—</span>
       </div>
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">Leads</span>
+        <span class="mb-card-result-label" data-t="mb_res_leads">Leads</span>
         <span class="mb-card-result-val val-leads mb-alloc-leads">—</span>
       </div>
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">Orders</span>
+        <span class="mb-card-result-label" data-t="mb_res_orders">Orders</span>
         <span class="mb-card-result-val val-orders mb-alloc-orders">—</span>
       </div>
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">Net Profit</span>
+        <span class="mb-card-result-label" data-t="mb_res_net">Net Profit</span>
         <span class="mb-card-result-val mb-alloc-netprofit" style="color:var(--profit)">—</span>
       </div>
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">Margin Profit</span>
+        <span class="mb-card-result-label" data-t="mb_res_margin">Margin Profit</span>
         <span class="mb-card-result-val mb-alloc-margin" style="color:var(--c3)">—</span>
       </div>
     </div>`;
   container.appendChild(card);
   card.querySelector('.mb-ch-name-inp').focus();
+  if(typeof applyLang==='function') applyLang();
 }
 
 // ── MODE: MIN ORDERS — Target orders per channel → Budget + Verdict ──
@@ -4788,56 +4789,57 @@ function mbMOAddChannel(){
   card.innerHTML = `
     <div class="mb-ch-card-header">
       <div class="mb-ch-card-name">
-        <input type="text" placeholder="Channel name" class="mb-ch-name-inp" style="font-size:12px;font-weight:600;background:none;border:none;border-bottom:1px dashed var(--bdr2);color:var(--txt);outline:none;max-width:140px">
+        <input type="text" placeholder="Channel name" data-t-ph="mb_channel_name_ph" class="mb-ch-name-inp" style="font-size:12px;font-weight:600;background:none;border:none;border-bottom:1px dashed var(--bdr2);color:var(--txt);outline:none;max-width:140px">
       </div>
       <span class="mb-mo-verdict mb-verdict-badge unknown">—</span>
       <button onclick="this.closest('.mb-mo-card').remove();mbMORecalc()" class="fc-del-btn" style="font-size:16px">×</button>
     </div>
     <div class="mb-card-inputs">
       <div class="mb-card-inp-group">
-        <label>Min Orders</label>
-        <div class="f-row"><input type="number" placeholder="e.g. 200" min="0" class="mb-mo-orders" oninput="mbMORecalc()"><span class="unit" style="font-size:10px">orders</span></div>
+        <label data-t="mb_min_orders">Min Orders</label>
+        <div class="f-row"><input type="number" placeholder="e.g. 200" min="0" class="mb-mo-orders" oninput="mbMORecalc()"><span class="unit" style="font-size:10px" data-t="unit_orders">orders</span></div>
       </div>
       <div class="mb-card-inp-group">
-        <label>Market CPA <span style="font-weight:400;opacity:.7">(optional)</span></label>
+        <label><span data-t="mb_market_cpa">Market CPA</span> <span style="font-weight:400;opacity:.7" data-t="mb_optional">(optional)</span></label>
         <div class="f-row"><input type="number" placeholder="or BE CPA" min="0" class="mb-mo-cpa" oninput="mbMORecalc()"><span class="unit">EGP</span></div>
       </div>
     </div>
       <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
-        <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+        <span style="font-size:9px">▶</span> <span data-t="mb_custom_rates">Custom Conf% / Del% rates</span>
       </button>
       <div class="mb-rates-panel">
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <div class="mb-card-inp-group">
-            <label style="font-size:10px">Conf %</label>
-            <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+            <label style="font-size:10px" data-t="mb_conf_pct">Conf %</label>
+            <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
           </div>
           <div class="mb-card-inp-group">
-            <label style="font-size:10px">Del %</label>
-            <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+            <label style="font-size:10px" data-t="mb_del_pct">Del %</label>
+            <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
           </div>
         </div>
       </div>
     <div class="mb-card-results" style="grid-template-columns:1fr 1fr">
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">Budget needed</span>
+        <span class="mb-card-result-label" data-t="mb_res_budget_needed">Budget needed</span>
         <span class="mb-card-result-val val-budget mb-mo-budget">—</span>
       </div>
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">Leads needed</span>
+        <span class="mb-card-result-label" data-t="mb_res_leads_needed">Leads needed</span>
         <span class="mb-card-result-val val-leads mb-mo-leads">—</span>
       </div>
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">Net Profit</span>
+        <span class="mb-card-result-label" data-t="mb_res_net">Net Profit</span>
         <span class="mb-card-result-val mb-mo-netprofit" style="color:var(--profit)">—</span>
       </div>
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">Margin Profit</span>
+        <span class="mb-card-result-label" data-t="mb_res_margin">Margin Profit</span>
         <span class="mb-card-result-val mb-mo-margin" style="color:var(--c3)">—</span>
       </div>
     </div>`;
   container.appendChild(card);
   card.querySelector('.mb-ch-name-inp').focus();
+  if(typeof applyLang==='function') applyLang();
 }
 
 // ── MODE: PRO — Per-Channel CPA ────────────────────
@@ -4916,13 +4918,13 @@ function mbProAddChannel(){
   card.innerHTML = `
     <div class="mb-ch-card-header">
       <div class="mb-ch-card-name">
-        <input type="text" placeholder="Channel name" class="mb-ch-name-inp" style="font-size:12px;font-weight:600;background:none;border:none;border-bottom:1px dashed var(--bdr2);color:var(--txt);outline:none;max-width:140px">
+        <input type="text" placeholder="Channel name" data-t-ph="mb_channel_name_ph" class="mb-ch-name-inp" style="font-size:12px;font-weight:600;background:none;border:none;border-bottom:1px dashed var(--bdr2);color:var(--txt);outline:none;max-width:140px">
       </div>
       <button onclick="this.closest('.mb-pro-card').remove();mbProRecalc()" class="fc-del-btn" style="font-size:16px">×</button>
     </div>
     <div class="mb-card-inputs">
       <div class="mb-card-inp-group">
-        <label>% Allocation</label>
+        <label data-t="mb_pct_alloc">% Allocation</label>
         <div class="f-row"><input type="number" placeholder="%" min="0" max="100" class="mb-pro-pct" oninput="mbProRecalc()"><span class="unit">%</span></div>
       </div>
       <div class="mb-card-inp-group">
@@ -4931,44 +4933,45 @@ function mbProAddChannel(){
       </div>
     </div>
       <button class="mb-rates-toggle" onclick="mbToggleRates(this)">
-        <span style="font-size:9px">▶</span> Custom Conf% / Del% rates
+        <span style="font-size:9px">▶</span> <span data-t="mb_custom_rates">Custom Conf% / Del% rates</span>
       </button>
       <div class="mb-rates-panel">
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <div class="mb-card-inp-group">
-            <label style="font-size:10px">Conf %</label>
-            <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+            <label style="font-size:10px" data-t="mb_conf_pct">Conf %</label>
+            <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-conf" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
           </div>
           <div class="mb-card-inp-group">
-            <label style="font-size:10px">Del %</label>
-            <div class="f-row"><input type="number" placeholder="global" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
+            <label style="font-size:10px" data-t="mb_del_pct">Del %</label>
+            <div class="f-row"><input type="number" placeholder="global" data-t-ph="mb_global_ph" min="0" max="100" class="mb-ch-del" oninput="mbRatesChanged(this)"><span class="unit">%</span></div>
           </div>
         </div>
       </div>
     <div class="mb-card-results">
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">Budget</span>
+        <span class="mb-card-result-label" data-t="mb_res_budget">Budget</span>
         <span class="mb-card-result-val val-budget mb-pro-budget">—</span>
       </div>
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">Leads</span>
+        <span class="mb-card-result-label" data-t="mb_res_leads">Leads</span>
         <span class="mb-card-result-val val-leads mb-pro-leads">—</span>
       </div>
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">Orders</span>
+        <span class="mb-card-result-label" data-t="mb_res_orders">Orders</span>
         <span class="mb-card-result-val val-orders mb-pro-orders">—</span>
       </div>
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">Net Profit</span>
+        <span class="mb-card-result-label" data-t="mb_res_net">Net Profit</span>
         <span class="mb-card-result-val mb-pro-netprofit" style="color:var(--profit)">—</span>
       </div>
       <div class="mb-card-result-item">
-        <span class="mb-card-result-label">Margin Profit</span>
+        <span class="mb-card-result-label" data-t="mb_res_margin">Margin Profit</span>
         <span class="mb-card-result-val mb-pro-margin" style="color:var(--c3)">—</span>
       </div>
     </div>`;
   container.appendChild(card);
   card.querySelector('.mb-ch-name-inp').focus();
+  if(typeof applyLang==='function') applyLang();
 }
 
 // Legacy stubs — keep so old references don't break
@@ -8053,7 +8056,7 @@ function _tpRender(stock, cpp, inp){
     if(netProfit >= target){
       alertEl.className = 'alert ag';
       alertEl.querySelector('.alert-icon').textContent = '✓';
-      msgEl.textContent = LANG==='ar' ? `${d0(stock)} وحدة → ربح ${d0(netProfit)} ${CURRENCY} (+${d0(diff)} عن الـ target) ✓` : `${d0(stock)} units → profit ${d0(netProfit)} ${CURRENCY} (+${d0(diff)} above target) ✓`;
+      msgEl.textContent = LANG==='ar' ? `${d0(stock)} وحدة → ربح ${d0(netProfit)} ${CURRENCY} (+${d0(diff)} فوق المستهدف) ✓` : `${d0(stock)} units → profit ${d0(netProfit)} ${CURRENCY} (+${d0(diff)} above target) ✓`;
     } else {
       alertEl.className = 'alert ar';
       alertEl.querySelector('.alert-icon').textContent = '✗';
@@ -9075,6 +9078,128 @@ const T = {
     ex_budget_unit:'Ad budget / unit', ex_salary_unit:'Salary / unit',
     ex_ret_abs_unit:'Return cost absorbed/unit',
     ex_roas_div:'ROAS (Revenue ÷ Ad spend)',
+    mb_pct_alloc:'% Allocation',
+    mb_custom_rates:'Custom Conf% / Del% rates',
+    mb_conf_pct:'Conf %',
+    mb_del_pct:'Del %',
+    mb_res_budget:'Budget',
+    mb_res_target_cpa:'Target CPA',
+    mb_res_leads:'Leads',
+    mb_res_orders:'Orders',
+    mb_res_net:'Net Profit',
+    mb_res_margin:'Margin Profit',
+    mb_res_budget_needed:'Budget needed',
+    mb_res_leads_needed:'Leads needed',
+    mb_min_orders:'Min Orders',
+    mb_market_cpa:'Market CPA',
+    mb_optional:'(optional)',
+    mb_tot_alloc:'% allocated',
+    mb_tot_leads:'Total leads',
+    mb_tot_orders:'Total orders',
+    mb_tot_net:'Total Net Profit',
+    mb_tot_margin:'Total Margin Profit',
+    mb_tot_budget_needed:'Total budget needed',
+    mb_tot_leads_needed:'Total leads needed',
+    mb_tot_del_orders:'Total delivered orders',
+    mb_add_channel:'+ Add channel',
+    mb_channel_name_ph:'Channel name',
+    mb_global_ph:'global',
+    mb_seg_cpa_order:'CPA / Order',
+    mb_seg_total_budget:'Total Budget',
+    mb_seg_alloc:'% Allocation',
+    mb_seg_to_budget:'→ Budget',
+    mb_seg_perch:'Per-Channel',
+    mb_plan_q:'How do you plan your campaigns?',
+    mb_total_ad_budget:'Total ad budget',
+    mb_target_cpa_eff:'Target CPA efficiency',
+    mb_preset_aggressive:'Aggressive',
+    mb_preset_realistic:'Realistic',
+    mb_preset_safe:'Safe',
+    tip_cpa_eff_target:'How aggressively you plan to buy, relative to your break-even CPA. Lower % = safer (bigger margin); higher % = more aggressive (closer to break-even). Default 70% keeps a 30% safety margin.',
+    fc_cat_ops:'🏢 Operations & Admin',
+    fc_cat_team:'👥 Team & Payroll',
+    fc_cat_tech:'💻 Tech & Tools',
+    fc_cat_mktg:'📣 Marketing Fixed',
+    fc_cat_fulfill:'📦 Fulfillment Fixed',
+    fc_cat_cs:'🎯 Customer Service',
+    fc_ops_rent:'Office / warehouse rent',
+    fc_ops_utils:'Utilities (electricity, internet, phone)',
+    fc_ops_admin:'Admin & accounting fees',
+    fc_ops_insurance:'Social insurance',
+    fc_team_salaries:'Employee salaries',
+    fc_team_bonus:'Fixed bonuses & commissions',
+    fc_team_freelance:'Freelancers (monthly retainer)',
+    fc_tech_cms:'CMS / Store (Shopify, WooCommerce...)',
+    fc_tech_hosting:'Hosting + domain',
+    fc_tech_automation:'Automation tools (Zapier, Make...)',
+    fc_tech_design:'Design software (Adobe, Canva...)',
+    fc_tech_crm:'CRM / Customer service (Freshdesk...)',
+    fc_tech_analytics:'Analytics & tracking tools',
+    fc_mktg_creative:'Creative production costs',
+    fc_mktg_influencers:'Influencers & bloggers',
+    fc_mktg_sms:'SMS / Email marketing subscription',
+    fc_fulfill_rent:'Warehouse / storage rent',
+    fc_fulfill_wms:'Warehouse software (WMS)',
+    fc_fulfill_packaging:'Packaging & fixed supplies',
+    fc_cs_callcenter:'Call center (outsourced)',
+    fc_cs_ticketing:'Ticketing & chat tools',
+    cf_custom_fees:'CUSTOM FEES',
+    cf_total_label:'Total fees per order (all-in)',
+    fc_advanced_breakdown:'Advanced breakdown',
+    gen_total:'Total',
+    biz_wide_note:'↳ Business-wide — shared across all products (split by orders)',
+    kpi_actual_cpa:'Actual CPA (ads)',
+    m_actual_cpa:'Actual CPA',
+    m_actual_roas:'Actual ROAS',
+    kpi_cpa_eff:'CPA Efficiency',
+    kpi_cost_del:'Cost / Delivered Order',
+    kpi_lead_order_rate:'Lead → Order Rate',
+    kpi_wasted:'Wasted Ad Spend',
+    kpi_spent_del:'Spent on Delivered',
+    kpi_leads_needed:'Leads needed',
+    kpi_ads_paren:'(ads)',
+    tp_rev_expected:'Revenue expected',
+    tp_sub_incoming:'total incoming',
+    tp_sub_incl_ship:'incl. shipping',
+    tp_sub_max_pay:'max you can pay',
+    tp_sub_min_lose:'min to not lose',
+    sh_courier_cost:'Courier cost',
+    sh_real_per_del:'Real shipping / delivered order',
+    chart_cpa_vs_be:'CPA vs Break-even',
+    chart_funnel_drop:'Funnel drop-off',
+    chart_be_lead_order:'BE CPA vs Lead→Order rate — where are you?',
+    gauge_max:'Max',
+    nav_switch_to:'Switch to...',
+    curr_go_to_product:'Go to product',
+    bundle_avg_price:'Avg price / unit',
+    bundle_avg_ship:'Avg ship / order',
+    bundle_singles:'Single orders (auto)',
+    bundle_add_btn2:'+ Add Bundle',
+    adv_cashflow_title:'⚙️ Operations & Cash Flow',
+    cashflow_sim_title:'Cash Flow Simulation',
+    cashflow_ccc:'⏱ CCC Calculator',
+    cashflow_wc:'💰 Working Capital',
+    cashflow_3sc:'📊 3 Scenarios',
+    cashflow_stocksim:'📦 Stock Simulation',
+    coming_soon:'COMING SOON',
+    cashflow_desc:'Based on CCC and available capital — calculates max daily budget, ad scenarios, and days to sell out stock',
+    exp_tab_inputs:'📋 Inputs',
+    exp_tab_marketing:'📢 Marketing',
+    exp_tab_shipping:'🚚 Shipping',
+    exp_tab_compare:'⚖️ Compare',
+    exp_preview:'Preview',
+    tip_pdr_info:'Customer received the product then requested a return. Affects Net Delivered Orders and profitPU via additional shipping cost and optional product loss.',
+    cf_seg_units:'Avg units / order',
+    unit_units_word:'units',
+    fc_mode_preset:'📋 Preset categories',
+    fc_mode_custom:'✏️ Custom table',
+    fc_add_item:'+ Add item',
+    cf_add_fee:'+ Add fee',
+    export_download_btn:'Download Excel Report',
+    bundle_pricing_title:'🎁 Bundle Pricing',
+    roas_sub_rev_roas:'Revenue ÷ ROAS',
+    roas_sub_net_rev:'Net ÷ Revenue',
+    sh_hint_real_collected:'Real − Collected',
   },
   ar: {
     nav_inputs:'المدخلات', nav_marketing:'الإعلانات', nav_shipping:'الشحن', nav_overview:'نظرة عامة',
@@ -9147,7 +9272,7 @@ const T = {
     roas_title:'محاكي ROAS المستهدف', lbl_roas_target:'ROAS الذي تريد تحقيقه',
     lbl_roas_orders:'الأوردرات المستهدفة', roas_budget_lbl:'الميزانية المطلوبة',
     roas_cpp_lbl:'أقصى CPA مسموح', roas_rev_lbl:'الإيراد المتوقع',
-    slider_title:'محاكاة What-if — اضبط لترى التأثير',
+    slider_title:'محاكاة الاحتمالات — اضبط لترى التأثير',
     si_profit_lbl:'ربح / وحدة', si_maxcpp_lbl:'MAX CPA', si_be_lbl:'نقطة التعادل',
     sc_title:'مقارنة السيناريوهات', sc_show:'إظهار', sc_a:'السيناريو A', sc_b:'السيناريو B',
     hero_pu:'صافي الربح / وحدة', hero_total:'الربح الكلي (كل المخزون)',
@@ -9161,52 +9286,52 @@ const T = {
     adv_vat_hint_on:'مفتوح → VAT بيأثر على الإيراد والتكاليف',
     adv_pdr_lbl:'نسبة المرتجع بعد الاستلام',
     adv_pdr_hint_off:'مقفول → مفيش مرتجع بعد الاستلام في الحسابات',
-    adv_pdr_hint_on:'مفتوح → المرتجع بعد الاستلام بيأثر على الـ profitPU وصافي الأوردرات',
+    adv_pdr_hint_on:'مفتوح → المرتجع بعد الاستلام بيأثر على ربح الوحدة وصافي الأوردرات',
     adv_pdr_rate_lbl:'نسبة المرتجع (% من الموصّل)',
     adv_pdr_ship_lbl:'تكلفة شحن المرتجع',
     adv_pdr_damaged_lbl:'المنتج بيتتلف؟ (خسارة تكلفة المنتج)',
     lbl_ret_damaged:'% المرتجع التالف (خسارة تكلفة المنتج)',
     tip_ret_damaged:'من كل أوردر مرتجع — سواء رجع قبل التسليم (RTO) أو رجع بعد ما العميل استلمه — النسبة دي مبتتباعش تاني، فبتخسر تكلفة المنتج كاملة عليها. بتتطبّق على المرتجعات قبل وبعد التسليم. سيبها 0 لو كل المرتجعات بترجع صالحة للبيع.',
-    tip_ff_ret:'التكلفة الكلية لكل أوردر مرتجع — شاملة رحلة الكورير للإرجاع + الـ fulfillment fee للمرتجع + أي رسوم تانية.<br>في مصر، شركات الشحن بتحاسبك على الرحلتين (تسليم + إرجاع) حتى لو العميل رفض.<br>مثال: لو الكورير 70 للتسليم + 35 fulfillment للمرتجع = 105 EGP',
-    tip_comm:'نسبة عمولة بتتحسب على كل أوردر موصّل — مثال: عمولة شركة شحن أو marketplace.',
+    tip_ff_ret:'التكلفة الكلية لكل أوردر مرتجع — شاملة رحلة الكورير للإرجاع + رسوم الفولفلمينت للمرتجع + أي رسوم تانية.<br>في مصر، شركات الشحن بتحاسبك على الرحلتين (تسليم + إرجاع) حتى لو العميل رفض.<br>مثال: لو الكورير 70 للتسليم + 35 فولفلمينت للمرتجع = 105 EGP',
+    tip_comm:'نسبة عمولة بتتحسب على كل أوردر موصّل — مثال: عمولة شركة شحن أو منصة بيع.',
     tip_gateway:'نسبة بيأخذها بوابة الدفع على كل أوردر موصّل — مثال: Paymob, Stripe, PayTabs.',
-    tip_plat:'مبلغ ثابت بيتحسب على كل lead بييجي من الإعلانات — بغض النظر عن التأكيد أو التوصيل.<br>مثال: منصة EasyOrders بتاخد مبلغ على كل lead وارد.',
-    tip_budget:'إجمالي ميزانية الإعلانات الشهرية على كل الـ channels.<br>لو فتحت الـ Channel breakdown، التول بيجمع الـ channels تلقائي هنا.',
-    tip_avg_cpp:'متوسط تكلفة اكتساب الـ Lead عبر كل الـ channels مجتمعة.<br>لو فتحت الـ Channel breakdown، بيتحسب تلقائي كـ weighted average.<br>لو بتكتب هنا مباشرة → standalone.',
+    tip_plat:'مبلغ ثابت بيتحسب على كل ليد بييجي من الإعلانات — بغض النظر عن التأكيد أو التوصيل.<br>مثال: منصة EasyOrders بتاخد مبلغ على كل ليد وارد.',
+    tip_budget:'إجمالي ميزانية الإعلانات الشهرية على كل القنوات.<br>لو فتحت تقسيم القنوات، التول بيجمع القنوات تلقائي هنا.',
+    tip_avg_cpp:'متوسط تكلفة اكتساب الليد عبر كل القنوات مجتمعة.<br>لو فتحت تقسيم القنوات، بيتحسب تلقائي كـ متوسط موزون.<br>لو بتكتب هنا مباشرة → مستقل.',
     tip_salary:'كل التكاليف الثابتة الشهرية — رواتب، إيجار، اشتراكات، أدوات، إنتاج...<br>تكلفة على مستوى البيزنس: بتتكتب مرة واحدة وبتتقسم على كل المنتجات حسب عدد الأوردرات في صفحة الإجمالي.',
-    tip_dur:'مدة الحملة بالشهور. التول يضرب الـ Salary الشهري × المدة علشان يحسب التكلفة الإجمالية للراتب.<br>لو القفل مقفول → التول بيعتبر الحملة شهر واحد (السلوك الافتراضي).',
-    tip_vat:'نسبة ضريبة القيمة المضافة (14% في مصر للمسجّلين). التول بيخصم الـ VAT من الإيراد وبيضيف VAT على التكاليف (input VAT).<br>لو القفل مقفول → التول مش بيحسب VAT نهائياً.',
-    tip_bundle:'حط كل bundle وعدد الأوردرات. التول هيحسب متوسط السعر والشحن تلقائياً.',
-    tip_real_ship:'التكلفة الحقيقية للشحن لكل وحدة موصّلة بعد احتساب المرتجعات.<br>= (Del% × costDel + (1−Del%) × costRet) ÷ Del%',
+    tip_dur:'مدة الحملة بالشهور. التول يضرب الراتب الشهري × المدة علشان يحسب التكلفة الإجمالية للراتب.<br>لو القفل مقفول → التول بيعتبر الحملة شهر واحد (السلوك الافتراضي).',
+    tip_vat:'نسبة ضريبة القيمة المضافة (14% في مصر للمسجّلين). التول بيخصم الـ VAT من الإيراد وبيضيف VAT على التكاليف (ضريبة المدخلات).<br>لو القفل مقفول → التول مش بيحسب VAT نهائياً.',
+    tip_bundle:'حط كل باندل وعدد الأوردرات. التول هيحسب متوسط السعر والشحن تلقائياً.',
+    tip_real_ship:'التكلفة الحقيقية للشحن لكل وحدة موصّلة بعد احتساب المرتجعات.<br>= (Del% × تكلفة التوصيل + (1−Del%) × تكلفة المرتجع) ÷ Del%',
     tip_collected:'مبلغ الشحن اللي بتحصّله من العميل لكل وحدة موصّلة.',
-    tip_net_ship:'صافي تكلفة الشحن اللي بتتحملها أنت بعد ما العميل دفع.<br>= Real shipping − Customer pays',
-    tip_actual_cpa:'تكلفة الليد الفعلية من الإعلانات.<br>= ميزانية الإعلانات ÷ إجمالي الليدز المطلوبة<br>لو أعلى من Break-even CPA → البزنس بيخسر.',
-    tip_actual_roas:'العائد الفعلي على الإنفاق الإعلاني.<br>= (سعر البيع + شحن العميل) × عدد الأوردرات الموصّلة ÷ ميزانية الإعلانات<br>لو أقل من Break-even ROAS → البزنس بيخسر.',
-    tip_be_cpa:'أقصى سعر ليد ممكن تدفعه وتغطي كل تكاليف البزنس (منتج + شحن + إعلانات + راتب).<br>= (Profit/unit − Salary/unit) × Conf% × Del%<br>لو الـ Actual CPA عدى الرقم ده → أنت بتخسر على البزنس كله.',
-    tip_be_roas:'أدنى ROAS لازم تحققه عشان تغطي كل تكاليف البزنس كاملة.<br>= (Price + ShipC) × Conf% × Del% ÷ Break-even CPA<br>لو الـ Actual ROAS أقل من الرقم ده → البزنس بيخسر.',
-    tip_leads_needed:'إجمالي الليدز المطلوبة من الإعلانات لتصريف كل المخزون.<br>= Stock ÷ Del% ÷ Conf%',
-    tip_confirmed:'عدد الأوردرات المؤكدة من الليدز.<br>= Leads × Confirmation rate',
-    tip_delivered:'الأوردرات الموصّلة فعلاً — دي وحداتك المباعة الحقيقية.<br>= Confirmed × Delivery rate',
-    tip_cpa_eff:'كفاءة الـ CPA الحالي مقارنةً بالحد الأقصى المسموح.<br>= (BE CPA − Actual CPA) ÷ BE CPA × 100<br>كلما اقترب من 100% → أنت بعيد عن الخطر.<br>لو سالب → الـ CPA تجاوز الـ Break-even وأنت بتخسر.',
-    tip_cost_del:'تكلفة الإعلان لكل أوردر وصل فعلاً للعميل.<br>= ميزانية الإعلانات ÷ Delivered Orders<br>ده الـ CPA الحقيقي بالمعنى التجاري — مش per lead.',
-    tip_lead_order:'نسبة تحويل الليد لأوردر موصّل — كفاءة الـ funnel في رقم واحد.<br>= Delivered ÷ Leads × 100<br>= Conf% × Del%<br>كلما ارتفع → ميزانيتك بتشتغل أكفأ.',
-    tip_wasted:'الجزء من ميزانية الإعلانات اللي راح على ليدز ما اتحولتش لأوردرات موصّلة.<br>= Budget × (1 − Conf% × Del%)',
-    tip_spent_del:'الجزء من ميزانية الإعلانات اللي أنتج أوردرات وصلت فعلاً للعميل.<br>= Budget × (Conf% × Del%)',
-    lbl_target_profit:'🔒 Target net profit — ثابت',
-    lbl_planned_cpa:'✏ Planned CPA',
-    lbl_planned_cpa_sub:'غيّره ← Stock يتحسب',
-    lbl_stock_needed:'✏ Stock needed',
+    tip_net_ship:'صافي تكلفة الشحن اللي بتتحملها أنت بعد ما العميل دفع.<br>= الشحن الحقيقي − دفع العميل',
+    tip_actual_cpa:'تكلفة الليد الفعلية من الإعلانات.<br>= ميزانية الإعلانات ÷ إجمالي الليدز المطلوبة<br>لو أعلى من CPA التعادل → البزنس بيخسر.',
+    tip_actual_roas:'العائد الفعلي على الإنفاق الإعلاني.<br>= (سعر البيع + شحن العميل) × عدد الأوردرات الموصّلة ÷ ميزانية الإعلانات<br>لو أقل من ROAS التعادل → البزنس بيخسر.',
+    tip_be_cpa:'أقصى سعر ليد ممكن تدفعه وتغطي كل تكاليف البزنس (منتج + شحن + إعلانات + راتب).<br>= (ربح/وحدة − راتب/وحدة) × Conf% × Del%<br>لو الـ CPA الفعلي عدى الرقم ده → أنت بتخسر على البزنس كله.',
+    tip_be_roas:'أدنى ROAS لازم تحققه عشان تغطي كل تكاليف البزنس كاملة.<br>= (السعر + شحن العميل) × Conf% × Del% ÷ CPA التعادل<br>لو الـ ROAS الفعلي أقل من الرقم ده → البزنس بيخسر.',
+    tip_leads_needed:'إجمالي الليدز المطلوبة من الإعلانات لتصريف كل المخزون.<br>= المخزون ÷ Del% ÷ Conf%',
+    tip_confirmed:'عدد الأوردرات المؤكدة من الليدز.<br>= الليدز × نسبة التأكيد',
+    tip_delivered:'الأوردرات الموصّلة فعلاً — دي وحداتك المباعة الحقيقية.<br>= المؤكدة × نسبة التوصيل',
+    tip_cpa_eff:'كفاءة الـ CPA الحالي مقارنةً بالحد الأقصى المسموح.<br>= (BE CPA − CPA الفعلي) ÷ BE CPA × 100<br>كلما اقترب من 100% → أنت بعيد عن الخطر.<br>لو سالب → الـ CPA تجاوز حد التعادل وأنت بتخسر.',
+    tip_cost_del:'تكلفة الإعلان لكل أوردر وصل فعلاً للعميل.<br>= ميزانية الإعلانات ÷ الأوردرات الموصّلة<br>ده الـ CPA الحقيقي بالمعنى التجاري — مش لكل ليد.',
+    tip_lead_order:'نسبة تحويل الليد لأوردر موصّل — كفاءة الفانل في رقم واحد.<br>= الموصّلة ÷ الليدز × 100<br>= Conf% × Del%<br>كلما ارتفع → ميزانيتك بتشتغل أكفأ.',
+    tip_wasted:'الجزء من ميزانية الإعلانات اللي راح على ليدز ما اتحولتش لأوردرات موصّلة.<br>= الميزانية × (1 − Conf% × Del%)',
+    tip_spent_del:'الجزء من ميزانية الإعلانات اللي أنتج أوردرات وصلت فعلاً للعميل.<br>= الميزانية × (Conf% × Del%)',
+    lbl_target_profit:'🔒 صافي الربح المستهدف — ثابت',
+    lbl_planned_cpa:'✏ CPA المخطط',
+    lbl_planned_cpa_sub:'غيّره ← المخزون يتحسب',
+    lbl_stock_needed:'✏ المخزون المطلوب',
     lbl_stock_needed_sub:'غيّره ← CPA يتحسب',
     ov_net_all:'صافي الربح الكلي — كل المنتجات',
     ov_all_products:'كل المنتجات',
     ov_all_campaigns:'كل الكامبينيات',
-    ov_before_fixed:'قبل Fixed Costs',
-    ov_ads_blended:'الإعلانات — Blended',
-    ov_ship_blended:'الشحن والتوصيل — Blended',
+    ov_before_fixed:'قبل التكاليف الثابتة',
+    ov_ads_blended:'الإعلانات — مدمج',
+    ov_ship_blended:'الشحن والتوصيل — مدمج',
     ov_units_dist:'توزيع الوحدات الكلي',
     ov_delivered:'وصلت',
     ov_returned:'رجعت',
-    ov_ship_cost_unit:'تكلفة شحن / وحدة (weighted avg)',
+    ov_ship_cost_unit:'تكلفة شحن / وحدة (متوسط موزون)',
     ov_you_bear:'بتتحمّله',
     ov_customer_pays:'العميل بيدفع',
     ov_net:'صافي',
@@ -9215,14 +9340,14 @@ const T = {
     ov_after_ads:'بعد الإعلانات والراتب',
     ov_rev_toggle:'+شحن',
     ov_total_returns:'إجمالي تكلفة الإرجاعات', ov_net_ship_impact:'صافي أثر الشحن',
-    export_sub:'كل أناليسيز المنتجات في شيت Excel واحدة — Inputs، Marketing، Shipping، P&L، ومقارنة المنتجات',
+    export_sub:'كل أناليسيز المنتجات في شيت Excel واحدة — المدخلات، الإعلانات، الشحن، P&L، ومقارنة المنتجات',
     js_auto_cpa:'★ الـ CPA المستهدف = ',
     js_auto_cpa_suffix:' (هامش أمان 30%)',
-    js_no_be_cpa:'⚠ أدخل بيانات المنتج في الـ Inputs عشان يتحسب Break-even CPA تلقائي',
-    js_be_hint:'★ Break-even CPA: ',
-    js_be_hint_suffix:' — أي channel CPA أقل منه = ربح ✅',
-    js_no_be_cpa2:'أدخل بيانات المنتج في الـ Inputs عشان يتحسب الـ Break-even CPA تلقائي',
-    stale_data_msg:'⚠ ظبط الـ Confirmation/Delivery rate فوق — الأرقام دي مجمدة مش لايف',
+    js_no_be_cpa:'⚠ أدخل بيانات المنتج في المدخلات عشان يتحسب CPA التعادل تلقائي',
+    js_be_hint:'★ CPA التعادل: ',
+    js_be_hint_suffix:' — أي CPA للقناة أقل منه = ربح ✅',
+    js_no_be_cpa2:'أدخل بيانات المنتج في المدخلات عشان يتحسب CPA التعادل تلقائي',
+    stale_data_msg:'⚠ ظبط نسبة التأكيد/التوصيل فوق — الأرقام دي مجمدة مش لايف',
     js_orders_suffix:' أوردر',
     js_leads_suffix:' ليد',
     js_returns_expected:' مرتجع متوقع',
@@ -9236,7 +9361,7 @@ const T = {
     js_loss_badge:'✗ خسارة',
     js_locked:'🔒 مقفول',
     js_unlocked:'🔓 مفتوح',
-    js_weighted_be:'Break-even الموزون: ',
+    js_weighted_be:'التعادل الموزون: ',
     js_be_roas:'BE ROAS: ',
     js_bundle_locked:'مقفول → سعر واحد مستخدم',
     js_bundle_unlocked:'مفتوح → متوسط السعر والشحن المدمج',
@@ -9252,15 +9377,15 @@ const T = {
     bundle_label:'باندل', bundle_units:'وحدات / أوردر', bundle_price:'السعر الكلي',
     bundle_orders:'أوردرات مباعة', bundle_free_ship:'شحن مجاني', bundle_remove:'إزالة',
     si_status_ok:'✓ رابح — CPA أقل من نقطة التعادل',
-    si_status_warn:'⚠ ربح لكن CPA تجاوز الـ BE',
+    si_status_warn:'⚠ ربح لكن CPA تجاوز حد التعادل',
     si_status_loss:'✗ خسارة بهذا الـ CPA',
     delta_base:'أساس',
     ap_profitable:'✓ رابح', ap_loss:'✗ خسارة',
     ap_of:'من', ap_products_profitable:'منتج رابح',
-    blended_cpa_hint:'→ Blended CPA: ',
+    blended_cpa_hint:'→ CPA مدمج: ',
     excel_profitable:'رابح', excel_loss:'خسارة',
     hide_card:'إخفاء', show_card:'إظهار', drag_card:'اسحب لإعادة الترتيب',
-    enter_market_cpa:'أدخل Market CPA',
+    enter_market_cpa:'أدخل CPA السوق',
     income_tag:'دخل', fixed_tag:'ثابت', variable_tag:'متغير', tax_tag:'ضريبة',
     pl_salary:'التكلفة الثابتة',
     curr_menu_title:'اختر العملة',
@@ -9273,14 +9398,14 @@ const T = {
     ap_sh_real_lbl:'متوسط الشحن الحقيقي / وحدة', ap_sh_collected_lbl:'متوسط المحصّل / وحدة',
     ap_sh_net_lbl:'متوسط صافي الشحن عليك', ap_sh_total_lbl:'إجمالي تكلفة الشحن',
     ap_sh_weighted_hint:'موزون عبر المنتجات', ap_sh_all_hint:'كل المنتجات مجتمعة',
-    ap_cpa_chart:'CPA مقابل Break-even CPA — لكل منتج',
+    ap_cpa_chart:'CPA مقابل CPA التعادل — لكل منتج',
     ap_budget_chart:'ميزانية الإعلانات — لكل منتج',
     ap_sh_chart:'تكلفة الشحن الحقيقية مقابل المحصّل — لكل منتج',
     ov_total_rev_lbl:'إجمالي الإيرادات',
     ov_portfolio_margin_lbl:'هامش المحفظة', ov_portfolio_margin_sub:'صافي الربح ÷ الإيراد',
     sl_sync_btn:'↺ مزامنة من المدخلات', sl_sync_title:'إعادة تعيين المؤشرات للقيم الحالية',
     be_label:'تعادل: ',
-    ap_blended_cpa_lbl:'Blended CPA', ap_blended_roas_lbl:'Blended ROAS', ap_weighted_be_lbl:'Weighted BE CPA',
+    ap_blended_cpa_lbl:'CPA مدمج', ap_blended_roas_lbl:'ROAS مدمج', ap_weighted_be_lbl:'BE CPA الموزون',
     ap_total_leads_lbl:'إجمالي الليدز', ap_total_conf_lbl:'إجمالي المؤكدات', ap_total_del_lbl:'إجمالي الموصّلات',
     ap_del_orders_chart:'الأوردرات الموصّلة — لكل منتج',
     ap_net_profit_chart:'صافي الربح لكل منتج', ap_rev_breakdown_chart:'توزيع الإيرادات',
@@ -9309,7 +9434,7 @@ const T = {
     si_margin_pu_lbl:'ربح الهامش / وحدة', si_net_pu_lbl:'صافي الربح / وحدة',
     si_budget_lbl:'الميزانية المطلوبة',
     sim_roas_lbl:'ROAS المستهدف', sim_rev_lbl:'الإيراد المستهدف',
-    sim_cpp_lbl_s:'Planned CPA', sim_stock_lbl_s:'المخزون المطلوب',
+    sim_cpp_lbl_s:'CPA المخطط', sim_stock_lbl_s:'المخزون المطلوب',
     tp_calc_title:'حاسبة الربح المستهدف',
     sh_totals_lbl:'الإجماليات — كل المخزون',
     chart_sh_sens:'لو نسبة توصيلك اتغيرت — كيف يتأثر صافي الربح؟',
@@ -9370,6 +9495,128 @@ const T = {
     ex_budget_unit:'الميزانية / وحدة', ex_salary_unit:'التكاليف الثابتة / وحدة',
     ex_ret_abs_unit:'تكلفة المرتجع / وحدة',
     ex_roas_div:'ROAS (الإيراد ÷ الإعلانات)',
+    mb_pct_alloc:'نسبة التوزيع %',
+    mb_custom_rates:'نِسب تأكيد/توصيل مخصّصة',
+    mb_conf_pct:'تأكيد %',
+    mb_del_pct:'توصيل %',
+    mb_res_budget:'الميزانية',
+    mb_res_target_cpa:'CPA المستهدف',
+    mb_res_leads:'الليدز',
+    mb_res_orders:'الأوردرات',
+    mb_res_net:'صافي الربح',
+    mb_res_margin:'ربح الهامش',
+    mb_res_budget_needed:'الميزانية المطلوبة',
+    mb_res_leads_needed:'الليدز المطلوبة',
+    mb_min_orders:'أقل أوردرات',
+    mb_market_cpa:'CPA السوق',
+    mb_optional:'(اختياري)',
+    mb_tot_alloc:'نسبة الموزّع %',
+    mb_tot_leads:'إجمالي الليدز',
+    mb_tot_orders:'إجمالي الأوردرات',
+    mb_tot_net:'إجمالي صافي الربح',
+    mb_tot_margin:'إجمالي ربح الهامش',
+    mb_tot_budget_needed:'إجمالي الميزانية المطلوبة',
+    mb_tot_leads_needed:'إجمالي الليدز المطلوبة',
+    mb_tot_del_orders:'إجمالي الأوردرات الموصّلة',
+    mb_add_channel:'+ إضافة قناة',
+    mb_channel_name_ph:'اسم القناة',
+    mb_global_ph:'عام',
+    mb_seg_cpa_order:'CPA / أوردر',
+    mb_seg_total_budget:'إجمالي الميزانية',
+    mb_seg_alloc:'نسبة التوزيع',
+    mb_seg_to_budget:'→ الميزانية',
+    mb_seg_perch:'لكل قناة',
+    mb_plan_q:'إزاي بتخطط حملاتك؟',
+    mb_total_ad_budget:'إجمالي ميزانية الإعلانات',
+    mb_target_cpa_eff:'كفاءة الـ CPA المستهدف',
+    mb_preset_aggressive:'عدواني',
+    mb_preset_realistic:'واقعي',
+    mb_preset_safe:'آمن',
+    tip_cpa_eff_target:'إزاي بتخطط تشتري بقوة، نسبةً لـ CPA التعادل بتاعك. نسبة أقل = أأمن (هامش أكبر)؛ نسبة أعلى = أكثر جرأة (أقرب للتعادل). الافتراضي 70% بيسيب هامش أمان 30%.',
+    fc_cat_ops:'🏢 العمليات والإدارة',
+    fc_cat_team:'👥 الفريق والرواتب',
+    fc_cat_tech:'💻 التقنية والأدوات',
+    fc_cat_mktg:'📣 تسويق ثابت',
+    fc_cat_fulfill:'📦 فولفلمينت ثابت',
+    fc_cat_cs:'🎯 خدمة العملاء',
+    fc_ops_rent:'إيجار المكتب / المخزن',
+    fc_ops_utils:'مرافق (كهربا، إنترنت، تليفون)',
+    fc_ops_admin:'رسوم إدارية ومحاسبية',
+    fc_ops_insurance:'تأمينات اجتماعية',
+    fc_team_salaries:'رواتب الموظفين',
+    fc_team_bonus:'مكافآت وعمولات ثابتة',
+    fc_team_freelance:'فريلانسرز (اشتراك شهري)',
+    fc_tech_cms:'متجر / CMS (Shopify, WooCommerce...)',
+    fc_tech_hosting:'استضافة + دومين',
+    fc_tech_automation:'أدوات أتمتة (Zapier, Make...)',
+    fc_tech_design:'برامج تصميم (Adobe, Canva...)',
+    fc_tech_crm:'CRM / خدمة عملاء (Freshdesk...)',
+    fc_tech_analytics:'أدوات تحليلات وتتبّع',
+    fc_mktg_creative:'تكاليف إنتاج الكرييتف',
+    fc_mktg_influencers:'مؤثرين ومدوّنين',
+    fc_mktg_sms:'اشتراك SMS / إيميل ماركتنج',
+    fc_fulfill_rent:'إيجار المخزن / التخزين',
+    fc_fulfill_wms:'برنامج إدارة المخازن (WMS)',
+    fc_fulfill_packaging:'تغليف ومستلزمات ثابتة',
+    fc_cs_callcenter:'كول سنتر (خارجي)',
+    fc_cs_ticketing:'أدوات تذاكر وشات',
+    cf_custom_fees:'رسوم مخصّصة',
+    cf_total_label:'إجمالي الرسوم لكل أوردر (شامل)',
+    fc_advanced_breakdown:'تفصيل متقدم',
+    gen_total:'الإجمالي',
+    biz_wide_note:'↳ على مستوى البيزنس — مشترك بين كل المنتجات (بيتقسّم بالأوردرات)',
+    kpi_actual_cpa:'CPA الفعلي (إعلانات)',
+    m_actual_cpa:'CPA الفعلي',
+    m_actual_roas:'ROAS الفعلي',
+    kpi_cpa_eff:'كفاءة الـ CPA',
+    kpi_cost_del:'تكلفة / أوردر موصّل',
+    kpi_lead_order_rate:'معدل الليد → أوردر',
+    kpi_wasted:'إنفاق إعلاني مهدور',
+    kpi_spent_del:'إنفاق على الموصّل',
+    kpi_leads_needed:'الليدز المطلوبة',
+    kpi_ads_paren:'(إعلانات)',
+    tp_rev_expected:'الإيراد المتوقع',
+    tp_sub_incoming:'إجمالي الوارد',
+    tp_sub_incl_ship:'شامل الشحن',
+    tp_sub_max_pay:'أقصى مبلغ تدفعه',
+    tp_sub_min_lose:'الحد الأدنى لعدم الخسارة',
+    sh_courier_cost:'تكلفة الكورير',
+    sh_real_per_del:'الشحن الحقيقي / أوردر موصّل',
+    chart_cpa_vs_be:'CPA مقابل التعادل',
+    chart_funnel_drop:'تسرّب الفانل',
+    chart_be_lead_order:'CPA التعادل مقابل معدل الليد→أوردر — إنت فين؟',
+    gauge_max:'الأقصى',
+    nav_switch_to:'بدّل لـ...',
+    curr_go_to_product:'اذهب للمنتج',
+    bundle_avg_price:'متوسط السعر / وحدة',
+    bundle_avg_ship:'متوسط الشحن / أوردر',
+    bundle_singles:'أوردرات فردية (تلقائي)',
+    bundle_add_btn2:'+ إضافة باندل',
+    adv_cashflow_title:'⚙️ العمليات والتدفق النقدي',
+    cashflow_sim_title:'محاكاة التدفق النقدي',
+    cashflow_ccc:'⏱ حاسبة CCC',
+    cashflow_wc:'💰 رأس المال العامل',
+    cashflow_3sc:'📊 3 سيناريوهات',
+    cashflow_stocksim:'📦 محاكاة المخزون',
+    coming_soon:'قريباً',
+    cashflow_desc:'بناءً على دورة التحويل النقدي ورأس المال المتاح — بيحسب أقصى ميزانية يومية، وسيناريوهات الإعلان، وعدد الأيام لتصريف المخزون',
+    exp_tab_inputs:'📋 المدخلات',
+    exp_tab_marketing:'📢 الإعلانات',
+    exp_tab_shipping:'🚚 الشحن',
+    exp_tab_compare:'⚖️ مقارنة',
+    exp_preview:'معاينة',
+    tip_pdr_info:'العميل استلم المنتج وبعدين طلب يرجّعه. بيأثر على صافي الأوردرات الموصّلة وربح الوحدة عن طريق تكلفة شحن إضافية وخسارة محتملة لتكلفة المنتج.',
+    cf_seg_units:'متوسط الوحدات / أوردر',
+    unit_units_word:'وحدة',
+    fc_mode_preset:'📋 فئات جاهزة',
+    fc_mode_custom:'✏️ جدول مخصّص',
+    fc_add_item:'+ إضافة بند',
+    cf_add_fee:'+ إضافة رسم',
+    export_download_btn:'تحميل تقرير Excel',
+    bundle_pricing_title:'🎁 تسعير الباندل',
+    roas_sub_rev_roas:'الإيراد ÷ ROAS',
+    roas_sub_net_rev:'الصافي ÷ الإيراد',
+    sh_hint_real_collected:'الحقيقي − المحصّل',
   }
 };
 
@@ -9386,6 +9633,11 @@ function applyLang(){
     const key = el.dataset.tTitle;
     if(T[LANG][key] !== undefined) el.title = T[LANG][key];
   });
+  document.querySelectorAll('[data-t-ph]').forEach(el=>{
+    const key = el.dataset.tPh;
+    if(T[LANG][key] !== undefined) el.placeholder = T[LANG][key];
+  });
+  if(typeof _simUpdateUI === 'function') _simUpdateUI();
   if(typeof ffSyncHint === 'function') ffSyncHint();
   if(typeof renderExportPreview==='function' && document.getElementById('export_thead')?.children.length){
     renderExportPreview();
