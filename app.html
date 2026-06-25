@@ -276,19 +276,20 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 .mymsg-overlay{
   position:fixed;inset:0;z-index:1200;
   background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
-  display:flex;align-items:flex-end;justify-content:center;
+  display:flex;align-items:center;justify-content:center;
   opacity:0;pointer-events:none;transition:opacity .2s;
+  padding:20px;
 }
 .mymsg-overlay.open{opacity:1;pointer-events:all}
 .mymsg-modal{
   background:var(--surf);border:1px solid var(--bdr2);
-  border-radius:18px 18px 0 0;
-  width:100%;max-width:520px;height:82dvh;
+  border-radius:16px;
+  width:100%;max-width:500px;height:min(82dvh,680px);
   display:flex;flex-direction:column;
-  transform:translateY(20px);transition:transform .22s;
-  overflow:hidden;
+  transform:scale(.97) translateY(8px);transition:transform .22s;
+  overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.55);
 }
-.mymsg-overlay.open .mymsg-modal{transform:translateY(0)}
+.mymsg-overlay.open .mymsg-modal{transform:scale(1) translateY(0)}
 .mymsg-head{
   display:flex;align-items:center;gap:10px;
   padding:16px 18px;border-bottom:1px solid var(--bdr);flex-shrink:0;
@@ -306,7 +307,7 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
   transition:background .15s;
 }
 .mymsg-close-btn:hover{background:var(--surf3)}
-.mymsg-body{flex:1;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:8px;}
+.mymsg-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:14px 16px;display:flex;flex-direction:column;gap:8px;}
 .mymsg-body::-webkit-scrollbar{width:4px}
 .mymsg-body::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:4px}
 .mymsg-empty{
@@ -10189,7 +10190,12 @@ window.addEventListener('load', ()=>{
           menu.classList.toggle('open', willOpen);
         });
         document.addEventListener('click', e => { if (!wrap.contains(e.target)) menu.classList.remove('open'); });
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') menu.classList.remove('open'); });
+        document.addEventListener('keydown', e => {
+          if (e.key === 'Escape') {
+            menu.classList.remove('open');
+            myMsgClose();
+          }
+        });
       }
 
       // Cloud sync every 3s
@@ -10362,11 +10368,13 @@ window.addEventListener('load', ()=>{
     const menu = document.getElementById('__pl_menu');
     if (menu) menu.classList.remove('open');
     document.getElementById('mymsg_overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
     myMsgLoad();
   };
 
   window.myMsgClose = function() {
     document.getElementById('mymsg_overlay').classList.remove('open');
+    document.body.style.overflow = '';
   };
 
   window.myMsgLoad = async function() {
