@@ -354,6 +354,20 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
   align-self:center;font-size:11px;color:var(--txt3);font-style:italic;padding:4px 0;
 }
 .mymsg-loading{flex:1;display:flex;align-items:center;justify-content:center;color:var(--txt3);font-size:13px}
+.mymsg-lightbox{
+  display:none;position:fixed;inset:0;z-index:1300;
+  background:rgba(0,0,0,.88);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;padding:24px;
+}
+.mymsg-lightbox.open{display:flex}
+.mymsg-lightbox img{max-width:92vw;max-height:88vh;border-radius:10px;object-fit:contain;box-shadow:0 16px 64px rgba(0,0,0,.6)}
+.mymsg-lightbox-close{
+  position:fixed;top:16px;inset-inline-start:16px;
+  width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(255,255,255,.14);color:#fff;font-size:18px;
+  display:flex;align-items:center;justify-content:center;transition:background .15s;
+}
+.mymsg-lightbox-close:hover{background:rgba(255,255,255,.26)}
 .fb-btn:not(:disabled):hover{opacity:.88}
 .fb-success{text-align:center;padding:10px 20px 24px}
 .fb-success-icon{font-size:40px;margin-bottom:10px}
@@ -10431,7 +10445,7 @@ window.addEventListener('load', ()=>{
       const avLetter = n.out ? MM_ESC((window.__sbUser?.email||'أ').charAt(0).toUpperCase()) : 'P';
       const time = new Date(n.ts).toLocaleTimeString(LANG==='ar'?'ar-EG':'en-US',{hour:'2-digit',minute:'2-digit'});
       const imgHtml = n.image_url
-        ? '<img src="'+MM_ESC(n.image_url)+'" alt="attachment" loading="lazy" onclick="openLightbox&&openLightbox(\''+MM_ESC(n.image_url)+'\')" style="display:block">'
+        ? '<img src="'+MM_ESC(n.image_url)+'" alt="attachment" loading="lazy" onclick="myMsgOpenLightbox(this.src)" style="display:block">'
         : '';
       html +=
         '<div class="mymsg-bubble-wrap '+dir+'">'+
@@ -10446,6 +10460,18 @@ window.addEventListener('load', ()=>{
     body.innerHTML = html;
     body.scrollTop = body.scrollHeight;
   };
+
+  window.myMsgOpenLightbox = function(url) {
+    document.getElementById('mymsg_lightbox_img').src = url;
+    document.getElementById('mymsg_lightbox').classList.add('open');
+  };
+  window.myMsgCloseLightbox = function() {
+    document.getElementById('mymsg_lightbox').classList.remove('open');
+    document.getElementById('mymsg_lightbox_img').src = '';
+  };
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('mymsg_lightbox')?.classList.contains('open')) myMsgCloseLightbox();
+  });
   // ── END MY MESSAGES ────────────────────────────────────────────────────────
 
   // ── END FEEDBACK ──────────────────────────────────────────────────────────
@@ -10717,6 +10743,12 @@ function toggleRevShipping(){
       <div class="mymsg-loading">جاري التحميل…</div>
     </div>
   </div>
+</div>
+
+<!-- My Messages image lightbox -->
+<div class="mymsg-lightbox" id="mymsg_lightbox" onclick="myMsgCloseLightbox()">
+  <button class="mymsg-lightbox-close" onclick="myMsgCloseLightbox()" title="إغلاق">✕</button>
+  <img id="mymsg_lightbox_img" src="" alt="preview" onclick="event.stopPropagation()">
 </div>
 
 <div class="fb-overlay" id="fb_overlay" onclick="fbOverlayClick(event)">

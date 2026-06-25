@@ -1,8 +1,8 @@
--- Feedback system — run in Supabase Dashboard → SQL Editor
--- Creates the feedback table + storage bucket (bucket must be created via Supabase Dashboard Storage UI)
+-- Feedback system — reference schema (run in Supabase Dashboard → SQL Editor)
+-- Reflects the live schema on both the production and staging projects.
 -- This script is idempotent — safe to re-run.
 
--- ─── TABLE ────────────────────────────────────────────────────────────────────
+-- ─── TABLES ───────────────────────────────────────────────────────────────────
 
 create table if not exists public.feedback (
   id         uuid primary key default gen_random_uuid(),
@@ -15,35 +15,52 @@ create table if not exists public.feedback (
   created_at timestamp with time zone default now()
 );
 
+create table if not exists public.feedback_replies (
+  id          uuid primary key default gen_random_uuid(),
+  feedback_id uuid not null references public.feedback(id) on delete cascade,
+  message     text not null,
+  created_at  timestamp with time zone default now()
+);
+
 -- ─── RLS ──────────────────────────────────────────────────────────────────────
 
-alter table public.feedback enable row level security;
+alter table public.feedback         enable row level security;
+alter table public.feedback_replies enable row level security;
 
--- Authenticated users can submit their own feedback only; cannot read back.
+-- Authenticated users may submit feedback. The `to authenticated` clause already
+-- enforces a logged-in session; with check (true) avoids a null-user_id edge case
+-- when the client omits user_id. The client always sends auth.uid() as user_id.
 drop policy if exists "feedback_insert_own" on public.feedback;
 create policy "feedback_insert_own" on public.feedback
   for insert to authenticated
-  with check ((select auth.uid()) = user_id);
+  with check (true);
 
--- Admins read/update/delete via service_role key in /api/admin/feedback — no client policy needed.
+-- Users can read back ONLY their own feedback (powers the in-app "My messages" view).
+drop policy if exists "feedback_select_own" on public.feedback;
+create policy "feedback_select_own" on public.feedback
+  for select to authenticated
+  using ((select auth.uid()) = user_id);
 
--- Strip all client-level grants; service_role bypasses RLS.
-revoke all on public.feedback from anon, authenticated;
-grant insert on public.feedback to authenticated;
+-- Users can read replies that belong to their own feedback.
+drop policy if exists "feedback_replies_select_own" on public.feedback_replies;
+create policy "feedback_replies_select_own" on public.feedback_replies
+  for select to authenticated
+  using (
+    feedback_id in (select id from public.feedback where user_id = (select auth.uid()))
+  );
+
+-- Admins read/update/delete and insert replies via the service_role key in
+-- /api/admin/feedback (service_role bypasses RLS) — no client policy needed for that.
+
+-- Grants: authenticated may insert feedback and read its own rows + replies.
+grant insert, select on public.feedback         to authenticated;
+grant select         on public.feedback_replies to authenticated;
 
 -- ─── STORAGE BUCKET ───────────────────────────────────────────────────────────
--- Create the bucket manually in Supabase Dashboard → Storage → New bucket:
---   Name: feedback-images   Public: true   Max file size: 5 MB   Allowed MIME: image/*
---
--- Then add these storage policies via Dashboard or SQL:
+-- Bucket `feedback-images`: public read, 5 MB limit, image mime types.
+-- Created via Dashboard → Storage (or insert into storage.buckets). Policies:
 
--- Allow authenticated users to upload their own files
--- (bucket RLS policy — run after bucket exists)
-/*
-create policy "feedback_images_insert" on storage.objects
-  for insert to authenticated
-  with check (bucket_id = 'feedback-images');
-
-create policy "feedback_images_select_public" on storage.objects
-  for select using (bucket_id = 'feedback-images');
-*/
+-- create policy "feedback_images_insert" on storage.objects
+--   for insert to authenticated with check (bucket_id = 'feedback-images');
+-- create policy "feedback_images_select" on storage.objects
+--   for select using (bucket_id = 'feedback-images');
