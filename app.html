@@ -8772,6 +8772,7 @@ function toggleCurrMenu(e){
   const isOpen = menu.classList.contains('show');
   document.querySelectorAll('.curr-menu').forEach(m => m.classList.remove('show'));
   document.querySelectorAll('.curr-btn').forEach(b => b.classList.remove('open'));
+  document.getElementById('__pl_menu')?.classList.remove('open');
   if(!isOpen){
     buildCurrMenu();
     menu.classList.add('show');
@@ -9849,7 +9850,13 @@ window.addEventListener('load', ()=>{
 
         const avBtn = wrap.querySelector('#__pl_av');
         const menu  = wrap.querySelector('#__pl_menu');
-        avBtn.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); });
+        avBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          const willOpen = !menu.classList.contains('open');
+          document.querySelectorAll('.curr-menu').forEach(m => m.classList.remove('show'));
+          document.querySelectorAll('.curr-btn').forEach(b => b.classList.remove('open'));
+          menu.classList.toggle('open', willOpen);
+        });
         document.addEventListener('click', e => { if (!wrap.contains(e.target)) menu.classList.remove('open'); });
         document.addEventListener('keydown', e => { if (e.key === 'Escape') menu.classList.remove('open'); });
       }
