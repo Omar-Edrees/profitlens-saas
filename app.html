@@ -135,7 +135,7 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 .curr-arrow{font-size:9px;color:var(--txt3);transition:transform .2s}
 .curr-btn.open .curr-arrow{transform:rotate(180deg)}
 .curr-menu{
-  display:none;position:absolute;top:calc(100% + 6px);right:0;z-index:200;
+  display:none;position:absolute;top:calc(100% + 6px);inset-inline-end:0;z-index:200;
   background:var(--surf);border:1px solid var(--bdr2);border-radius:10px;
   min-width:200px;box-shadow:0 8px 24px rgba(0,0,0,.3);overflow:hidden;
 }
@@ -181,7 +181,7 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 .pl-avatar:hover{box-shadow:0 0 0 2px var(--c1)}
 .pl-avatar img{width:100%;height:100%;object-fit:cover}
 .pl-menu{
-  position:absolute;top:calc(100% + 8px);right:0;z-index:200;
+  position:absolute;top:calc(100% + 8px);inset-inline-end:0;z-index:200;
   width:248px;max-width:calc(100vw - 24px);
   background:var(--surf);border:1px solid var(--bdr2);
   border-radius:12px;padding:6px;
@@ -211,6 +211,168 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 .pl-menu-btn svg{flex-shrink:0}
 .pl-menu-btn:hover{background:var(--surf3);color:var(--txt)}
 .pl-menu-btn.danger:hover{background:rgba(239,68,68,.12);color:#f87171}
+
+/* ─── FEEDBACK MODAL ─────────────────────────────────── */
+.fb-overlay{
+  position:fixed;inset:0;z-index:9000;
+  background:rgba(0,0,0,.65);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s;
+  padding:16px;
+}
+.fb-overlay.open{opacity:1;visibility:visible}
+.fb-modal{
+  background:var(--surf);border:1px solid var(--bdr2);border-radius:18px;
+  width:100%;max-width:420px;max-height:90vh;overflow-y:auto;
+  box-shadow:0 24px 64px rgba(0,0,0,.55);
+  transform:translateY(16px);transition:transform .2s;
+}
+.fb-overlay.open .fb-modal{transform:translateY(0)}
+.fb-modal-head{
+  display:flex;align-items:center;gap:12px;
+  padding:20px 20px 0;margin-bottom:16px;
+}
+.fb-type-icon{
+  width:40px;height:40px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.fb-modal-title{font-size:15px;font-weight:700;color:var(--txt-title);flex:1}
+.fb-modal-close{
+  width:30px;height:30px;border:none;background:transparent;border-radius:8px;
+  cursor:pointer;color:var(--txt2);display:flex;align-items:center;justify-content:center;
+  transition:background .15s;
+}
+.fb-modal-close:hover{background:var(--surf3)}
+.fb-step{padding:0 20px 20px;animation:fbFadeIn .18s ease}
+@keyframes fbFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fb-lbl{font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:6px;display:block}
+.fb-input,.fb-textarea{
+  width:100%;padding:10px 13px;border:1px solid var(--bdr2);border-radius:10px;
+  background:var(--surf2);color:var(--txt);font-family:var(--body);font-size:13px;
+  transition:border-color .15s;outline:none;
+}
+.fb-input:focus,.fb-textarea:focus{border-color:var(--c1)}
+.fb-textarea{resize:vertical;min-height:110px;max-height:240px}
+.fb-field{margin-bottom:14px}
+.fb-upload-area{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:100%;min-height:72px;
+  border:2px dashed var(--bdr2);border-radius:10px;padding:14px 16px;
+  cursor:pointer;transition:border-color .15s,background .15s;margin-bottom:14px;gap:6px;
+}
+.fb-upload-area:hover,.fb-upload-area.drag{border-color:var(--c1);background:rgba(52,211,153,.04)}
+.fb-upload-hint{font-size:12px;color:var(--txt2);text-align:center;line-height:1.4}
+.fb-preview{max-width:100%;max-height:140px;border-radius:8px;border:1px solid var(--bdr);object-fit:cover}
+.fb-remove-img{display:block;width:100%;text-align:center;font-size:11px;color:var(--red);cursor:pointer;margin-bottom:10px;background:none;border:none;padding:0;font-family:var(--body)}
+.fb-remove-img:hover{text-decoration:underline}
+.fb-btn{
+  width:100%;padding:11px;border:none;border-radius:10px;
+  background:var(--c1);color:#0b0e14;font-family:var(--head);font-size:14px;font-weight:700;
+  cursor:pointer;transition:opacity .15s;
+}
+.fb-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ── My Messages chat overlay ── */
+.mymsg-overlay{
+  position:fixed;inset:0;z-index:1200;
+  background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+  padding:20px;
+}
+.mymsg-overlay.open{opacity:1;pointer-events:all}
+.mymsg-modal{
+  background:var(--surf);border:1px solid var(--bdr2);
+  border-radius:16px;
+  width:100%;max-width:500px;height:min(82dvh,680px);
+  display:flex;flex-direction:column;
+  transform:scale(.97) translateY(8px);transition:transform .22s;
+  overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.55);
+}
+.mymsg-overlay.open .mymsg-modal{transform:scale(1) translateY(0)}
+.mymsg-head{
+  display:flex;align-items:center;gap:10px;
+  padding:16px 18px;border-bottom:1px solid var(--bdr);flex-shrink:0;
+}
+.mymsg-head-title{font-size:15px;font-weight:700;flex:1;color:var(--txt)}
+.mymsg-refresh-btn{
+  font-size:11px;font-weight:600;padding:5px 12px;border-radius:7px;border:1px solid var(--bdr2);
+  background:transparent;color:var(--txt2);cursor:pointer;font-family:var(--body);
+  transition:background .15s;
+}
+.mymsg-refresh-btn:hover{background:var(--surf2)}
+.mymsg-close-btn{
+  width:28px;height:28px;border:none;background:transparent;border-radius:8px;
+  cursor:pointer;color:var(--txt2);display:flex;align-items:center;justify-content:center;
+  transition:background .15s;
+}
+.mymsg-close-btn:hover{background:var(--surf3)}
+.mymsg-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:14px 16px;display:flex;flex-direction:column;gap:8px;}
+.mymsg-body::-webkit-scrollbar{width:4px}
+.mymsg-body::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:4px}
+.mymsg-empty{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:32px 20px;gap:10px;
+}
+.mymsg-empty-icon{font-size:36px;opacity:.4}
+.mymsg-empty-title{font-size:14px;font-weight:600;color:var(--txt2)}
+.mymsg-empty-sub{font-size:12px;color:var(--txt3);line-height:1.5;max-width:280px}
+.mymsg-sep{
+  align-self:center;font-size:10px;color:var(--txt3);
+  background:var(--surf2);border-radius:20px;padding:2px 12px;margin:4px 0;
+}
+.mymsg-type-sep{
+  display:flex;align-items:center;gap:8px;margin:6px 0 2px;
+}
+.mymsg-type-sep span{font-size:10px;font-weight:700;padding:2px 10px;border-radius:20px;}
+.mymsg-type-complaint{background:rgba(239,68,68,.12);color:#ef4444}
+.mymsg-type-suggestion{background:rgba(34,197,94,.12);color:#22c55e}
+.mymsg-type-customization{background:rgba(139,92,246,.12);color:#8b5cf6}
+.mymsg-bubble-wrap{display:flex;gap:8px;max-width:82%;}
+.mymsg-bubble-wrap.out{align-self:flex-end;flex-direction:row-reverse}
+.mymsg-bubble-wrap.in{align-self:flex-start}
+.mymsg-av{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;margin-top:2px;
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;
+}
+.mymsg-bubble-wrap.out .mymsg-av{background:linear-gradient(135deg,var(--c1),#0e9460)}
+.mymsg-bubble-wrap.in  .mymsg-av{background:linear-gradient(135deg,#5b6af5,#8b5cf6)}
+.mymsg-bubble{
+  padding:9px 13px;border-radius:14px;font-size:13px;line-height:1.6;
+  white-space:pre-wrap;word-break:break-word;
+}
+.mymsg-bubble-wrap.out .mymsg-bubble{
+  background:rgba(var(--c1-rgb,52,211,153),.15);border:1px solid rgba(var(--c1-rgb,52,211,153),.25);
+  border-top-left-radius:4px;
+}
+.mymsg-bubble-wrap.in .mymsg-bubble{
+  background:var(--surf2);border:1px solid var(--bdr);border-top-right-radius:4px;
+}
+.mymsg-bubble img{max-width:180px;max-height:130px;border-radius:8px;border:1px solid var(--bdr);object-fit:cover;margin-top:8px;cursor:zoom-in}
+.mymsg-time{font-size:10px;color:var(--txt3);margin-top:3px;text-align:end}
+.mymsg-no-reply{
+  align-self:center;font-size:11px;color:var(--txt3);font-style:italic;padding:4px 0;
+}
+.mymsg-loading{flex:1;display:flex;align-items:center;justify-content:center;color:var(--txt3);font-size:13px}
+.mymsg-lightbox{
+  display:none;position:fixed;inset:0;z-index:1300;
+  background:rgba(0,0,0,.88);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;padding:24px;
+}
+.mymsg-lightbox.open{display:flex}
+.mymsg-lightbox img{max-width:92vw;max-height:88vh;border-radius:10px;object-fit:contain;box-shadow:0 16px 64px rgba(0,0,0,.6)}
+.mymsg-lightbox-close{
+  position:fixed;top:16px;inset-inline-start:16px;
+  width:38px;height:38px;border-radius:50%;border:none;cursor:pointer;
+  background:rgba(255,255,255,.14);color:#fff;font-size:18px;
+  display:flex;align-items:center;justify-content:center;transition:background .15s;
+}
+.mymsg-lightbox-close:hover{background:rgba(255,255,255,.26)}
+.fb-btn:not(:disabled):hover{opacity:.88}
+.fb-success{text-align:center;padding:10px 20px 24px}
+.fb-success-icon{font-size:40px;margin-bottom:10px}
+.fb-success-title{font-size:16px;font-weight:700;color:var(--txt-title);margin-bottom:6px}
+.fb-success-msg{font-size:13px;color:var(--txt2);line-height:1.6}
 
 /* mobile tab bar — hidden on desktop */
 .mobile-tabs{display:none}
@@ -1033,6 +1195,14 @@ body[data-theme="light"] #s0 .f-row select.freq-unit{ border-inline-start-color:
 .ov2-gauge-roas{background:var(--c4)}
 .ov2-gauge-marker{position:absolute;top:-3px;width:2px;height:12px;background:var(--c2);border-radius:1px;transition:left .6s cubic-bezier(.4,0,.2,1)}
 .ov2-gauge-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);font-family:var(--mono);margin-top:4px}
+
+/* ── Force LTR on all progress-bar / gauge elements so fills always grow
+   left→right and labels always read 0 (left) → max (right) in both LTR & RTL ── */
+[dir="rtl"] .ov2-gauge-track,
+[dir="rtl"] .ov2-gauge-labels,
+[dir="rtl"] .bdg-track,
+[dir="rtl"] .bdg-row,
+[dir="rtl"] .fn-row { direction:ltr; }
 
 .ov2-ship-compare{display:flex;align-items:center;gap:8px;margin-top:8px}
 .ov2-ship-item{background:var(--surf2);border-radius:8px;padding:8px 12px;flex:1;text-align:center}
@@ -3203,7 +3373,7 @@ input[type=range]::-moz-range-thumb{
           <button class="prod-indicator show" onclick="toggleProdSwitcher(event,'s1')" id="prod_switch_btn_s1" style="cursor:pointer;gap:6px">
             <span style="font-size:11px">📦</span><span style="font-size:11px" data-t="nav_switch_to">Switch to...</span><span style="font-size:9px;opacity:.5">▾</span>
           </button>
-          <div class="curr-menu" id="prod_switch_menu_s1" style="right:0;left:auto">
+          <div class="curr-menu" id="prod_switch_menu_s1" style="inset-inline-end:0">
             <div class="curr-menu-title" data-t="curr_go_to_product">Go to product</div>
             <div class="curr-options" id="prod_switch_options_s1"></div>
           </div>
@@ -3698,7 +3868,7 @@ input[type=range]::-moz-range-thumb{
           <button class="prod-indicator show" onclick="toggleProdSwitcher(event,'s2')" id="prod_switch_btn_s2" style="cursor:pointer;gap:6px">
             <span style="font-size:11px">📦</span><span style="font-size:11px" data-t="nav_switch_to">Switch to...</span><span style="font-size:9px;opacity:.5">▾</span>
           </button>
-          <div class="curr-menu" id="prod_switch_menu_s2" style="right:0;left:auto">
+          <div class="curr-menu" id="prod_switch_menu_s2" style="inset-inline-end:0">
             <div class="curr-menu-title" data-t="curr_go_to_product">Go to product</div>
             <div class="curr-options" id="prod_switch_options_s2"></div>
           </div>
@@ -3854,7 +4024,7 @@ input[type=range]::-moz-range-thumb{
           <button class="prod-indicator show" onclick="toggleProdSwitcher(event,'s3')" id="prod_switch_btn_s3" style="cursor:pointer;gap:6px">
             <span style="font-size:11px">📦</span><span style="font-size:11px" data-t="nav_switch_to">Switch to...</span><span style="font-size:9px;opacity:.5">▾</span>
           </button>
-          <div class="curr-menu" id="prod_switch_menu_s3" style="right:0;left:auto">
+          <div class="curr-menu" id="prod_switch_menu_s3" style="inset-inline-end:0">
             <div class="curr-menu-title" data-t="curr_go_to_product">Go to product</div>
             <div class="curr-options" id="prod_switch_options_s3"></div>
           </div>
@@ -4131,6 +4301,7 @@ input[type=range]::-moz-range-thumb{
           <span style="font-size:13px;color:var(--muted)" data-t="m_actual_cpa">Actual CPA</span>
           <span class="pl-num" id="ov_actual_cpa" style="font-size:16px;font-weight:700;color:var(--green)">—</span>
         </div>
+        <div style="direction:ltr">
         <div style="position:relative;height:6px;border-radius:3px;background:var(--track)">
           <div id="ov_cpa_gauge" style="width:0%;height:100%;border-radius:3px;background:linear-gradient(90deg,#818CF8,#A5B4FC)"></div>
           <div style="position:absolute;top:-3px;left:100%;width:2px;height:12px;background:var(--red);transform:translateX(-2px)"></div>
@@ -4138,6 +4309,7 @@ input[type=range]::-moz-range-thumb{
         <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px">
           <span style="color:var(--muted-2)">0</span>
           <span class="pl-num" id="ov_be_cpa_lbl" style="color:var(--muted)">BE: —</span>
+        </div>
         </div>
       </div>
 
@@ -4147,6 +4319,7 @@ input[type=range]::-moz-range-thumb{
           <span style="font-size:13px;color:var(--muted)" data-t="m_actual_roas">Actual ROAS</span>
           <span class="pl-num" id="ov_actual_roas" style="font-size:16px;font-weight:700;color:var(--purple-2)">—</span>
         </div>
+        <div style="direction:ltr">
         <div style="position:relative;height:6px;border-radius:3px;background:var(--track)">
           <div id="ov_roas_gauge" style="width:0%;height:100%;border-radius:3px;background:linear-gradient(90deg,#818CF8,#A5B4FC)"></div>
           <div style="position:absolute;top:-3px;left:50%;width:2px;height:12px;background:var(--green)"></div>
@@ -4154,6 +4327,7 @@ input[type=range]::-moz-range-thumb{
         <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px">
           <span style="color:var(--muted-2)">0×</span>
           <span class="pl-num" id="ov_be_roas_lbl" style="color:var(--muted)">BE: —</span>
+        </div>
         </div>
       </div>
 
@@ -5963,8 +6137,8 @@ function calc(){
   set('sh_p3_lbl', pct(fracRet));    document.getElementById('sh_p3').style.width=Math.min(fracRet,100)+'%';
   const overPay=effShip-shipC;
   set('sh_msg', overPay>0
-    ? `You absorb ${(Math.round(overPay*10)/10).toFixed(1)} ${CURRENCY} per delivered unit in real shipping costs above what you collect.`
-    : `Shipping collected covers real cost — no shipping loss.`
+    ? tfmt('sh_absorb_msg', (Math.round(overPay*10)/10).toFixed(1), CURRENCY)
+    : T[LANG].sh_no_loss_msg
   );
   renderShBar(costDel, costRet, effShip);
   renderShLine(fulfillDel, courier, costRet, delR);
@@ -5989,9 +6163,9 @@ function calc(){
     const _hc = document.getElementById('ov_hero_card');
     if(_hc) _hc.classList.toggle('is-loss', !isP);
   })();
-  set('ov_total_sub', isP?'Profitable':'Loss-making');
+  set('ov_total_sub', isP?T[LANG].ov_profitable:T[LANG].ov_loss_making);
   set('ov_be', isFinite(beUnits)?Math.ceil(beUnits)+' units':'∞', 'var(--c2)');
-  set('ov_be_sub', isFinite(beUnits)&&beUnits<=stock?'Covered by stock ✓':'Exceeds stock ✗');
+  set('ov_be_sub', isFinite(beUnits)&&beUnits<=stock?T[LANG].ov_covered_stock:T[LANG].ov_exceeds_stock);
   // Cache both revenue modes for the shipping toggle
   window._lastRevInclShip = totalRev;           // stock × (priceNet + shipCNet)
   window._lastRevExclShip = stock * priceNet;   // product only
@@ -6078,9 +6252,9 @@ function calc(){
     const _sub = document.getElementById('ov_total_sub');
     if(_sub){
       const _pu = (profitPUNet>=0?'+':'-')+eg(Math.abs(profitPUNet));
-      _sub.innerHTML = '<span class="hb-verdict">'+(isP?'Profitable':'Loss-making')+'</span>'
+      _sub.innerHTML = '<span class="hb-verdict">'+(isP?T[LANG].ov_profitable:T[LANG].ov_loss_making)+'</span>'
         + '<span class="hb-sep"></span>'
-        + '<span class="hb-pu">'+_pu+' / unit</span>';
+        + '<span class="hb-pu">'+_pu+T[LANG].hb_per_unit+'</span>';
     }
   })();
 
@@ -6244,10 +6418,10 @@ function renderMktDonut(ads, salary, varCost){
   const maxV = Math.max(ads, salary, 1);
 
   const rows = [
-    { lbl:'Ad Budget',               v:ads,            grad:'linear-gradient(90deg,#3B82F6,#60A5FA)' },
-    { lbl:'→ Reached Orders',        v:deliveredSpend, grad:'linear-gradient(90deg,#10B981,#34D399)' },
-    { lbl:'→ Wasted on Undelivered', v:wastedSpend2,   grad:'linear-gradient(90deg,#EF4444,#F87171)' },
-    { lbl:'Salary',                  v:salary,         grad:'linear-gradient(90deg,#8B5CF6,#A78BFA)' },
+    { lbl:T[LANG].wf_ad_budget,           v:ads,            grad:'linear-gradient(90deg,#3B82F6,#60A5FA)' },
+    { lbl:T[LANG].wf_reached_orders,      v:deliveredSpend, grad:'linear-gradient(90deg,#10B981,#34D399)' },
+    { lbl:T[LANG].wf_wasted_undelivered,  v:wastedSpend2,   grad:'linear-gradient(90deg,#EF4444,#F87171)' },
+    { lbl:T[LANG].wf_salary,              v:salary,         grad:'linear-gradient(90deg,#8B5CF6,#A78BFA)' },
   ];
   const f = n => Math.round(n).toLocaleString('en');
 
@@ -6281,10 +6455,10 @@ function renderFunnel(leads, conf, del){
 
   el.style.cssText = 'display:flex;flex-direction:column;justify-content:center;gap:12px;min-height:200px;padding:6px 0';
   el.innerHTML =
-    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:100%;background:linear-gradient(90deg,#3B82F6,#60A5FA)">Leads: '+f(leads)+'</div></div><span></span></div>'+
-    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:'+wConf+'%;background:linear-gradient(90deg,#7C3AED,#A78BFA)">Confirmed: '+f(conf)+'</div></div><span class="fn-drop">↓ '+confDrop+'% dropped</span></div>'+
-    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:'+wDel+'%;background:linear-gradient(90deg,#10B981,#34D399)">Delivered: '+f(del)+'</div></div><span class="fn-drop">↓ '+delDrop+'% dropped</span></div>'+
-    '<div class="fn-summary">Overall: <b style="color:#34D399">'+l2oPct+'%</b> of leads → delivered orders</div>';
+    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:100%;background:linear-gradient(90deg,#3B82F6,#60A5FA)">'+T[LANG].fn_leads+f(leads)+'</div></div><span></span></div>'+
+    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:'+wConf+'%;background:linear-gradient(90deg,#7C3AED,#A78BFA)">'+T[LANG].fn_confirmed+f(conf)+'</div></div><span class="fn-drop">'+tfmt('fn_dropped',confDrop)+'</span></div>'+
+    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:'+wDel+'%;background:linear-gradient(90deg,#10B981,#34D399)">'+T[LANG].fn_delivered+f(del)+'</div></div><span class="fn-drop">'+tfmt('fn_dropped',delDrop)+'</span></div>'+
+    '<div class="fn-summary">'+tfmt('fn_overall','<b style="color:#34D399">'+l2oPct+'%</b>')+'</div>';
 }
 
 // Chart 4: BE CPA Sensitivity + "You are here" marker
@@ -6468,12 +6642,12 @@ function renderWaterfall(revenue, product, shipping, comm, adfixed){
   if(!(revenue>0)){ host.innerHTML=''; return; }
 
   const cols=[
-    {label:'Revenue',  val:revenue, color:'#34D399', kind:'total'},
-    {label:'Product',  val:product, color:'#F87171', kind:'drop'},
-    {label:'Shipping', val:shipping,color:'#FBBF24', kind:'drop'},
-    {label:'Comm.',    val:comm,    color:'#38BDF8', kind:'drop'},
-    {label:'Ad+fixed', val:adfixed, color:'#818CF8', kind:'drop'},
-    {label:'Net',      val:net,     color:net>=0?'#6EE7B7':'#F87171', kind:'total'}
+    {label:T[LANG].wf_lbl_revenue,  val:revenue, color:'#34D399', kind:'total'},
+    {label:T[LANG].wf_lbl_product,  val:product, color:'#F87171', kind:'drop'},
+    {label:T[LANG].wf_lbl_shipping, val:shipping,color:'#FBBF24', kind:'drop'},
+    {label:T[LANG].wf_lbl_comm,     val:comm,    color:'#38BDF8', kind:'drop'},
+    {label:T[LANG].wf_lbl_adfixed,  val:adfixed, color:'#818CF8', kind:'drop'},
+    {label:T[LANG].wf_lbl_net,      val:net,     color:net>=0?'#6EE7B7':'#F87171', kind:'total'}
   ];
 
   const topY=18, baseY=230, W=460;
@@ -8661,6 +8835,53 @@ let LANG = 'en';
 
 // ── CURRENCY SYSTEM ─────────────────────────
 let CURRENCY = 'EGP';
+
+// Monetary input fields per product (% and count fields excluded)
+const MONETARY_PRODUCT_FIELDS = ['i_price','i_cost','i_ship_c','i_fulfill_del','i_fulfill_ret','i_courier','i_plat','i_ads','i_avg_cpp'];
+
+// Exchange rate cache  { 'EGP': { 'USD': 0.020, 'EUR': 0.018, ... } }
+const _fxCache = {};
+
+async function _fxFetchFrom(fromCode){
+  if(_fxCache[fromCode]) return _fxCache[fromCode];
+  try{
+    const key = fromCode.toLowerCase();
+    const r = await fetch(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${key}.json`);
+    if(!r.ok) throw 0;
+    const j = await r.json();
+    const raw = j[key] || {};
+    const out = {};
+    Object.keys(raw).forEach(k => { out[k.toUpperCase()] = raw[k]; });
+    _fxCache[fromCode] = out;
+    return out;
+  }catch(e){ return null; }
+}
+
+async function _fxRate(from, to){
+  if(from === to) return 1;
+  const rates = await _fxFetchFrom(from);
+  if(rates && rates[to]) return rates[to];
+  // fallback: try reverse
+  const rev = await _fxFetchFrom(to);
+  if(rev && rev[from]) return 1 / rev[from];
+  return null;
+}
+
+function _fxConvertVal(val, rate, decimals){
+  const n = parseFloat(String(val).replace(/,/g,''));
+  if(!n || !isFinite(n)) return val;
+  const converted = n * rate;
+  if(decimals === 0) return String(Math.round(converted));
+  return String(+(converted.toFixed(decimals)));
+}
+
+function _fxDecimals(rate){
+  // High-value currencies (rate < 0.01 means 1 old unit = fraction of new) → more decimals
+  if(rate < 0.01) return 3;
+  if(rate < 0.1)  return 2;
+  if(rate < 10)   return 2;
+  return 0;
+}
 const CURRENCIES = [
   { code:'EGP', flag:'🇪🇬', name:'Egyptian Pound' },
   { code:'USD', flag:'🇺🇸', name:'US Dollar' },
@@ -8701,14 +8922,71 @@ function buildCurrMenu(){
   });
 }
 
-function setCurrency(code, flag){
+async function setCurrency(code, flag){
+  const oldCode = CURRENCY;
+
+  // Close dropdown immediately
+  document.getElementById('curr_menu').classList.remove('show');
+  document.getElementById('curr_btn').classList.remove('open');
+
+  if(oldCode === code){ buildCurrMenu(); return; }
+
+  // Show loading state on button
+  const btn = document.getElementById('curr_btn');
+  const origContent = btn.innerHTML;
+  btn.style.opacity = '0.5';
+  btn.style.pointerEvents = 'none';
+
+  const rate = await _fxRate(oldCode, code);
+
+  btn.style.opacity = '';
+  btn.style.pointerEvents = '';
+
+  if(rate !== null){
+    const dec = _fxDecimals(rate);
+
+    // Save active product inputs to PRODUCTS before converting
+    saveCurrentProduct();
+
+    // Convert all products
+    PRODUCTS.forEach(prod => {
+      if(!prod.data) return;
+      MONETARY_PRODUCT_FIELDS.forEach(field => {
+        if(prod.data[field]) prod.data[field] = _fxConvertVal(prod.data[field], rate, dec);
+      });
+    });
+
+    // Convert global fixed cost (salary)
+    const salEl = document.getElementById('i_salary');
+    if(salEl && salEl.value){
+      salEl.value = _fxConvertVal(salEl.value, rate, dec);
+      if(typeof reformatThousands === 'function') reformatThousands();
+    }
+
+    // Convert advanced PDR shipping cost
+    const pdrShipEl = document.getElementById('adv_pdr_ship');
+    if(pdrShipEl && pdrShipEl.value)
+      pdrShipEl.value = _fxConvertVal(pdrShipEl.value, rate, dec);
+
+    // Convert bundle prices
+    document.querySelectorAll('#adv_bundle_list .b-price').forEach(el => {
+      if(el.value) el.value = _fxConvertVal(el.value, rate, dec);
+    });
+
+    // Convert cash-flow capital field
+    const cfCashEl = document.getElementById('adv_cf_cash');
+    if(cfCashEl && cfCashEl.value)
+      cfCashEl.value = _fxConvertVal(cfCashEl.value, rate, dec);
+
+    // Reload active product inputs from converted data
+    loadProduct(ACTIVE_PROD);
+  }
+
   CURRENCY = code;
   document.getElementById('curr_code').textContent = code;
   document.getElementById('curr_flag').textContent = flag;
   applyCurrencyToUnits();
   buildCurrMenu();
-  document.getElementById('curr_menu').classList.remove('show');
-  document.getElementById('curr_btn').classList.remove('open');
   calc();
   persistSave();
 }
@@ -8772,6 +9050,7 @@ function toggleCurrMenu(e){
   const isOpen = menu.classList.contains('show');
   document.querySelectorAll('.curr-menu').forEach(m => m.classList.remove('show'));
   document.querySelectorAll('.curr-btn').forEach(b => b.classList.remove('open'));
+  document.getElementById('__pl_menu')?.classList.remove('open');
   if(!isOpen){
     buildCurrMenu();
     menu.classList.add('show');
@@ -9200,6 +9479,44 @@ const T = {
     roas_sub_rev_roas:'Revenue ÷ ROAS',
     roas_sub_net_rev:'Net ÷ Revenue',
     sh_hint_real_collected:'Real − Collected',
+    sh_absorb_msg:'You absorb {0} {1} per delivered unit in real shipping costs above what you collect.',
+    sh_no_loss_msg:'Shipping collected covers real cost — no shipping loss.',
+    ov_profitable:'Profitable',
+    ov_loss_making:'Loss-making',
+    hb_per_unit:' / unit',
+    ov_covered_stock:'Covered by stock ✓',
+    ov_exceeds_stock:'Exceeds stock ✗',
+    wf_ad_budget:'Ad Budget',
+    wf_reached_orders:'→ Reached Orders',
+    wf_wasted_undelivered:'→ Wasted on Undelivered',
+    wf_salary:'Salary',
+    fn_leads:'Leads: ',
+    fn_confirmed:'Confirmed: ',
+    fn_delivered:'Delivered: ',
+    fn_dropped:'↓ {0}% dropped',
+    fn_overall:'Overall: {0} of leads → delivered orders',
+    wf_lbl_revenue:'Revenue', wf_lbl_product:'Product', wf_lbl_shipping:'Shipping',
+    wf_lbl_comm:'Comm.', wf_lbl_adfixed:'Ad+fixed', wf_lbl_net:'Net',
+    fb_btn_complaint:'Complaints', fb_btn_suggestion:'Suggestions', fb_btn_customization:'Customization',
+    fb_admin_feedback:'Feedback inbox',
+    fb_email_lbl:'Your email', fb_msg_lbl:'Your message',
+    fb_img_hint:'Attach a screenshot (optional — max 5MB)',
+    fb_next_btn:'Continue →', fb_submit_btn:'Send',
+    fb_success_title:'Sent successfully!',
+    fb_success_msg:'We received your message and will reply to your email.',
+    fb_close_btn:'Close', fb_remove_img:'✕ Remove image',
+    fb_title_complaint:'Complaint', fb_title_suggestion:'Suggestion', fb_title_customization:'Customization request',
+    fb_err_email:'Please enter a valid email.',
+    fb_err_msg:'Please enter a message.',
+    fb_err_size:'File too large (max 5MB).',
+    fb_err_send:'Failed to send. Please try again.',
+    mymsg_btn:'My messages', mymsg_title:'My messages',
+    mymsg_empty:'You haven\'t sent any messages yet.',
+    mymsg_empty_sub:'Use the buttons below to send a complaint, suggestion, or customization request.',
+    mymsg_no_reply:'Awaiting admin reply…',
+    mymsg_you:'You', mymsg_admin:'Support',
+    mymsg_refresh:'Refresh',
+    mymsg_type_complaint:'Complaint', mymsg_type_suggestion:'Suggestion', mymsg_type_customization:'Customization',
   },
   ar: {
     nav_inputs:'المدخلات', nav_marketing:'الإعلانات', nav_shipping:'الشحن', nav_overview:'نظرة عامة',
@@ -9617,6 +9934,44 @@ const T = {
     roas_sub_rev_roas:'الإيراد ÷ ROAS',
     roas_sub_net_rev:'الصافي ÷ الإيراد',
     sh_hint_real_collected:'الحقيقي − المحصّل',
+    sh_absorb_msg:'أنت تتحمل {0} {1} لكل وحدة موصّلة كتكاليف شحن حقيقية فوق ما تحصّله.',
+    sh_no_loss_msg:'الشحن المحصّل يغطي التكلفة الحقيقية — لا خسارة في الشحن.',
+    ov_profitable:'رابح',
+    ov_loss_making:'خاسر',
+    hb_per_unit:' / وحدة',
+    ov_covered_stock:'المخزون يكفي ✓',
+    ov_exceeds_stock:'يتجاوز المخزون ✗',
+    wf_ad_budget:'ميزانية الإعلانات',
+    wf_reached_orders:'← الأوردرات الواصلة',
+    wf_wasted_undelivered:'← هدر على غير المُوصَّل',
+    wf_salary:'الراتب',
+    fn_leads:'الليدز: ',
+    fn_confirmed:'مؤكد: ',
+    fn_delivered:'موصّل: ',
+    fn_dropped:'↓ {0}% انخفض',
+    fn_overall:'إجمالاً: {0} من الليدز ← أوردرات موصّلة',
+    wf_lbl_revenue:'الإيراد', wf_lbl_product:'المنتج', wf_lbl_shipping:'الشحن',
+    wf_lbl_comm:'عمولة', wf_lbl_adfixed:'إعلان+ثابت', wf_lbl_net:'الصافي',
+    fb_btn_complaint:'شكاوي', fb_btn_suggestion:'اقتراحات', fb_btn_customization:'طلبات كاستمايزيشن',
+    fb_admin_feedback:'صندوق الفيدباك',
+    fb_email_lbl:'إيميلك المسجّل', fb_msg_lbl:'الرسالة',
+    fb_img_hint:'أرفق صورة أو سكرينشوت (اختياري — حد أقصى 5MB)',
+    fb_next_btn:'متابعة ←', fb_submit_btn:'إرسال',
+    fb_success_title:'تم الإرسال بنجاح!',
+    fb_success_msg:'استلمنا رسالتك وهنرد عليك على الإيميل.',
+    fb_close_btn:'إغلاق', fb_remove_img:'✕ إزالة الصورة',
+    fb_title_complaint:'شكوى', fb_title_suggestion:'اقتراح', fb_title_customization:'طلب كاستمايزيشن',
+    fb_err_email:'الرجاء إدخال بريد إلكتروني صحيح.',
+    fb_err_msg:'الرجاء كتابة رسالتك.',
+    fb_err_size:'الملف كبير جداً (الحد الأقصى 5MB).',
+    fb_err_send:'فشل الإرسال. حاول مرة أخرى.',
+    mymsg_btn:'رسائلي', mymsg_title:'رسائلي',
+    mymsg_empty:'لم ترسل أي رسائل بعد.',
+    mymsg_empty_sub:'استخدم الأزرار أدناه لإرسال شكوى أو اقتراح أو طلب كاستمايزيشن.',
+    mymsg_no_reply:'في انتظار رد الأدمن…',
+    mymsg_you:'أنت', mymsg_admin:'الدعم',
+    mymsg_refresh:'تحديث',
+    mymsg_type_complaint:'شكوى', mymsg_type_suggestion:'اقتراح', mymsg_type_customization:'كاستمايزيشن',
   }
 };
 
@@ -9650,6 +10005,7 @@ function applyLang(){
 function toggleLang(){
   LANG = LANG==='en'?'ar':'en';
   applyLang();
+  if(typeof calc==='function') calc();
   persistSave();
 }
 
@@ -9784,8 +10140,33 @@ window.addEventListener('load', ()=>{
               '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 7.7 8 9 4.6-1.3 8-4 8-9V5z"/><path d="m9 12 2 2 4-4"/></svg>'+
               '<span>Admin panel</span>'+
             '</a>'+
+            '<a class="pl-menu-btn" href="/admin-feedback" style="text-decoration:none">'+
+              '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>'+
+              '<span>'+( T[LANG].fb_admin_feedback||T.en.fb_admin_feedback )+'</span>'+
+            '</a>'+
             '<div class="pl-menu-div"></div>'
           : '';
+
+        const feedbackItems =
+          '<button class="pl-menu-btn" onclick="openFeedback(\'complaint\')">'+
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>'+
+            '<span>'+( T[LANG].fb_btn_complaint||T.en.fb_btn_complaint )+'</span>'+
+          '</button>'+
+          '<button class="pl-menu-btn" onclick="openFeedback(\'suggestion\')">'+
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>'+
+            '<span>'+( T[LANG].fb_btn_suggestion||T.en.fb_btn_suggestion )+'</span>'+
+          '</button>'+
+          '<button class="pl-menu-btn" onclick="openFeedback(\'customization\')">'+
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>'+
+            '<span>'+( T[LANG].fb_btn_customization||T.en.fb_btn_customization )+'</span>'+
+          '</button>'+
+          '<div class="pl-menu-div"></div>';
+
+        const myMsgItem =
+          '<button class="pl-menu-btn" onclick="myMsgOpen()">'+
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'+
+            '<span>'+( T[LANG].mymsg_btn||T.en.mymsg_btn )+'</span>'+
+          '</button>';
 
         const wrap = document.createElement('div');
         wrap.className = 'pl-profile';
@@ -9802,6 +10183,9 @@ window.addEventListener('load', ()=>{
             '</div>'+
             '<div class="pl-menu-div"></div>'+
             adminItem +
+            feedbackItems +
+            myMsgItem +
+            '<div class="pl-menu-div"></div>'+
             '<button class="pl-menu-btn danger" onclick="window.__plLogout()">'+
               '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>'+
               '<span data-t="sign_out">Sign out</span>'+
@@ -9812,9 +10196,20 @@ window.addEventListener('load', ()=>{
 
         const avBtn = wrap.querySelector('#__pl_av');
         const menu  = wrap.querySelector('#__pl_menu');
-        avBtn.addEventListener('click', e => { e.stopPropagation(); menu.classList.toggle('open'); });
+        avBtn.addEventListener('click', e => {
+          e.stopPropagation();
+          const willOpen = !menu.classList.contains('open');
+          document.querySelectorAll('.curr-menu').forEach(m => m.classList.remove('show'));
+          document.querySelectorAll('.curr-btn').forEach(b => b.classList.remove('open'));
+          menu.classList.toggle('open', willOpen);
+        });
         document.addEventListener('click', e => { if (!wrap.contains(e.target)) menu.classList.remove('open'); });
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') menu.classList.remove('open'); });
+        document.addEventListener('keydown', e => {
+          if (e.key === 'Escape') {
+            menu.classList.remove('open');
+            myMsgClose();
+          }
+        });
       }
 
       // Cloud sync every 3s
@@ -9856,6 +10251,230 @@ window.addEventListener('load', ()=>{
       '<button style="background:rgba(0,0,0,.2);border:none;color:#fff;cursor:pointer;padding:4px 10px;border-radius:4px;font-size:11px" onclick="this.parentElement.remove()">✕</button>';
     document.body.appendChild(banner);
   })();
+
+  // ── FEEDBACK MODAL ──────────────────────────────────────────────────────────
+  let _fbType = '';
+
+  window.openFeedback = function(type) {
+    _fbType = type;
+    const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
+    const titles = { complaint:'fb_title_complaint', suggestion:'fb_title_suggestion', customization:'fb_title_customization' };
+    const icons  = { complaint:'⚠️', suggestion:'💡', customization:'🔧' };
+    document.getElementById('fb_title').textContent = L(titles[type]||'fb_title_complaint');
+    document.getElementById('fb_icon').textContent  = icons[type]||'💬';
+    document.getElementById('fb_email_lbl').textContent = L('fb_email_lbl');
+    document.getElementById('fb_msg_lbl').textContent   = L('fb_msg_lbl');
+    document.getElementById('fb_img_hint').textContent  = L('fb_img_hint');
+    const step1Btn = document.querySelector('#fb_step1 .fb-btn');
+    if (step1Btn) step1Btn.textContent = L('fb_next_btn');
+    const submitBtn = document.getElementById('fb_submit_btn');
+    if (submitBtn) { submitBtn.textContent = L('fb_submit_btn'); submitBtn.disabled = false; }
+    document.getElementById('fb_remove_img').textContent = L('fb_remove_img');
+    document.getElementById('fb_step1').style.display = '';
+    document.getElementById('fb_step2').style.display = 'none';
+    document.getElementById('fb_success').style.display = 'none';
+    document.getElementById('fb_msg').value = '';
+    const emailEl = document.getElementById('fb_email');
+    if (window.__sbUser?.email) emailEl.value = window.__sbUser.email;
+    fbRemoveImg();
+    document.getElementById('fb_overlay').classList.add('open');
+    const m = document.getElementById('__pl_menu');
+    if (m) m.classList.remove('open');
+  };
+
+  window.fbNext = function() {
+    const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
+    const email = document.getElementById('fb_email').value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert(L('fb_err_email')); return; }
+    document.getElementById('fb_step1').style.display = 'none';
+    document.getElementById('fb_step2').style.display = '';
+    document.getElementById('fb_msg').focus();
+  };
+
+  window.fbSubmit = async function() {
+    const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
+    const email = document.getElementById('fb_email').value.trim();
+    const msg   = document.getElementById('fb_msg').value.trim();
+    if (!msg) { alert(L('fb_err_msg')); return; }
+    const btn = document.getElementById('fb_submit_btn');
+    btn.disabled = true; btn.textContent = '...';
+    try {
+      let imageUrl = null;
+      const fileInput = document.getElementById('fb_file_input');
+      if (fileInput.files[0]) {
+        const file = fileInput.files[0];
+        const ext  = file.name.split('.').pop() || 'jpg';
+        const path = Date.now()+'_'+Math.random().toString(36).slice(2)+'.'+ext;
+        const { error: upErr } = await window.__sb.storage.from('feedback-images').upload(path, file, { upsert:false });
+        if (upErr) throw upErr;
+        const { data: { publicUrl } } = window.__sb.storage.from('feedback-images').getPublicUrl(path);
+        imageUrl = publicUrl;
+      }
+      const { error } = await window.__sb.from('feedback').insert({
+        user_id: window.__sbUser?.id || null,
+        type: _fbType, email, message: msg, image_url: imageUrl
+      });
+      if (error) throw error;
+      document.getElementById('fb_step2').style.display = 'none';
+      const succ = document.getElementById('fb_success');
+      succ.style.display = '';
+      succ.querySelector('.fb-success-title').textContent = L('fb_success_title');
+      succ.querySelector('.fb-success-msg').textContent   = L('fb_success_msg');
+      succ.querySelector('.fb-btn').textContent            = L('fb_close_btn');
+    } catch(e) {
+      alert((T[LANG]&&T[LANG].fb_err_send)||T.en.fb_err_send);
+      btn.disabled = false;
+      btn.textContent = L('fb_submit_btn');
+    }
+  };
+
+  window.fbClose = function() {
+    document.getElementById('fb_overlay').classList.remove('open');
+    setTimeout(()=>{
+      document.getElementById('fb_step1').style.display = '';
+      document.getElementById('fb_step2').style.display = 'none';
+      document.getElementById('fb_success').style.display = 'none';
+      document.getElementById('fb_msg').value = '';
+      fbRemoveImg();
+      const btn = document.getElementById('fb_submit_btn');
+      if (btn) { btn.disabled = false; btn.textContent = (T[LANG]&&T[LANG].fb_submit_btn)||T.en.fb_submit_btn; }
+    }, 300);
+  };
+
+  window.fbFileChange = function(input) {
+    const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 5*1024*1024) { alert(L('fb_err_size')); input.value=''; return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      const prev = document.getElementById('fb_preview');
+      prev.src = e.target.result; prev.style.display = 'block';
+      document.getElementById('fb_img_hint').style.display = 'none';
+      document.getElementById('fb_remove_img').style.display = '';
+    };
+    reader.readAsDataURL(file);
+  };
+
+  window.fbRemoveImg = function() {
+    const inp  = document.getElementById('fb_file_input');
+    const prev = document.getElementById('fb_preview');
+    const hint = document.getElementById('fb_img_hint');
+    const rem  = document.getElementById('fb_remove_img');
+    if (inp)  inp.value = '';
+    if (prev) { prev.src=''; prev.style.display='none'; }
+    if (hint) hint.style.display = '';
+    if (rem)  rem.style.display  = 'none';
+  };
+
+  window.fbOverlayClick = function(e) {
+    if (e.target === document.getElementById('fb_overlay')) fbClose();
+  };
+
+  // ── MY MESSAGES ───────────────────────────────────────────────────────────
+  const MM_TYPE = { complaint:'mymsg_type_complaint', suggestion:'mymsg_type_suggestion', customization:'mymsg_type_customization' };
+  const MM_TYPE_CLS = { complaint:'mymsg-type-complaint', suggestion:'mymsg-type-suggestion', customization:'mymsg-type-customization' };
+  const MM_ESC = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  window.myMsgOpen = function() {
+    document.querySelectorAll('.curr-menu').forEach(m=>m.classList.remove('show'));
+    document.querySelectorAll('.curr-btn').forEach(b=>b.classList.remove('open'));
+    const menu = document.getElementById('__pl_menu');
+    if (menu) menu.classList.remove('open');
+    document.getElementById('mymsg_overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    myMsgLoad();
+  };
+
+  window.myMsgClose = function() {
+    document.getElementById('mymsg_overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  };
+
+  window.myMsgLoad = async function() {
+    const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
+    document.getElementById('mymsg_title').textContent = L('mymsg_title');
+    document.getElementById('mymsg_refresh_btn').textContent = L('mymsg_refresh');
+    const body = document.getElementById('mymsg_body');
+    body.innerHTML = '<div class="mymsg-loading">'+L('mymsg_refresh')+'…</div>';
+    if (!window.__sb) { body.innerHTML = '<div class="mymsg-loading">غير متصل</div>'; return; }
+
+    const { data: items, error } = await window.__sb
+      .from('feedback').select('*').order('created_at', { ascending: true });
+
+    if (error || !items?.length) {
+      body.innerHTML =
+        '<div class="mymsg-empty">'+
+          '<div class="mymsg-empty-icon">💬</div>'+
+          '<div class="mymsg-empty-title">'+MM_ESC(L('mymsg_empty'))+'</div>'+
+          '<div class="mymsg-empty-sub">'+MM_ESC(L('mymsg_empty_sub'))+'</div>'+
+        '</div>';
+      return;
+    }
+
+    // Fetch replies for all items in parallel
+    const withReplies = await Promise.all(items.map(async item => {
+      const { data: replies } = await window.__sb
+        .from('feedback_replies').select('*').eq('feedback_id', item.id).order('created_at', { ascending: true });
+      return { ...item, replies: replies || [] };
+    }));
+
+    // Build merged timeline
+    const nodes = [];
+    withReplies.forEach(item => {
+      nodes.push({ ts: item.created_at, out: true, text: item.message, image_url: item.image_url, type: item.type, firstOfItem: true });
+      item.replies.forEach(r => {
+        nodes.push({ ts: r.created_at, out: false, text: r.message });
+      });
+    });
+
+    let html = '';
+    let lastDay = '';
+    nodes.forEach(n => {
+      const day = new Date(n.ts).toLocaleDateString(LANG==='ar'?'ar-EG':'en-US', { year:'numeric', month:'long', day:'numeric' });
+      if (day !== lastDay) {
+        html += '<div class="mymsg-sep">'+MM_ESC(day)+'</div>';
+        lastDay = day;
+      }
+      if (n.firstOfItem) {
+        const typeKey = MM_TYPE[n.type] || 'mymsg_type_complaint';
+        const typeCls = MM_TYPE_CLS[n.type] || 'mymsg-type-complaint';
+        html += '<div class="mymsg-type-sep"><span class="'+typeCls+'">'+MM_ESC(L(typeKey))+'</span></div>';
+      }
+      const dir = n.out ? 'out' : 'in';
+      const avLetter = n.out ? MM_ESC((window.__sbUser?.email||'أ').charAt(0).toUpperCase()) : 'P';
+      const time = new Date(n.ts).toLocaleTimeString(LANG==='ar'?'ar-EG':'en-US',{hour:'2-digit',minute:'2-digit'});
+      const imgHtml = n.image_url
+        ? '<img src="'+MM_ESC(n.image_url)+'" alt="attachment" loading="lazy" onclick="myMsgOpenLightbox(this.src)" style="display:block">'
+        : '';
+      html +=
+        '<div class="mymsg-bubble-wrap '+dir+'">'+
+          '<div class="mymsg-av">'+avLetter+'</div>'+
+          '<div>'+
+            '<div class="mymsg-bubble">'+MM_ESC(n.text)+imgHtml+'</div>'+
+            '<div class="mymsg-time">'+MM_ESC(time)+'</div>'+
+          '</div>'+
+        '</div>';
+    });
+
+    body.innerHTML = html;
+    body.scrollTop = body.scrollHeight;
+  };
+
+  window.myMsgOpenLightbox = function(url) {
+    document.getElementById('mymsg_lightbox_img').src = url;
+    document.getElementById('mymsg_lightbox').classList.add('open');
+  };
+  window.myMsgCloseLightbox = function() {
+    document.getElementById('mymsg_lightbox').classList.remove('open');
+    document.getElementById('mymsg_lightbox_img').src = '';
+  };
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('mymsg_lightbox')?.classList.contains('open')) myMsgCloseLightbox();
+  });
+  // ── END MY MESSAGES ────────────────────────────────────────────────────────
+
+  // ── END FEEDBACK ──────────────────────────────────────────────────────────
 
   attachThousandsFormatting(); // convert large-value inputs to formatted text BEFORE values load
   initProducts();
@@ -10107,6 +10726,73 @@ function toggleRevShipping(){
 })();
 
 </script>
+
+<!-- ── FEEDBACK MODAL ──────────────────────────────────── -->
+<!-- My Messages overlay -->
+<div class="mymsg-overlay" id="mymsg_overlay" onclick="if(event.target===this)myMsgClose()">
+  <div class="mymsg-modal">
+    <div class="mymsg-head">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="mymsg-head-title" id="mymsg_title">رسائلي</span>
+      <button class="mymsg-refresh-btn" id="mymsg_refresh_btn" onclick="myMsgLoad()">تحديث</button>
+      <button class="mymsg-close-btn" onclick="myMsgClose()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="mymsg-body" id="mymsg_body">
+      <div class="mymsg-loading">جاري التحميل…</div>
+    </div>
+  </div>
+</div>
+
+<!-- My Messages image lightbox -->
+<div class="mymsg-lightbox" id="mymsg_lightbox" onclick="myMsgCloseLightbox()">
+  <button class="mymsg-lightbox-close" onclick="myMsgCloseLightbox()" title="إغلاق">✕</button>
+  <img id="mymsg_lightbox_img" src="" alt="preview" onclick="event.stopPropagation()">
+</div>
+
+<div class="fb-overlay" id="fb_overlay" onclick="fbOverlayClick(event)">
+  <div class="fb-modal" id="fb_modal">
+    <div class="fb-modal-head">
+      <div class="fb-type-icon" id="fb_icon"></div>
+      <div class="fb-modal-title" id="fb_title"></div>
+      <button class="fb-modal-close" onclick="fbClose()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <!-- Step 1: email -->
+    <div class="fb-step" id="fb_step1">
+      <div class="fb-field">
+        <label class="fb-lbl" id="fb_email_lbl">إيميلك المسجّل</label>
+        <input class="fb-input" type="email" id="fb_email" autocomplete="email">
+      </div>
+      <button class="fb-btn" onclick="fbNext()">متابعة ←</button>
+    </div>
+    <!-- Step 2: message + image -->
+    <div class="fb-step" id="fb_step2" style="display:none">
+      <div class="fb-field">
+        <label class="fb-lbl" id="fb_msg_lbl">الرسالة</label>
+        <textarea class="fb-textarea" id="fb_msg" rows="5"></textarea>
+      </div>
+      <label class="fb-upload-area" id="fb_upload_area" for="fb_file_input">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--txt3)"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div class="fb-upload-hint" id="fb_img_hint">أرفق صورة أو سكرينشوت (اختياري — حد أقصى 5MB)</div>
+        <img id="fb_preview" class="fb-preview" style="display:none" alt="preview">
+        <input type="file" id="fb_file_input" accept="image/*" style="display:none" onchange="fbFileChange(this)">
+      </label>
+      <button class="fb-remove-img" id="fb_remove_img" style="display:none" onclick="fbRemoveImg()">✕ إزالة الصورة</button>
+      <button class="fb-btn" id="fb_submit_btn" onclick="fbSubmit()">إرسال</button>
+    </div>
+    <!-- Success -->
+    <div class="fb-step fb-success" id="fb_success" style="display:none">
+      <div class="fb-success-icon">✅</div>
+      <div class="fb-success-title">تم الإرسال بنجاح!</div>
+      <div class="fb-success-msg">استلمنا رسالتك وهنرد عليك على الإيميل.</div>
+      <button class="fb-btn" style="margin-top:16px" onclick="fbClose()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
 <!-- LANG PATCH: injected by build -->
