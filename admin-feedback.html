@@ -378,10 +378,10 @@ const STATUS_LABELS = { pending:'قيد الانتظار', reviewed:'تمت ال
 const STATUS_CLASSES = { pending:'s-pending', reviewed:'s-reviewed', resolved:'s-resolved' };
 
 let __sb, __token;
-let __allData = [];        // flat list from API
-let __activeType = 'all';  // tab filter
-let __activeId = null;     // currently open convo
-let __currentItem = null;  // full item with replies
+let __allData = [];
+let __activeType = 'all';
+let __activeEmail = null;   // email of open conversation
+let __currentItems = [];    // full items (with replies) for active email
 
 async function init() {
   const cfgRes = await fetch('/api/config');
@@ -415,9 +415,17 @@ function updateCounts() {
   });
 }
 
-function filtered() {
-  if (__activeType === 'all') return __allData;
-  return __allData.filter(i => i.type === __activeType);
+function emailGroups() {
+  const items = __activeType === 'all' ? __allData : __allData.filter(i => i.type === __activeType);
+  const map = new Map();
+  items.forEach(item => {
+    if (!map.has(item.email)) map.set(item.email, []);
+    map.get(item.email).push(item);
+  });
+  map.forEach(arr => arr.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)));
+  return [...map.entries()]
+    .sort((a,b) => new Date(b[1][0].created_at) - new Date(a[1][0].created_at))
+    .map(([email, items]) => ({ email, items }));
 }
 
 function switchTab(type) {
@@ -427,32 +435,43 @@ function switchTab(type) {
 }
 
 function renderList() {
-  const items = filtered();
+  const groups = emailGroups();
   const wrap = document.getElementById('convList');
-  if (!items.length) {
+  if (!groups.length) {
     wrap.innerHTML = '<div class="list-empty">لا توجد رسائل</div>';
     return;
   }
-  wrap.innerHTML = items.map(item => convItemHTML(item)).join('');
-  // Re-highlight active
-  if (__activeId) {
-    const el = document.getElementById('ci_'+__activeId.replace(/-/g,''));
+  wrap.innerHTML = groups.map(g => convGroupHTML(g)).join('');
+  if (__activeEmail) {
+    const safeE = safeEmailId(__activeEmail);
+    const el = document.getElementById('cg_'+safeE);
     if (el) el.classList.add('active');
   }
 }
 
-function convItemHTML(item) {
-  const initial = (item.email||'?').charAt(0).toUpperCase();
-  const date = fmtDate(item.created_at);
-  const preview = (item.message||'').slice(0,60);
-  const scls = STATUS_CLASSES[item.status] || 's-pending';
-  const slbl = STATUS_LABELS[item.status] || item.status;
-  const safeId = item.id.replace(/-/g,'');
+function safeEmailId(email) {
+  return email.replace(/[^a-z0-9]/gi, '_');
+}
+
+function convGroupHTML(g) {
+  const { email, items } = g;
+  const latest = items[0];
+  const initial = (email||'?').charAt(0).toUpperCase();
+  const date = fmtDate(latest.created_at);
+  const preview = (latest.message||'').slice(0,60);
+  const statusPriority = { pending:0, reviewed:1, resolved:2 };
+  const worstStatus = items.reduce((best, i) => (statusPriority[i.status]??2) < (statusPriority[best]??2) ? i.status : best, items[0].status);
+  const scls = STATUS_CLASSES[worstStatus] || 's-pending';
+  const slbl = STATUS_LABELS[worstStatus] || worstStatus;
+  const countBadge = items.length > 1
+    ? `<span style="font-size:9px;background:rgba(91,106,245,.2);color:var(--acc);border-radius:20px;padding:1px 6px;font-weight:700;margin-right:4px;">${items.length}</span>`
+    : '';
+  const safeE = safeEmailId(email);
   return `
-  <div class="conv-item" id="ci_${safeId}" onclick="openConvo('${esc(item.id)}')">
+  <div class="conv-item" id="cg_${safeE}" onclick="openEmailConvo('${esc(email)}')">
     <div class="conv-avatar">${esc(initial)}</div>
     <div class="conv-info">
-      <div class="conv-email">${esc(item.email)}</div>
+      <div class="conv-email">${countBadge}${esc(email)}</div>
       <div class="conv-preview">${esc(preview)}</div>
     </div>
     <div class="conv-right">
@@ -462,66 +481,67 @@ function convItemHTML(item) {
   </div>`;
 }
 
-async function openConvo(id) {
-  __activeId = id;
-  // highlight
+async function openEmailConvo(email) {
+  __activeEmail = email;
   document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
-  const safeId = id.replace(/-/g,'');
-  const el = document.getElementById('ci_'+safeId);
+  const safeE = safeEmailId(email);
+  const el = document.getElementById('cg_'+safeE);
   if (el) el.classList.add('active');
 
-  // Show loading
   document.getElementById('chatEmpty').style.display = 'none';
   const chatView = document.getElementById('chatView');
   chatView.style.display = 'flex';
   document.getElementById('chatBody').innerHTML = '<div class="chat-loading">جاري التحميل…</div>';
-
-  // Mobile: slide in
   document.getElementById('panelChat').classList.add('mobile-open');
 
-  // Fetch full item with replies
-  const r = await fetch('/api/admin/feedback?id='+encodeURIComponent(id), { headers:{ Authorization:'Bearer '+__token } });
-  const j = await r.json();
-  if (!j.data) { document.getElementById('chatBody').innerHTML = '<div class="chat-loading">خطأ في التحميل</div>'; return; }
-  __currentItem = j.data;
-  renderChatView();
+  const emailItems = __allData.filter(i => i.email === email && (__activeType === 'all' || i.type === __activeType));
+  const fullItems = await Promise.all(
+    emailItems.map(item =>
+      fetch('/api/admin/feedback?id='+encodeURIComponent(item.id), { headers:{ Authorization:'Bearer '+__token } })
+        .then(r => r.json()).then(j => j.data).catch(() => null)
+    )
+  );
+  __currentItems = fullItems.filter(Boolean).sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+  renderEmailChatView();
 }
 
-function renderChatView() {
-  const item = __currentItem;
-  if (!item) return;
+function renderEmailChatView() {
+  if (!__currentItems.length) return;
+  const latestItem = __currentItems[__currentItems.length - 1];
+  const email = latestItem.email;
 
-  // Header
-  const initial = (item.email||'?').charAt(0).toUpperCase();
-  document.getElementById('chatAvatar').textContent = initial;
-  document.getElementById('chatEmail').textContent = item.email;
+  document.getElementById('chatAvatar').textContent = (email||'?').charAt(0).toUpperCase();
+  document.getElementById('chatEmail').textContent = email;
 
   const typeBadge = document.getElementById('chatTypeBadge');
-  typeBadge.textContent = TYPE_LABELS[item.type] || item.type;
-  typeBadge.className = 'type-badge ' + (TYPE_CLASSES[item.type] || '');
+  if (__currentItems.length === 1) {
+    typeBadge.textContent = TYPE_LABELS[latestItem.type] || latestItem.type;
+    typeBadge.className = 'type-badge ' + (TYPE_CLASSES[latestItem.type] || '');
+    typeBadge.style.cssText = '';
+  } else {
+    typeBadge.textContent = __currentItems.length + ' رسائل';
+    typeBadge.className = 'type-badge';
+    typeBadge.style.cssText = 'background:rgba(91,106,245,.12);color:var(--acc);border:1px solid rgba(91,106,245,.25)';
+  }
 
-  document.getElementById('chatDate').textContent = fmtDateFull(item.created_at);
+  document.getElementById('chatDate').textContent = fmtDateFull(latestItem.created_at);
 
   const sel = document.getElementById('statusSelect');
-  sel.value = item.status || 'pending';
+  sel.value = latestItem.status || 'pending';
   const wrap = document.getElementById('statusWrap');
-  wrap.className = 'status-select-wrap ' + (STATUS_CLASSES[item.status] || 's-pending');
+  wrap.className = 'status-select-wrap ' + (STATUS_CLASSES[latestItem.status] || 's-pending');
 
-  // Build chat bubbles
-  const body = document.getElementById('chatBody');
+  // Merge all messages + replies into one timeline
   const nodes = [];
-
-  // The original message as "incoming"
-  nodes.push({ ts: item.created_at, incoming: true, text: item.message, image_url: item.image_url });
-
-  // Replies as "outgoing"
-  (item.replies || []).forEach(r => {
-    nodes.push({ ts: r.created_at, incoming: false, text: r.message });
+  __currentItems.forEach(item => {
+    nodes.push({ ts: item.created_at, incoming: true, text: item.message, image_url: item.image_url, type: item.type });
+    (item.replies || []).forEach(r => {
+      nodes.push({ ts: r.created_at, incoming: false, text: r.message });
+    });
   });
-
-  // Sort by time (just in case)
   nodes.sort((a,b) => new Date(a.ts) - new Date(b.ts));
 
+  const body = document.getElementById('chatBody');
   let html = '';
   let lastDay = '';
   nodes.forEach(n => {
@@ -532,23 +552,25 @@ function renderChatView() {
     }
     html += bubbleHTML(n);
   });
-
   body.innerHTML = html;
   body.scrollTop = body.scrollHeight;
 }
 
 function bubbleHTML(n) {
   const direction = n.incoming ? 'incoming' : 'outgoing';
-  const avatarLetter = n.incoming ? (__currentItem?.email||'?').charAt(0).toUpperCase() : 'أ';
+  const avatarLetter = n.incoming ? (__currentItems[0]?.email||'?').charAt(0).toUpperCase() : 'أ';
   const time = fmtTime(n.ts);
   const imgHtml = n.image_url
     ? `<div class="bubble-img"><img src="${esc(n.image_url)}" alt="attachment" loading="lazy" onclick="openLightbox('${esc(n.image_url)}')"></div>`
+    : '';
+  const typePill = (n.incoming && __currentItems.length > 1)
+    ? `<span class="type-badge ${TYPE_CLASSES[n.type]||''}" style="font-size:9px;padding:1px 7px;margin-bottom:5px;display:inline-block;">${TYPE_LABELS[n.type]||n.type}</span><br>`
     : '';
   return `
   <div class="bubble-wrap ${direction}">
     <div class="bubble-avatar">${esc(avatarLetter)}</div>
     <div>
-      <div class="bubble">${esc(n.text)}${imgHtml}</div>
+      <div class="bubble">${typePill}${esc(n.text)}${imgHtml}</div>
       <div class="bubble-time">${esc(time)}</div>
     </div>
   </div>`;
@@ -557,38 +579,36 @@ function bubbleHTML(n) {
 async function sendReply() {
   const input = document.getElementById('replyInput');
   const msg = input.value.trim();
-  if (!msg || !__activeId) return;
+  if (!msg || !__activeEmail || !__currentItems.length) return;
 
   const btn = document.getElementById('sendBtn');
   btn.disabled = true;
 
+  // Reply goes to the most recent item
+  const targetItem = __currentItems[__currentItems.length - 1];
+
   const r = await fetch('/api/admin/feedback', {
     method: 'POST',
     headers: { Authorization:'Bearer '+__token, 'Content-Type':'application/json' },
-    body: JSON.stringify({ feedback_id: __activeId, message: msg })
+    body: JSON.stringify({ feedback_id: targetItem.id, message: msg })
   });
 
   btn.disabled = false;
-
   if (!r.ok) { alert('خطأ في الإرسال، حاول مرة أخرى'); return; }
 
   input.value = '';
   input.style.height = '';
 
-  // Optimistic: add reply to __currentItem and re-render
-  if (__currentItem) {
-    __currentItem.replies = __currentItem.replies || [];
-    __currentItem.replies.push({ created_at: new Date().toISOString(), message: msg });
-    // If status was pending, auto-mark reviewed locally
-    if (__currentItem.status === 'pending') {
-      __currentItem.status = 'reviewed';
-      const item = __allData.find(i => i.id === __activeId);
-      if (item) item.status = 'reviewed';
-      updateCounts();
-      renderList();
-    }
-    renderChatView();
+  targetItem.replies = targetItem.replies || [];
+  targetItem.replies.push({ created_at: new Date().toISOString(), message: msg });
+  if (targetItem.status === 'pending') {
+    targetItem.status = 'reviewed';
+    const src = __allData.find(i => i.id === targetItem.id);
+    if (src) src.status = 'reviewed';
+    updateCounts();
+    renderList();
   }
+  renderEmailChatView();
 }
 
 function replyKeydown(e) {
@@ -605,41 +625,46 @@ function autoResize(el) {
 }
 
 async function changeStatus(status) {
-  if (!__activeId) return;
+  if (!__activeEmail || !__currentItems.length) return;
+  const targetItem = __currentItems[__currentItems.length - 1];
   const wrap = document.getElementById('statusWrap');
   wrap.className = 'status-select-wrap ' + (STATUS_CLASSES[status] || 's-pending');
 
   const r = await fetch('/api/admin/feedback', {
     method:'PATCH',
     headers:{ Authorization:'Bearer '+__token, 'Content-Type':'application/json' },
-    body: JSON.stringify({ id: __activeId, status })
+    body: JSON.stringify({ id: targetItem.id, status })
   });
   if (!r.ok) { alert('خطأ في تحديث الحالة'); return; }
 
-  // Update local data
-  const item = __allData.find(i => i.id === __activeId);
-  if (item) item.status = status;
-  if (__currentItem) __currentItem.status = status;
+  targetItem.status = status;
+  const src = __allData.find(i => i.id === targetItem.id);
+  if (src) src.status = status;
   updateCounts();
   renderList();
 }
 
 async function deleteCurrentFb() {
-  if (!__activeId) return;
-  if (!confirm('هل أنت متأكد من حذف هذه الرسالة؟')) return;
+  if (!__activeEmail || !__currentItems.length) return;
+  const count = __currentItems.length;
+  const confirmMsg = count === 1
+    ? 'هل أنت متأكد من حذف هذه الرسالة؟'
+    : `هل أنت متأكد من حذف جميع رسائل هذا المستخدم؟ (${count} رسائل)`;
+  if (!confirm(confirmMsg)) return;
 
-  const r = await fetch('/api/admin/feedback?id='+encodeURIComponent(__activeId), {
-    method:'DELETE', headers:{ Authorization:'Bearer '+__token }
-  });
-  if (!r.ok) { alert('خطأ في الحذف'); return; }
+  await Promise.all(__currentItems.map(item =>
+    fetch('/api/admin/feedback?id='+encodeURIComponent(item.id), {
+      method:'DELETE', headers:{ Authorization:'Bearer '+__token }
+    }).catch(() => null)
+  ));
 
-  __allData = __allData.filter(i => i.id !== __activeId);
-  __activeId = null;
-  __currentItem = null;
+  const deletedIds = new Set(__currentItems.map(i => i.id));
+  __allData = __allData.filter(i => !deletedIds.has(i.id));
+  __activeEmail = null;
+  __currentItems = [];
   updateCounts();
   renderList();
 
-  // Reset chat panel
   document.getElementById('chatView').style.display = 'none';
   document.getElementById('chatEmpty').style.display = 'flex';
   document.getElementById('panelChat').classList.remove('mobile-open');
@@ -647,7 +672,7 @@ async function deleteCurrentFb() {
 
 function closeMobileChat() {
   document.getElementById('panelChat').classList.remove('mobile-open');
-  __activeId = null;
+  __activeEmail = null;
   document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
 }
 
