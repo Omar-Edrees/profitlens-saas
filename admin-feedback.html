@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProfitLens — إدارة الرسائل</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:#0d0f14; --bg2:#13161e; --bg3:#1a1e28; --bg4:#1f2435;
+      --bdr:#2a2f3d; --bdr2:#3a4055;
+      --txt:#e8eaf0; --txt2:#8890a6; --txt3:#555e78;
+      --acc:#5b6af5; --acc2:#4a58e8;
+      --grn:#22c55e; --red:#ef4444; --ylw:#f59e0b; --pur:#8b5cf6; --blue:#38bdf8;
+      --mono:'JetBrains Mono','Fira Code',monospace;
+      --body:'Inter',system-ui,sans-serif;
+    }
+
+    body { background:var(--bg); color:var(--txt); font-family:var(--body); min-height:100vh; }
+
+    nav {
+      position:sticky; top:0; z-index:100;
+      background:rgba(13,15,20,.92); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--bdr);
+      height:54px; display:flex; align-items:center; padding:0 24px; gap:12px;
+    }
+    .nav-logo { font-weight:700; font-size:15px; }
+    .nav-logo span { color:var(--acc); }
+    .badge { font-size:10px; font-weight:600; padding:2px 8px; background:rgba(239,68,68,.15); color:var(--red); border:1px solid rgba(239,68,68,.2); border-radius:20px; }
+    .nav-spacer { flex:1; }
+    .nav-back { font-size:12px; color:var(--txt2); text-decoration:none; display:flex; align-items:center; gap:6px; padding:6px 10px; border-radius:7px; transition:background .15s; }
+    .nav-back:hover { background:var(--bg3); color:var(--txt); }
+
+    main { max-width:1000px; margin:0 auto; padding:28px 20px; }
+
+    h1 { font-size:20px; font-weight:800; margin-bottom:4px; }
+    .subtitle { color:var(--txt2); font-size:13px; margin-bottom:24px; }
+
+    /* ── Tabs ── */
+    .tabs { display:flex; gap:4px; background:var(--bg2); border:1px solid var(--bdr); border-radius:10px; padding:4px; margin-bottom:24px; width:fit-content; }
+    .tab-btn {
+      padding:8px 20px; border:none; border-radius:7px; font-family:var(--body);
+      font-size:13px; font-weight:600; cursor:pointer;
+      color:var(--txt2); background:transparent; transition:all .15s; white-space:nowrap;
+    }
+    .tab-btn.active { background:var(--acc); color:#fff; }
+    .tab-btn .tab-count {
+      display:inline-flex; align-items:center; justify-content:center;
+      background:rgba(255,255,255,.15); border-radius:20px;
+      font-size:10px; padding:1px 7px; margin-right:6px; font-weight:700;
+    }
+    .tab-btn:not(.active) .tab-count { background:var(--bg3); color:var(--txt3); }
+
+    /* ── Cards grid ── */
+    .cards { display:flex; flex-direction:column; gap:12px; }
+
+    .fb-card {
+      background:var(--bg2); border:1px solid var(--bdr); border-radius:12px; padding:18px;
+      transition:border-color .15s;
+    }
+    .fb-card:hover { border-color:var(--bdr2); }
+
+    .fb-card-top { display:flex; align-items:flex-start; gap:14px; }
+    .fb-avatar {
+      width:38px; height:38px; border-radius:50%; flex-shrink:0;
+      background:linear-gradient(135deg,var(--acc),var(--pur));
+      display:flex; align-items:center; justify-content:center;
+      font-weight:700; font-size:15px; color:#fff;
+    }
+    .fb-meta { flex:1; min-width:0; }
+    .fb-email { font-size:13px; font-weight:600; color:var(--txt); font-family:var(--mono); }
+    .fb-date { font-size:11px; color:var(--txt3); margin-top:2px; }
+    .fb-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+
+    .status-badge {
+      font-size:11px; font-weight:600; padding:3px 10px; border-radius:20px; cursor:pointer;
+      border:none; font-family:var(--body);
+    }
+    .status-pending  { background:rgba(245,158,11,.12); color:var(--ylw); border:1px solid rgba(245,158,11,.25); }
+    .status-reviewed { background:rgba(56,189,248,.12); color:var(--blue); border:1px solid rgba(56,189,248,.25); }
+    .status-resolved { background:rgba(34,197,94,.12);  color:var(--grn);  border:1px solid rgba(34,197,94,.25); }
+
+    .btn-del {
+      width:30px; height:30px; border:none; border-radius:7px; cursor:pointer;
+      background:rgba(239,68,68,.08); color:var(--red); display:flex; align-items:center; justify-content:center;
+      transition:background .15s;
+    }
+    .btn-del:hover { background:rgba(239,68,68,.18); }
+
+    .fb-message { margin-top:12px; font-size:13px; color:var(--txt2); line-height:1.65; white-space:pre-wrap; word-break:break-word; }
+    .fb-message.collapsed { max-height:80px; overflow:hidden; position:relative; }
+    .fb-message.collapsed::after { content:''; position:absolute; bottom:0; left:0; right:0; height:30px; background:linear-gradient(transparent,var(--bg2)); }
+    .fb-expand { font-size:11px; color:var(--acc); cursor:pointer; margin-top:6px; background:none; border:none; padding:0; font-family:var(--body); }
+    .fb-expand:hover { text-decoration:underline; }
+
+    .fb-image { margin-top:12px; }
+    .fb-image a { display:inline-block; }
+    .fb-image img { max-width:220px; max-height:140px; border-radius:8px; border:1px solid var(--bdr); object-fit:cover; transition:opacity .15s; }
+    .fb-image img:hover { opacity:.85; }
+    .fb-image-lbl { font-size:10px; color:var(--txt3); margin-bottom:5px; text-transform:uppercase; letter-spacing:.06em; }
+
+    .empty-state { text-align:center; padding:60px 0; color:var(--txt3); font-size:14px; }
+    .empty-state svg { margin-bottom:12px; opacity:.3; }
+
+    .loading { text-align:center; padding:60px 0; color:var(--txt3); }
+
+    .status-menu-wrap { position:relative; }
+    .status-dropdown {
+      position:absolute; top:calc(100% + 4px); left:0; z-index:50;
+      background:var(--bg3); border:1px solid var(--bdr2); border-radius:9px;
+      padding:4px; min-width:130px; box-shadow:0 8px 24px rgba(0,0,0,.4);
+      display:none;
+    }
+    .status-dropdown.open { display:block; }
+    .status-opt {
+      padding:8px 12px; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600;
+      transition:background .12s;
+    }
+    .status-opt:hover { background:var(--bg4); }
+
+    @media(max-width:600px) {
+      .fb-card-top { flex-wrap:wrap; }
+      .fb-actions { width:100%; justify-content:flex-end; margin-top:8px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Profit<span>Lens</span></div>
+  <span class="badge">ADMIN</span>
+  <div class="nav-spacer"></div>
+  <a class="nav-back" href="/admin">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    لوحة التحكم
+  </a>
+</nav>
+
+<main>
+  <h1>إدارة الرسائل</h1>
+  <p class="subtitle">شكاوي واقتراحات وطلبات كاستمايزيشن من المستخدمين</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-type="complaint"  onclick="switchTab('complaint')">
+      <span class="tab-count" id="cnt_complaint">—</span>شكاوي
+    </button>
+    <button class="tab-btn" data-type="suggestion" onclick="switchTab('suggestion')">
+      <span class="tab-count" id="cnt_suggestion">—</span>اقتراحات
+    </button>
+    <button class="tab-btn" data-type="customization" onclick="switchTab('customization')">
+      <span class="tab-count" id="cnt_customization">—</span>كاستمايزيشن
+    </button>
+  </div>
+
+  <div class="cards" id="cards_wrap">
+    <div class="loading">جاري التحميل…</div>
+  </div>
+</main>
+
+<script>
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const statusLabels = { pending:'قيد الانتظار', reviewed:'تمت المراجعة', resolved:'تم الحل' };
+const statusClasses = { pending:'status-pending', reviewed:'status-reviewed', resolved:'status-resolved' };
+
+let __sb, __token, __allData = {}, __activeType = 'complaint';
+
+async function init() {
+  const cfgRes = await fetch('/api/config');
+  const cfg = await cfgRes.json();
+  __sb = supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+  const { data: { session } } = await __sb.auth.getSession();
+  if (!session) { window.location.replace('/'); return; }
+  __token = session.access_token;
+
+  const { data: profile } = await __sb.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+  if (profile?.role !== 'admin') { document.body.innerHTML = '<div style="text-align:center;padding:80px;color:#ef4444;font-size:16px">⛔ Admin access only</div>'; return; }
+
+  await loadAll();
+}
+
+async function loadAll() {
+  const types = ['complaint','suggestion','customization'];
+  await Promise.all(types.map(async t => {
+    const r = await fetch('/api/admin/feedback?type='+t, { headers:{ Authorization:'Bearer '+__token } });
+    const j = await r.json();
+    __allData[t] = j.data || [];
+    const cnt = document.getElementById('cnt_'+t);
+    if(cnt) cnt.textContent = __allData[t].length;
+  }));
+  renderTab(__activeType);
+}
+
+function switchTab(type) {
+  __activeType = type;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.type === type));
+  renderTab(type);
+}
+
+function renderTab(type) {
+  const items = __allData[type] || [];
+  const wrap = document.getElementById('cards_wrap');
+  if (!items.length) {
+    wrap.innerHTML = '<div class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><br>لا توجد رسائل</div>';
+    return;
+  }
+  wrap.innerHTML = items.map(item => cardHTML(item)).join('');
+}
+
+function cardHTML(item) {
+  const initial = (item.email||'?').charAt(0).toUpperCase();
+  const date = new Date(item.created_at).toLocaleDateString('ar-EG', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+  const msgId = 'msg_'+item.id.replace(/-/g,'');
+  const imgHtml = item.image_url
+    ? `<div class="fb-image"><div class="fb-image-lbl">صورة مرفقة</div><a href="${esc(item.image_url)}" target="_blank" rel="noopener"><img src="${esc(item.image_url)}" alt="attachment" loading="lazy"></a></div>`
+    : '';
+  const statusCls = statusClasses[item.status] || 'status-pending';
+  const statusLbl = statusLabels[item.status] || item.status;
+  return `
+  <div class="fb-card" id="card_${esc(item.id)}">
+    <div class="fb-card-top">
+      <div class="fb-avatar">${esc(initial)}</div>
+      <div class="fb-meta">
+        <div class="fb-email">${esc(item.email)}</div>
+        <div class="fb-date">${esc(date)}</div>
+      </div>
+      <div class="fb-actions">
+        <div class="status-menu-wrap" id="smw_${esc(item.id)}">
+          <button class="status-badge ${statusCls}" onclick="toggleStatusMenu('${esc(item.id)}')">${statusLbl} ▾</button>
+          <div class="status-dropdown" id="sdrop_${esc(item.id)}">
+            <div class="status-opt status-pending"  onclick="setStatus('${esc(item.id)}','pending')">قيد الانتظار</div>
+            <div class="status-opt status-reviewed" onclick="setStatus('${esc(item.id)}','reviewed')">تمت المراجعة</div>
+            <div class="status-opt status-resolved" onclick="setStatus('${esc(item.id)}','resolved')">تم الحل</div>
+          </div>
+        </div>
+        <button class="btn-del" onclick="deleteFb('${esc(item.id)}')" title="حذف">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="fb-message collapsed" id="${msgId}">${esc(item.message)}</div>
+    <button class="fb-expand" onclick="expandMsg('${msgId}',this)">عرض الكل ▾</button>
+    ${imgHtml}
+  </div>`;
+}
+
+function expandMsg(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('collapsed');
+  btn.style.display = 'none';
+}
+
+function toggleStatusMenu(id) {
+  const drop = document.getElementById('sdrop_'+id);
+  if (!drop) return;
+  const isOpen = drop.classList.contains('open');
+  document.querySelectorAll('.status-dropdown.open').forEach(d => d.classList.remove('open'));
+  if (!isOpen) drop.classList.add('open');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.status-menu-wrap'))
+    document.querySelectorAll('.status-dropdown.open').forEach(d => d.classList.remove('open'));
+});
+
+async function setStatus(id, status) {
+  document.querySelectorAll('.status-dropdown.open').forEach(d => d.classList.remove('open'));
+  const r = await fetch('/api/admin/feedback', {
+    method:'PATCH',
+    headers:{ Authorization:'Bearer '+__token, 'Content-Type':'application/json' },
+    body: JSON.stringify({ id, status })
+  });
+  if (!r.ok) { alert('خطأ في تحديث الحالة'); return; }
+  // Update local data
+  const item = Object.values(__allData).flat().find(i => i.id === id);
+  if (item) item.status = status;
+  renderTab(__activeType);
+}
+
+async function deleteFb(id) {
+  if (!confirm('هل أنت متأكد من الحذف؟')) return;
+  const r = await fetch('/api/admin/feedback?id='+encodeURIComponent(id), {
+    method:'DELETE', headers:{ Authorization:'Bearer '+__token }
+  });
+  if (!r.ok) { alert('خطأ في الحذف'); return; }
+  Object.keys(__allData).forEach(t => {
+    __allData[t] = __allData[t].filter(i => i.id !== id);
+  });
+  const cnt = document.getElementById('cnt_'+__activeType);
+  if (cnt) cnt.textContent = __allData[__activeType].length;
+  renderTab(__activeType);
+}
+
+init().catch(console.error);
+</script>
+</body>
+</html>

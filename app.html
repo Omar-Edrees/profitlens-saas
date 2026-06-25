@@ -212,6 +212,69 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 .pl-menu-btn:hover{background:var(--surf3);color:var(--txt)}
 .pl-menu-btn.danger:hover{background:rgba(239,68,68,.12);color:#f87171}
 
+/* ─── FEEDBACK MODAL ─────────────────────────────────── */
+.fb-overlay{
+  position:fixed;inset:0;z-index:9000;
+  background:rgba(0,0,0,.65);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s;
+  padding:16px;
+}
+.fb-overlay.open{opacity:1;visibility:visible}
+.fb-modal{
+  background:var(--surf);border:1px solid var(--bdr2);border-radius:18px;
+  width:100%;max-width:420px;max-height:90vh;overflow-y:auto;
+  box-shadow:0 24px 64px rgba(0,0,0,.55);
+  transform:translateY(16px);transition:transform .2s;
+}
+.fb-overlay.open .fb-modal{transform:translateY(0)}
+.fb-modal-head{
+  display:flex;align-items:center;gap:12px;
+  padding:20px 20px 0;margin-bottom:16px;
+}
+.fb-type-icon{
+  width:40px;height:40px;border-radius:12px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+}
+.fb-modal-title{font-size:15px;font-weight:700;color:var(--txt-title);flex:1}
+.fb-modal-close{
+  width:30px;height:30px;border:none;background:transparent;border-radius:8px;
+  cursor:pointer;color:var(--txt2);display:flex;align-items:center;justify-content:center;
+  transition:background .15s;
+}
+.fb-modal-close:hover{background:var(--surf3)}
+.fb-step{padding:0 20px 20px;animation:fbFadeIn .18s ease}
+@keyframes fbFadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fb-lbl{font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:6px;display:block}
+.fb-input,.fb-textarea{
+  width:100%;padding:10px 13px;border:1px solid var(--bdr2);border-radius:10px;
+  background:var(--surf2);color:var(--txt);font-family:var(--body);font-size:13px;
+  transition:border-color .15s;outline:none;
+}
+.fb-input:focus,.fb-textarea:focus{border-color:var(--c1)}
+.fb-textarea{resize:vertical;min-height:110px;max-height:240px}
+.fb-field{margin-bottom:14px}
+.fb-upload-area{
+  border:2px dashed var(--bdr2);border-radius:10px;padding:16px;text-align:center;
+  cursor:pointer;transition:border-color .15s,background .15s;margin-bottom:14px;
+}
+.fb-upload-area:hover,.fb-upload-area.drag{border-color:var(--c1);background:rgba(52,211,153,.04)}
+.fb-upload-hint{font-size:12px;color:var(--txt2);margin-top:4px}
+.fb-preview{max-width:100%;max-height:160px;border-radius:8px;border:1px solid var(--bdr);margin-top:10px;object-fit:cover}
+.fb-remove-img{font-size:11px;color:var(--red);cursor:pointer;margin-top:4px;background:none;border:none;padding:0;font-family:var(--body)}
+.fb-remove-img:hover{text-decoration:underline}
+.fb-btn{
+  width:100%;padding:11px;border:none;border-radius:10px;
+  background:var(--c1);color:#0b0e14;font-family:var(--head);font-size:14px;font-weight:700;
+  cursor:pointer;transition:opacity .15s;
+}
+.fb-btn:disabled{opacity:.5;cursor:not-allowed}
+.fb-btn:not(:disabled):hover{opacity:.88}
+.fb-success{text-align:center;padding:10px 20px 24px}
+.fb-success-icon{font-size:40px;margin-bottom:10px}
+.fb-success-title{font-size:16px;font-weight:700;color:var(--txt-title);margin-bottom:6px}
+.fb-success-msg{font-size:13px;color:var(--txt2);line-height:1.6}
+
 /* mobile tab bar — hidden on desktop */
 .mobile-tabs{display:none}
 
@@ -9335,6 +9398,19 @@ const T = {
     fn_overall:'Overall: {0} of leads → delivered orders',
     wf_lbl_revenue:'Revenue', wf_lbl_product:'Product', wf_lbl_shipping:'Shipping',
     wf_lbl_comm:'Comm.', wf_lbl_adfixed:'Ad+fixed', wf_lbl_net:'Net',
+    fb_btn_complaint:'Complaints', fb_btn_suggestion:'Suggestions', fb_btn_customization:'Customization',
+    fb_admin_feedback:'Feedback inbox',
+    fb_email_lbl:'Your email', fb_msg_lbl:'Your message',
+    fb_img_hint:'Attach a screenshot (optional — max 5MB)',
+    fb_next_btn:'Continue →', fb_submit_btn:'Send',
+    fb_success_title:'Sent successfully!',
+    fb_success_msg:'We received your message and will reply to your email.',
+    fb_close_btn:'Close', fb_remove_img:'✕ Remove image',
+    fb_title_complaint:'Complaint', fb_title_suggestion:'Suggestion', fb_title_customization:'Customization request',
+    fb_err_email:'Please enter a valid email.',
+    fb_err_msg:'Please enter a message.',
+    fb_err_size:'File too large (max 5MB).',
+    fb_err_send:'Failed to send. Please try again.',
   },
   ar: {
     nav_inputs:'المدخلات', nav_marketing:'الإعلانات', nav_shipping:'الشحن', nav_overview:'نظرة عامة',
@@ -9770,6 +9846,19 @@ const T = {
     fn_overall:'إجمالاً: {0} من الليدز ← أوردرات موصّلة',
     wf_lbl_revenue:'الإيراد', wf_lbl_product:'المنتج', wf_lbl_shipping:'الشحن',
     wf_lbl_comm:'عمولة', wf_lbl_adfixed:'إعلان+ثابت', wf_lbl_net:'الصافي',
+    fb_btn_complaint:'شكاوي', fb_btn_suggestion:'اقتراحات', fb_btn_customization:'طلبات كاستمايزيشن',
+    fb_admin_feedback:'صندوق الفيدباك',
+    fb_email_lbl:'إيميلك المسجّل', fb_msg_lbl:'الرسالة',
+    fb_img_hint:'أرفق صورة أو سكرينشوت (اختياري — حد أقصى 5MB)',
+    fb_next_btn:'متابعة ←', fb_submit_btn:'إرسال',
+    fb_success_title:'تم الإرسال بنجاح!',
+    fb_success_msg:'استلمنا رسالتك وهنرد عليك على الإيميل.',
+    fb_close_btn:'إغلاق', fb_remove_img:'✕ إزالة الصورة',
+    fb_title_complaint:'شكوى', fb_title_suggestion:'اقتراح', fb_title_customization:'طلب كاستمايزيشن',
+    fb_err_email:'الرجاء إدخال بريد إلكتروني صحيح.',
+    fb_err_msg:'الرجاء كتابة رسالتك.',
+    fb_err_size:'الملف كبير جداً (الحد الأقصى 5MB).',
+    fb_err_send:'فشل الإرسال. حاول مرة أخرى.',
   }
 };
 
@@ -9938,8 +10027,27 @@ window.addEventListener('load', ()=>{
               '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 7.7 8 9 4.6-1.3 8-4 8-9V5z"/><path d="m9 12 2 2 4-4"/></svg>'+
               '<span>Admin panel</span>'+
             '</a>'+
+            '<a class="pl-menu-btn" href="/admin-feedback" style="text-decoration:none">'+
+              '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>'+
+              '<span>'+( T[LANG].fb_admin_feedback||T.en.fb_admin_feedback )+'</span>'+
+            '</a>'+
             '<div class="pl-menu-div"></div>'
           : '';
+
+        const feedbackItems =
+          '<button class="pl-menu-btn" onclick="openFeedback(\'complaint\')">'+
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>'+
+            '<span>'+( T[LANG].fb_btn_complaint||T.en.fb_btn_complaint )+'</span>'+
+          '</button>'+
+          '<button class="pl-menu-btn" onclick="openFeedback(\'suggestion\')">'+
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>'+
+            '<span>'+( T[LANG].fb_btn_suggestion||T.en.fb_btn_suggestion )+'</span>'+
+          '</button>'+
+          '<button class="pl-menu-btn" onclick="openFeedback(\'customization\')">'+
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>'+
+            '<span>'+( T[LANG].fb_btn_customization||T.en.fb_btn_customization )+'</span>'+
+          '</button>'+
+          '<div class="pl-menu-div"></div>';
 
         const wrap = document.createElement('div');
         wrap.className = 'pl-profile';
@@ -9956,6 +10064,7 @@ window.addEventListener('load', ()=>{
             '</div>'+
             '<div class="pl-menu-div"></div>'+
             adminItem +
+            feedbackItems +
             '<button class="pl-menu-btn danger" onclick="window.__plLogout()">'+
               '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>'+
               '<span data-t="sign_out">Sign out</span>'+
@@ -10016,6 +10125,126 @@ window.addEventListener('load', ()=>{
       '<button style="background:rgba(0,0,0,.2);border:none;color:#fff;cursor:pointer;padding:4px 10px;border-radius:4px;font-size:11px" onclick="this.parentElement.remove()">✕</button>';
     document.body.appendChild(banner);
   })();
+
+  // ── FEEDBACK MODAL ──────────────────────────────────────────────────────────
+  let _fbType = '';
+
+  window.openFeedback = function(type) {
+    _fbType = type;
+    const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
+    const titles = { complaint:'fb_title_complaint', suggestion:'fb_title_suggestion', customization:'fb_title_customization' };
+    const icons  = { complaint:'⚠️', suggestion:'💡', customization:'🔧' };
+    document.getElementById('fb_title').textContent = L(titles[type]||'fb_title_complaint');
+    document.getElementById('fb_icon').textContent  = icons[type]||'💬';
+    document.getElementById('fb_email_lbl').textContent = L('fb_email_lbl');
+    document.getElementById('fb_msg_lbl').textContent   = L('fb_msg_lbl');
+    document.getElementById('fb_img_hint').textContent  = L('fb_img_hint');
+    const step1Btn = document.querySelector('#fb_step1 .fb-btn');
+    if (step1Btn) step1Btn.textContent = L('fb_next_btn');
+    const submitBtn = document.getElementById('fb_submit_btn');
+    if (submitBtn) { submitBtn.textContent = L('fb_submit_btn'); submitBtn.disabled = false; }
+    document.getElementById('fb_remove_img').textContent = L('fb_remove_img');
+    document.getElementById('fb_step1').style.display = '';
+    document.getElementById('fb_step2').style.display = 'none';
+    document.getElementById('fb_success').style.display = 'none';
+    document.getElementById('fb_msg').value = '';
+    const emailEl = document.getElementById('fb_email');
+    if (window.__sbUser?.email) emailEl.value = window.__sbUser.email;
+    fbRemoveImg();
+    document.getElementById('fb_overlay').classList.add('open');
+    const m = document.getElementById('__pl_menu');
+    if (m) m.classList.remove('open');
+  };
+
+  window.fbNext = function() {
+    const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
+    const email = document.getElementById('fb_email').value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert(L('fb_err_email')); return; }
+    document.getElementById('fb_step1').style.display = 'none';
+    document.getElementById('fb_step2').style.display = '';
+    document.getElementById('fb_msg').focus();
+  };
+
+  window.fbSubmit = async function() {
+    const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
+    const email = document.getElementById('fb_email').value.trim();
+    const msg   = document.getElementById('fb_msg').value.trim();
+    if (!msg) { alert(L('fb_err_msg')); return; }
+    const btn = document.getElementById('fb_submit_btn');
+    btn.disabled = true; btn.textContent = '...';
+    try {
+      let imageUrl = null;
+      const fileInput = document.getElementById('fb_file_input');
+      if (fileInput.files[0]) {
+        const file = fileInput.files[0];
+        const ext  = file.name.split('.').pop() || 'jpg';
+        const path = Date.now()+'_'+Math.random().toString(36).slice(2)+'.'+ext;
+        const { error: upErr } = await window.__sb.storage.from('feedback-images').upload(path, file, { upsert:false });
+        if (upErr) throw upErr;
+        const { data: { publicUrl } } = window.__sb.storage.from('feedback-images').getPublicUrl(path);
+        imageUrl = publicUrl;
+      }
+      const { error } = await window.__sb.from('feedback').insert({
+        user_id: window.__sbUser?.id || null,
+        type: _fbType, email, message: msg, image_url: imageUrl
+      });
+      if (error) throw error;
+      document.getElementById('fb_step2').style.display = 'none';
+      const succ = document.getElementById('fb_success');
+      succ.style.display = '';
+      succ.querySelector('.fb-success-title').textContent = L('fb_success_title');
+      succ.querySelector('.fb-success-msg').textContent   = L('fb_success_msg');
+      succ.querySelector('.fb-btn').textContent            = L('fb_close_btn');
+    } catch(e) {
+      alert((T[LANG]&&T[LANG].fb_err_send)||T.en.fb_err_send);
+      btn.disabled = false;
+      btn.textContent = L('fb_submit_btn');
+    }
+  };
+
+  window.fbClose = function() {
+    document.getElementById('fb_overlay').classList.remove('open');
+    setTimeout(()=>{
+      document.getElementById('fb_step1').style.display = '';
+      document.getElementById('fb_step2').style.display = 'none';
+      document.getElementById('fb_success').style.display = 'none';
+      document.getElementById('fb_msg').value = '';
+      fbRemoveImg();
+      const btn = document.getElementById('fb_submit_btn');
+      if (btn) { btn.disabled = false; btn.textContent = (T[LANG]&&T[LANG].fb_submit_btn)||T.en.fb_submit_btn; }
+    }, 300);
+  };
+
+  window.fbFileChange = function(input) {
+    const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
+    const file = input.files[0];
+    if (!file) return;
+    if (file.size > 5*1024*1024) { alert(L('fb_err_size')); input.value=''; return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+      const prev = document.getElementById('fb_preview');
+      prev.src = e.target.result; prev.style.display = 'block';
+      document.getElementById('fb_img_hint').style.display = 'none';
+      document.getElementById('fb_remove_img').style.display = '';
+    };
+    reader.readAsDataURL(file);
+  };
+
+  window.fbRemoveImg = function() {
+    const inp  = document.getElementById('fb_file_input');
+    const prev = document.getElementById('fb_preview');
+    const hint = document.getElementById('fb_img_hint');
+    const rem  = document.getElementById('fb_remove_img');
+    if (inp)  inp.value = '';
+    if (prev) { prev.src=''; prev.style.display='none'; }
+    if (hint) hint.style.display = '';
+    if (rem)  rem.style.display  = 'none';
+  };
+
+  window.fbOverlayClick = function(e) {
+    if (e.target === document.getElementById('fb_overlay')) fbClose();
+  };
+  // ── END FEEDBACK ──────────────────────────────────────────────────────────
 
   attachThousandsFormatting(); // convert large-value inputs to formatted text BEFORE values load
   initProducts();
@@ -10267,6 +10496,50 @@ function toggleRevShipping(){
 })();
 
 </script>
+
+<!-- ── FEEDBACK MODAL ──────────────────────────────────── -->
+<div class="fb-overlay" id="fb_overlay" onclick="fbOverlayClick(event)">
+  <div class="fb-modal" id="fb_modal">
+    <div class="fb-modal-head">
+      <div class="fb-type-icon" id="fb_icon"></div>
+      <div class="fb-modal-title" id="fb_title"></div>
+      <button class="fb-modal-close" onclick="fbClose()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <!-- Step 1: email -->
+    <div class="fb-step" id="fb_step1">
+      <div class="fb-field">
+        <label class="fb-lbl" id="fb_email_lbl">إيميلك المسجّل</label>
+        <input class="fb-input" type="email" id="fb_email" autocomplete="email">
+      </div>
+      <button class="fb-btn" onclick="fbNext()">متابعة ←</button>
+    </div>
+    <!-- Step 2: message + image -->
+    <div class="fb-step" id="fb_step2" style="display:none">
+      <div class="fb-field">
+        <label class="fb-lbl" id="fb_msg_lbl">الرسالة</label>
+        <textarea class="fb-textarea" id="fb_msg" rows="5"></textarea>
+      </div>
+      <label class="fb-upload-area" id="fb_upload_area" for="fb_file_input">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--txt3)"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div class="fb-upload-hint" id="fb_img_hint">أرفق صورة أو سكرينشوت (اختياري — حد أقصى 5MB)</div>
+        <img id="fb_preview" class="fb-preview" style="display:none" alt="preview">
+        <input type="file" id="fb_file_input" accept="image/*" style="display:none" onchange="fbFileChange(this)">
+      </label>
+      <button class="fb-remove-img" id="fb_remove_img" style="display:none" onclick="fbRemoveImg()">✕ إزالة الصورة</button>
+      <button class="fb-btn" id="fb_submit_btn" onclick="fbSubmit()">إرسال</button>
+    </div>
+    <!-- Success -->
+    <div class="fb-step fb-success" id="fb_success" style="display:none">
+      <div class="fb-success-icon">✅</div>
+      <div class="fb-success-title">تم الإرسال بنجاح!</div>
+      <div class="fb-success-msg">استلمنا رسالتك وهنرد عليك على الإيميل.</div>
+      <button class="fb-btn" style="margin-top:16px" onclick="fbClose()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
 <!-- LANG PATCH: injected by build -->
