@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ProfitLens Pro — Pricing</title>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KRX6N8ZX');</script>
+<!-- End Google Tag Manager -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -289,6 +296,10 @@
   </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRX6N8ZX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
   <div class="bg-grid"></div>
   <div class="glow"></div>
 
@@ -437,6 +448,11 @@
     const WHATSAPP_NUMBER = '201556318082';
     // ────────────────────────────────────────
 
+    function track(event, params) {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(Object.assign({ event: event }, params || {}));
+    }
+
     document.getElementById('price-amount').textContent  = PRICE_EGP;
     document.getElementById('price-original').textContent = PRICE_ORIGINAL + ' EGP';
     document.getElementById('pay-step-amount').textContent = PRICE_EGP;
@@ -472,6 +488,7 @@
     window.__applyCouponDiscount = applyCouponDiscount;
 
     function copyNumber() {
+      track('copy_payment_number');
       navigator.clipboard.writeText(PAYMENT_NUMBER).then(() => {
         const btn = document.querySelector('.copy-btn');
         btn.textContent = 'Copied ✓';
@@ -480,12 +497,17 @@
       });
     }
 
+    document.getElementById('wa-btn').addEventListener('click', function() {
+      track('wa_checkout_click');
+    });
+
     // Auth check
     let __sb = null;
     async function init() {
+      let userStatus = 'guest';
       try {
         const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
-        if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) return;
+        if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) { track('view_pricing', { user_status: userStatus }); return; }
         const { createClient } = supabase;
         __sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
         const { data: { session } } = await __sb.auth.getSession();
@@ -497,6 +519,7 @@
             window.location.replace('/app');
             return;
           }
+          userStatus = 'logged_in';
           document.getElementById('sign-out-btn').style.display = 'block';
           // already applied a discount code but not paid yet → show their discounted price
           if (profile?.redeemed_code && profile.redeemed_discount_pct != null && profile.redeemed_discount_pct < 100) {
@@ -510,6 +533,7 @@
           }
         }
       } catch(e) {}
+      track('view_pricing', { user_status: userStatus });
     }
 
     async function doSignOut() {
@@ -522,7 +546,10 @@
       const arrow = btn.querySelector('.promo-toggle-arrow');
       body.classList.toggle('open');
       arrow.classList.toggle('open');
-      if (body.classList.contains('open')) document.getElementById('promo-input').focus();
+      if (body.classList.contains('open')) {
+        track('promo_code_reveal');
+        document.getElementById('promo-input').focus();
+      }
     }
 
     async function redeemPromo() {
@@ -537,6 +564,7 @@
       const { data: { session } } = await __sb.auth.getSession();
       if (!session) { window.location.replace('/'); return; }
 
+      track('promo_code_submit');
       btn.disabled = true; btn.textContent = '…جاري التحقق';
       try {
         const res = await fetch('/api/redeem', {
@@ -553,11 +581,13 @@
         }
         if (json.activated) {
           // 100% code → free unlock, go straight to the app
+          track('promo_code_success', { type: 'free_unlock' });
           msg.textContent = '✓ تم التفعيل! بيتم تحويلك…';
           msg.className = 'promo-msg success';
           setTimeout(() => window.location.replace('/app'), 1200);
         } else {
           // discount code → apply discount to the price; customer pays it manually
+          track('promo_code_success', { type: 'discount', discount_pct: json.discount_pct });
           const newPrice = window.__applyCouponDiscount(json.discount_pct, code.toUpperCase());
           msg.textContent = '✓ تم تطبيق الكوبون: خصم ' + json.discount_pct + '% — السعر بقى ' + newPrice +
             ' جنيه. حوّل المبلغ وابعت الإيصال على واتساب وهنفعّلك.';

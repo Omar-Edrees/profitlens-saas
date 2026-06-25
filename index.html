@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ProfitLens Pro — Sign In</title>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KRX6N8ZX');</script>
+<!-- End Google Tag Manager -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -162,6 +169,10 @@
   </style>
 </head>
 <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRX6N8ZX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
   <div class="bg-grid"></div>
   <div class="glow"></div>
 
@@ -227,6 +238,11 @@
   </div>
 
   <script>
+    function track(event, params) {
+      window.dataLayer = window.dataLayer || [];
+      window.dataLayer.push(Object.assign({ event: event }, params || {}));
+    }
+
     let __sb = null;
 
     async function init() {
@@ -257,6 +273,7 @@
 
     async function doGoogleSignIn() {
       if (!__sb) return alert('Service unavailable — please try again later.');
+      track('google_sign_in_click');
       const btn = document.getElementById('google-btn');
       btn.disabled = true; btn.childNodes[1].textContent = ' Redirecting…';
       await __sb.auth.signInWithOAuth({
@@ -278,6 +295,7 @@
       btn.disabled = false; btn.textContent = 'Sign In';
 
       if (error) return showMsg('si-msg', error.message, 'error');
+      track('sign_in_success', { method: 'email' });
       window.location.replace('/app');
     }
 
@@ -298,6 +316,7 @@
       btn.disabled = false; btn.textContent = 'Create Account';
 
       if (error) return showMsg('su-msg', error.message, 'error');
+      track('sign_up_success', { method: 'email' });
       showMsg('su-msg', 'Account created! Check your email to confirm, then sign in.', 'success');
     }
 
