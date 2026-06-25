@@ -6468,12 +6468,12 @@ function renderWaterfall(revenue, product, shipping, comm, adfixed){
   if(!(revenue>0)){ host.innerHTML=''; return; }
 
   const cols=[
-    {label:'Revenue',  val:revenue, color:'#34D399', kind:'total'},
-    {label:'Product',  val:product, color:'#F87171', kind:'drop'},
-    {label:'Shipping', val:shipping,color:'#FBBF24', kind:'drop'},
-    {label:'Comm.',    val:comm,    color:'#38BDF8', kind:'drop'},
-    {label:'Ad+fixed', val:adfixed, color:'#818CF8', kind:'drop'},
-    {label:'Net',      val:net,     color:net>=0?'#6EE7B7':'#F87171', kind:'total'}
+    {label:T[LANG].wf_lbl_revenue,  val:revenue, color:'#34D399', kind:'total'},
+    {label:T[LANG].wf_lbl_product,  val:product, color:'#F87171', kind:'drop'},
+    {label:T[LANG].wf_lbl_shipping, val:shipping,color:'#FBBF24', kind:'drop'},
+    {label:T[LANG].wf_lbl_comm,     val:comm,    color:'#38BDF8', kind:'drop'},
+    {label:T[LANG].wf_lbl_adfixed,  val:adfixed, color:'#818CF8', kind:'drop'},
+    {label:T[LANG].wf_lbl_net,      val:net,     color:net>=0?'#6EE7B7':'#F87171', kind:'total'}
   ];
 
   const topY=18, baseY=230, W=460;
@@ -9216,6 +9216,8 @@ const T = {
     fn_delivered:'Delivered: ',
     fn_dropped:'↓ {0}% dropped',
     fn_overall:'Overall: {0} of leads → delivered orders',
+    wf_lbl_revenue:'Revenue', wf_lbl_product:'Product', wf_lbl_shipping:'Shipping',
+    wf_lbl_comm:'Comm.', wf_lbl_adfixed:'Ad+fixed', wf_lbl_net:'Net',
   },
   ar: {
     nav_inputs:'المدخلات', nav_marketing:'الإعلانات', nav_shipping:'الشحن', nav_overview:'نظرة عامة',
@@ -9649,6 +9651,8 @@ const T = {
     fn_delivered:'موصّل: ',
     fn_dropped:'↓ {0}% انخفض',
     fn_overall:'إجمالاً: {0} من الليدز ← أوردرات موصّلة',
+    wf_lbl_revenue:'الإيراد', wf_lbl_product:'المنتج', wf_lbl_shipping:'الشحن',
+    wf_lbl_comm:'عمولة', wf_lbl_adfixed:'إعلان+ثابت', wf_lbl_net:'الصافي',
   }
 };
 
