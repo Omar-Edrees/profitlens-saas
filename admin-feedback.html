@@ -204,8 +204,28 @@
     .bubble-time { font-size:10px; color:var(--txt3); margin-top:4px; text-align:end; }
 
     .bubble-img { margin-top:8px; }
-    .bubble-img a { display:inline-block; }
-    .bubble-img img { max-width:200px; max-height:140px; border-radius:8px; border:1px solid var(--bdr); object-fit:cover; }
+    .bubble-img img { max-width:200px; max-height:140px; border-radius:8px; border:1px solid var(--bdr); object-fit:cover; cursor:zoom-in; transition:opacity .15s; }
+    .bubble-img img:hover { opacity:.85; }
+
+    /* ── Lightbox ── */
+    .lightbox {
+      display:none; position:fixed; inset:0; z-index:999;
+      background:rgba(0,0,0,.85); backdrop-filter:blur(6px);
+      align-items:center; justify-content:center;
+    }
+    .lightbox.open { display:flex; }
+    .lightbox img {
+      max-width:90vw; max-height:88vh; border-radius:10px;
+      object-fit:contain; box-shadow:0 16px 64px rgba(0,0,0,.6);
+    }
+    .lightbox-close {
+      position:fixed; top:16px; left:16px;
+      width:38px; height:38px; border-radius:50%; border:none; cursor:pointer;
+      background:rgba(255,255,255,.12); color:#fff; font-size:20px;
+      display:flex; align-items:center; justify-content:center;
+      transition:background .15s;
+    }
+    .lightbox-close:hover { background:rgba(255,255,255,.22); }
 
     /* Date separator */
     .date-sep {
@@ -263,6 +283,12 @@
     لوحة التحكم
   </a>
 </nav>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()" title="إغلاق">✕</button>
+  <img id="lightboxImg" src="" alt="preview" onclick="event.stopPropagation()">
+</div>
 
 <div class="layout">
 
@@ -516,7 +542,7 @@ function bubbleHTML(n) {
   const avatarLetter = n.incoming ? (__currentItem?.email||'?').charAt(0).toUpperCase() : 'أ';
   const time = fmtTime(n.ts);
   const imgHtml = n.image_url
-    ? `<div class="bubble-img"><a href="${esc(n.image_url)}" target="_blank" rel="noopener"><img src="${esc(n.image_url)}" alt="attachment" loading="lazy"></a></div>`
+    ? `<div class="bubble-img"><img src="${esc(n.image_url)}" alt="attachment" loading="lazy" onclick="openLightbox('${esc(n.image_url)}')"></div>`
     : '';
   return `
   <div class="bubble-wrap ${direction}">
@@ -641,6 +667,16 @@ function fmtDateFull(iso) {
 function fmtTime(iso) {
   return new Date(iso).toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
 }
+
+function openLightbox(url) {
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightboxImg').src = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
 init().catch(console.error);
 </script>
