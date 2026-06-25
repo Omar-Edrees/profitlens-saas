@@ -36,6 +36,39 @@
     .nav-spacer { flex: 1; }
     .nav-email { font-size: 12px; color: var(--txt2); font-family: var(--mono); }
 
+    /* ── Admin profile menu ── */
+    .nav-menu-wrap { position: relative; }
+    .nav-menu-btn {
+      width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--bdr2);
+      background: linear-gradient(135deg,var(--acc),var(--pur));
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: #fff; transition: border-color .15s;
+    }
+    .nav-menu-btn:hover { border-color: var(--acc); }
+    .nav-menu-drop {
+      display: none; position: absolute; top: calc(100% + 10px); right: 0;
+      background: var(--bg3); border: 1px solid var(--bdr2); border-radius: 12px;
+      padding: 6px; min-width: 200px; box-shadow: 0 12px 32px rgba(0,0,0,.5);
+      z-index: 200;
+    }
+    .nav-menu-drop.open { display: block; }
+    .nav-menu-email {
+      padding: 8px 12px 10px; font-size: 11px; color: var(--txt3);
+      font-family: var(--mono); border-bottom: 1px solid var(--bdr); margin-bottom: 4px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .nav-menu-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 8px; cursor: pointer;
+      font-size: 13px; font-weight: 500; color: var(--txt2);
+      text-decoration: none; transition: background .12s, color .12s;
+    }
+    .nav-menu-item:hover { background: var(--bg4); color: var(--txt); }
+    .nav-menu-item svg { flex-shrink: 0; }
+    .nav-menu-sep { height: 1px; background: var(--bdr); margin: 4px 0; }
+    .nav-menu-item.danger { color: var(--red); }
+    .nav-menu-item.danger:hover { background: rgba(239,68,68,.1); color: var(--red); }
+
     main { max-width: 1100px; margin: 0 auto; padding: 32px 24px; }
 
     h1 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
@@ -149,8 +182,25 @@
   <div class="nav-logo">Profit<span>Lens</span> Pro</div>
   <span class="badge">ADMIN</span>
   <div class="nav-spacer"></div>
-  <span class="nav-email" id="nav-email"></span>
-  <button class="btn btn-ghost" style="margin-left:12px;padding:6px 14px;font-size:12px" onclick="doLogout()">Sign out</button>
+  <div class="nav-menu-wrap">
+    <button class="nav-menu-btn" id="navMenuBtn" onclick="toggleAdminMenu()">A</button>
+    <div class="nav-menu-drop" id="navMenuDrop">
+      <div class="nav-menu-email" id="nav-email">—</div>
+      <a class="nav-menu-item" href="/app">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        الأداة الأساسية
+      </a>
+      <a class="nav-menu-item" href="/admin-feedback">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        الرسائل
+      </a>
+      <div class="nav-menu-sep"></div>
+      <div class="nav-menu-item danger" onclick="doLogout()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sign out
+      </div>
+    </div>
+  </div>
 </nav>
 
 <div id="gate" style="display:none">
@@ -216,6 +266,8 @@ async function init() {
     __session = session;
     __token = session.access_token;
     document.getElementById('nav-email').textContent = session.user.email;
+    const btn = document.getElementById('navMenuBtn');
+    if (btn) btn.textContent = (session.user.email||'A').charAt(0).toUpperCase();
 
     // Check admin role
     const { data: profile } = await __sb.from('profiles').select('role').eq('id', session.user.id).single();
@@ -250,6 +302,14 @@ async function doLogout() {
   if (__sb) await __sb.auth.signOut();
   window.location.replace('/');
 }
+
+function toggleAdminMenu() {
+  document.getElementById('navMenuDrop').classList.toggle('open');
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.nav-menu-wrap'))
+    document.getElementById('navMenuDrop')?.classList.remove('open');
+});
 
 async function loadUsers() {
   document.getElementById('table-wrap').innerHTML = '<div class="spinner"></div>';

@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google" content="notranslate">
+<title>ProfitLens — اعرف ربحك الحقيقي قبل ما تصرف جنيه في إعلان</title>
+<meta name="description" content="ProfitLens: أداة تحليل ربحية للـ e-commerce. احسب صافي ربحك الحقيقي، حلّل إعلاناتك (CPA / ROAS / Break-even)، وقرر تعمل Scale لأنهي منتج بأمان. دفعة واحدة، بدون اشتراك شهري.">
+
+<!-- ============================================================
+     Google Tag Manager  —  Container ID: GTM-KRX6N8ZX (مفعّل)
+     كل البكسلز (Meta / TikTok / Google Ads / GA4) تتدار من جوه GTM،
+     مش محتاج تحط snippets تانية في الصفحة.
+     ملاحظة: لازم الدومينات دي تكون مسموحة في CSP بتاعة vercel.json.
+     ============================================================ -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KRX6N8ZX');</script>
+<!-- End Google Tag Manager -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; direction: rtl; }
+  body { margin: 0; direction: rtl; text-align: right; background: #080A11; font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; color: #E6EDF3; -webkit-font-smoothing: antialiased; }
+  a { text-decoration: none; }
+  .num { font-family: 'Inter', system-ui, sans-serif; font-variant-numeric: tabular-nums; }
+  .en  { font-family: 'Inter', system-ui, sans-serif; }
+  @keyframes pl-glow { 0%,100% { opacity: .85; } 50% { opacity: 1; } }
+  @keyframes pl-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+  .wrap { position: relative; max-width: 1180px; margin: 0 auto; padding: 0 32px; }
+  .section { position: relative; padding: 64px 0; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px; border-radius: 999px; font-size: 12.5px; font-weight: 600; color: #A5B4FC; background: rgba(129,140,248,0.12); border: 1px solid rgba(129,140,248,0.3); margin-bottom: 18px; }
+  .h2 { margin: 0 0 16px; font-size: 32px; line-height: 1.3; font-weight: 700; color: #fff; letter-spacing: -0.01em; text-wrap: balance; }
+  .lead { margin: 0; font-size: 16px; line-height: 1.9; color: #9BA6B4; max-width: 640px; }
+
+  /* buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 15px 26px; border-radius: 14px; border: none; cursor: pointer; font-size: 15.5px; font-weight: 700; font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; transition: filter .2s ease, transform .2s ease; }
+  .btn-primary { color: #fff; background: linear-gradient(140deg, #818CF8, #6366F1); box-shadow: 0 0 40px -8px rgba(129,140,248,0.6), 0 14px 30px -12px rgba(99,102,241,0.7); }
+  .btn-primary:hover { filter: brightness(1.07); transform: translateY(-1px); }
+  .btn-ghost { color: #E6EDF3; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); }
+  .btn-ghost:hover { background: rgba(255,255,255,0.07); }
+  .btn-wa { color: #052E16; background: linear-gradient(140deg, #34D399, #10B981); box-shadow: 0 0 40px -6px rgba(52,211,153,0.55), 0 14px 30px -10px rgba(16,185,129,0.6); }
+  .btn-wa:hover { filter: brightness(1.06); transform: translateY(-1px); }
+
+  /* card */
+  .card { position: relative; overflow: hidden; border-radius: 18px; padding: 26px; background: linear-gradient(160deg, rgba(22,27,34,0.85), rgba(15,19,26,0.65)); border: 1px solid rgba(255,255,255,0.06); transition: border-color .2s ease, transform .2s ease; }
+  .card:hover { border-color: rgba(129,140,248,0.32); transform: translateY(-2px); }
+  .card .topbar { position: absolute; top: 0; right: 0; left: 0; height: 2px; }
+  .ico { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 13px; margin-bottom: 16px; }
+  .card h3 { margin: 0 0 8px; font-size: 17px; font-weight: 700; color: #fff; }
+  .card p { margin: 0; font-size: 13px; line-height: 1.8; color: #8B949E; }
+
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+
+  /* trust bar */
+  .trustbar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; border-radius: 18px; padding: 22px; background: linear-gradient(160deg, rgba(22,27,34,0.7), rgba(15,19,26,0.5)); border: 1px solid rgba(255,255,255,0.06); }
+  .trust-item { text-align: center; }
+  .trust-item .big { font-size: 24px; font-weight: 800; color: #fff; }
+  .trust-item .small { font-size: 12.5px; color: #8B949E; margin-top: 4px; }
+
+  /* steps */
+  .step-num { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; font-size: 18px; font-weight: 800; color: #fff; background: linear-gradient(140deg, #818CF8, #6366F1); margin-bottom: 16px; }
+
+  /* faq */
+  details { border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 4px 20px; margin-bottom: 12px; background: rgba(22,27,34,0.55); }
+  details[open] { border-color: rgba(129,140,248,0.3); }
+  summary { list-style: none; cursor: pointer; padding: 16px 0; font-size: 15.5px; font-weight: 600; color: #E6EDF3; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  summary::-webkit-details-marker { display: none; }
+  summary .plus { flex-shrink: 0; color: #A5B4FC; font-size: 22px; transition: transform .2s ease; }
+  details[open] summary .plus { transform: rotate(45deg); }
+  details p { margin: 0 0 18px; font-size: 14px; line-height: 1.9; color: #9BA6B4; }
+
+  /* whatsapp floating */
+  .wa-float { position: fixed; bottom: 22px; left: 22px; z-index: 60; display: flex; align-items: center; gap: 10px; padding: 13px 18px; border-radius: 999px; background: linear-gradient(140deg, #34D399, #10B981); color: #052E16; font-weight: 700; font-size: 14px; box-shadow: 0 12px 34px -8px rgba(16,185,129,0.7); animation: pl-float 3.5s ease-in-out infinite; opacity: 0; pointer-events: none; transform: translateY(12px); transition: opacity .35s ease, transform .35s ease; }
+  .wa-float.wa-visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+  .wa-float:hover { filter: brightness(1.05); }
+
+  /* mockup */
+  .mock { position: relative; border-radius: 20px; padding: 1.4px; background: linear-gradient(160deg, #818CF8 0%, #6366F1 38%, rgba(99,102,241,0.2) 60%, #38BDF8 100%); box-shadow: 0 40px 90px -40px rgba(99,102,241,0.6); }
+  .mock-inner { border-radius: 19px; padding: 22px; background: linear-gradient(180deg, #12161D, #0C0F15); }
+  .stat-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-row .label { font-size: 13.5px; color: #9BA6B4; }
+  .stat-row .val { font-size: 16px; font-weight: 700; }
+
+  @media (max-width: 920px) {
+    .grid-3 { grid-template-columns: 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .trustbar { grid-template-columns: repeat(2, 1fr); row-gap: 22px; }
+    .hero-grid { grid-template-columns: 1fr !important; }
+    .h1 { font-size: 32px !important; }
+    .h2 { font-size: 26px; }
+    .hide-mobile { display: none !important; }
+  }
+  @media (max-width: 600px) {
+    .btn-block-m { display: flex; width: 100%; }
+  }
+  @media (max-width: 480px) {
+    .wrap { padding: 0 18px; }
+    .section { padding: 48px 0; }
+    .cta-row { flex-direction: column; align-items: stretch !important; }
+    .cta-row .btn { width: 100%; }
+  }
+</style>
+</head>
+<body dir="rtl">
+
+<!-- Google Tag Manager (noscript) — GTM-KRX6N8ZX -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRX6N8ZX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<div style="position: relative; overflow: hidden; background:
+    radial-gradient(1000px 720px at 16% 8%, rgba(129,140,248,0.20), transparent 56%),
+    radial-gradient(900px 760px at 92% 4%, rgba(99,102,241,0.14), transparent 58%),
+    radial-gradient(820px 680px at 80% 60%, rgba(56,189,248,0.07), transparent 56%),
+    #080A11;">
+
+  <!-- grid texture -->
+  <div style="position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px); background-size: 58px 58px; -webkit-mask-image: radial-gradient(circle at 40% 8%, #000 0%, transparent 70%); mask-image: radial-gradient(circle at 40% 8%, #000 0%, transparent 70%);"></div>
+
+  <!-- ===== NAV ===== -->
+  <nav class="wrap" style="display: flex; align-items: center; justify-content: space-between; padding-top: 24px; padding-bottom: 8px;">
+    <div style="display: flex; align-items: center; gap: 11px;">
+      <span class="en" style="font-size: 19px; font-weight: 700; letter-spacing: -0.02em; color: #fff;">ProfitLens</span>
+      <div style="display: grid; place-items: center; width: 38px; height: 38px; border-radius: 11px; background: linear-gradient(140deg, #818CF8, #6366F1); box-shadow: 0 6px 20px rgba(99,102,241,0.45);">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 3 7-8"/><path d="M16 7h4v4"/></svg>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <a href="/" class="hide-mobile" style="font-size: 14px; font-weight: 600; color: #C9D1D9;">تسجيل الدخول</a>
+      <a href="/" class="btn btn-primary" style="padding: 11px 20px; font-size: 14px;" onclick="track('cta_click','nav')">اشترك الآن</a>
+    </div>
+  </nav>
+
+  <!-- ===== HERO ===== -->
+  <header class="wrap section" style="padding-top: 40px;">
+    <div class="hero-grid" style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center;">
+
+      <!-- copy -->
+      <div>
+        <span class="eyebrow">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.2H22l-6 4.4 2.3 7.2-6.3-4.5L5.7 20.8 8 13.6 2 9.2h7.6z"/></svg>
+          مصمّمة لأصحاب المتاجر والـ E-commerce
+        </span>
+        <h1 class="h1" style="margin: 0 0 20px; font-size: 44px; line-height: 1.22; font-weight: 700; color: #fff; letter-spacing: -0.015em; text-wrap: balance;">
+          بتعمل مبيعات كتير بس<br>بتطلع خسران أو بمكسب قليل؟
+        </h1>
+        <p style="margin: 0 0 22px; font-size: 16px; line-height: 1.9; color: #9BA6B4; max-width: 540px;">
+          <strong style="color:#C9D1D9; font-weight:600;">الغلط في طريقة حساب الربح.</strong> <span class="en" style="color:#C9D1D9; font-weight:600;">ProfitLens</span> بتكشفلك <strong style="color:#E6EDF3; font-weight:600;">الأرقام الخفية اللي بتاكل من ربحك</strong>، وبتحسبلك <strong style="color:#E6EDF3; font-weight:600;">ربحك الفعلي</strong> في دقيقة.
+        </p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:11px; max-width:540px; margin:0 0 30px;">
+          <div style="padding:14px 13px; border-radius:14px; background:rgba(129,140,248,0.07); border:1px solid rgba(129,140,248,0.18);">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <div style="margin-top:9px; font-size:13.5px; line-height:1.6; color:#C9D1D9;">بتحلّل إعلاناتك بالكامل: <span class="en" style="color:#E6EDF3; font-weight:600;">CPA / ROAS / Break-even</span></div>
+          </div>
+          <div style="padding:14px 13px; border-radius:14px; background:rgba(129,140,248,0.07); border:1px solid rgba(129,140,248,0.18);">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+            <div style="margin-top:9px; font-size:13.5px; line-height:1.6; color:#C9D1D9;">تعرف تعمل <strong style="color:#fff; font-weight:700;">Scale</strong> لأنهي منتج بأمان — قبل ما تحرق فلوسك</div>
+          </div>
+        </div>
+        <div class="cta-row" style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+          <a href="/" class="btn btn-primary" onclick="track('cta_click','hero')">ابدأ — شوف أرقامك الفعلية</a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 20px; margin-top: 24px; flex-wrap: wrap; font-size: 13px; color: #8B949E;">
+          <span style="display:flex; align-items:center; gap:7px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> بيكشف التكاليف الخفية</span>
+          <span style="display:flex; align-items:center; gap:7px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> قرار <span class="en">Scale</span> أو <span class="en">Stop</span> واضح</span>
+          <span style="display:flex; align-items:center; gap:7px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> من غير خبرة محاسبية</span>
+        </div>
+      </div>
+
+      <!-- visual mockup -->
+      <div class="mock hide-mobile" style="animation: pl-glow 4.5s ease-in-out infinite;">
+        <div class="mock-inner">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 14px;">
+            <span style="font-size: 13px; font-weight: 700; color:#C9D1D9;">ملخص الربحية</span>
+            <span class="en" style="font-size: 11px; color:#6EE7B7; background: rgba(52,211,153,0.12); padding: 4px 10px; border-radius: 999px; border:1px solid rgba(52,211,153,0.25);">رابح ✓</span>
+          </div>
+          <div class="stat-row"><span class="label">صافي الربح</span><span class="val num" style="color:#6EE7B7;">+12,480</span></div>
+          <div class="stat-row"><span class="label">هامش الربح</span><span class="val num" style="color:#fff;">31.4%</span></div>
+          <div class="stat-row"><span class="label en">ROAS</span><span class="val num" style="color:#A5B4FC;">2.8x</span></div>
+          <div class="stat-row"><span class="label en">CPA الحقيقي</span><span class="val num" style="color:#fff;">86 ج</span></div>
+          <div class="stat-row"><span class="label en">Break-even ROAS</span><span class="val num" style="color:#FBBF24;">1.7x</span></div>
+          <div style="margin-top: 16px; padding: 13px 15px; border-radius: 12px; background: rgba(129,140,248,0.1); border: 1px solid rgba(129,140,248,0.25); font-size: 12.5px; line-height:1.7; color:#C7D2FE;">
+            💡 المنتج ده فوق نقطة التعادل — تقدر تعمل <strong>Scale</strong> بأمان.
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== TRUST BAR ===== -->
+  <div class="wrap" style="padding-bottom: 8px;">
+    <div class="trustbar">
+      <div class="trust-item"><div class="big num">دقيقة</div><div class="small">من الأرقام للقرار</div></div>
+      <div class="trust-item"><div class="big">7 تحليلات</div><div class="small">في أداة واحدة</div></div>
+      <div class="trust-item"><div class="big">ربحك الحقيقي</div><div class="small">بعد كل التكاليف الخفية</div></div>
+      <div class="trust-item"><div class="big"><span class="en">Scale</span> أو <span class="en">Stop</span></div><div class="small">قرار واضح لكل منتج</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAIN ===== -->
+<section class="section">
+  <div class="wrap">
+    <div style="text-align:center; max-width: 680px; margin: 0 auto 40px;">
+      <span class="eyebrow" style="color:#FCA5A5; background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.28);">المشكلة</span>
+      <h2 class="h2">المبيعات بتزيد… بس الربح مش باين فين</h2>
+      <p class="lead" style="margin: 0 auto;">أغلب أصحاب المتاجر بيحسبوا الربح بالغلط، فبيكملوا صرف على إعلانات بتاكل الهامش وهما مش حاسين.</p>
+    </div>
+    <div class="grid-3">
+      <div class="card">
+        <div class="topbar" style="background: linear-gradient(90deg, transparent, #F87171, transparent);"></div>
+        <div class="ico" style="background: rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.22);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FCA5A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+        </div>
+        <h3>بتحسب الربح بالتخمين</h3>
+        <p>السعر ناقص التكلفة مش بيساوي ربح. فيه شحن، مرتجع، رسوم، وإعلانات — ودول بياكلوا الهامش من غير ما تحس.</p>
+      </div>
+      <div class="card">
+        <div class="topbar" style="background: linear-gradient(90deg, transparent, #F87171, transparent);"></div>
+        <div class="ico" style="background: rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.22);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FCA5A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>
+        </div>
+        <h3>بتعمل Scale لمنتج خسران</h3>
+        <p>بتزوّد ميزانية الإعلان على منتج إعلاناته شكلها كويس، لكنه فعليًا تحت نقطة التعادل — فكل ما تكبّر، تخسر أكتر.</p>
+      </div>
+      <div class="card">
+        <div class="topbar" style="background: linear-gradient(90deg, transparent, #F87171, transparent);"></div>
+        <div class="ico" style="background: rgba(248,113,113,0.1); border:1px solid rgba(248,113,113,0.22);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FCA5A5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <h3>قرارات بتاخد وقت طويل</h3>
+        <p>شيتات Excel كتير هتشتتك وأرقام متفرّقة، فبتتأخر في كل قرار — وفي الإعلانات، التأخير ده بيتحسب فلوس.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="section" style="background: linear-gradient(180deg, transparent, rgba(129,140,248,0.04), transparent);">
+  <div class="wrap">
+    <div style="text-align:center; max-width: 680px; margin: 0 auto 44px;">
+      <span class="eyebrow">إزاي بتشتغل</span>
+      <h2 class="h2">من الأرقام للقرار في 3 خطوات</h2>
+    </div>
+    <div class="grid-3">
+      <div class="card" style="text-align:center;">
+        <div class="step-num num" style="margin: 0 auto 16px;">1</div>
+        <h3>دخّل أرقامك</h3>
+        <p>سعر البيع، تكلفة المنتج، الشحن، ومصروف الإعلان. ثواني وتكون خلّصت الإدخال.</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="step-num num" style="margin: 0 auto 16px;">2</div>
+        <h3>الأداة بتحلّل</h3>
+        <p>ProfitLens بتحسب صافي الربح، الهامش، الـ CPA الحقيقي، الـ ROAS، ونقطة التعادل أوتوماتيك.</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="step-num num" style="margin: 0 auto 16px;">3</div>
+        <h3>خد القرار الصح</h3>
+        <p>تعرف تعمل Scale لأنهي منتج، توقف أنهي، وتستهدف أنهي ربح — بأرقام مش تخمين.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section class="section">
+  <div class="wrap">
+    <div style="text-align:center; max-width: 680px; margin: 0 auto 44px;">
+      <span class="eyebrow">المميزات</span>
+      <h2 class="h2">كل اللي تحتاجه عشان تتحكم في ربحك</h2>
+      <p class="lead" style="margin: 0 auto;">7 تحليلات متكاملة في أداة واحدة — بدل ما تشتت نفسك في كذا شيت وكذا حاسبة.</p>
+    </div>
+    <div class="grid-3">
+
+      <div class="card">
+        <div class="topbar" style="background: linear-gradient(90deg, transparent, #818CF8, transparent);"></div>
+        <div class="ico" style="background: rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.22);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l3-4 3 2 4-6"/></svg>
+        </div>
+        <h3>تحليل ربحية كامل</h3>
+        <p>صافي الربح والهامش الحقيقي بعد كل التكاليف الخفية — مش بس سعر ناقص تكلفة.</p>
+      </div>
+
+      <div class="card">
+        <div class="topbar" style="background: linear-gradient(90deg, transparent, #818CF8, transparent);"></div>
+        <div class="ico" style="background: rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.22);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+        </div>
+        <h3>تحليل إعلانات متكامل</h3>
+        <p>الـ <span class="en">CPA</span> الحقيقي، الـ <span class="en">ROAS</span>، ونقطة التعادل (<span class="en">Break-even</span>) بدقة.</p>
+      </div>
+
+      <div class="card">
+        <div class="topbar" style="background: linear-gradient(90deg, transparent, #34D399, transparent);"></div>
+        <div class="ico" style="background: rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.22);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6EE7B7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 18l4-4 3 3 7-8"/><path d="M16 9h4v4"/></svg>
+        </div>
+        <h3 class="en" style="font-family:'IBM Plex Sans Arabic';">Scale Detector</h3>
+        <p>بيقولك أنهي منتج جاهز للتكبير بأمان، وأنهي لسه تحت نقطة التعادل.</p>
+      </div>
+
+      <div class="card">
+        <div class="topbar" style="background: linear-gradient(90deg, transparent, #FBBF24, transparent);"></div>
+        <div class="ico" style="background: rgba(251,191,36,0.12); border:1px solid rgba(251,191,36,0.22);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FCD34D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </div>
+        <h3 class="en" style="font-family:'IBM Plex Sans Arabic';">Target Profit Simulator</h3>
+        <p>عايز ربح معيّن؟ الأداة بتقولك تبيع بكام وتصرف على الإعلان قد إيه توصله.</p>
+      </div>
+
+      <div class="card">
+        <div class="topbar" style="background: linear-gradient(90deg, transparent, #38BDF8, transparent);"></div>
+        <div class="ico" style="background: rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.22);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7DD3FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h7v7H3z"/><path d="M14 3h7v7h-7z"/><path d="M14 14h7v7h-7z"/><path d="M3 14h7v7H3z"/></svg>
+        </div>
+        <h3>مقارنة المنتجات</h3>
+        <p>قارن منتجاتك جنب بعض واعرف مين بيجيب فلوس فعليًا ومين بياكل من جيبك.</p>
+      </div>
+
+      <div class="card">
+        <div class="topbar" style="background: linear-gradient(90deg, transparent, #818CF8, transparent);"></div>
+        <div class="ico" style="background: rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.22);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <h3>تحليل الشحن والتوصيل</h3>
+        <p>احسب أثر تكلفة الشحن والمرتجعات على ربح كل منتج — ده بيفرق في القرار.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== AD ANALYSIS HIGHLIGHT (للمعلن) ===== -->
+<section class="section" style="background: linear-gradient(180deg, transparent, rgba(56,189,248,0.05), transparent);">
+  <div class="wrap">
+    <div class="grid-2" style="align-items:center; gap: 40px;">
+      <div>
+        <span class="eyebrow" style="color:#7DD3FC; background: rgba(56,189,248,0.1); border-color: rgba(56,189,248,0.28);">للمعلنين بالذات</span>
+        <h2 class="h2">بطّل تعمل Scale بالحاسة — اعمله بالأرقام</h2>
+        <p class="lead" style="margin-bottom: 22px;">قبل ما تزوّد ميزانية أي حملة، ProfitLens بتقولك المنتج ده فوق نقطة التعادل ولا تحتها، وكام أقصى <span class="en">CPA</span> تقدر تدفعه وتفضل رابح.</p>
+        <ul style="list-style:none; padding:0; margin: 0 0 26px; display:flex; flex-direction:column; gap: 12px;">
+          <li style="display:flex; gap:11px; align-items:flex-start; font-size:14.5px; color:#C9D1D9;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6EE7B7" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M20 6L9 17l-5-5"/></svg> اعرف أقصى <span class="en">CPA</span> مربح لكل منتج قبل ما تصرف</li>
+          <li style="display:flex; gap:11px; align-items:flex-start; font-size:14.5px; color:#C9D1D9;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6EE7B7" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M20 6L9 17l-5-5"/></svg> قارن الـ <span class="en">ROAS</span> الفعلي بنقطة التعادل فورًا</li>
+          <li style="display:flex; gap:11px; align-items:flex-start; font-size:14.5px; color:#C9D1D9;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6EE7B7" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M20 6L9 17l-5-5"/></svg> قرار Scale / Stop واضح لكل منتج</li>
+        </ul>
+        <a href="/" class="btn btn-primary btn-block-m" onclick="track('cta_click','ad_section')">ابدأ حلّل إعلاناتك</a>
+      </div>
+
+      <div class="mock">
+        <div class="mock-inner">
+          <div style="font-size: 13px; font-weight: 700; color:#C9D1D9; margin-bottom: 14px;">قرار الـ Scale لكل منتج</div>
+          <div class="stat-row"><span class="label">منتج A</span><span class="val en" style="color:#6EE7B7; font-size:13px;">ROAS 3.1x · Scale ✓</span></div>
+          <div class="stat-row"><span class="label">منتج B</span><span class="val en" style="color:#FCD34D; font-size:13px;">ROAS 1.9x · راقب</span></div>
+          <div class="stat-row"><span class="label">منتج C</span><span class="val en" style="color:#FCA5A5; font-size:13px;">ROAS 1.2x · Stop ✕</span></div>
+          <div style="margin-top: 16px; padding: 13px 15px; border-radius: 12px; background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.22); font-size: 12.5px; line-height:1.7; color:#BAE6FD;">
+            ركّز ميزانيتك على A، وقّف C قبل ما يستنزفك.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== WHO IS IT FOR ===== -->
+<section class="section">
+  <div class="wrap">
+    <div style="text-align:center; max-width: 680px; margin: 0 auto 44px;">
+      <span class="eyebrow">مناسبة لمين؟</span>
+      <h2 class="h2">مهما كان دورك في الـ <span class="en" style="white-space:nowrap">E-commerce</span>، الأداة دي هتناسبك</h2>
+      <p class="lead" style="margin: 0 auto;">سواء بتدير متجرك بنفسك، ميديا باير، أو شغّال أفيليت — <span class="en">ProfitLens</span> بتخلّي كل قرار مبني على أرقام مش إحساس.</p>
+    </div>
+    <div class="grid-3">
+
+      <div class="card">
+        <div class="topbar" style="background: linear-gradient(90deg, transparent, #818CF8, transparent);"></div>
+        <div class="ico" style="background: rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.22);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        </div>
+        <h3>صاحب متجر <span class="en">E-commerce</span></h3>
+        <p>لو بتدير متجرك بنفسك، هتشوف كل أرقامك كاملة بإيدك — تعرف أنهي منتج بيكسّبك وأنهي بياكل من ربحك. ولو شغّال مع ميديا باير، هتبقى فاهم البنش ماركس والأرقام اللي المفروض تكون كويسة، فتقدر تقيّم شغله صح.</p>
+      </div>
+
+      <div class="card">
+        <div class="topbar" style="background: linear-gradient(90deg, transparent, #38BDF8, transparent);"></div>
+        <div class="ico" style="background: rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.22);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7DD3FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        </div>
+        <h3>ميديا باير</h3>
+        <p>اعرف البنش ماركس الحقيقية لكل منتج وحملة، واعرف تعمل <span class="en">Scale</span> إمتى بأمان. ومعاك سيميولتر بيقولك وضعك الحالي في كل لحظة — قرارك يبقى بأرقام مش بإحساس.</p>
+      </div>
+
+      <div class="card">
+        <div class="topbar" style="background: linear-gradient(90deg, transparent, #34D399, transparent);"></div>
+        <div class="ico" style="background: rgba(52,211,153,0.12); border:1px solid rgba(52,211,153,0.22);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6EE7B7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        </div>
+        <h3>شغّال في الأفيليت</h3>
+        <p>تيست على المنتجات اللي هتكسّبك فعليًا، وسعّرها بالطريقة اللي تطلّعك كسبان. ومعاك <span class="en">Profit Simulator</span> تحدد بيه المكسب اللي عايزه من كل منتج، وتعرف تعمل إيه بالظبط علشان توصله.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== OFFER ===== -->
+<section id="offer-section" class="section">
+  <div class="wrap" style="max-width: 720px;">
+    <div style="position: relative; overflow:hidden; border-radius: 24px; padding: 1.5px; background: linear-gradient(160deg, #818CF8, #6366F1 40%, rgba(99,102,241,0.25) 60%, #38BDF8); box-shadow: 0 40px 90px -40px rgba(99,102,241,0.6);">
+      <div style="border-radius: 23px; padding: 44px 40px; background: linear-gradient(180deg, #12161D, #0C0F15); text-align:center;">
+        <span style="display:inline-block; padding: 6px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700; color: #FCD34D; background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.3); margin-bottom: 18px;">⏳ عرض لفترة محدودة</span>
+        <h2 class="h2" style="margin-bottom: 10px;">ادفع مرة واحدة، استخدمها مدى الحياة</h2>
+        <p style="color:#9BA6B4; font-size:15px; margin: 0 0 24px;">من غير اشتراك شهري بيتجدد عليك كل شوية.</p>
+
+        <div style="display:flex; align-items:center; justify-content:center; gap: 14px; margin-bottom: 8px;">
+          <span class="num" style="font-size: 22px; color:#6E7681; text-decoration: line-through;">1500</span>
+          <span class="num" style="font-size: 52px; font-weight: 800; color:#fff;">500</span>
+          <span style="font-size: 18px; color:#C9D1D9;">جنيه</span>
+          <span class="num" style="font-size: 13px; font-weight: 800; color:#FCA5A5; background: rgba(248,113,113,0.12); border:1px solid rgba(248,113,113,0.3); padding: 5px 10px; border-radius: 999px;">-67%</span>
+        </div>
+
+        <div style="margin-top: 16px; font-size: 12.5px; line-height: 1.7; color:#FCD34D;">⏳ عرض مؤقت — اشترك دلوقتي وادفع <span class="num">500</span> بس، من غير أي اشتراك شهري عليك خالص. بعد فترة التجربة السعر بيرجع <span class="num">1500</span>.</div>
+
+        <a href="/" class="btn btn-primary" style="margin-top: 24px; padding: 17px 40px; font-size: 16px;" onclick="track('cta_click','offer')">اشترك الآن وابدأ تربح بثقة</a>
+        <div style="margin-top: 18px; font-size: 13px; color:#8B949E;">عندك سؤال قبل ما تشترك؟ <a href="#" id="wa-inline" style="color:#6EE7B7; font-weight:600;">كلّمنا على واتساب</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="section">
+  <div class="wrap" style="max-width: 760px;">
+    <div style="text-align:center; margin-bottom: 36px;">
+      <span class="eyebrow">أسئلة شائعة</span>
+      <h2 class="h2">أي حاجة في بالك، غالبًا هتلاقيها هنا</h2>
+    </div>
+
+    <details>
+      <summary><span class="en">ProfitLens</span> بتعمل إيه بالظبط؟ <span class="plus">+</span></summary>
+      <p>بتاخد أرقام منتجك (سعر البيع، التكلفة، الشحن، مصروف الإعلان) وتطلّعلك صافي ربحك الحقيقي، الهامش، الـ <span class="en">CPA</span> والـ <span class="en">ROAS</span> الحقيقيين، ونقطة التعادل — وتقولك تعمل <span class="en">Scale</span> لأنهي منتج وتوقف أنهي. باختصار: بتحوّل أرقامك المبعثرة لقرار واضح في دقيقة.</p>
+    </details>
+    <details>
+      <summary>محتاج خبرة في المحاسبة أو الأرقام عشان أستخدمها؟ <span class="plus">+</span></summary>
+      <p>إطلاقًا. انت بس بتدخّل أرقام بسيطة، والأداة بتعمل كل الحسابات المعقّدة وتطلّعلك النتيجة جاهزة بقرار واضح. مش محتاج تعرف أي معادلات ولا يكون عندك أي خلفية محاسبية.</p>
+    </details>
+    <details>
+      <summary>في شرح كامل للأداة يمشّيني خطوة بخطوة؟ <span class="plus">+</span></summary>
+      <p>أيوة. جواها شرح كامل لكل خاصية — في مسار <strong style="color:#E6EDF3;">للمبتدئين</strong> يمشّيك من الصفر لحد ما تفهم كل حاجة، ومسار <strong style="color:#E6EDF3;"><span class="en">Advanced</span></strong> للناس اللي عايزة تتعمّق في التحليلات وتطلّع منها أقصى استفادة. مش هتدخل تلاقي نفسك تايه.</p>
+    </details>
+    <details>
+      <summary>الأرقام اللي بتطلعها أقدر أعتمد عليها في قراري؟ <span class="plus">+</span></summary>
+      <p>أيوة. الحسابات مبنية على نفس المعادلات اللي بيستخدمها المحاسبين والميديا بايرز المحترفين، بس متعمّلة أوتوماتيك وبدقة — فبتاخد قرارك بأرقام حقيقية مش بتخمين.</p>
+    </details>
+    <details>
+      <summary>محتاج أربطها بمتجري أو بحساب إعلاناتي؟ <span class="plus">+</span></summary>
+      <p>لأ، مفيش أي ربط معقّد ولا إعدادات تقنية. انت بتدخّل أرقامك بنفسك في ثواني، فهي شغّالة مهما كانت المنصة اللي بتبيع عليها أو بتعلن من خلالها.</p>
+    </details>
+    <details>
+      <summary>بتشتغل على أي منتج وأي سوق وأي عملة؟ <span class="plus">+</span></summary>
+      <p>أيوة. الأداة بتدعم كل العملات وكل أنواع المنتجات، فتقدر تستخدمها لأي منتج وفي أي سوق بتشتغل فيه.</p>
+    </details>
+    <details>
+      <summary>السعر ده ثابت؟ وفيه اشتراك شهري؟ <span class="plus">+</span></summary>
+      <p>اللي بيشترك <strong style="color:#E6EDF3;">دلوقتي</strong> بيدفع <span class="num" style="color:#fff;">500 جنيه بس — مرة واحدة ومفيش أي حاجة تانية عليه خالص</span>. ده عرض خاص بفترة النسخة التجريبية. بعد ما الفترة دي تخلص، السعر بيرجع <span class="num">1500</span> وهيتضاف اشتراك شهري رمزي للتحديثات — بس ده مش عليك انت لو اشتركت دلوقتي.</p>
+    </details>
+    <details>
+      <summary>بياناتي آمنة وخاصة؟ <span class="plus">+</span></summary>
+      <p>حسابك محمي بتسجيل دخول آمن، وأرقامك خاصة بيك انت بس. مفيش حد تاني بيشوف بياناتك.</p>
+    </details>
+    <details>
+      <summary>أشترك وأبدأ أستخدمها إزاي؟ <span class="plus">+</span></summary>
+      <p>اضغط على "اشترك الآن"، اختر العرض، وادفع بسهولة. وبعدها على طول بيتفعّلك الوصول الكامل للأداة. ولو عندك أي سؤال قبل أو بعد، كلّمنا على واتساب وهنمشّيك خطوة بخطوة.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ===== FINAL CTA ===== -->
+<section class="section" style="text-align:center;">
+  <div class="wrap" style="max-width: 640px;">
+    <h2 class="h2" style="font-size: 34px;">كل يوم بدون أرقام واضحة = فلوس بتضيع</h2>
+    <p class="lead" style="margin: 0 auto 28px;">ابدأ النهاردة، واعرف ربحك الحقيقي قبل ما تصرف الجنيه الجاي في إعلان.</p>
+    <div class="cta-row" style="display:flex; gap: 14px; justify-content:center; flex-wrap:wrap;">
+      <a href="/" class="btn btn-primary" style="padding: 17px 38px; font-size: 16px;" onclick="track('cta_click','final')">ابدأ دلوقتي</a>
+      <a href="#" id="wa-final" class="btn btn-wa" style="padding: 17px 30px;">اسأل على واتساب</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer style="border-top: 1px solid rgba(255,255,255,0.06); padding: 30px 0;">
+  <div class="wrap" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap: 14px;">
+    <div style="display:flex; align-items:center; gap: 9px;">
+      <span class="en" style="font-size: 16px; font-weight: 700; color:#fff;">ProfitLens</span>
+      <span style="color:#6E7681; font-size: 12.5px;">© <span class="num" id="year"></span> — كل الحقوق محفوظة</span>
+    </div>
+    <div style="display:flex; gap: 18px; font-size: 13px;">
+      <a href="/pricing" style="color:#9BA6B4;">الأسعار</a>
+      <a href="/" style="color:#9BA6B4;">تسجيل الدخول</a>
+      <a href="#" id="wa-footer" style="color:#9BA6B4;">واتساب</a>
+    </div>
+  </div>
+</footer>
+
+<!-- WhatsApp floating button -->
+<a href="#" id="wa-floating" class="wa-float">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="#052E16"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.477-.911z"/></svg>
+  محتاج مساعدة؟
+</a>
+
+<script>
+  // ===== dataLayer events (GTM بيلتقطها ويفجّر منها البكسلز: Lead / Contact / InitiateCheckout) =====
+  function track(event, location) {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: event, click_location: location || '' });
+  }
+
+  // ===== WhatsApp =====
+  var WHATSAPP_NUMBER = '201556318082';
+  var waHref = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' +
+    encodeURIComponent('مرحبا، مهتم بـ ProfitLens وعايز أعرف تفاصيل أكتر');
+
+  ['wa-inline','wa-final','wa-footer','wa-floating'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.href = waHref;
+    el.target = '_blank';
+    el.rel = 'noopener';
+    el.addEventListener('click', function(){ track('whatsapp_click', id); });
+  });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // ===== Show WA float when offer section enters viewport =====
+  (function(){
+    var offerEl = document.getElementById('offer-section');
+    var waEl    = document.getElementById('wa-floating');
+    if (!offerEl || !waEl) return;
+    var observer = new IntersectionObserver(function(entries){
+      if (entries[0].isIntersecting) {
+        waEl.classList.add('wa-visible');
+      }
+    }, { threshold: 0.1 });
+    observer.observe(offerEl);
+  })();
+</script>
+
+</body>
+</html>
