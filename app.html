@@ -1034,6 +1034,14 @@ body[data-theme="light"] #s0 .f-row select.freq-unit{ border-inline-start-color:
 .ov2-gauge-marker{position:absolute;top:-3px;width:2px;height:12px;background:var(--c2);border-radius:1px;transition:left .6s cubic-bezier(.4,0,.2,1)}
 .ov2-gauge-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--txt2);font-family:var(--mono);margin-top:4px}
 
+/* ── Force LTR on all progress-bar / gauge elements so fills always grow
+   left→right and labels always read 0 (left) → max (right) in both LTR & RTL ── */
+[dir="rtl"] .ov2-gauge-track,
+[dir="rtl"] .ov2-gauge-labels,
+[dir="rtl"] .bdg-track,
+[dir="rtl"] .bdg-row,
+[dir="rtl"] .fn-row { direction:ltr; }
+
 .ov2-ship-compare{display:flex;align-items:center;gap:8px;margin-top:8px}
 .ov2-ship-item{background:var(--surf2);border-radius:8px;padding:8px 12px;flex:1;text-align:center}
 .ov2-ship-cost{border:1px solid rgba(244,63,94,.2)}
@@ -4131,6 +4139,7 @@ input[type=range]::-moz-range-thumb{
           <span style="font-size:13px;color:var(--muted)" data-t="m_actual_cpa">Actual CPA</span>
           <span class="pl-num" id="ov_actual_cpa" style="font-size:16px;font-weight:700;color:var(--green)">—</span>
         </div>
+        <div style="direction:ltr">
         <div style="position:relative;height:6px;border-radius:3px;background:var(--track)">
           <div id="ov_cpa_gauge" style="width:0%;height:100%;border-radius:3px;background:linear-gradient(90deg,#818CF8,#A5B4FC)"></div>
           <div style="position:absolute;top:-3px;left:100%;width:2px;height:12px;background:var(--red);transform:translateX(-2px)"></div>
@@ -4138,6 +4147,7 @@ input[type=range]::-moz-range-thumb{
         <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px">
           <span style="color:var(--muted-2)">0</span>
           <span class="pl-num" id="ov_be_cpa_lbl" style="color:var(--muted)">BE: —</span>
+        </div>
         </div>
       </div>
 
@@ -4147,6 +4157,7 @@ input[type=range]::-moz-range-thumb{
           <span style="font-size:13px;color:var(--muted)" data-t="m_actual_roas">Actual ROAS</span>
           <span class="pl-num" id="ov_actual_roas" style="font-size:16px;font-weight:700;color:var(--purple-2)">—</span>
         </div>
+        <div style="direction:ltr">
         <div style="position:relative;height:6px;border-radius:3px;background:var(--track)">
           <div id="ov_roas_gauge" style="width:0%;height:100%;border-radius:3px;background:linear-gradient(90deg,#818CF8,#A5B4FC)"></div>
           <div style="position:absolute;top:-3px;left:50%;width:2px;height:12px;background:var(--green)"></div>
@@ -4154,6 +4165,7 @@ input[type=range]::-moz-range-thumb{
         <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px">
           <span style="color:var(--muted-2)">0×</span>
           <span class="pl-num" id="ov_be_roas_lbl" style="color:var(--muted)">BE: —</span>
+        </div>
         </div>
       </div>
 
