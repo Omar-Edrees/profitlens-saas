@@ -23,12 +23,27 @@ export default async function handler(req, res) {
   const sb = adminClient();
 
   if (req.method === 'GET') {
-    const { type } = req.query;
+    const { type, id } = req.query;
+    if (id) {
+      const { data: item, error: itemErr } = await sb.from('feedback').select('*').eq('id', id).single();
+      if (itemErr || !item) return res.status(404).json({ error: 'Not found' });
+      const { data: replies } = await sb.from('feedback_replies').select('*').eq('feedback_id', id).order('created_at', { ascending: true });
+      return res.status(200).json({ data: { ...item, replies: replies || [] } });
+    }
     let query = sb.from('feedback').select('*').order('created_at', { ascending: false });
     if (type) query = query.eq('type', type);
     const { data, error } = await query;
     if (error) return res.status(500).json({ error: error.message });
     return res.status(200).json({ data });
+  }
+
+  if (req.method === 'POST') {
+    const { feedback_id, message } = req.body || {};
+    if (!feedback_id || !message?.trim()) return res.status(400).json({ error: 'Missing fields' });
+    const { error } = await sb.from('feedback_replies').insert({ feedback_id, message: message.trim() });
+    if (error) return res.status(500).json({ error: error.message });
+    await sb.from('feedback').update({ status: 'reviewed' }).eq('id', feedback_id).eq('status', 'pending');
+    return res.status(200).json({ ok: true });
   }
 
   if (req.method === 'PATCH') {
