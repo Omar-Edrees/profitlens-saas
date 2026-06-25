@@ -8661,6 +8661,53 @@ let LANG = 'en';
 
 // ── CURRENCY SYSTEM ─────────────────────────
 let CURRENCY = 'EGP';
+
+// Monetary input fields per product (% and count fields excluded)
+const MONETARY_PRODUCT_FIELDS = ['i_price','i_cost','i_ship_c','i_fulfill_del','i_fulfill_ret','i_courier','i_plat','i_ads','i_avg_cpp'];
+
+// Exchange rate cache  { 'EGP': { 'USD': 0.020, 'EUR': 0.018, ... } }
+const _fxCache = {};
+
+async function _fxFetchFrom(fromCode){
+  if(_fxCache[fromCode]) return _fxCache[fromCode];
+  try{
+    const key = fromCode.toLowerCase();
+    const r = await fetch(`https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${key}.json`);
+    if(!r.ok) throw 0;
+    const j = await r.json();
+    const raw = j[key] || {};
+    const out = {};
+    Object.keys(raw).forEach(k => { out[k.toUpperCase()] = raw[k]; });
+    _fxCache[fromCode] = out;
+    return out;
+  }catch(e){ return null; }
+}
+
+async function _fxRate(from, to){
+  if(from === to) return 1;
+  const rates = await _fxFetchFrom(from);
+  if(rates && rates[to]) return rates[to];
+  // fallback: try reverse
+  const rev = await _fxFetchFrom(to);
+  if(rev && rev[from]) return 1 / rev[from];
+  return null;
+}
+
+function _fxConvertVal(val, rate, decimals){
+  const n = parseFloat(String(val).replace(/,/g,''));
+  if(!n || !isFinite(n)) return val;
+  const converted = n * rate;
+  if(decimals === 0) return String(Math.round(converted));
+  return String(+(converted.toFixed(decimals)));
+}
+
+function _fxDecimals(rate){
+  // High-value currencies (rate < 0.01 means 1 old unit = fraction of new) → more decimals
+  if(rate < 0.01) return 3;
+  if(rate < 0.1)  return 2;
+  if(rate < 10)   return 2;
+  return 0;
+}
 const CURRENCIES = [
   { code:'EGP', flag:'🇪🇬', name:'Egyptian Pound' },
   { code:'USD', flag:'🇺🇸', name:'US Dollar' },
@@ -8701,14 +8748,71 @@ function buildCurrMenu(){
   });
 }
 
-function setCurrency(code, flag){
+async function setCurrency(code, flag){
+  const oldCode = CURRENCY;
+
+  // Close dropdown immediately
+  document.getElementById('curr_menu').classList.remove('show');
+  document.getElementById('curr_btn').classList.remove('open');
+
+  if(oldCode === code){ buildCurrMenu(); return; }
+
+  // Show loading state on button
+  const btn = document.getElementById('curr_btn');
+  const origContent = btn.innerHTML;
+  btn.style.opacity = '0.5';
+  btn.style.pointerEvents = 'none';
+
+  const rate = await _fxRate(oldCode, code);
+
+  btn.style.opacity = '';
+  btn.style.pointerEvents = '';
+
+  if(rate !== null){
+    const dec = _fxDecimals(rate);
+
+    // Save active product inputs to PRODUCTS before converting
+    saveCurrentProduct();
+
+    // Convert all products
+    PRODUCTS.forEach(prod => {
+      if(!prod.data) return;
+      MONETARY_PRODUCT_FIELDS.forEach(field => {
+        if(prod.data[field]) prod.data[field] = _fxConvertVal(prod.data[field], rate, dec);
+      });
+    });
+
+    // Convert global fixed cost (salary)
+    const salEl = document.getElementById('i_salary');
+    if(salEl && salEl.value){
+      salEl.value = _fxConvertVal(salEl.value, rate, dec);
+      if(typeof reformatThousands === 'function') reformatThousands();
+    }
+
+    // Convert advanced PDR shipping cost
+    const pdrShipEl = document.getElementById('adv_pdr_ship');
+    if(pdrShipEl && pdrShipEl.value)
+      pdrShipEl.value = _fxConvertVal(pdrShipEl.value, rate, dec);
+
+    // Convert bundle prices
+    document.querySelectorAll('#adv_bundle_list .b-price').forEach(el => {
+      if(el.value) el.value = _fxConvertVal(el.value, rate, dec);
+    });
+
+    // Convert cash-flow capital field
+    const cfCashEl = document.getElementById('adv_cf_cash');
+    if(cfCashEl && cfCashEl.value)
+      cfCashEl.value = _fxConvertVal(cfCashEl.value, rate, dec);
+
+    // Reload active product inputs from converted data
+    loadProduct(ACTIVE_PROD);
+  }
+
   CURRENCY = code;
   document.getElementById('curr_code').textContent = code;
   document.getElementById('curr_flag').textContent = flag;
   applyCurrencyToUnits();
   buildCurrMenu();
-  document.getElementById('curr_menu').classList.remove('show');
-  document.getElementById('curr_btn').classList.remove('open');
   calc();
   persistSave();
 }
