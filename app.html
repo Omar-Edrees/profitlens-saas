@@ -5963,8 +5963,8 @@ function calc(){
   set('sh_p3_lbl', pct(fracRet));    document.getElementById('sh_p3').style.width=Math.min(fracRet,100)+'%';
   const overPay=effShip-shipC;
   set('sh_msg', overPay>0
-    ? `You absorb ${(Math.round(overPay*10)/10).toFixed(1)} ${CURRENCY} per delivered unit in real shipping costs above what you collect.`
-    : `Shipping collected covers real cost — no shipping loss.`
+    ? tfmt('sh_absorb_msg', (Math.round(overPay*10)/10).toFixed(1), CURRENCY)
+    : T[LANG].sh_no_loss_msg
   );
   renderShBar(costDel, costRet, effShip);
   renderShLine(fulfillDel, courier, costRet, delR);
@@ -5989,9 +5989,9 @@ function calc(){
     const _hc = document.getElementById('ov_hero_card');
     if(_hc) _hc.classList.toggle('is-loss', !isP);
   })();
-  set('ov_total_sub', isP?'Profitable':'Loss-making');
+  set('ov_total_sub', isP?T[LANG].ov_profitable:T[LANG].ov_loss_making);
   set('ov_be', isFinite(beUnits)?Math.ceil(beUnits)+' units':'∞', 'var(--c2)');
-  set('ov_be_sub', isFinite(beUnits)&&beUnits<=stock?'Covered by stock ✓':'Exceeds stock ✗');
+  set('ov_be_sub', isFinite(beUnits)&&beUnits<=stock?T[LANG].ov_covered_stock:T[LANG].ov_exceeds_stock);
   // Cache both revenue modes for the shipping toggle
   window._lastRevInclShip = totalRev;           // stock × (priceNet + shipCNet)
   window._lastRevExclShip = stock * priceNet;   // product only
@@ -6078,9 +6078,9 @@ function calc(){
     const _sub = document.getElementById('ov_total_sub');
     if(_sub){
       const _pu = (profitPUNet>=0?'+':'-')+eg(Math.abs(profitPUNet));
-      _sub.innerHTML = '<span class="hb-verdict">'+(isP?'Profitable':'Loss-making')+'</span>'
+      _sub.innerHTML = '<span class="hb-verdict">'+(isP?T[LANG].ov_profitable:T[LANG].ov_loss_making)+'</span>'
         + '<span class="hb-sep"></span>'
-        + '<span class="hb-pu">'+_pu+' / unit</span>';
+        + '<span class="hb-pu">'+_pu+T[LANG].hb_per_unit+'</span>';
     }
   })();
 
@@ -6244,10 +6244,10 @@ function renderMktDonut(ads, salary, varCost){
   const maxV = Math.max(ads, salary, 1);
 
   const rows = [
-    { lbl:'Ad Budget',               v:ads,            grad:'linear-gradient(90deg,#3B82F6,#60A5FA)' },
-    { lbl:'→ Reached Orders',        v:deliveredSpend, grad:'linear-gradient(90deg,#10B981,#34D399)' },
-    { lbl:'→ Wasted on Undelivered', v:wastedSpend2,   grad:'linear-gradient(90deg,#EF4444,#F87171)' },
-    { lbl:'Salary',                  v:salary,         grad:'linear-gradient(90deg,#8B5CF6,#A78BFA)' },
+    { lbl:T[LANG].wf_ad_budget,           v:ads,            grad:'linear-gradient(90deg,#3B82F6,#60A5FA)' },
+    { lbl:T[LANG].wf_reached_orders,      v:deliveredSpend, grad:'linear-gradient(90deg,#10B981,#34D399)' },
+    { lbl:T[LANG].wf_wasted_undelivered,  v:wastedSpend2,   grad:'linear-gradient(90deg,#EF4444,#F87171)' },
+    { lbl:T[LANG].wf_salary,              v:salary,         grad:'linear-gradient(90deg,#8B5CF6,#A78BFA)' },
   ];
   const f = n => Math.round(n).toLocaleString('en');
 
@@ -6281,10 +6281,10 @@ function renderFunnel(leads, conf, del){
 
   el.style.cssText = 'display:flex;flex-direction:column;justify-content:center;gap:12px;min-height:200px;padding:6px 0';
   el.innerHTML =
-    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:100%;background:linear-gradient(90deg,#3B82F6,#60A5FA)">Leads: '+f(leads)+'</div></div><span></span></div>'+
-    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:'+wConf+'%;background:linear-gradient(90deg,#7C3AED,#A78BFA)">Confirmed: '+f(conf)+'</div></div><span class="fn-drop">↓ '+confDrop+'% dropped</span></div>'+
-    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:'+wDel+'%;background:linear-gradient(90deg,#10B981,#34D399)">Delivered: '+f(del)+'</div></div><span class="fn-drop">↓ '+delDrop+'% dropped</span></div>'+
-    '<div class="fn-summary">Overall: <b style="color:#34D399">'+l2oPct+'%</b> of leads → delivered orders</div>';
+    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:100%;background:linear-gradient(90deg,#3B82F6,#60A5FA)">'+T[LANG].fn_leads+f(leads)+'</div></div><span></span></div>'+
+    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:'+wConf+'%;background:linear-gradient(90deg,#7C3AED,#A78BFA)">'+T[LANG].fn_confirmed+f(conf)+'</div></div><span class="fn-drop">'+tfmt('fn_dropped',confDrop)+'</span></div>'+
+    '<div class="fn-row"><div class="fn-barwrap"><div class="fn-bar" style="width:'+wDel+'%;background:linear-gradient(90deg,#10B981,#34D399)">'+T[LANG].fn_delivered+f(del)+'</div></div><span class="fn-drop">'+tfmt('fn_dropped',delDrop)+'</span></div>'+
+    '<div class="fn-summary">'+tfmt('fn_overall','<b style="color:#34D399">'+l2oPct+'%</b>')+'</div>';
 }
 
 // Chart 4: BE CPA Sensitivity + "You are here" marker
@@ -9200,6 +9200,22 @@ const T = {
     roas_sub_rev_roas:'Revenue ÷ ROAS',
     roas_sub_net_rev:'Net ÷ Revenue',
     sh_hint_real_collected:'Real − Collected',
+    sh_absorb_msg:'You absorb {0} {1} per delivered unit in real shipping costs above what you collect.',
+    sh_no_loss_msg:'Shipping collected covers real cost — no shipping loss.',
+    ov_profitable:'Profitable',
+    ov_loss_making:'Loss-making',
+    hb_per_unit:' / unit',
+    ov_covered_stock:'Covered by stock ✓',
+    ov_exceeds_stock:'Exceeds stock ✗',
+    wf_ad_budget:'Ad Budget',
+    wf_reached_orders:'→ Reached Orders',
+    wf_wasted_undelivered:'→ Wasted on Undelivered',
+    wf_salary:'Salary',
+    fn_leads:'Leads: ',
+    fn_confirmed:'Confirmed: ',
+    fn_delivered:'Delivered: ',
+    fn_dropped:'↓ {0}% dropped',
+    fn_overall:'Overall: {0} of leads → delivered orders',
   },
   ar: {
     nav_inputs:'المدخلات', nav_marketing:'الإعلانات', nav_shipping:'الشحن', nav_overview:'نظرة عامة',
@@ -9617,6 +9633,22 @@ const T = {
     roas_sub_rev_roas:'الإيراد ÷ ROAS',
     roas_sub_net_rev:'الصافي ÷ الإيراد',
     sh_hint_real_collected:'الحقيقي − المحصّل',
+    sh_absorb_msg:'أنت تتحمل {0} {1} لكل وحدة موصّلة كتكاليف شحن حقيقية فوق ما تحصّله.',
+    sh_no_loss_msg:'الشحن المحصّل يغطي التكلفة الحقيقية — لا خسارة في الشحن.',
+    ov_profitable:'رابح',
+    ov_loss_making:'خاسر',
+    hb_per_unit:' / وحدة',
+    ov_covered_stock:'المخزون يكفي ✓',
+    ov_exceeds_stock:'يتجاوز المخزون ✗',
+    wf_ad_budget:'ميزانية الإعلانات',
+    wf_reached_orders:'← الأوردرات الواصلة',
+    wf_wasted_undelivered:'← هدر على غير المُوصَّل',
+    wf_salary:'الراتب',
+    fn_leads:'الليدز: ',
+    fn_confirmed:'مؤكد: ',
+    fn_delivered:'موصّل: ',
+    fn_dropped:'↓ {0}% انخفض',
+    fn_overall:'إجمالاً: {0} من الليدز ← أوردرات موصّلة',
   }
 };
 
@@ -9650,6 +9682,7 @@ function applyLang(){
 function toggleLang(){
   LANG = LANG==='en'?'ar':'en';
   applyLang();
+  if(typeof calc==='function') calc();
   persistSave();
 }
 
