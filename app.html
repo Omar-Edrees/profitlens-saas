@@ -4191,6 +4191,13 @@ input[type=range]::-moz-range-thumb{
       </div>
     </div>
 
+    <!-- ══ BUSINESS HEALTH STRIP ══ -->
+    <div class="kpi-row" style="margin-bottom:16px">
+      <div class="kpi" style="--kc:var(--c1)"><div class="kpi-lbl"><span data-t="ap_ov_safety_lbl">Margin of safety</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_ov_safety_tip">How far total revenue can fall before the whole business hits break-even.<br>= Net profit ÷ Contribution margin<br>Higher = more cushion against a bad month.</span></span></div><div class="kpi-val" id="ap_ov_safety">—</div><div class="kpi-hint" id="ap_ov_safety_hint" data-t="ap_ov_safety_hint">Room before break-even</div></div>
+      <div class="kpi" style="--kc:var(--c4)"><div class="kpi-lbl"><span data-t="ap_ov_roi_lbl">Overall ROI</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_ov_roi_tip">Net profit as a share of every pound the business spends (product, shipping, fees, ads, salaries).<br>= Net profit ÷ Total all-in costs</span></span></div><div class="kpi-val" id="ap_ov_roi">—</div><div class="kpi-hint" id="ap_ov_roi_hint" data-t="ap_ov_roi_hint">Profit per 100 spent</div></div>
+      <div class="kpi" style="--kc:var(--c3)"><div class="kpi-lbl"><span data-t="ap_ov_conc_lbl">Profit concentration</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_ov_conc_tip">Share of total profit coming from your single biggest product. High concentration = fragile — one product failing hurts the whole business.</span></span></div><div class="kpi-val" id="ap_ov_conc">—</div><div class="kpi-hint" id="ap_ov_conc_hint" data-t="ap_ov_conc_hint">Top product share</div></div>
+    </div>
+
     <!-- ══ ADS + SHIPPING ══ -->
     <div class="ov2-insight-row" style="margin-bottom:16px">
 
@@ -8112,6 +8119,38 @@ function calcAllProducts(){
   // ── New overview IDs ──
   const totalMarginAll = all.reduce((s,p)=>s+p.calc.profitPU*p.calc.stock,0);
   _s('ap_ov_total_margin', fmtM(totalMarginAll), totalMarginAll>=0?'var(--c1)':'var(--red)');
+
+  // ── Business health (executive) ──
+  // Margin of safety = how far revenue can fall before break-even = profit ÷ contribution margin
+  const marginOfSafety = totalMarginAll > 0 ? totalProfit/totalMarginAll*100 : 0;
+  const breakEvenRev   = totalRev * (1 - Math.max(0, Math.min(1, marginOfSafety/100)));
+  _s('ap_ov_safety', totalMarginAll > 0 ? (marginOfSafety>=0?'':'-')+Math.abs(marginOfSafety).toFixed(0)+'%' : '—',
+     marginOfSafety >= 30 ? 'var(--c1)' : marginOfSafety >= 0 ? 'var(--c3)' : 'var(--red)');
+  { const h=document.getElementById('ap_ov_safety_hint');
+    if(h) h.textContent = totalMarginAll>0
+      ? (T[LANG].ap_ov_be_rev||'Break-even revenue')+': '+fmtM(breakEvenRev)
+      : (T[LANG].ap_ov_safety_hint||'Room before break-even'); }
+  // Overall ROI = net profit ÷ total all-in costs
+  const totalCostsAllIn = totalCost + totalShipCost + totalCommission + totalAds + totalSalary;
+  const overallROI = totalCostsAllIn > 0 ? totalProfit/totalCostsAllIn*100 : 0;
+  _s('ap_ov_roi', totalCostsAllIn > 0 ? (overallROI>=0?'+':'')+overallROI.toFixed(0)+'%' : '—',
+     overallROI >= 20 ? 'var(--c1)' : overallROI >= 0 ? 'var(--c3)' : 'var(--red)');
+  { const h=document.getElementById('ap_ov_roi_hint');
+    if(h) h.textContent = totalCostsAllIn>0
+      ? (overallROI>=0?'+':'')+Math.round(overallROI)+' '+(T[LANG].ap_ov_roi_per100||'profit per 100 spent')
+      : (T[LANG].ap_ov_roi_hint||'Profit per 100 spent'); }
+  // Profit concentration = top product's share of total positive profit
+  const posProfits = all.map(p=>p.calc.totalProf).filter(x=>x>0).sort((a,b)=>b-a);
+  const sumPos = posProfits.reduce((a,b)=>a+b,0);
+  const concentration = sumPos > 0 ? posProfits[0]/sumPos*100 : 0;
+  let cum=0, n80=0; for(const v of posProfits){ cum+=v; n80++; if(cum>=sumPos*0.8) break; }
+  const lossDrag = all.map(p=>p.calc.totalProf).filter(x=>x<0).reduce((a,b)=>a+b,0);
+  _s('ap_ov_conc', sumPos > 0 ? concentration.toFixed(0)+'%' : '—',
+     concentration >= 60 ? 'var(--red)' : concentration >= 40 ? 'var(--c3)' : 'var(--c1)');
+  { const h=document.getElementById('ap_ov_conc_hint');
+    if(h) h.textContent = lossDrag < 0
+      ? '⚠ '+fmtM(Math.abs(lossDrag))+' '+(T[LANG].ap_ov_loss_drag||'lost to weak products')
+      : (sumPos>0 ? n80+' '+(T[LANG].ap_of||'of')+' '+all.length+' '+(T[LANG].ap_ov_make80||'make 80% of profit') : (T[LANG].ap_ov_conc_hint||'Top product share')); }
   _s('ap_ov_cpa',   blendedCPA>0  ? eg(blendedCPA)  : '—', blendedCPA>0&&blendedCPA<=weightedBECPA?'var(--c1)':'var(--red)');
   _s('ap_ov_roas',  blendedROAS>0 ? blendedROAS.toFixed(1)+'x' : '—');
   _s('ap_ov_becpa', weightedBECPA>0 ? eg(weightedBECPA) : '—');
@@ -9762,6 +9801,12 @@ const T = {
     ap_net_profit_chart:'Net Profit per product', ap_rev_breakdown_chart:'Revenue breakdown',
     ap_margin_chart:'Profit margin % per product', ap_pl_summary_chart:'Full Business P&L Summary',
     ap_ranked_by:'Products ranked by Total Net Profit',
+    ap_ov_safety_lbl:'Margin of safety', ap_ov_safety_hint:'Room before break-even', ap_ov_be_rev:'Break-even revenue',
+    ap_ov_safety_tip:'How far total revenue can fall before the whole business hits break-even. = Net profit ÷ Contribution margin. Higher = more cushion against a bad month.',
+    ap_ov_roi_lbl:'Overall ROI', ap_ov_roi_hint:'Profit per 100 spent', ap_ov_roi_per100:'profit per 100 spent',
+    ap_ov_roi_tip:'Net profit as a share of every pound the business spends (product, shipping, fees, ads, salaries). = Net profit ÷ Total all-in costs',
+    ap_ov_conc_lbl:'Profit concentration', ap_ov_conc_hint:'Top product share', ap_ov_make80:'make 80% of profit', ap_ov_loss_drag:'lost to weak products',
+    ap_ov_conc_tip:'Share of total profit coming from your single biggest product. High concentration = fragile — one product failing hurts the whole business.',
     ov_ads_title:'Advertising', ov_ads_card_sub:'CPA & ROAS vs break-even',
     ov_delivery_title:'Delivery', ov_delivery_sub:'Units distribution', ov_del_ret_lbl:'Delivered / Returned',
     ov_ship_title:'Shipping costs', ov_ship_sub:'Per unit breakdown', ov_ship_panel_sub:'weighted across all products',
@@ -10262,6 +10307,12 @@ const T = {
     ap_net_profit_chart:'صافي الربح لكل منتج', ap_rev_breakdown_chart:'توزيع الإيرادات',
     ap_margin_chart:'هامش الربح % لكل منتج', ap_pl_summary_chart:'ملخص P&L الكامل للبزنس',
     ap_ranked_by:'المنتجات مرتبة بالربح الكلي الصافي',
+    ap_ov_safety_lbl:'هامش الأمان', ap_ov_safety_hint:'المساحة قبل التعادل', ap_ov_be_rev:'إيراد التعادل',
+    ap_ov_safety_tip:'الإيراد الكلي ينزل قد إيه قبل ما البيزنس كله يوصل نقطة التعادل. = صافي الربح ÷ هامش المساهمة. كل ما زاد → وسادة أمان أكبر ضد أي شهر وحش.',
+    ap_ov_roi_lbl:'العائد الكلي ROI', ap_ov_roi_hint:'ربح لكل 100 مصروفة', ap_ov_roi_per100:'ربح لكل 100 مصروفة',
+    ap_ov_roi_tip:'صافي الربح كنسبة من كل جنيه بيصرفه البيزنس (منتج، شحن، رسوم، إعلانات، رواتب). = صافي الربح ÷ إجمالي التكاليف الشاملة',
+    ap_ov_conc_lbl:'تركّز الربح', ap_ov_conc_hint:'حصة أكبر منتج', ap_ov_make80:'بيعملوا 80% من الربح', ap_ov_loss_drag:'ضايعة على منتجات ضعيفة',
+    ap_ov_conc_tip:'نسبة الربح الكلي الجاية من أكبر منتج عندك. التركّز العالي = هشاشة — لو المنتج ده وقع بيضر البيزنس كله.',
     ov_ads_title:'الإعلانات', ov_ads_card_sub:'CPA و ROAS مقابل نقطة التعادل',
     ov_delivery_title:'التوصيل', ov_delivery_sub:'توزيع الوحدات', ov_del_ret_lbl:'وصلت / رجعت',
     ov_ship_title:'تكاليف الشحن', ov_ship_sub:'تفصيل لكل وحدة', ov_ship_panel_sub:'موزون عبر كل المنتجات',
