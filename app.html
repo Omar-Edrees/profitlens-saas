@@ -503,10 +503,24 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 }
 @media(max-width:560px){
   .input-groups{grid-template-columns:1fr;grid-template-areas:"pricing""fulfill""commfees""media""fc"}
-  /* Ranking & verdict tables — scroll horizontally instead of squishing */
-  .rank-table{min-width:520px}
-  .rank-table th,.rank-table td{white-space:nowrap;padding:9px 8px}
-  .rank-prod-name{white-space:nowrap}
+  /* Ranking & verdict tables — turn each row into a card on mobile */
+  .rank-table{min-width:0}
+  .rank-table thead{display:none}
+  .rank-table,.rank-table tbody{display:block;width:100%}
+  .rank-table tr{display:block;border:1px solid var(--bdr2);border-radius:10px;
+    margin-bottom:10px;padding:2px 12px;background:var(--surf2)}
+  .rank-table tr:hover td{background:transparent}
+  .rank-table td{display:flex;justify-content:space-between;align-items:center;gap:12px;
+    padding:9px 0!important;border:none!important;border-bottom:1px solid var(--bdr)!important;
+    text-align:end;font-size:13px}
+  .rank-table tr td:last-child{border-bottom:none!important}
+  .rank-table td::before{content:attr(data-label);font-size:10px;text-transform:uppercase;
+    letter-spacing:.04em;color:var(--txt3);font-weight:700;white-space:nowrap;flex-shrink:0}
+  .rank-table td[data-label='']::before,.rank-table td:not([data-label])::before{content:''}
+  .rank-table .rk-hide-m{display:none!important}
+  .rank-table .rk-edit{padding-top:11px!important}
+  .rank-table .rk-edit .rank-go-btn{width:100%;padding:9px}
+  .rank-bar-wrap{display:none}
 }
 .input-card{
   background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);
@@ -8034,13 +8048,13 @@ function calcAllProducts(){
         const safety = c.beCPP>0 ? (c.beCPP-c.actualCPP)/c.beCPP*100 : null;
         const safetyCol = safety===null ? 'var(--txt3)' : safety>=25?'var(--c1)':safety>=0?'var(--c3)':'var(--red)';
         return `<tr>
-          <td><div class="rank-prod-name">${escapeHtml(p.name)}</div></td>
-          <td style="text-align:right;font-family:var(--mono)">${fmtM(c.ads)}<div class="rank-margin">${share.toFixed(0)}%</div></td>
-          <td style="text-align:right;font-family:var(--mono)">${c.actualCPP>0?eg(c.actualCPP):'—'}</td>
-          <td style="text-align:right;font-family:var(--mono);color:var(--txt3)">${c.beCPP>0?eg(c.beCPP):'—'}</td>
-          <td style="text-align:right;font-family:var(--mono);color:${safetyCol}">${safety===null?'—':(safety>=0?'+':'')+safety.toFixed(0)+'%'}</td>
-          <td style="text-align:center"><span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:${v.bg};color:${v.col};border:${v.bg==='transparent'?'1px solid var(--bdr2)':'none'}">${v.lbl}</span></td>
-          <td style="text-align:right"><button class="rank-go-btn" onclick="switchProduct(${p.index})">Edit ↗</button></td>
+          <td data-label="${T[LANG].ap_vc_product||'Product'}"><div class="rank-prod-name">${escapeHtml(p.name)}</div></td>
+          <td style="text-align:right;font-family:var(--mono)" data-label="${T[LANG].ap_vc_budget||'Budget'}">${fmtM(c.ads)}<div class="rank-margin">${share.toFixed(0)}%</div></td>
+          <td style="text-align:right;font-family:var(--mono)" data-label="${T[LANG].ap_vc_cpa||'Actual CPA'}">${c.actualCPP>0?eg(c.actualCPP):'—'}</td>
+          <td style="text-align:right;font-family:var(--mono);color:var(--txt3)" data-label="${T[LANG].ap_vc_be||'BE CPA'}">${c.beCPP>0?eg(c.beCPP):'—'}</td>
+          <td style="text-align:right;font-family:var(--mono);color:${safetyCol}" data-label="${T[LANG].ap_vc_safety||'Safety'}">${safety===null?'—':(safety>=0?'+':'')+safety.toFixed(0)+'%'}</td>
+          <td style="text-align:center" data-label="${T[LANG].ap_vc_verdict||'Verdict'}"><span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:${v.bg};color:${v.col};border:${v.bg==='transparent'?'1px solid var(--bdr2)':'none'}">${v.lbl}</span></td>
+          <td style="text-align:right" class="rk-edit"><button class="rank-go-btn" onclick="switchProduct(${p.index})">Edit ↗</button></td>
         </tr>`;
       }).join('')}</tbody></table></div>`;
   }
@@ -8101,14 +8115,14 @@ function calcAllProducts(){
         const netCol = c.netShip>0?'var(--red)':'var(--c1)';
         const recCol = rec>=90?'var(--c1)':rec>=60?'var(--c3)':'var(--red)';
         return `<tr>
-          <td><div class="rank-prod-name">${escapeHtml(p.name)}</div></td>
-          <td style="text-align:right;font-family:var(--mono)">${eg(c.effShip)}</td>
-          <td style="text-align:right;font-family:var(--mono)">${eg(c.shipC)}</td>
-          <td style="text-align:right;font-family:var(--mono);color:${netCol}">${c.netShip>0?'+':''}${eg(c.netShip)}</td>
-          <td style="text-align:right;font-family:var(--mono);color:${burden>0?'var(--red)':'var(--c1)'}">${fmtM(burden)}</td>
-          <td style="text-align:right;font-family:var(--mono);color:${recCol}">${c.stock>0?rec.toFixed(0)+'%':'—'}</td>
-          <td style="text-align:center"><span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:${v.bg};color:${v.col};border:${v.bg==='transparent'?'1px solid var(--bdr2)':'none'}">${v.lbl}</span></td>
-          <td style="text-align:right"><button class="rank-go-btn" onclick="switchProduct(${p.index})">Edit ↗</button></td>
+          <td data-label="${T[LANG].ap_vc_product||'Product'}"><div class="rank-prod-name">${escapeHtml(p.name)}</div></td>
+          <td style="text-align:right;font-family:var(--mono)" data-label="${T[LANG].ap_sh_real_lbl||'Real/unit'}">${eg(c.effShip)}</td>
+          <td style="text-align:right;font-family:var(--mono)" data-label="${T[LANG].ap_sh_collected_lbl||'Collected/unit'}">${eg(c.shipC)}</td>
+          <td style="text-align:right;font-family:var(--mono);color:${netCol}" data-label="${T[LANG].ap_shc_net||'Net/unit'}">${c.netShip>0?'+':''}${eg(c.netShip)}</td>
+          <td style="text-align:right;font-family:var(--mono);color:${burden>0?'var(--red)':'var(--c1)'}" data-label="${T[LANG].ap_shc_burden||'Total burden'}">${fmtM(burden)}</td>
+          <td style="text-align:right;font-family:var(--mono);color:${recCol}" data-label="${T[LANG].ap_sh_recovery_lbl||'Recovery'}">${c.stock>0?rec.toFixed(0)+'%':'—'}</td>
+          <td style="text-align:center" data-label="${T[LANG].ap_vc_verdict||'Verdict'}"><span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:${v.bg};color:${v.col};border:${v.bg==='transparent'?'1px solid var(--bdr2)':'none'}">${v.lbl}</span></td>
+          <td style="text-align:right" class="rk-edit"><button class="rank-go-btn" onclick="switchProduct(${p.index})">Edit ↗</button></td>
         </tr>`;
       }).join('')}</tbody></table></div>`;
   }
@@ -8240,14 +8254,14 @@ function calcAllProducts(){
     <tbody>${sorted.map((p,i)=>{
       const c=p.calc,isP=c.totalProf>=0,barW=Math.round(Math.abs(c.totalProf)/maxAbs*100);
       return `<tr>
-        <td style="width:32px"><span class="rank-num ${i<3?rnCls[i]:'rn'}">${i<3?medals[i]:'#'+(i+1)}</span></td>
-        <td><div class="rank-prod-name">${escapeHtml(p.name)}</div>
+        <td style="width:32px" data-label="#"><span class="rank-num ${i<3?rnCls[i]:'rn'}">${i<3?medals[i]:'#'+(i+1)}</span></td>
+        <td data-label="${T[LANG].ap_vc_product||'Product'}"><div class="rank-prod-name">${escapeHtml(p.name)}</div>
             <div class="rank-bar-wrap"><div class="rank-bar" style="width:${barW}%;background:${isP?'var(--profit)':'var(--red)'}"></div></div></td>
-        <td style="text-align:right"><div class="rank-profit-val" style="color:${isP?'var(--profit)':'var(--red)'}">${fmtM(c.totalProf)}</div>
+        <td style="text-align:right" data-label="${T[LANG].ov_net_profit||'Net Profit'}"><div class="rank-profit-val" style="color:${isP?'var(--profit)':'var(--red)'}">${fmtM(c.totalProf)}</div>
             <div class="rank-margin">${c.marginPct!==undefined?c.marginPct.toFixed(1)+'% margin':''}</div></td>
-        <td style="text-align:right"><div class="rank-margin">${fmtM(c.totalRev)} rev</div>
+        <td style="text-align:right" data-label="${T[LANG].th_rev_stock||'Revenue / Stock'}"><div class="rank-margin">${fmtM(c.totalRev)} rev</div>
             <div class="rank-margin">${c.stock>0?Math.round(c.stock)+' units':'—'}</div></td>
-        <td style="text-align:right"><button class="rank-go-btn" onclick="switchProduct(${p.index})">Edit ↗</button></td>
+        <td style="text-align:right" class="rk-edit"><button class="rank-go-btn" onclick="switchProduct(${p.index})">Edit ↗</button></td>
       </tr>`;
     }).join('')}</tbody></table></div>`;
 
