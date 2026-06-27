@@ -503,6 +503,10 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 }
 @media(max-width:560px){
   .input-groups{grid-template-columns:1fr;grid-template-areas:"pricing""fulfill""commfees""media""fc"}
+  /* Ranking & verdict tables — scroll horizontally instead of squishing */
+  .rank-table{min-width:520px}
+  .rank-table th,.rank-table td{white-space:nowrap;padding:9px 8px}
+  .rank-prod-name{white-space:nowrap}
 }
 .input-card{
   background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);
