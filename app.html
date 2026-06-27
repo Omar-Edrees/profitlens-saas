@@ -3988,8 +3988,21 @@ input[type=range]::-moz-range-thumb{
       <div class="kpi" style="--kc:var(--c1)"><div class="kpi-lbl" data-t="ap_sh_collected_lbl">Avg Collected / unit</div><div class="kpi-val" id="ap_sh_collected" style="color:var(--c1)">—</div><div class="kpi-hint" data-t="ap_sh_weighted_hint">Weighted across products</div></div>
       <div class="kpi" style="--kc:var(--red)"><div class="kpi-lbl" data-t="ap_sh_net_lbl">Avg Net Shipping on you</div><div class="kpi-val" id="ap_sh_net" style="color:var(--red)">—</div><div class="kpi-hint" data-t="sh_hint_real_collected">Real − Collected</div></div>
       <div class="kpi" style="--kc:var(--c4)"><div class="kpi-lbl" data-t="ap_sh_total_lbl">Total Shipping Cost</div><div class="kpi-val" id="ap_sh_total" style="color:var(--c4)">—</div><div class="kpi-hint" data-t="ap_sh_all_hint">All products combined</div></div>
+      <div class="kpi" style="--kc:var(--c1)"><div class="kpi-lbl"><span data-t="ap_sh_recovery_lbl">Shipping recovery</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_sh_recovery_tip">Share of your real shipping cost that customers cover through shipping charges.<br>= Total collected ÷ Total real shipping<br>Below 100% means you pay the rest out of pocket.</span></span></div><div class="kpi-val" id="ap_sh_recovery">—</div><div class="kpi-hint" data-t="ap_sh_recovery_hint">Covered by customers</div></div>
+      <div class="kpi" style="--kc:var(--red)"><div class="kpi-lbl"><span data-t="ap_sh_burden_lbl">Net burden you absorb</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_sh_burden_tip">Total shipping money the business eats after what customers pay.<br>= Total real shipping − Total collected</span></span></div><div class="kpi-val" id="ap_sh_burden">—</div><div class="kpi-hint" id="ap_sh_burden_hint" data-t="ap_sh_burden_hint">Out of your pocket</div></div>
+      <div class="kpi" style="--kc:var(--red)"><div class="kpi-lbl"><span data-t="ap_sh_rto_lbl">Return (RTO) cost</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_sh_rto_tip">Total cost of orders confirmed but never delivered (returns) — courier charges both legs with zero revenue back.<br>= (Confirmed − Delivered) × return cost per order</span></span></div><div class="kpi-val" id="ap_sh_rto">—</div><div class="kpi-hint" id="ap_sh_rto_hint" data-t="ap_sh_rto_hint">Confirmed but not delivered</div></div>
     </div>
+    <!-- Per-product shipping verdict -->
     <div class="chart-card" style="margin-top:16px">
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span><span data-t="ap_sh_verdict_title">Per-product shipping verdict — who's underwater</span></div>
+      <div id="ap_sh_verdict_wrap"></div>
+    </div>
+    <!-- Net shipping burden (total) per product -->
+    <div class="chart-card" style="margin-top:14px">
+      <div class="chart-lbl"><span class="cdot" style="background:var(--red)"></span><span data-t="ap_sh_burden_chart">Net shipping burden (total) — per product</span></div>
+      <div class="ch-wrap"><canvas id="ap_ch_shburden"></canvas></div>
+    </div>
+    <div class="chart-card" style="margin-top:14px">
       <div class="chart-lbl"><span class="cdot" style="background:var(--c3)"></span><span data-t="ap_sh_chart">Real shipping cost vs collected — per product</span></div>
       <div class="ch-wrap"><canvas id="ap_ch_ship"></canvas></div>
     </div>
@@ -8027,6 +8040,68 @@ function calcAllProducts(){
   _s('ap_sh_net',       eg(wAvgShipNet),  wAvgShipNet>0?'var(--red)':'var(--c1)');
   _s('ap_sh_total',     fmtM(totalShipCost), 'var(--c4)');
 
+  // Shipping recovery = % of real shipping cost customers cover
+  const shRecovery = totalShipCost > 0 ? totalShipColl/totalShipCost*100 : 0;
+  _s('ap_sh_recovery', totalShipCost>0 ? shRecovery.toFixed(0)+'%' : '—',
+     shRecovery >= 90 ? 'var(--c1)' : shRecovery >= 60 ? 'var(--c3)' : 'var(--red)');
+  // Net burden you absorb = real − collected (total $)
+  const shBurden = totalShipCost - totalShipColl;
+  _s('ap_sh_burden', totalShipCost>0 ? fmtM(shBurden) : '—', shBurden > 0 ? 'var(--red)' : 'var(--c1)');
+  { const h=document.getElementById('ap_sh_burden_hint');
+    if(h){ const pct = totalProfit>0 ? Math.round(shBurden/totalProfit*100) : null;
+      h.textContent = (shBurden>0 && pct!==null) ? '≈ '+pct+'% '+(T[LANG].ap_sh_burden_of_profit||'of net profit') : (T[LANG].ap_sh_burden_hint||'Out of your pocket'); } }
+  // Total return (RTO) cost = (confirmed − delivered) × return cost per order
+  const totalRtoCost = all.reduce((s,p)=>s + Math.max(0, p.calc.confNeeded - p.calc.delivNeeded) * p.calc.costRet, 0);
+  const totalReturns = all.reduce((s,p)=>s + Math.max(0, p.calc.confNeeded - p.calc.delivNeeded), 0);
+  _s('ap_sh_rto', totalRtoCost>0 ? fmtM(totalRtoCost) : '—', 'var(--red)');
+  { const h=document.getElementById('ap_sh_rto_hint');
+    if(h) h.textContent = totalReturns>0 ? '≈ '+Math.round(totalReturns).toLocaleString('en')+' '+(T[LANG].ap_sh_rto_orders||'returned orders') : (T[LANG].ap_sh_rto_hint||'Confirmed but not delivered'); }
+
+  // ─── PER-PRODUCT SHIPPING VERDICT ───
+  const shVerdictOf = c => {
+    if(!(c.stock > 0)) return {key:'none', lbl:T[LANG].ap_shv_none||'—', col:'var(--txt3)', bg:'transparent'};
+    const rec = c.effShip > 0 ? c.shipC/c.effShip*100 : 100;
+    if(rec < 60)  return {key:'sink', lbl:T[LANG].ap_shv_sink||'Underwater', col:'#fff',     bg:'var(--red)'};
+    if(rec < 90)  return {key:'raise',lbl:T[LANG].ap_shv_raise||'Raise fee', col:'#1a1a1a',  bg:'var(--c3)'};
+    return {key:'ok', lbl:T[LANG].ap_shv_ok||'OK', col:'#0a0a0a', bg:'var(--c1)'};
+  };
+  const shvWrap = document.getElementById('ap_sh_verdict_wrap');
+  if(shvWrap){
+    const shOrder = {sink:0, raise:1, ok:2, none:3};
+    const shSorted = [...all].sort((a,b)=>{
+      const va=shVerdictOf(a.calc), vb=shVerdictOf(b.calc);
+      if(shOrder[va.key]!==shOrder[vb.key]) return shOrder[va.key]-shOrder[vb.key];
+      return (b.calc.netShip*b.calc.stock) - (a.calc.netShip*a.calc.stock);
+    });
+    shvWrap.innerHTML = `<div style="overflow-x:auto"><table class="rank-table">
+      <thead><tr>
+        <th>${T[LANG].ap_vc_product||'Product'}</th>
+        <th style="text-align:right">${T[LANG].ap_sh_real_lbl||'Real/unit'}</th>
+        <th style="text-align:right">${T[LANG].ap_sh_collected_lbl||'Collected/unit'}</th>
+        <th style="text-align:right">${T[LANG].ap_shc_net||'Net/unit'}</th>
+        <th style="text-align:right">${T[LANG].ap_shc_burden||'Total burden'}</th>
+        <th style="text-align:right">${T[LANG].ap_sh_recovery_lbl||'Recovery'}</th>
+        <th style="text-align:center">${T[LANG].ap_vc_verdict||'Verdict'}</th>
+        <th></th>
+      </tr></thead><tbody>${shSorted.map(p=>{
+        const c=p.calc, v=shVerdictOf(c);
+        const rec = c.effShip>0 ? c.shipC/c.effShip*100 : 0;
+        const burden = c.netShip*c.stock;
+        const netCol = c.netShip>0?'var(--red)':'var(--c1)';
+        const recCol = rec>=90?'var(--c1)':rec>=60?'var(--c3)':'var(--red)';
+        return `<tr>
+          <td><div class="rank-prod-name">${escapeHtml(p.name)}</div></td>
+          <td style="text-align:right;font-family:var(--mono)">${eg(c.effShip)}</td>
+          <td style="text-align:right;font-family:var(--mono)">${eg(c.shipC)}</td>
+          <td style="text-align:right;font-family:var(--mono);color:${netCol}">${c.netShip>0?'+':''}${eg(c.netShip)}</td>
+          <td style="text-align:right;font-family:var(--mono);color:${burden>0?'var(--red)':'var(--c1)'}">${fmtM(burden)}</td>
+          <td style="text-align:right;font-family:var(--mono);color:${recCol}">${c.stock>0?rec.toFixed(0)+'%':'—'}</td>
+          <td style="text-align:center"><span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:${v.bg};color:${v.col};border:${v.bg==='transparent'?'1px solid var(--bdr2)':'none'}">${v.lbl}</span></td>
+          <td style="text-align:right"><button class="rank-go-btn" onclick="switchProduct(${p.index})">Edit ↗</button></td>
+        </tr>`;
+      }).join('')}</tbody></table></div>`;
+  }
+
   // ─── OVERVIEW ───
   _s('ap_ov_profit', (isProfit?'':'-')+Math.round(Math.abs(totalProfit)).toLocaleString('en')+' '+CUR, isProfit?'var(--c1)':'var(--red)');
   _s('ap_ov_profit_sub', (isProfit?T[LANG].ap_profitable:T[LANG].ap_loss)+' — '+all.filter(p=>p.calc.isProfit).length+' '+T[LANG].ap_of+' '+all.length+' '+T[LANG].ap_products_profitable);
@@ -8198,6 +8273,16 @@ function calcAllProducts(){
       data:{labels:names,datasets:[{label:'Delivered Orders',data:all.map(p=>Math.round(p.calc.delivNeeded)),backgroundColor:colors,borderRadius:4}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
         scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab'}}}}});
+
+    // Net shipping burden (total) per product — where the real money leaks
+    if(CH['ap_shburden']){CH['ap_shburden'].destroy();}
+    const apShBEl=document.getElementById('ap_ch_shburden');
+    if(apShBEl) CH['ap_shburden']=new Chart(apShBEl,{type:'bar',
+      data:{labels:names,datasets:[{label:'Net burden',
+        data:all.map(p=>Math.round(p.calc.netShip*p.calc.stock)),
+        backgroundColor:all.map(p=>p.calc.netShip>0?'#f43f5e':'#00e5a0'),borderRadius:4}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v<=-1000?'-'+Math.round(Math.abs(v)/1000)+'K':v}}}}});
 
     // Shipping chart
     if(CH['ap_shp']){CH['ap_shp'].destroy();}
@@ -9642,6 +9727,16 @@ const T = {
     ap_sh_real_lbl:'Avg Real Shipping / unit', ap_sh_collected_lbl:'Avg Collected / unit',
     ap_sh_net_lbl:'Avg Net Shipping on you', ap_sh_total_lbl:'Total Shipping Cost',
     ap_sh_weighted_hint:'Weighted across products', ap_sh_all_hint:'All products combined',
+    ap_sh_recovery_lbl:'Shipping recovery', ap_sh_recovery_hint:'Covered by customers',
+    ap_sh_recovery_tip:'Share of your real shipping cost that customers cover through shipping charges. = Total collected ÷ Total real shipping. Below 100% means you pay the rest out of pocket.',
+    ap_sh_burden_lbl:'Net burden you absorb', ap_sh_burden_hint:'Out of your pocket', ap_sh_burden_of_profit:'of net profit',
+    ap_sh_burden_tip:'Total shipping money the business eats after what customers pay. = Total real shipping − Total collected',
+    ap_sh_rto_lbl:'Return (RTO) cost', ap_sh_rto_hint:'Confirmed but not delivered', ap_sh_rto_orders:'returned orders',
+    ap_sh_rto_tip:'Total cost of orders confirmed but never delivered (returns) — courier charges both legs with zero revenue back. = (Confirmed − Delivered) × return cost per order',
+    ap_sh_verdict_title:"Per-product shipping verdict — who's underwater",
+    ap_sh_burden_chart:'Net shipping burden (total) — per product',
+    ap_shc_net:'Net/unit', ap_shc_burden:'Total burden',
+    ap_shv_sink:'Underwater', ap_shv_raise:'Raise fee', ap_shv_ok:'OK', ap_shv_none:'—',
     ap_cpa_chart:'CPA vs Break-even CPA — per product',
     ap_budget_chart:'Ad Budget — per product',
     ap_sh_chart:'Real shipping cost vs collected — per product',
@@ -10132,6 +10227,16 @@ const T = {
     ap_sh_real_lbl:'متوسط الشحن الحقيقي / وحدة', ap_sh_collected_lbl:'متوسط المحصّل / وحدة',
     ap_sh_net_lbl:'متوسط صافي الشحن عليك', ap_sh_total_lbl:'إجمالي تكلفة الشحن',
     ap_sh_weighted_hint:'موزون عبر المنتجات', ap_sh_all_hint:'كل المنتجات مجتمعة',
+    ap_sh_recovery_lbl:'استرداد الشحن', ap_sh_recovery_hint:'بيغطيه العملاء',
+    ap_sh_recovery_tip:'نسبة تكلفة الشحن الحقيقية اللي العملاء بيغطوها من رسوم الشحن اللي بتاخدها منهم. = إجمالي المحصّل ÷ إجمالي الشحن الحقيقي. أقل من 100% يعني الباقي من جيبك.',
+    ap_sh_burden_lbl:'العبء الصافي عليك', ap_sh_burden_hint:'من جيبك', ap_sh_burden_of_profit:'من صافي الربح',
+    ap_sh_burden_tip:'إجمالي فلوس الشحن اللي البيزنس بياكلها بعد اللي العملاء بيدفعوه. = إجمالي الشحن الحقيقي − إجمالي المحصّل',
+    ap_sh_rto_lbl:'تكلفة المرتجعات (RTO)', ap_sh_rto_hint:'مؤكد بس مووصلش', ap_sh_rto_orders:'أوردر مرتجع',
+    ap_sh_rto_tip:'إجمالي تكلفة الأوردرات اللي اتأكدت ومووصلتش (مرتجعات) — الكورير بياخد رايح وجاي من غير أي إيراد راجع. = (المؤكد − الموصّل) × تكلفة المرتجع لكل أوردر',
+    ap_sh_verdict_title:'حُكم الشحن لكل منتج — مين بيغرق',
+    ap_sh_burden_chart:'العبء الصافي للشحن (الإجمالي) — لكل منتج',
+    ap_shc_net:'الصافي/وحدة', ap_shc_burden:'العبء الكلي',
+    ap_shv_sink:'بيغرق', ap_shv_raise:'ارفع الرسوم', ap_shv_ok:'تمام', ap_shv_none:'—',
     ap_cpa_chart:'CPA مقابل CPA التعادل — لكل منتج',
     ap_budget_chart:'ميزانية الإعلانات — لكل منتج',
     ap_sh_chart:'تكلفة الشحن الحقيقية مقابل المحصّل — لكل منتج',
