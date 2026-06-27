@@ -3572,6 +3572,27 @@ input[type=range]::-moz-range-thumb{
       <div class="kpi-hint" data-t="hint_ltv_cac">Target ≥ 3×</div>
     </div>
   </div>
+
+  <!-- ── Budget Recommendation Card ── -->
+  <div id="be_ads_budget_card" style="display:none;margin-top:6px;margin-bottom:4px;padding:14px 16px;background:var(--surf2);border:1px solid var(--bdr2);border-radius:var(--r)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--c2);display:inline-block;flex-shrink:0"></span>
+        <span style="font-size:12px;font-weight:600;color:var(--txt2)" data-t="bud_rec_title">Recommended Ad Budget</span>
+        <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_bud_rec">Maximum = break-even point (contribution margin × stock − salary). Spending above this loses money.<br>70% = moderate, leaves a healthy margin.<br>50% = conservative, comfortable profit.</span></span>
+      </div>
+      <div class="mb-io-seg">
+        <button type="button" id="be_bud_btn_100" class="mb-io-seg-btn active" onclick="advBudgetSelect(1.0)" data-t="bud_rec_max">Max</button>
+        <button type="button" id="be_bud_btn_70"  class="mb-io-seg-btn" onclick="advBudgetSelect(0.7)">70%</button>
+        <button type="button" id="be_bud_btn_50"  class="mb-io-seg-btn" onclick="advBudgetSelect(0.5)">50%</button>
+      </div>
+    </div>
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+      <span style="font-size:11px;color:var(--txt3)" id="be_bud_hint" data-t="bud_rec_hint_max">Break-even — spend more and you lose</span>
+      <span style="font-family:var(--mono);font-size:22px;font-weight:700" id="be_bud_val">—</span>
+    </div>
+  </div>
+
   <div id="m_net_delivered" style="display:none;font-size:12px;font-family:var(--mono);margin-top:-8px;margin-bottom:12px;padding:8px 12px;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);border-radius:var(--r);color:var(--red)">—</div>
 
   <div class="kpi-pool" id="kpi_pool">
@@ -5328,6 +5349,36 @@ function fcToggleAdv(){
   arrow.style.transform = open ? 'rotate(90deg)' : '';
 }
 
+// ── Budget Recommendation Card ──────────────────────────────────
+let BE_BUD_SEL = 1.0;
+
+function advBudgetSelect(pct){
+  BE_BUD_SEL = pct;
+  [[1.0,'be_bud_btn_100'],[0.7,'be_bud_btn_70'],[0.5,'be_bud_btn_50']].forEach(([p,id])=>{
+    const b = document.getElementById(id);
+    if(b) b.classList.toggle('active', p === pct);
+  });
+  updateBeBudgetCard();
+}
+
+function updateBeBudgetCard(){
+  const card   = document.getElementById('be_ads_budget_card');
+  const valEl  = document.getElementById('be_bud_val');
+  const hintEl = document.getElementById('be_bud_hint');
+  if(!card || !valEl) return;
+  const beMax = window.LAST_BE_ADS_BUDGET;
+  if(!beMax || beMax <= 0){ card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  const rec = beMax * BE_BUD_SEL;
+  valEl.textContent = Math.round(rec).toLocaleString('en') + ' ' + (window.CURRENCY || 'EGP');
+  valEl.style.color = BE_BUD_SEL <= 0.5 ? 'var(--c1)' : BE_BUD_SEL <= 0.7 ? 'var(--c3)' : 'var(--red)';
+  if(hintEl){
+    const key = BE_BUD_SEL <= 0.5 ? 'bud_rec_hint_50' : BE_BUD_SEL <= 0.7 ? 'bud_rec_hint_70' : 'bud_rec_hint_max';
+    hintEl.textContent = T[LANG][key] || hintEl.textContent;
+    hintEl.dataset.t = key;
+  }
+}
+
 // Pricing card → Advanced options (holds Avg orders per customer)
 function pricingToggleAdv(){
   const panel = document.getElementById('pricing_adv_panel');
@@ -6163,6 +6214,10 @@ function calc(){
       } else { _e.textContent = '—'; _e.style.color = 'var(--txt2)'; }
     } }
   // ─────────────────────────────────────────────────────────────
+
+  // ── Budget Recommendation Card ────────────────────────────────
+  window.LAST_BE_ADS_BUDGET = profitPU > 0 ? Math.max(0, profitPU * stock - salary) : 0;
+  if(typeof updateBeBudgetCard === 'function') updateBeBudgetCard();
 
   // ── Ads Health Banner ────────────────────────────────────────
   (function(){
@@ -9336,6 +9391,11 @@ const T = {
     hero_pu:'Net profit / unit', hero_total:'Total profit (all stock)',
     hero_rev:'Revenue', hero_rev_sub:'Total incl. shipping',
     adv_title:'Advanced options', adv_show:'Show', adv_hide:'Hide',
+    bud_rec_title:'Recommended Ad Budget', bud_rec_max:'Max',
+    bud_rec_hint_max:'Break-even — spend more and you lose',
+    bud_rec_hint_70:'Moderate — healthy profit margin',
+    bud_rec_hint_50:'Conservative — comfortable profit',
+    tip_bud_rec:'Maximum = contribution margin × stock − salary. Spending above this loses money. 70% = moderate, 50% = conservative.',
     adv_dur_lbl:'Campaign duration (months)',
     adv_dur_hint_off:'Locked → campaign treated as 1 month',
     adv_dur_hint_on:'Unlocked → salary × number of months',
@@ -9808,6 +9868,11 @@ const T = {
     hero_pu:'صافي الربح / وحدة', hero_total:'الربح الكلي (كل المخزون)',
     hero_rev:'الإيراد', hero_rev_sub:'شامل الشحن',
     adv_title:'الإعدادات المتقدمة', adv_show:'إظهار', adv_hide:'إخفاء',
+    bud_rec_title:'بادجت الإعلانات المقترح', bud_rec_max:'الحد الأقصى',
+    bud_rec_hint_max:'نقطة التعادل — لو صرفت أكتر هتخسر',
+    bud_rec_hint_70:'معتدل — هامش ربح كويس',
+    bud_rec_hint_50:'محافظ — ربح مريح',
+    tip_bud_rec:'الحد الأقصى = هامش الربح × المخزون − الراتب. لو صرفت أكتر من كده هتخسر. 70% = معتدل، 50% = محافظ.',
     adv_dur_lbl:'مدة الحملة (بالشهور)',
     adv_dur_hint_off:'مقفول → الحملة محسوبة كشهر واحد',
     adv_dur_hint_on:'مفتوح → الراتب × عدد الشهور',
