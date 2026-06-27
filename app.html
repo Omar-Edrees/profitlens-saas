@@ -3573,13 +3573,14 @@ input[type=range]::-moz-range-thumb{
     </div>
     <div class="kpi" id="be_ads_budget_card" style="--kc:var(--c2);display:none">
       <div class="kpi-lbl">
-        <span data-t="bud_rec_title">Recommended Ad Budget</span>
-        <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_bud_rec">Maximum = contribution margin × stock − salary. Spending above this loses money.<br>70% = moderate, 50% = conservative.</span></span>
+        <span data-t="bud_rec_title">Ad Budget Gauge</span>
+        <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_bud_rec">🔴 Max = break-even (contribution margin × stock − salary) — spend more and you lose.<br>🟡 70% = moderate, healthy margin.<br>🟢 50% = conservative, comfortable profit.<br>Actual = your entered ad budget.</span></span>
       </div>
-      <div style="display:flex;gap:3px;margin:4px 0 2px">
-        <button type="button" id="be_bud_btn_100" class="mb-io-seg-btn active" onclick="advBudgetSelect(1.0)" data-t="bud_rec_max" style="padding:2px 7px;font-size:9.5px">Max</button>
-        <button type="button" id="be_bud_btn_70"  class="mb-io-seg-btn" onclick="advBudgetSelect(0.7)" style="padding:2px 7px;font-size:9.5px">70%</button>
-        <button type="button" id="be_bud_btn_50"  class="mb-io-seg-btn" onclick="advBudgetSelect(0.5)" style="padding:2px 7px;font-size:9.5px">50%</button>
+      <div style="display:flex;gap:3px;margin:4px 0 2px;flex-wrap:wrap">
+        <button type="button" id="be_bud_btn_100" class="mb-io-seg-btn active" onclick="advBudgetSelect(1.0)" style="padding:2px 8px;font-size:10px">🔴</button>
+        <button type="button" id="be_bud_btn_70"  class="mb-io-seg-btn" onclick="advBudgetSelect(0.7)" style="padding:2px 8px;font-size:10px">🟡</button>
+        <button type="button" id="be_bud_btn_50"  class="mb-io-seg-btn" onclick="advBudgetSelect(0.5)" style="padding:2px 8px;font-size:10px">🟢</button>
+        <button type="button" id="be_bud_btn_act" class="mb-io-seg-btn" onclick="advBudgetSelect('actual')" data-t="bud_rec_actual" style="padding:2px 8px;font-size:9.5px">Actual</button>
       </div>
       <div class="kpi-val" id="be_bud_val">—</div>
       <div class="kpi-hint" id="be_bud_hint" data-t="bud_rec_hint_max">Break-even — spend more and you lose</div>
@@ -5343,13 +5344,13 @@ function fcToggleAdv(){
 }
 
 // ── Budget Recommendation Card ──────────────────────────────────
-let BE_BUD_SEL = 1.0;
+let BE_BUD_SEL = 1.0; // 1.0 | 0.7 | 0.5 | 'actual'
 
-function advBudgetSelect(pct){
-  BE_BUD_SEL = pct;
-  [[1.0,'be_bud_btn_100'],[0.7,'be_bud_btn_70'],[0.5,'be_bud_btn_50']].forEach(([p,id])=>{
+function advBudgetSelect(sel){
+  BE_BUD_SEL = sel;
+  [[1.0,'be_bud_btn_100'],[0.7,'be_bud_btn_70'],[0.5,'be_bud_btn_50'],['actual','be_bud_btn_act']].forEach(([p,id])=>{
     const b = document.getElementById(id);
-    if(b) b.classList.toggle('active', p === pct);
+    if(b) b.classList.toggle('active', p === sel);
   });
   updateBeBudgetCard();
 }
@@ -5362,13 +5363,21 @@ function updateBeBudgetCard(){
   const beMax = window.LAST_BE_ADS_BUDGET;
   if(!beMax || beMax <= 0){ card.style.display = 'none'; return; }
   card.style.display = 'block';
-  const rec = beMax * BE_BUD_SEL;
-  valEl.textContent = Math.round(rec).toLocaleString('en') + ' ' + (window.CURRENCY || 'EGP');
-  valEl.style.color = BE_BUD_SEL <= 0.5 ? 'var(--c1)' : BE_BUD_SEL <= 0.7 ? 'var(--c3)' : 'var(--red)';
-  if(hintEl){
-    const key = BE_BUD_SEL <= 0.5 ? 'bud_rec_hint_50' : BE_BUD_SEL <= 0.7 ? 'bud_rec_hint_70' : 'bud_rec_hint_max';
-    hintEl.textContent = T[LANG][key] || hintEl.textContent;
-    hintEl.dataset.t = key;
+  const CUR = window.CURRENCY || 'EGP';
+  if(BE_BUD_SEL === 'actual'){
+    const actual = parseFloat(String(document.getElementById('i_ads')?.value||'').replace(/,/g,'')) || 0;
+    valEl.textContent = actual > 0 ? Math.round(actual).toLocaleString('en')+' '+CUR : '—';
+    valEl.style.color = actual > beMax ? 'var(--red)' : actual > beMax*0.7 ? 'var(--c3)' : 'var(--c1)';
+    if(hintEl){ const k='bud_rec_hint_actual'; hintEl.textContent=T[LANG][k]||hintEl.textContent; hintEl.dataset.t=k; }
+  } else {
+    const rec = beMax * BE_BUD_SEL;
+    valEl.textContent = Math.round(rec).toLocaleString('en')+' '+CUR;
+    valEl.style.color = BE_BUD_SEL <= 0.5 ? 'var(--c1)' : BE_BUD_SEL <= 0.7 ? 'var(--c3)' : 'var(--red)';
+    if(hintEl){
+      const key = BE_BUD_SEL <= 0.5 ? 'bud_rec_hint_50' : BE_BUD_SEL <= 0.7 ? 'bud_rec_hint_70' : 'bud_rec_hint_max';
+      hintEl.textContent = T[LANG][key] || hintEl.textContent;
+      hintEl.dataset.t = key;
+    }
   }
 }
 
@@ -9384,11 +9393,12 @@ const T = {
     hero_pu:'Net profit / unit', hero_total:'Total profit (all stock)',
     hero_rev:'Revenue', hero_rev_sub:'Total incl. shipping',
     adv_title:'Advanced options', adv_show:'Show', adv_hide:'Hide',
-    bud_rec_title:'Recommended Ad Budget', bud_rec_max:'Max',
+    bud_rec_title:'Ad Budget Gauge', bud_rec_max:'Max', bud_rec_actual:'Actual',
     bud_rec_hint_max:'Break-even — spend more and you lose',
     bud_rec_hint_70:'Moderate — healthy profit margin',
     bud_rec_hint_50:'Conservative — comfortable profit',
-    tip_bud_rec:'Maximum = contribution margin × stock − salary. Spending above this loses money. 70% = moderate, 50% = conservative.',
+    bud_rec_hint_actual:'Your entered ad budget',
+    tip_bud_rec:'🔴 Max = break-even (contribution margin × stock − salary). 🟡 70% = moderate. 🟢 50% = conservative. Actual = your entered budget.',
     adv_dur_lbl:'Campaign duration (months)',
     adv_dur_hint_off:'Locked → campaign treated as 1 month',
     adv_dur_hint_on:'Unlocked → salary × number of months',
@@ -9861,11 +9871,12 @@ const T = {
     hero_pu:'صافي الربح / وحدة', hero_total:'الربح الكلي (كل المخزون)',
     hero_rev:'الإيراد', hero_rev_sub:'شامل الشحن',
     adv_title:'الإعدادات المتقدمة', adv_show:'إظهار', adv_hide:'إخفاء',
-    bud_rec_title:'بادجت الإعلانات المقترح', bud_rec_max:'الحد الأقصى',
+    bud_rec_title:'مؤشر بادجت الإعلانات', bud_rec_max:'الحد الأقصى', bud_rec_actual:'الفعلي',
     bud_rec_hint_max:'نقطة التعادل — لو صرفت أكتر هتخسر',
     bud_rec_hint_70:'معتدل — هامش ربح كويس',
     bud_rec_hint_50:'محافظ — ربح مريح',
-    tip_bud_rec:'الحد الأقصى = هامش الربح × المخزون − الراتب. لو صرفت أكتر من كده هتخسر. 70% = معتدل، 50% = محافظ.',
+    bud_rec_hint_actual:'البادجت المُدخَل فعلياً',
+    tip_bud_rec:'🔴 الحد الأقصى = نقطة التعادل (هامش الربح × المخزون − الراتب). 🟡 70% = معتدل. 🟢 50% = محافظ. الفعلي = البادجت المُدخَل.',
     adv_dur_lbl:'مدة الحملة (بالشهور)',
     adv_dur_hint_off:'مقفول → الحملة محسوبة كشهر واحد',
     adv_dur_hint_on:'مفتوح → الراتب × عدد الشهور',
