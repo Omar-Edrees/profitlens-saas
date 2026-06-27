@@ -3571,25 +3571,18 @@ input[type=range]::-moz-range-thumb{
       <div class="kpi-val" id="m_ltv_cac">—</div>
       <div class="kpi-hint" data-t="hint_ltv_cac">Target ≥ 3×</div>
     </div>
-  </div>
-
-  <!-- ── Budget Recommendation Card ── -->
-  <div id="be_ads_budget_card" style="display:none;margin-top:6px;margin-bottom:4px;padding:14px 16px;background:var(--surf2);border:1px solid var(--bdr2);border-radius:var(--r)">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-      <div style="display:flex;align-items:center;gap:6px">
-        <span style="width:7px;height:7px;border-radius:50%;background:var(--c2);display:inline-block;flex-shrink:0"></span>
-        <span style="font-size:12px;font-weight:600;color:var(--txt2)" data-t="bud_rec_title">Recommended Ad Budget</span>
-        <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_bud_rec">Maximum = break-even point (contribution margin × stock − salary). Spending above this loses money.<br>70% = moderate, leaves a healthy margin.<br>50% = conservative, comfortable profit.</span></span>
+    <div class="kpi" id="be_ads_budget_card" style="--kc:var(--c2);display:none">
+      <div class="kpi-lbl">
+        <span data-t="bud_rec_title">Recommended Ad Budget</span>
+        <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_bud_rec">Maximum = contribution margin × stock − salary. Spending above this loses money.<br>70% = moderate, 50% = conservative.</span></span>
       </div>
-      <div class="mb-io-seg">
-        <button type="button" id="be_bud_btn_100" class="mb-io-seg-btn active" onclick="advBudgetSelect(1.0)" data-t="bud_rec_max">Max</button>
-        <button type="button" id="be_bud_btn_70"  class="mb-io-seg-btn" onclick="advBudgetSelect(0.7)">70%</button>
-        <button type="button" id="be_bud_btn_50"  class="mb-io-seg-btn" onclick="advBudgetSelect(0.5)">50%</button>
+      <div style="display:flex;gap:3px;margin:4px 0 2px">
+        <button type="button" id="be_bud_btn_100" class="mb-io-seg-btn active" onclick="advBudgetSelect(1.0)" data-t="bud_rec_max" style="padding:2px 7px;font-size:9.5px">Max</button>
+        <button type="button" id="be_bud_btn_70"  class="mb-io-seg-btn" onclick="advBudgetSelect(0.7)" style="padding:2px 7px;font-size:9.5px">70%</button>
+        <button type="button" id="be_bud_btn_50"  class="mb-io-seg-btn" onclick="advBudgetSelect(0.5)" style="padding:2px 7px;font-size:9.5px">50%</button>
       </div>
-    </div>
-    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
-      <span style="font-size:11px;color:var(--txt3)" id="be_bud_hint" data-t="bud_rec_hint_max">Break-even — spend more and you lose</span>
-      <span style="font-family:var(--mono);font-size:22px;font-weight:700" id="be_bud_val">—</span>
+      <div class="kpi-val" id="be_bud_val">—</div>
+      <div class="kpi-hint" id="be_bud_hint" data-t="bud_rec_hint_max">Break-even — spend more and you lose</div>
     </div>
   </div>
 
