@@ -3468,9 +3468,22 @@ input[type=range]::-moz-range-thumb{
       <div class="kpi" style="--kc:var(--txt2)"><div class="kpi-lbl" data-t="ap_total_leads_lbl">Total Leads</div><div class="kpi-val" id="ap_m_leads" style="color:var(--txt)">—</div><div class="kpi-hint" data-t="hint_leads">All incoming leads</div></div>
       <div class="kpi" style="--kc:var(--c3)"><div class="kpi-lbl" data-t="ap_total_conf_lbl">Total Confirmed</div><div class="kpi-val" id="ap_m_conf" style="color:var(--c3)">—</div><div class="kpi-hint" data-t="ap_after_conf_hint">After confirmation rates</div></div>
       <div class="kpi" style="--kc:var(--c4)"><div class="kpi-lbl" data-t="ap_total_del_lbl">Total Delivered</div><div class="kpi-val" id="ap_m_del" style="color:var(--c4)">—</div><div class="kpi-hint" data-t="ap_after_del_hint">After delivery rates</div></div>
+      <div class="kpi" style="--kc:var(--c1)"><div class="kpi-lbl"><span data-t="ap_safety_lbl">Safety margin</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_safety_tip">How far your blended CPA sits below the weighted break-even CPA. Higher = more room to scale spend safely.<br>= (BE CPA − Blended CPA) ÷ BE CPA</span></span></div><div class="kpi-val" id="ap_m_safety">—</div><div class="kpi-hint" data-t="ap_safety_hint">Room below break-even</div></div>
+      <div class="kpi" style="--kc:var(--red)"><div class="kpi-lbl"><span data-t="ap_wasted_lbl">Wasted spend</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_wasted_tip">Share of total ad budget spent on leads that never became delivered orders.<br>= Budget × (1 − Lead→Delivered rate)<br>Some is the normal cost of confirmation — but lower is better.</span></span></div><div class="kpi-val" id="ap_m_wasted">—</div><div class="kpi-hint" id="ap_m_wasted_hint" data-t="ap_wasted_hint">On undelivered leads</div></div>
+      <div class="kpi" style="--kc:var(--c2)"><div class="kpi-lbl"><span data-t="ap_ceiling_lbl">Spend ceiling</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_ceiling_tip">Maximum total ad budget the whole business can absorb before profit hits zero (holding delivered volume constant).<br>= Current ad spend + Total net profit</span></span></div><div class="kpi-val" id="ap_m_ceiling">—</div><div class="kpi-hint" id="ap_m_ceiling_hint" data-t="ap_ceiling_hint">Max before break-even</div></div>
+    </div>
+    <!-- Per-product decision table: Scale / Hold / Cut -->
+    <div class="chart-card" style="margin-top:16px">
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span><span data-t="ap_verdict_title">Per-product verdict — where to put your money</span></div>
+      <div id="ap_verdict_wrap"></div>
+    </div>
+    <!-- Portfolio bubble chart: safety vs profit, size = budget -->
+    <div class="chart-card" style="margin-top:14px">
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c4)"></span><span data-t="ap_bubble_title">Portfolio map — safety vs profit (bubble size = ad budget)</span></div>
+      <div class="ch-wrap"><canvas id="ap_ch_bubble"></canvas></div>
     </div>
     <!-- Per-product CPA comparison chart -->
-    <div class="chart-card" style="margin-top:16px">
+    <div class="chart-card" style="margin-top:14px">
       <div class="chart-lbl"><span class="cdot" style="background:var(--c2)"></span><span data-t="ap_cpa_chart">CPA vs Break-even CPA — per product</span></div>
       <div class="ch-wrap"><canvas id="ap_ch_cpa"></canvas></div>
     </div>
@@ -7945,6 +7958,69 @@ function calcAllProducts(){
   _s('ap_m_conf',    Math.round(totalConf).toLocaleString(),  'var(--c3)');
   _s('ap_m_del',     Math.round(totalDel).toLocaleString(),   'var(--c4)');
 
+  // ─── HEALTH & SAFETY ───
+  // Safety margin = how far blended CPA sits below the weighted break-even CPA
+  const safetyMargin = weightedBECPA > 0 ? (weightedBECPA - blendedCPA) / weightedBECPA * 100 : 0;
+  _s('ap_m_safety', (blendedCPA > 0 && weightedBECPA > 0) ? (safetyMargin>=0?'+':'')+safetyMargin.toFixed(0)+'%' : '—',
+     safetyMargin >= 30 ? 'var(--c1)' : safetyMargin >= 0 ? 'var(--c3)' : 'var(--red)');
+  // Wasted spend = budget on leads that never delivered
+  const lead2del   = totalLeads > 0 ? totalDel / totalLeads : 0;
+  const wastedPct  = (1 - lead2del) * 100;
+  const wastedAmt  = totalAds * (1 - lead2del);
+  _s('ap_m_wasted', totalAds > 0 ? wastedPct.toFixed(0)+'%' : '—', 'var(--red)');
+  { const h=document.getElementById('ap_m_wasted_hint');
+    if(h) h.textContent = totalAds>0 ? '≈ '+fmtM(wastedAmt)+' '+(T[LANG].ap_wasted_hint_amt||'on undelivered leads') : (T[LANG].ap_wasted_hint||'On undelivered leads'); }
+  // Spend ceiling = max ad budget before whole business hits break-even
+  const spendCeiling = totalAds + totalProfit;
+  _s('ap_m_ceiling', totalAds > 0 ? fmtM(spendCeiling) : '—', totalProfit > 0 ? 'var(--c2)' : 'var(--red)');
+  { const h=document.getElementById('ap_m_ceiling_hint');
+    if(h) h.textContent = totalProfit > 0
+      ? '+'+fmtM(totalProfit)+' '+(T[LANG].ap_ceiling_hint_room||'more before break-even')
+      : (T[LANG].ap_ceiling_hint_over||'Already at/over break-even'); }
+
+  // ─── PER-PRODUCT VERDICT (Scale / Hold / Cut) ───
+  // safety% per product = (BE CPA − Actual CPA) ÷ BE CPA. Verdict combines safety + profitability.
+  const verdictOf = c => {
+    if(!c.actualCPP || c.actualCPP <= 0) return {key:'none', lbl:T[LANG].ap_v_none||'No ads', col:'var(--txt3)', bg:'transparent'};
+    const safety = c.beCPP > 0 ? (c.beCPP - c.actualCPP)/c.beCPP*100 : -100;
+    if(c.totalProf < 0 || safety < 0)  return {key:'cut',  lbl:T[LANG].ap_v_cut ||'Cut',  col:'#fff', bg:'var(--red)'};
+    if(safety < 25)                    return {key:'hold', lbl:T[LANG].ap_v_hold||'Hold', col:'#1a1a1a', bg:'var(--c3)'};
+    return {key:'scale', lbl:T[LANG].ap_v_scale||'Scale', col:'#0a0a0a', bg:'var(--c1)'};
+  };
+  const vWrap = document.getElementById('ap_verdict_wrap');
+  if(vWrap){
+    const order = {scale:0, hold:1, cut:2, none:3};
+    const vSorted = [...all].sort((a,b)=>{
+      const va=verdictOf(a.calc), vb=verdictOf(b.calc);
+      if(order[va.key]!==order[vb.key]) return order[va.key]-order[vb.key];
+      return b.calc.ads - a.calc.ads;
+    });
+    vWrap.innerHTML = `<div style="overflow-x:auto"><table class="rank-table">
+      <thead><tr>
+        <th>${T[LANG].ap_vc_product||'Product'}</th>
+        <th style="text-align:right">${T[LANG].ap_vc_budget||'Budget'}</th>
+        <th style="text-align:right">${T[LANG].ap_vc_cpa||'Actual CPA'}</th>
+        <th style="text-align:right">${T[LANG].ap_vc_be||'BE CPA'}</th>
+        <th style="text-align:right">${T[LANG].ap_vc_safety||'Safety'}</th>
+        <th style="text-align:center">${T[LANG].ap_vc_verdict||'Verdict'}</th>
+        <th></th>
+      </tr></thead><tbody>${vSorted.map(p=>{
+        const c=p.calc, v=verdictOf(c);
+        const share = totalAds>0 ? c.ads/totalAds*100 : 0;
+        const safety = c.beCPP>0 ? (c.beCPP-c.actualCPP)/c.beCPP*100 : null;
+        const safetyCol = safety===null ? 'var(--txt3)' : safety>=25?'var(--c1)':safety>=0?'var(--c3)':'var(--red)';
+        return `<tr>
+          <td><div class="rank-prod-name">${escapeHtml(p.name)}</div></td>
+          <td style="text-align:right;font-family:var(--mono)">${fmtM(c.ads)}<div class="rank-margin">${share.toFixed(0)}%</div></td>
+          <td style="text-align:right;font-family:var(--mono)">${c.actualCPP>0?eg(c.actualCPP):'—'}</td>
+          <td style="text-align:right;font-family:var(--mono);color:var(--txt3)">${c.beCPP>0?eg(c.beCPP):'—'}</td>
+          <td style="text-align:right;font-family:var(--mono);color:${safetyCol}">${safety===null?'—':(safety>=0?'+':'')+safety.toFixed(0)+'%'}</td>
+          <td style="text-align:center"><span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:${v.bg};color:${v.col};border:${v.bg==='transparent'?'1px solid var(--bdr2)':'none'}">${v.lbl}</span></td>
+          <td style="text-align:right"><button class="rank-go-btn" onclick="switchProduct(${p.index})">Edit ↗</button></td>
+        </tr>`;
+      }).join('')}</tbody></table></div>`;
+  }
+
   // ─── SHIPPING ───
   _s('ap_sh_real',      eg(wAvgShipReal), 'var(--c3)');
   _s('ap_sh_collected', eg(wAvgShipColl), 'var(--c1)');
@@ -8076,6 +8152,36 @@ function calcAllProducts(){
       ]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:'#8896ab',font:{size:11}}}},
         scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab',callback:v=>Math.round(v)}}}}});
+
+    // Portfolio bubble chart — safety (x) vs net profit (y), size = ad budget
+    if(CH['ap_bubble']){CH['ap_bubble'].destroy();}
+    const apBubEl=document.getElementById('ap_ch_bubble');
+    if(apBubEl){
+      const vHex = {scale:'#00e5a0', hold:'#f59e0b', cut:'#f43f5e', none:'#8896ab'};
+      const maxAds = Math.max(...all.map(p=>p.calc.ads), 1);
+      const pts = all.map(p=>{
+        const c=p.calc;
+        const safety = c.beCPP>0 ? (c.beCPP-c.actualCPP)/c.beCPP*100 : 0;
+        const r = Math.max(6, Math.min(40, Math.sqrt((c.ads||0)/maxAds)*40));
+        return { x:+safety.toFixed(1), y:Math.round(c.totalProf), r, _name:p.name, _ads:c.ads, _col:vHex[verdictOf(c).key] };
+      });
+      CH['ap_bubble']=new Chart(apBubEl,{type:'bubble',
+        data:{datasets:[{
+          data:pts,
+          backgroundColor:pts.map(p=>p._col+'66'),
+          borderColor:pts.map(p=>p._col),
+          borderWidth:1.5
+        }]},
+        options:{responsive:true,maintainAspectRatio:false,
+          plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{
+            const d=ctx.raw;
+            return `${d._name}: ${T[LANG].ap_vc_safety||'Safety'} ${d.x>=0?'+':''}${d.x}% · ${T[LANG].hero_total||'Profit'} ${fmtM(d.y)} · ${T[LANG].ap_total_budget||'Budget'} ${fmtM(d._ads)}`;
+          }}}},
+          scales:{
+            x:{title:{display:true,text:(T[LANG].ap_bubble_x||'Safety margin % (right = safer)'),color:'#8896ab',font:{size:11}},ticks:{color:'#8896ab',callback:v=>v+'%'},grid:{color:'rgba(136,150,171,.1)'}},
+            y:{title:{display:true,text:(T[LANG].ap_bubble_y||'Net profit'),color:'#8896ab',font:{size:11}},ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v<=-1000?'-'+Math.round(Math.abs(v)/1000)+'K':v},grid:{color:'rgba(136,150,171,.1)'}}
+          }}});
+    }
 
     // Budget chart
     if(CH['ap_bud']){CH['ap_bud'].destroy();}
@@ -9546,6 +9652,18 @@ const T = {
     ap_blended_cpa_lbl:'Blended CPA', ap_blended_roas_lbl:'Blended ROAS', ap_weighted_be_lbl:'Weighted BE CPA',
     ap_total_leads_lbl:'Total Leads', ap_total_conf_lbl:'Total Confirmed', ap_total_del_lbl:'Total Delivered',
     ap_del_orders_chart:'Delivered Orders — per product',
+    ap_safety_lbl:'Safety margin', ap_safety_hint:'Room below break-even',
+    ap_safety_tip:'How far your blended CPA sits below the weighted break-even CPA. Higher = more room to scale spend safely. = (BE CPA − Blended CPA) ÷ BE CPA',
+    ap_wasted_lbl:'Wasted spend', ap_wasted_hint:'On undelivered leads', ap_wasted_hint_amt:'on undelivered leads',
+    ap_wasted_tip:'Share of total ad budget spent on leads that never became delivered orders. = Budget × (1 − Lead→Delivered rate). Some is the normal cost of confirmation — but lower is better.',
+    ap_ceiling_lbl:'Spend ceiling', ap_ceiling_hint:'Max before break-even',
+    ap_ceiling_hint_room:'more before break-even', ap_ceiling_hint_over:'Already at/over break-even',
+    ap_ceiling_tip:'Maximum total ad budget the whole business can absorb before profit hits zero (holding delivered volume constant). = Current ad spend + Total net profit',
+    ap_verdict_title:'Per-product verdict — where to put your money',
+    ap_bubble_title:'Portfolio map — safety vs profit (bubble size = ad budget)',
+    ap_bubble_x:'Safety margin % (right = safer)', ap_bubble_y:'Net profit',
+    ap_v_scale:'Scale', ap_v_hold:'Hold', ap_v_cut:'Cut', ap_v_none:'No ads',
+    ap_vc_product:'Product', ap_vc_budget:'Budget', ap_vc_cpa:'Actual CPA', ap_vc_be:'BE CPA', ap_vc_safety:'Safety', ap_vc_verdict:'Verdict',
     ap_net_profit_chart:'Net Profit per product', ap_rev_breakdown_chart:'Revenue breakdown',
     ap_margin_chart:'Profit margin % per product', ap_pl_summary_chart:'Full Business P&L Summary',
     ap_ranked_by:'Products ranked by Total Net Profit',
@@ -10024,6 +10142,18 @@ const T = {
     ap_blended_cpa_lbl:'CPA مدمج', ap_blended_roas_lbl:'ROAS مدمج', ap_weighted_be_lbl:'BE CPA الموزون',
     ap_total_leads_lbl:'إجمالي الليدز', ap_total_conf_lbl:'إجمالي المؤكدات', ap_total_del_lbl:'إجمالي الموصّلات',
     ap_del_orders_chart:'الأوردرات الموصّلة — لكل منتج',
+    ap_safety_lbl:'مساحة الأمان', ap_safety_hint:'المساحة تحت نقطة التعادل',
+    ap_safety_tip:'قد إيه الـ CPA المدمج بتاعك تحت الـ BE CPA الموزون. كل ما زادت → مساحة أكبر تكبّر الصرف بأمان. = (BE CPA − CPA المدمج) ÷ BE CPA',
+    ap_wasted_lbl:'الهدر', ap_wasted_hint:'على ليدز محولتش', ap_wasted_hint_amt:'على ليدز محولتش',
+    ap_wasted_tip:'نسبة ميزانية الإعلانات اللي راحت على ليدز معملتش أوردرات موصّلة. = الميزانية × (1 − معدل تحويل الليد للتوصيل). جزء منها تكلفة تأكيد طبيعية — بس كل ما قلّت أحسن.',
+    ap_ceiling_lbl:'سقف الصرف', ap_ceiling_hint:'الحد الأقصى قبل التعادل',
+    ap_ceiling_hint_room:'كمان قبل التعادل', ap_ceiling_hint_over:'وصلت/عدّيت نقطة التعادل',
+    ap_ceiling_tip:'أقصى ميزانية إعلانات يقدر البزنس كله يستحملها قبل ما الربح يوصل صفر (بثبات عدد الأوردرات الموصّلة). = الصرف الحالي + صافي الربح الكلي',
+    ap_verdict_title:'حُكم لكل منتج — تحط فلوسك فين',
+    ap_bubble_title:'خريطة المحفظة — الأمان مقابل الربح (حجم الفقاعة = ميزانية الإعلان)',
+    ap_bubble_x:'مساحة الأمان % (يمين = أأمن)', ap_bubble_y:'صافي الربح',
+    ap_v_scale:'كبّر', ap_v_hold:'سيب زي ما هو', ap_v_cut:'أوقف', ap_v_none:'بدون إعلان',
+    ap_vc_product:'المنتج', ap_vc_budget:'الميزانية', ap_vc_cpa:'CPA الفعلي', ap_vc_be:'BE CPA', ap_vc_safety:'الأمان', ap_vc_verdict:'الحُكم',
     ap_net_profit_chart:'صافي الربح لكل منتج', ap_rev_breakdown_chart:'توزيع الإيرادات',
     ap_margin_chart:'هامش الربح % لكل منتج', ap_pl_summary_chart:'ملخص P&L الكامل للبزنس',
     ap_ranked_by:'المنتجات مرتبة بالربح الكلي الصافي',
