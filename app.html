@@ -1928,19 +1928,18 @@ input[type=range]::-moz-range-thumb{
 .ch-wrap--scroll::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:5px}
 .ch-wrap--scroll::-webkit-scrollbar-track{background:transparent}
 
-/* ── All-Products: filter bar ───────────────────────────────────── */
-.ap-filter{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
-.ap-filter-search{display:flex;align-items:center;gap:6px;background:var(--surf2);
-  border:1px solid var(--bdr2);border-radius:9px;padding:0 10px;flex:1;min-width:160px;max-width:340px}
-.ap-filter-ico{font-size:12px;opacity:.6}
-.ap-q-input{flex:1;background:transparent;border:none;outline:none;color:var(--txt);
-  font-family:inherit;font-size:13px;padding:9px 0}
-.ap-chips{display:flex;gap:4px;flex-wrap:wrap}
-.ap-chip{padding:7px 14px;border-radius:8px;border:1px solid var(--bdr2);background:var(--surf2);
+/* ── All-Products: per-table filter/sort toolbar ────────────────── */
+.ap-tb{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.ap-tb-chips{display:flex;gap:4px;flex-wrap:wrap}
+.ap-tb-chip{padding:6px 13px;border-radius:8px;border:1px solid var(--bdr2);background:var(--surf2);
   color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
-.ap-chip:hover{border-color:var(--c1)}
-.ap-chip.active{background:var(--c1);border-color:var(--c1);color:#0a0a0a}
-.ap-count{font-size:12px;color:var(--txt3);font-family:var(--mono);margin-inline-start:auto}
+.ap-tb-chip:hover{border-color:var(--c1)}
+.ap-tb-chip.active{background:var(--c1);border-color:var(--c1);color:#0a0a0a}
+.ap-tb-sort{display:flex;align-items:center;gap:6px;margin-inline-start:auto}
+.ap-tb-sortlbl{font-size:11px;color:var(--txt3);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.ap-tb-sel{background:var(--surf2);border:1px solid var(--bdr2);border-radius:8px;color:var(--txt);
+  font-family:inherit;font-size:12px;font-weight:600;padding:6px 10px;cursor:pointer;outline:none}
+.ap-tb-sel:hover{border-color:var(--c1)}
 .rank-num{
   width:24px;height:24px;border-radius:50%;
   display:inline-flex;align-items:center;justify-content:center;
@@ -7976,64 +7975,39 @@ function switchToAllProducts(){
   calcAllProducts();
 }
 
-// ── All-Products filter state + UI ──────────────────────────────
-let AP_FILTER = { q:'', mode:'all' };
+// ── Per-table filter & sort state (All Products) ─────────────────
+let AP_MKT  = { status:'all', sort:'budget_desc' };  // marketing verdict table
+let AP_SHIP = { status:'all', sort:'burden_desc' };  // shipping verdict table
+let AP_RANK = { status:'all', sort:'profit_desc' };  // profit ranking table
+function apMktSet(k,v){ AP_MKT[k]=v;  calcAllProducts(); }
+function apShipSet(k,v){ AP_SHIP[k]=v; calcAllProducts(); }
+function apRankSet(k,v){ AP_RANK[k]=v; calcAllProducts(); }
 
-// Inject an identical filter bar at the top of each All-Products section
-// (marketing / shipping / overview). Created once; kept in sync via shared state.
-function apEnsureFilterBars(){
+// Build a small toolbar: status chips + a sort dropdown.
+// items  = [[value, labelKey], …]   sorts = [[value, metricKey, 'hi'|'lo'], …]
+function apToolbar(setter, state, items, sorts){
   const t = T[LANG] || {};
-  const ph     = t.ap_search_ph   || 'Search by product name…';
-  const lblAll = t.ap_filter_all  || 'All';
-  const lblPro = t.ap_filter_prof || 'Profitable';
-  const lblLos = t.ap_filter_loss || 'Loss';
-  ['ap_mkt_panel','ap_ship_panel','ap_ov_panel'].forEach(pid=>{
-    const panel = document.getElementById(pid);
-    if(!panel || panel.querySelector(':scope > .ap-filter')) return;
-    const bar = document.createElement('div');
-    bar.className = 'ap-filter';
-    bar.innerHTML = `
-      <div class="ap-filter-search">
-        <span class="ap-filter-ico">🔍</span>
-        <input type="search" class="ap-q-input" data-t-ph="ap_search_ph" placeholder="${escapeHtml(ph)}" value="${escapeHtml(AP_FILTER.q)}" oninput="apOnSearch(this.value)">
-      </div>
-      <div class="ap-chips">
-        <button class="ap-chip" data-mode="all"    data-t="ap_filter_all"  onclick="apSetMode('all')">${escapeHtml(lblAll)}</button>
-        <button class="ap-chip" data-mode="profit" data-t="ap_filter_prof" onclick="apSetMode('profit')">${escapeHtml(lblPro)}</button>
-        <button class="ap-chip" data-mode="loss"   data-t="ap_filter_loss" onclick="apSetMode('loss')">${escapeHtml(lblLos)}</button>
-      </div>
-      <span class="ap-count"></span>`;
-    panel.insertBefore(bar, panel.firstChild);
-  });
+  const chips = items.map(([v,k])=>
+    `<button class="ap-tb-chip${v===state.status?' active':''}" onclick="${setter}('status','${v}')">${escapeHtml(t[k]||k)}</button>`
+  ).join('');
+  const opts = sorts.map(([v,mk,dir])=>
+    `<option value="${v}"${v===state.sort?' selected':''}>${escapeHtml((t[mk]||mk)+' · '+(dir==='hi'?(t.ap_hi||'High first'):(t.ap_lo||'Low first')))}</option>`
+  ).join('');
+  return `<div class="ap-tb">
+    <div class="ap-tb-chips">${chips}</div>
+    <div class="ap-tb-sort"><span class="ap-tb-sortlbl">${escapeHtml(t.ap_sort||'Sort')}</span>
+      <select class="ap-tb-sel" onchange="${setter}('sort',this.value)">${opts}</select></div>
+  </div>`;
 }
-
-function apUpdateFilterUI(shown, total){
-  document.querySelectorAll('.ap-chip').forEach(c=>c.classList.toggle('active', c.dataset.mode===AP_FILTER.mode));
-  document.querySelectorAll('.ap-q-input').forEach(i=>{ if(i.value!==AP_FILTER.q) i.value=AP_FILTER.q; });
-  const txt = (shown<total) ? (shown+' / '+total) : (''+total);
-  document.querySelectorAll('.ap-count').forEach(c=>c.textContent=txt);
-}
-
-let _apSearchT;
-function apOnSearch(v){ AP_FILTER.q=v; clearTimeout(_apSearchT); _apSearchT=setTimeout(calcAllProducts,160); }
-function apSetMode(m){ AP_FILTER.mode=(AP_FILTER.mode===m && m!=='all')?'all':m; calcAllProducts(); }
 
 function calcAllProducts(){
   if(!SHOW_ALL_PRODUCTS) return;
   const all = getAllProductsData().filter(p => p.calc.stock > 0 || p.calc.price > 0);
   if(!all.length) return;
 
-  // ── FILTERS ── aggregate KPIs always reflect the whole business (`all`);
-  // the per-product tables & charts show the filtered subset (`view`).
-  apEnsureFilterBars();
-  const fq = (AP_FILTER.q || '').trim().toLowerCase();
-  let view = all.filter(p => {
-    if(fq && !String(p.name).toLowerCase().includes(fq)) return false;
-    if(AP_FILTER.mode === 'profit' && !(p.calc.totalProf >= 0)) return false;
-    if(AP_FILTER.mode === 'loss'   && !(p.calc.totalProf <  0)) return false;
-    return true;
-  });
-  apUpdateFilterUI(view.length, all.length);
+  // Charts always show every product. Filtering & sorting live inside each of
+  // the three per-product tables below (their own toolbars + state).
+  const view = all;
 
   const CUR = typeof CURRENCY !== 'undefined' ? CURRENCY : 'EGP';
   const eg  = n => (Math.round(Math.abs(n)*10)/10).toLocaleString('en',{minimumFractionDigits:1,maximumFractionDigits:1})+' '+CUR;
@@ -8114,13 +8088,22 @@ function calcAllProducts(){
   };
   const vWrap = document.getElementById('ap_verdict_wrap');
   if(vWrap){
-    const order = {scale:0, hold:1, cut:2, none:3};
-    const vSorted = [...view].sort((a,b)=>{
-      const va=verdictOf(a.calc), vb=verdictOf(b.calc);
-      if(order[va.key]!==order[vb.key]) return order[va.key]-order[vb.key];
-      return b.calc.ads - a.calc.ads;
-    });
-    vWrap.innerHTML = `<div class="ap-tbl-scroll"><table class="rank-table">
+    const mktSafety = p => p.calc.beCPP>0 ? (p.calc.beCPP-p.calc.actualCPP)/p.calc.beCPP : -Infinity;
+    const vSorted = [...all]
+      .filter(p => AP_MKT.status==='all' ? true : AP_MKT.status==='profit' ? p.calc.totalProf>=0 : p.calc.totalProf<0)
+      .sort((a,b)=>{
+        switch(AP_MKT.sort){
+          case 'budget_asc':  return a.calc.ads - b.calc.ads;
+          case 'safety_desc': return mktSafety(b) - mktSafety(a);
+          case 'safety_asc':  return mktSafety(a) - mktSafety(b);
+          case 'budget_desc':
+          default:            return b.calc.ads - a.calc.ads;
+        }
+      });
+    const mktTb = apToolbar('apMktSet', AP_MKT,
+      [['all','ap_f_all'],['profit','ap_f_profit'],['loss','ap_f_loss']],
+      [['budget_desc','ap_sm_budget','hi'],['budget_asc','ap_sm_budget','lo'],['safety_desc','ap_sm_safety','hi'],['safety_asc','ap_sm_safety','lo']]);
+    vWrap.innerHTML = mktTb + `<div class="ap-tbl-scroll"><table class="rank-table">
       <thead><tr>
         <th>${T[LANG].ap_vc_product||'Product'}</th>
         <th style="text-align:right">${T[LANG].ap_vc_budget||'Budget'}</th>
@@ -8179,13 +8162,23 @@ function calcAllProducts(){
   };
   const shvWrap = document.getElementById('ap_sh_verdict_wrap');
   if(shvWrap){
-    const shOrder = {sink:0, raise:1, ok:2, none:3};
-    const shSorted = [...view].sort((a,b)=>{
-      const va=shVerdictOf(a.calc), vb=shVerdictOf(b.calc);
-      if(shOrder[va.key]!==shOrder[vb.key]) return shOrder[va.key]-shOrder[vb.key];
-      return (b.calc.netShip*b.calc.stock) - (a.calc.netShip*a.calc.stock);
-    });
-    shvWrap.innerHTML = `<div class="ap-tbl-scroll"><table class="rank-table">
+    const shBurdenOf = p => p.calc.netShip * p.calc.stock;
+    const shRecOf    = p => p.calc.effShip>0 ? p.calc.shipC/p.calc.effShip*100 : 100;
+    const shSorted = [...all]
+      .filter(p => AP_SHIP.status==='all' ? true : (shVerdictOf(p.calc).key==='sink') === (AP_SHIP.status==='sink'))
+      .sort((a,b)=>{
+        switch(AP_SHIP.sort){
+          case 'burden_asc': return shBurdenOf(a) - shBurdenOf(b);
+          case 'rec_desc':   return shRecOf(b) - shRecOf(a);
+          case 'rec_asc':    return shRecOf(a) - shRecOf(b);
+          case 'burden_desc':
+          default:           return shBurdenOf(b) - shBurdenOf(a);
+        }
+      });
+    const shTb = apToolbar('apShipSet', AP_SHIP,
+      [['all','ap_f_all'],['sink','ap_f_sink'],['ok','ap_f_ok']],
+      [['burden_desc','ap_sm_burden','hi'],['burden_asc','ap_sm_burden','lo'],['rec_desc','ap_sm_recovery','hi'],['rec_asc','ap_sm_recovery','lo']]);
+    shvWrap.innerHTML = shTb + `<div class="ap-tbl-scroll"><table class="rank-table">
       <thead><tr>
         <th>${T[LANG].ap_vc_product||'Product'}</th>
         <th style="text-align:right">${T[LANG].ap_sh_real_lbl||'Real/unit'}</th>
@@ -8331,12 +8324,25 @@ function calcAllProducts(){
   }
 
   // ─── RANKING ───
-  const sorted = [...view].sort((a,b)=>b.calc.totalProf-a.calc.totalProf);
+  const sorted = [...all]
+    .filter(p => AP_RANK.status==='all' ? true : AP_RANK.status==='profit' ? p.calc.totalProf>=0 : p.calc.totalProf<0)
+    .sort((a,b)=>{
+      switch(AP_RANK.sort){
+        case 'profit_asc': return a.calc.totalProf - b.calc.totalProf;
+        case 'margin_desc': return (b.calc.marginPct||0) - (a.calc.marginPct||0);
+        case 'margin_asc':  return (a.calc.marginPct||0) - (b.calc.marginPct||0);
+        case 'profit_desc':
+        default:            return b.calc.totalProf - a.calc.totalProf;
+      }
+    });
   const maxAbs = Math.max(...sorted.map(p=>Math.abs(p.calc.totalProf)),1);
   const medals=['🥇','🥈','🥉'], rnCls=['r1','r2','r3'];
-  _s('ap_rank_count', (view.length<all.length ? view.length+'/'+all.length : all.length)+' '+(T[LANG].ap_products_word||'products'));
+  _s('ap_rank_count', (sorted.length<all.length ? sorted.length+'/'+all.length : all.length)+' '+(T[LANG].ap_products_word||'products'));
+  const rankTb = apToolbar('apRankSet', AP_RANK,
+    [['all','ap_f_all'],['profit','ap_f_profit'],['loss','ap_f_loss']],
+    [['profit_desc','ap_sm_profit','hi'],['profit_asc','ap_sm_profit','lo'],['margin_desc','ap_sm_margin','hi'],['margin_asc','ap_sm_margin','lo']]);
   const rankWrap = document.getElementById('ap_rank_wrap');
-  if(rankWrap) rankWrap.innerHTML = `<div class="ap-tbl-scroll"><table class="rank-table">
+  if(rankWrap) rankWrap.innerHTML = rankTb + `<div class="ap-tbl-scroll"><table class="rank-table">
     <thead><tr><th>#</th><th>Product</th><th style="text-align:right">Net Profit</th><th style="text-align:right">Revenue / Stock</th><th></th></tr></thead>
     <tbody>${sorted.map((p,i)=>{
       const c=p.calc,isP=c.totalProf>=0,barW=Math.round(Math.abs(c.totalProf)/maxAbs*100);
@@ -10321,7 +10327,10 @@ const T = {
     xl_ai_title:'AI tip', xl_ai_body:'You can share the template with ChatGPT / Gemini and say: "Fill this template with my product data: [paste your data]"',
     xl_reading:'Reading file…', xl_ok:'Imported', xl_ok_products:'products', xl_ok_product:'product', xl_ok_suf:'successfully!',
     xl_err_norows:'File has no data rows.', xl_err_nodatarows:'No data found. Fill in the rows below the header.', xl_err_nolib:'Excel library not loaded yet. Please try again.',
-    ap_search_ph:'Search by product name…', ap_filter_all:'All', ap_filter_prof:'Profitable', ap_filter_loss:'Loss', ap_products_word:'products',
+    ap_products_word:'products',
+    ap_sort:'Sort', ap_hi:'High first', ap_lo:'Low first',
+    ap_f_all:'All', ap_f_profit:'Profitable', ap_f_loss:'Loss', ap_f_sink:'Drowning', ap_f_ok:'Healthy',
+    ap_sm_budget:'Budget', ap_sm_safety:'Safety', ap_sm_burden:'Burden', ap_sm_recovery:'Recovery', ap_sm_profit:'Net profit', ap_sm_margin:'Margin',
   },
   ar: {
     nav_inputs:'المدخلات', nav_marketing:'الإعلانات', nav_shipping:'الشحن', nav_overview:'نظرة عامة',
@@ -10836,7 +10845,10 @@ const T = {
     xl_ai_title:'تلميح AI', xl_ai_body:'يمكنك مشاركة التمبلت مع ChatGPT أو Gemini وتقول: "امل هذا التمبلت ببيانات منتجاتي: [الصق بياناتك]"',
     xl_reading:'جاري قراءة الملف…', xl_ok:'تم استيراد', xl_ok_products:'منتجات', xl_ok_product:'منتج', xl_ok_suf:'بنجاح!',
     xl_err_norows:'الملف لا يحتوي على بيانات.', xl_err_nodatarows:'لم يُعثر على بيانات. امل الصفوف أسفل الهيدر.', xl_err_nolib:'مكتبة Excel لم تُحمَّل بعد. حاول مرة أخرى.',
-    ap_search_ph:'ابحث باسم المنتج…', ap_filter_all:'الكل', ap_filter_prof:'رابحة', ap_filter_loss:'خاسرة', ap_products_word:'منتج',
+    ap_products_word:'منتج',
+    ap_sort:'ترتيب', ap_hi:'الأعلى أولاً', ap_lo:'الأقل أولاً',
+    ap_f_all:'الكل', ap_f_profit:'رابحة', ap_f_loss:'خاسرة', ap_f_sink:'بيغرق', ap_f_ok:'سليم',
+    ap_sm_budget:'الميزانية', ap_sm_safety:'الأمان', ap_sm_burden:'العبء', ap_sm_recovery:'الاسترداد', ap_sm_profit:'الربح الصافي', ap_sm_margin:'الهامش',
   }
 };
 
