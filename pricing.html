@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ProfitLens Pro — Pricing</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ProfitLens — Checkout</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -12,601 +12,488 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-KRX6N8ZX');</script>
 <!-- End Google Tag Manager -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #080A11; }
+  .pl-num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; font-family: 'Inter', system-ui, sans-serif; }
+  @keyframes pl-glow { 0%,100% { opacity: .85; } 50% { opacity: 1; } }
+  .fcard { transition: border-color .2s ease; }
+  .fc-purple:hover { border-color: rgba(129,140,248,0.4) !important; }
+  .fc-green:hover  { border-color: rgba(52,211,153,0.4) !important; }
+  .fc-blue:hover   { border-color: rgba(56,189,248,0.4) !important; }
+  .fc-amber:hover  { border-color: rgba(251,191,36,0.4) !important; }
+  .disc-btn { transition: background .2s ease, border-color .2s ease; }
+  .disc-btn:hover { background: rgba(255,255,255,0.06) !important; border-color: rgba(129,140,248,0.35) !important; }
+  .cta-btn { transition: filter .2s ease; }
+  .cta-btn:hover { filter: brightness(1.06); }
 
-    :root {
-      --bg:   #0d0f14;
-      --bg2:  #13161e;
-      --bg3:  #1a1e28;
-      --bdr:  #2a2f3d;
-      --bdr2: #3a4055;
-      --txt:  #e8eaf0;
-      --txt2: #8890a6;
-      --txt3: #555e78;
-      --acc:  #5b6af5;
-      --grn:  #22c55e;
-      --body: 'Inter', system-ui, sans-serif;
-      --mono: 'JetBrains Mono', monospace;
-    }
+  /* sign-out (shown only when logged in) */
+  .sign-out-link { margin-right: auto; font-size: 12.5px; color: #6E7681; cursor: pointer; background: none; border: none; font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; transition: color .2s ease; }
+  .sign-out-link:hover { color: #9BA6B4; }
 
-    body {
-      background: var(--bg);
-      color: var(--txt);
-      font-family: var(--body);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 20px 60px;
-    }
+  /* promo code (revealed under discount button) */
+  .promo-body { display: none; margin-top: 12px; }
+  .promo-row { display: flex; gap: 8px; direction: rtl; }
+  .promo-input { flex: 1; padding: 12px 14px; background: #0A0D13; border: 1px solid rgba(255,255,255,0.08); border-radius: 11px; color: #fff; font-size: 14px; font-family: 'Inter', sans-serif; outline: none; text-transform: uppercase; letter-spacing: 0.06em; text-align: right; transition: border-color .2s ease; }
+  .promo-input:focus { border-color: rgba(129,140,248,0.5); }
+  .promo-input::placeholder { color: #6E7681; letter-spacing: 0; text-transform: none; font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; }
+  .promo-btn { padding: 12px 18px; border-radius: 11px; background: linear-gradient(140deg, #818CF8, #6366F1); color: #fff; border: none; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; transition: filter .2s ease; white-space: nowrap; }
+  .promo-btn:hover { filter: brightness(1.08); }
+  .promo-btn:disabled { opacity: .6; cursor: not-allowed; }
+  .promo-msg { margin-top: 10px; font-size: 12.5px; line-height: 1.65; text-align: right; display: none; }
+  .promo-msg.error { color: #FCA5A5; display: block; }
+  .promo-msg.success { color: #86EFAC; display: block; }
+  .promo-remove { background: none; border: none; cursor: pointer; color: #FCA5A5; font-size: 11.5px; font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; text-decoration: underline; padding: 0; margin-top: 8px; display: block; margin-right: auto; }
+  .promo-remove:hover { color: #F87171; }
+  .promo-remove:disabled { opacity: .5; cursor: not-allowed; }
 
-    .bg-grid {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background-image:
-        linear-gradient(rgba(91,106,245,.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(91,106,245,.03) 1px, transparent 1px);
-      background-size: 40px 40px;
-    }
-    .glow {
-      position: fixed; z-index: 0; pointer-events: none;
-      width: 700px; height: 700px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(91,106,245,.07) 0%, transparent 70%);
-      top: 0; left: 50%; transform: translateX(-50%);
-    }
-
-    .wrap { position: relative; z-index: 1; width: 100%; max-width: 520px; }
-
-    /* ── TOPBAR ── */
-    .topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      flex-direction: row-reverse;
-      width: 100%; max-width: 520px;
-      position: relative; z-index: 1;
-      margin-bottom: 48px;
-    }
-    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-    .logo-icon {
-      width: 34px; height: 34px;
-      background: linear-gradient(135deg, var(--acc), #8b5cf6);
-      border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px;
-    }
-    .logo-text { font-size: 17px; font-weight: 700; color: var(--txt); }
-    .logo-text span { color: var(--acc); }
-    .sign-out-link {
-      font-size: 12px; color: var(--txt3); cursor: pointer;
-      background: none; border: none; font-family: var(--body);
-      transition: color .15s;
-    }
-    .sign-out-link:hover { color: var(--txt2); }
-
-    /* ── HERO ── */
-    .hero { text-align: center; margin-bottom: 40px; }
-    .hero-badge {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: rgba(91,106,245,.12); border: 1px solid rgba(91,106,245,.25);
-      border-radius: 20px; padding: 5px 14px;
-      font-size: 11px; font-weight: 600; color: var(--acc);
-      letter-spacing: .04em; text-transform: uppercase;
-      margin-bottom: 16px;
-    }
-    .hero-title {
-      font-size: 32px; font-weight: 800; letter-spacing: -.5px;
-      line-height: 1.2; margin-bottom: 12px;
-    }
-    .hero-title span { color: var(--acc); }
-    .hero-sub { font-size: 15px; color: var(--txt2); line-height: 1.6; }
-
-    /* ── PRICING CARD ── */
-    .card {
-      background: var(--bg2);
-      border: 1px solid var(--bdr);
-      border-radius: 20px;
-      padding: 32px;
-      margin-bottom: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    .card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 3px;
-      background: linear-gradient(90deg, var(--acc), #8b5cf6);
-    }
-
-    .price-row {
-      display: flex; align-items: flex-end; gap: 6px;
-      margin-bottom: 6px; flex-direction: row-reverse; justify-content: flex-end;
-    }
-    .price-amount {
-      font-size: 48px; font-weight: 800; letter-spacing: -1px;
-      color: var(--txt); font-family: var(--mono);
-      line-height: 1;
-    }
-    .price-currency {
-      font-size: 20px; font-weight: 700; color: var(--txt2);
-      margin-bottom: 6px;
-    }
-    .price-period {
-      font-size: 13px; color: var(--txt3); margin-bottom: 6px;
-    }
-    .price-original-row {
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 4px; flex-direction: row-reverse; justify-content: flex-end;
-    }
-    .price-original {
-      font-size: 18px; font-weight: 600; color: var(--txt3);
-      text-decoration: line-through; font-family: var(--mono);
-    }
-    .price-badge {
-      background: rgba(239,68,68,.12); color: #f87171;
-      border: 1px solid rgba(239,68,68,.25);
-      font-size: 12px; font-weight: 700; padding: 3px 8px;
-      border-radius: 20px; letter-spacing: .03em;
-    }
-    .price-desc { font-size: 13px; color: var(--txt2); margin-bottom: 28px; }
-    .limited-banner {
-      display: inline-block; align-self: flex-end;
-      background: linear-gradient(90deg, rgba(251,191,36,.15), rgba(239,68,68,.12));
-      border: 1px solid rgba(251,191,36,.3);
-      color: #fbbf24; font-size: 12px; font-weight: 700;
-      padding: 5px 12px; border-radius: 20px; margin-bottom: 14px;
-      letter-spacing: .02em;
-    }
-
-    .features { list-style: none; margin-bottom: 28px; display: flex; flex-direction: column; gap: 12px; }
-    .feature {
-      display: flex; align-items: flex-start; gap: 10px;
-      font-size: 14px; color: var(--txt2);
-    }
-    .feature-check {
-      width: 20px; height: 20px; border-radius: 50%;
-      background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.25);
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; margin-top: 1px;
-      color: var(--grn); font-size: 10px;
-    }
-    .feature strong { color: var(--txt); font-weight: 600; }
-
-    /* ── PAYMENT STEPS ── */
-    .pay-title {
-      font-size: 13px; font-weight: 600; color: var(--txt2);
-      text-transform: uppercase; letter-spacing: .06em;
-      margin-bottom: 16px;
-    }
-    .steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
-    .step {
-      display: flex; align-items: flex-start; gap: 12px;
-      flex-direction: row-reverse;
-      background: var(--bg3); border: 1px solid var(--bdr);
-      border-radius: 12px; padding: 14px;
-    }
-    .step-num {
-      width: 24px; height: 24px; border-radius: 50%;
-      background: var(--acc); color: #fff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700; flex-shrink: 0;
-    }
-    .step-body { flex: 1; min-width: 0; text-align: right; }
-    .step-label { font-size: 13px; font-weight: 600; color: var(--txt); margin-bottom: 4px; }
-    .step-note { font-size: 12px; color: var(--txt2); line-height: 1.5; }
-
-    .copy-row {
-      display: flex; align-items: center; gap: 8px;
-      background: var(--bg); border: 1px solid var(--bdr2);
-      border-radius: 8px; padding: 8px 12px; margin-top: 6px;
-      direction: ltr;
-    }
-    .copy-val {
-      flex: 1; font-family: var(--mono); font-size: 13px;
-      color: var(--txt); word-break: break-all; text-align: left;
-    }
-    .copy-btn {
-      background: var(--bg3); border: 1px solid var(--bdr2);
-      border-radius: 6px; padding: 4px 10px;
-      font-size: 11px; color: var(--txt2); cursor: pointer;
-      font-family: var(--body); transition: all .15s; white-space: nowrap;
-    }
-    .copy-btn:hover { background: var(--bdr2); color: var(--txt); }
-    .copy-btn.copied { background: rgba(34,197,94,.15); color: var(--grn); border-color: rgba(34,197,94,.3); }
-
-    /* ── CTA ── */
-    .btn-wa {
-      width: 100%; padding: 14px;
-      background: #25d366; color: #fff;
-      border: none; border-radius: 12px;
-      font-size: 15px; font-weight: 700;
-      cursor: pointer; font-family: var(--body);
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      transition: opacity .15s, transform .1s;
-      text-decoration: none;
-    }
-    .btn-wa:hover { opacity: .9; transform: translateY(-1px); }
-    .btn-wa:active { transform: translateY(0); }
-
-    .note-box {
-      background: rgba(91,106,245,.07);
-      border: 1px solid rgba(91,106,245,.18);
-      border-radius: 12px;
-      padding: 14px 16px;
-      font-size: 12px; color: var(--txt2);
-      line-height: 1.6;
-      margin-top: 0;
-    }
-    .note-box strong { color: var(--acc); }
-
-    /* ── PROMO CODE ── */
-    .promo-wrap {
-      background: var(--bg2); border: 1px solid var(--bdr);
-      border-radius: 16px; padding: 20px 24px;
-      margin-bottom: 20px;
-    }
-    .promo-toggle {
-      display: flex; align-items: center; justify-content: space-between;
-      cursor: pointer; background: none; border: none;
-      width: 100%; padding: 0; color: var(--txt2);
-      font-family: var(--body); font-size: 13px; font-weight: 500;
-    }
-    .promo-toggle:hover { color: var(--txt); }
-    .promo-toggle-arrow { transition: transform .2s; font-size: 11px; }
-    .promo-toggle-arrow.open { transform: rotate(180deg); }
-    .promo-body { display: none; margin-top: 16px; }
-    .promo-body.open { display: block; }
-    .promo-row { display: flex; gap: 8px; direction: rtl; }
-    .promo-input {
-      flex: 1; padding: 10px 14px;
-      background: var(--bg3); border: 1px solid var(--bdr2);
-      border-radius: 9px; color: var(--txt); font-size: 14px;
-      font-family: var(--mono); outline: none; text-transform: uppercase;
-      transition: border-color .15s; letter-spacing: .08em;
-      text-align: right;
-    }
-    .promo-input:focus { border-color: var(--acc); }
-    .promo-input::placeholder { color: var(--txt3); letter-spacing: 0; text-transform: none; }
-    .promo-btn {
-      padding: 10px 18px; border-radius: 9px;
-      background: var(--acc); color: #fff; border: none;
-      font-size: 13px; font-weight: 600; cursor: pointer;
-      font-family: var(--body); transition: opacity .15s; white-space: nowrap;
-    }
-    .promo-btn:hover { opacity: .85; }
-    .promo-btn:disabled { opacity: .5; cursor: not-allowed; }
-    .promo-msg { margin-top: 10px; font-size: 12px; text-align: right; display: none; }
-    .promo-msg.error   { color: #fca5a5; display: block; }
-    .promo-msg.success { color: #86efac; display: block; }
-
-    /* ── TRUST ── */
-    .trust {
-      display: flex; justify-content: center; gap: 24px;
-      margin-top: 28px; flex-wrap: wrap;
-    }
-    .trust-item {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 12px; color: var(--txt3);
-    }
-
-    @media (max-width: 480px) {
-      body { padding: 24px 16px 48px; }
-      .topbar { margin-bottom: 32px; }
-      .hero-title { font-size: 26px; }
-      .card { padding: 22px; }
-      .price-amount { font-size: 40px; }
-    }
-  </style>
+  @media (max-width: 980px) {
+    .pl-grid { grid-template-columns: 1fr !important; }
+    .pl-h1 { font-size: 30px !important; }
+    .pl-offer { order: -1; }
+  }
+  @media (max-width: 480px) {
+    .pl-features { gap: 10px !important; }
+    .fcard { padding: 16px !important; }
+  }
+</style>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRX6N8ZX"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
-  <div class="bg-grid"></div>
-  <div class="glow"></div>
 
-  <div class="topbar">
-    <a class="logo" href="/">
-      <div class="logo-icon">📊</div>
-      <div class="logo-text">Profit<span>Lens</span> Pro</div>
-    </a>
-    <button class="sign-out-link" id="sign-out-btn" style="display:none" onclick="doSignOut()">Sign out</button>
-  </div>
+<div dir="rtl" style="position: relative; min-height: 100vh; overflow: hidden; font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; color: #E6EDF3; -webkit-font-smoothing: antialiased; background:
+    radial-gradient(1000px 720px at 16% 36%, rgba(129,140,248,0.20), transparent 58%),
+    radial-gradient(900px 760px at 92% 18%, rgba(99,102,241,0.14), transparent 60%),
+    radial-gradient(820px 680px at 78% 96%, rgba(56,189,248,0.08), transparent 58%),
+    radial-gradient(1200px 1000px at 50% -10%, rgba(167,139,250,0.07), transparent 55%),
+    #080A11;">
 
-  <div class="wrap">
+  <!-- faint grid texture -->
+  <div style="position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px); background-size: 58px 58px; -webkit-mask-image: radial-gradient(circle at 38% 42%, #000 0%, transparent 78%); mask-image: radial-gradient(circle at 38% 42%, #000 0%, transparent 78%);"></div>
+  <!-- vignette -->
+  <div style="position: absolute; inset: 0; pointer-events: none; background: radial-gradient(140% 120% at 50% 40%, transparent 45%, rgba(0,0,0,0.55) 100%);"></div>
 
-    <!-- HERO -->
-    <div class="hero">
-      <div class="hero-badge">💎 Full Access</div>
-      <h1 class="hero-title">One plan.<br><span>Everything included.</span></h1>
-      <p class="hero-sub">احسب أرباحك، شحنك، وإعلاناتك في مكان واحد<br>بدون قيود.</p>
-    </div>
+  <div style="position: relative; max-width: 1180px; margin: 0 auto; padding: 30px 32px 64px;">
 
-    <!-- PRICING CARD -->
-    <div class="card">
-      <div class="limited-banner">⏳ عرض لفترة محدودة</div>
-      <div class="price-original-row">
-        <span class="price-original" id="price-original">XXX EGP</span>
-        <span class="price-badge" id="price-badge">-XX%</span>
+    <!-- ===== HEADER ===== -->
+    <header style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 40px;">
+      <div style="display: flex; align-items: center; gap: 11px;">
+        <span style="font-size: 19px; font-weight: 700; letter-spacing: -0.02em; color: #fff; font-family: 'Inter', sans-serif;">ProfitLens</span>
+        <div style="display: grid; place-items: center; width: 38px; height: 38px; border-radius: 11px; background: linear-gradient(140deg, #818CF8, #6366F1); box-shadow: 0 6px 20px rgba(99,102,241,0.45);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 3 7-8"/><path d="M16 7h4v4"/></svg>
+        </div>
       </div>
-      <div class="price-row">
-        <span class="price-currency">EGP</span>
-        <span class="price-amount" id="price-amount">XXX</span>
-        <span class="price-period">مرة واحدة</span>
-      </div>
-      <p class="price-desc">ادفع مرة واحدة — استخدم مدى الحياة 🎉</p>
+      <button class="sign-out-link" id="sign-out-btn" style="display:none" onclick="doSignOut()">تسجيل الخروج</button>
+    </header>
 
-      <ul class="features">
-        <li class="feature">
-          <div class="feature-check">✓</div>
-          <span><strong>تحليل ربحية كامل</strong> — اعرف بتكسب ولا بتخسر على كل منتج</span>
-        </li>
-        <li class="feature">
-          <div class="feature-check">✓</div>
-          <span><strong>تحليل إعلانات متكامل</strong> — CPA, ROAS, Break-even بالتفصيل</span>
-        </li>
-        <li class="feature">
-          <div class="feature-check">✓</div>
-          <span><strong>تحليل شحن وتوصيل</strong> — تكاليف التوصيل والمرتجعات وتأثيرها على الربح</span>
-        </li>
-        <li class="feature">
-          <div class="feature-check">✓</div>
-          <span><strong>Target Profit Simulator</strong> — حدد المكسب اللي عايزه وهتقولك تعمل إيه</span>
-        </li>
-        <li class="feature">
-          <div class="feature-check">✓</div>
-          <span><strong>Scale Detector</strong> — يقولك امتى تكبّر الحملة وامتى لأ</span>
-        </li>
-        <li class="feature">
-          <div class="feature-check">✓</div>
-          <span><strong>مقارنة منتجات</strong> — أضف منتجات غير محدودة وشوف أكبر مكسب فين</span>
-        </li>
-        <li class="feature">
-          <div class="feature-check">✓</div>
-          <span><strong>Overview شامل</strong> — صورة كاملة عن أرباحك وكل أرقامك في مكان واحد</span>
-        </li>
-        <li class="feature">
-          <div class="feature-check">✓</div>
-          <span><strong>كل العملات</strong> — EGP, USD, EUR وأكتر</span>
-        </li>
-        <li class="feature">
-          <div class="feature-check">✓</div>
-          <span><strong>بدون اشتراك شهري</strong> — ادفع مرة وخلاص، مدى الحياة</span>
-        </li>
-      </ul>
+    <!-- ===== TWO-COLUMN GRID ===== -->
+    <div class="pl-grid" style="display: grid; grid-template-columns: 1fr 430px; gap: 26px; align-items: start;">
 
-      <!-- PAYMENT STEPS -->
-      <p class="pay-title">خطوات الاشتراك</p>
-      <div class="steps">
+      <!-- ===== HERO (right in RTL) ===== -->
+      <div style="display: flex; flex-direction: column; gap: 22px;">
 
-        <div class="step">
-          <div class="step-num">1</div>
-          <div class="step-body">
-            <div class="step-label">حوّل المبلغ عبر InstaPay أو المحفظة</div>
-            <div class="step-note">حوّل <span id="pay-step-amount">500</span> جنيه مرة واحدة على الرقم ده (InstaPay / Vodafone Cash / أي محفظة):</div>
-            <div class="copy-row">
-              <span class="copy-val" id="payment-number">01X-XXXX-XXXX</span>
-              <button class="copy-btn" onclick="copyNumber()">Copy</button>
+        <!-- intro panel -->
+        <section style="position: relative; overflow: hidden; border-radius: 22px; padding: 40px 42px 38px; background: linear-gradient(155deg, rgba(22,27,34,0.9), rgba(17,22,29,0.72)); border: 1px solid rgba(255,255,255,0.07); box-shadow: 0 30px 70px -30px rgba(0,0,0,0.7);">
+          <div style="position: absolute; top: -40px; left: -30px; width: 220px; height: 220px; border-radius: 50%; background: radial-gradient(circle, rgba(129,140,248,0.18), transparent 70%); pointer-events: none;"></div>
+          <span style="display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px; border-radius: 999px; font-size: 12px; font-weight: 600; color: #A5B4FC; background: rgba(129,140,248,0.12); border: 1px solid rgba(129,140,248,0.3); margin-bottom: 22px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.2H22l-6 4.4 2.3 7.2-6.3-4.5L5.7 20.8 8 13.6 2 9.2h7.6z"/></svg>
+            وصول مدى الحياة
+          </span>
+          <h1 class="pl-h1" style="margin: 0 0 18px; font-size: 40px; line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; color: #fff; text-wrap: balance;">تحكم في أرباحك،<br>بأداة واحدة متكاملة.</h1>
+          <p style="margin: 0; max-width: 580px; font-size: 16px; line-height: 1.85; color: #9BA6B4;">بدون تعقيد أو اشتراكات شهرية، <span style="color: #C9D1D9; font-weight: 600; font-family: 'Inter', sans-serif;">ProfitLens</span> بتوفرلك كل اللي تحتاجه عشان تحسب صافي أرباحك الحقيقية، تحلل تكاليف الشحن، وتعمل سكيل لإعلاناتك بأمان تام.</p>
+        </section>
+
+        <!-- feature grid -->
+        <div class="pl-features" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+
+          <div class="fcard fc-green" style="grid-column: 1 / -1; position: relative; overflow: hidden; border-radius: 18px; padding: 24px 26px; background: linear-gradient(160deg, rgba(22,27,34,0.85), rgba(15,19,26,0.65)); border: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 18px;">
+            <div style="position: absolute; top: 0; right: 0; left: 0; height: 2px; background: linear-gradient(90deg, transparent, #34D399, transparent);"></div>
+            <div style="display: grid; place-items: center; flex-shrink: 0; width: 46px; height: 46px; border-radius: 13px; background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.22);">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6EE7B7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+            </div>
+            <div>
+              <div style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 6px;"><span style="font-family: 'Inter', sans-serif;">Overview</span> شامل</div>
+              <div style="font-size: 11.5px; line-height: 1.75; color: #8B949E;">صورة كاملة عن أرباحك وكل أرقامك في مكان واحد — كل التحليلات مجمّعة في لوحة واحدة.</div>
             </div>
           </div>
-        </div>
 
-        <div class="step">
-          <div class="step-num">2</div>
-          <div class="step-body">
-            <div class="step-label">ابعت صورة الإيصال على واتساب</div>
-            <div class="step-note">مع إيميلك اللي سجلت بيه في التطبيق عشان نفعّل حسابك بسرعة.</div>
+          <div class="fcard fc-purple" style="position: relative; overflow: hidden; border-radius: 18px; padding: 24px; background: linear-gradient(160deg, rgba(22,27,34,0.85), rgba(15,19,26,0.65)); border: 1px solid rgba(255,255,255,0.06);">
+            <div style="position: absolute; top: 0; right: 0; left: 0; height: 2px; background: linear-gradient(90deg, transparent, #818CF8, transparent);"></div>
+            <div style="display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(129,140,248,0.12); border: 1px solid rgba(129,140,248,0.22); margin-bottom: 16px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l3-4 3 2 4-6"/></svg>
+            </div>
+            <div style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">مقاييس الإعلانات</div>
+            <div style="font-size: 11.5px; line-height: 1.75; color: #8B949E;">لوحة بتوضحلك الـ <span style="font-family: 'Inter', sans-serif; color: #C9D1D9;">CPA</span> الحقيقي، و الـ <span style="font-family: 'Inter', sans-serif; color: #C9D1D9;">ROAS</span>، ونقطة التعادل (<span style="font-family: 'Inter', sans-serif; color: #C9D1D9;">Break-even</span>) بدقة متناهية.</div>
           </div>
-        </div>
 
-        <div class="step">
-          <div class="step-num">3</div>
-          <div class="step-body">
-            <div class="step-label">التفعيل في أقل من 24 ساعة ⚡</div>
-            <div class="step-note">بعد التأكيد، حسابك هيتفعل تلقائي وتقدر تدخل على التطبيق فوراً.</div>
+          <div class="fcard fc-green" style="position: relative; overflow: hidden; border-radius: 18px; padding: 24px; background: linear-gradient(160deg, rgba(22,27,34,0.85), rgba(15,19,26,0.65)); border: 1px solid rgba(255,255,255,0.06);">
+            <div style="position: absolute; top: 0; right: 0; left: 0; height: 2px; background: linear-gradient(90deg, transparent, #34D399, transparent);"></div>
+            <div style="display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.22); margin-bottom: 16px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6EE7B7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            </div>
+            <div style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">تحليل ربحية دقيق</div>
+            <div style="font-size: 11.5px; line-height: 1.75; color: #8B949E;">احسب الـ <span style="font-family: 'Inter', sans-serif; color: #C9D1D9;">Net Profit</span> والـ <span style="font-family: 'Inter', sans-serif; color: #C9D1D9;">Profit Margin</span> الفعلي بعد الإعلانات والمرتجعات، بالجنيه أو الريال.</div>
           </div>
-        </div>
 
+          <div class="fcard fc-blue" style="position: relative; overflow: hidden; border-radius: 18px; padding: 24px; background: linear-gradient(160deg, rgba(22,27,34,0.85), rgba(15,19,26,0.65)); border: 1px solid rgba(255,255,255,0.06);">
+            <div style="position: absolute; top: 0; right: 0; left: 0; height: 2px; background: linear-gradient(90deg, transparent, #38BDF8, transparent);"></div>
+            <div style="display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.22); margin-bottom: 16px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7DD3FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11" rx="1.5"/><path d="M15 9h4l3 3v5h-7z"/><circle cx="6" cy="18.5" r="2"/><circle cx="18" cy="18.5" r="2"/></svg>
+            </div>
+            <div style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">محاكي التوصيل</div>
+            <div style="font-size: 11.5px; line-height: 1.75; color: #8B949E;">اعرف تأثير المرتجعات والشحن العكسي على المنتج قبل ما تحرق ميزانيتك في إعلاناته.</div>
+          </div>
+
+          <div class="fcard fc-amber" style="position: relative; overflow: hidden; border-radius: 18px; padding: 24px; background: linear-gradient(160deg, rgba(22,27,34,0.85), rgba(15,19,26,0.65)); border: 1px solid rgba(255,255,255,0.06);">
+            <div style="position: absolute; top: 0; right: 0; left: 0; height: 2px; background: linear-gradient(90deg, transparent, #FBBF24, transparent);"></div>
+            <div style="display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.22); margin-bottom: 16px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FCD34D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>
+            </div>
+            <div style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">كاشف السكيل</div>
+            <div style="font-size: 11.5px; line-height: 1.75; color: #8B949E;"><span style="font-family: 'Inter', sans-serif; color: #C9D1D9;">Scale Detector</span> بيقرأ الأرقام ويديك الإشارة الخضراء عشان تزود ميزانية الإعلان بأمان.</div>
+          </div>
+
+          <div class="fcard fc-purple" style="position: relative; overflow: hidden; border-radius: 18px; padding: 24px; background: linear-gradient(160deg, rgba(22,27,34,0.85), rgba(15,19,26,0.65)); border: 1px solid rgba(255,255,255,0.06);">
+            <div style="position: absolute; top: 0; right: 0; left: 0; height: 2px; background: linear-gradient(90deg, transparent, #818CF8, transparent);"></div>
+            <div style="display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(129,140,248,0.12); border: 1px solid rgba(129,140,248,0.22); margin-bottom: 16px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.6" fill="#A5B4FC"/></svg>
+            </div>
+            <div style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">محدد هدف الربح</div>
+            <div style="font-size: 11.5px; line-height: 1.75; color: #8B949E;"><span style="font-family: 'Inter', sans-serif; color: #C9D1D9;">Target Profit Simulator</span> — حدد المكسب اللي عايزه وهتقولك تعمل إيه.</div>
+          </div>
+
+          <div class="fcard fc-blue" style="position: relative; overflow: hidden; border-radius: 18px; padding: 24px; background: linear-gradient(160deg, rgba(22,27,34,0.85), rgba(15,19,26,0.65)); border: 1px solid rgba(255,255,255,0.06);">
+            <div style="position: absolute; top: 0; right: 0; left: 0; height: 2px; background: linear-gradient(90deg, transparent, #38BDF8, transparent);"></div>
+            <div style="display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.22); margin-bottom: 16px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7DD3FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="11" width="3.5" height="7" rx="1"/><rect x="14" y="6" width="3.5" height="12" rx="1"/></svg>
+            </div>
+            <div style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">مقارنة منتجات</div>
+            <div style="font-size: 11.5px; line-height: 1.75; color: #8B949E;">أضف منتجات غير محدودة وشوف أكبر مكسب فين، وقارن بينهم في لمحة.</div>
+          </div>
+
+          <div class="fcard fc-green" style="position: relative; overflow: hidden; border-radius: 18px; padding: 24px; background: linear-gradient(160deg, rgba(22,27,34,0.85), rgba(15,19,26,0.65)); border: 1px solid rgba(255,255,255,0.06);">
+            <div style="position: absolute; top: 0; right: 0; left: 0; height: 2px; background: linear-gradient(90deg, transparent, #34D399, transparent);"></div>
+            <div style="display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.22); margin-bottom: 16px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6EE7B7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a14 14 0 010 18 14 14 0 010-18"/></svg>
+            </div>
+            <div style="font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 8px;">كل العملات</div>
+            <div style="font-size: 11.5px; line-height: 1.75; color: #8B949E;">احسب أرباحك بأي عملة — <span style="font-family: 'Inter', sans-serif; color: #C9D1D9;">EGP, USD, EUR</span> وأكتر، بأسعار صرف محدّثة.</div>
+          </div>
+
+        </div>
       </div>
 
-      <a class="btn-wa" id="wa-btn" href="#" target="_blank" rel="noopener">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        ابعت إيصال الدفع على واتساب
-      </a>
-    </div>
+      <!-- ===== OFFER CARD (left in RTL) — glowing border ===== -->
+      <div class="pl-offer" style="position: relative; border-radius: 24px; padding: 1.5px; background: linear-gradient(160deg, #818CF8 0%, #6366F1 38%, rgba(99,102,241,0.25) 60%, #38BDF8 100%); box-shadow: 0 0 0 1px rgba(129,140,248,0.1), 0 0 60px -8px rgba(129,140,248,0.5), 0 40px 90px -40px rgba(99,102,241,0.6); animation: pl-glow 4.5s ease-in-out infinite;">
+        <div style="position: relative; overflow: hidden; border-radius: 22px; padding: 28px 26px 26px; background: linear-gradient(180deg, #12161D, #0C0F15);">
+          <div style="position: absolute; top: -60px; left: 50%; transform: translateX(-50%); width: 280px; height: 180px; background: radial-gradient(circle, rgba(129,140,248,0.22), transparent 70%); pointer-events: none;"></div>
 
-    <!-- PROMO CODE -->
-    <div class="promo-wrap">
-      <button class="promo-toggle" onclick="togglePromo(this)">
-        <span>🎟️ عندك برومو كود؟</span>
-        <span class="promo-toggle-arrow">▾</span>
-      </button>
-      <div class="promo-body" id="promo-body">
-        <div class="promo-row">
-          <input class="promo-input" id="promo-input" placeholder="أدخل الكود هنا" maxlength="32" autocomplete="off" spellcheck="false">
-          <button class="promo-btn" id="promo-btn" onclick="redeemPromo()">تفعيل</button>
+          <!-- limited offer badge -->
+          <div style="display: flex; justify-content: center; margin-bottom: 22px;">
+            <span style="display: inline-flex; align-items: center; gap: 7px; padding: 7px 15px; border-radius: 999px; font-size: 12.5px; font-weight: 600; color: #FCA5A5; background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.32);">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F87171" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              عرض لفترة محدودة
+            </span>
+          </div>
+
+          <!-- price -->
+          <div style="text-align: center; margin-bottom: 8px;">
+            <div style="display: inline-flex; align-items: center; gap: 9px; margin-bottom: 6px;">
+              <span id="price-badge" style="font-size: 12px; font-weight: 700; color: #fff; background: #DC2626; padding: 2px 8px; border-radius: 6px; font-family: 'Inter', sans-serif;">-67%</span>
+              <span class="pl-num" id="price-original" style="font-size: 17px; color: #6E7681; text-decoration: line-through;">1500</span>
+            </div>
+            <div style="display: flex; align-items: baseline; justify-content: center; gap: 10px; direction: ltr;">
+              <span class="pl-num" id="price-amount" style="font-size: 72px; line-height: 1; font-weight: 800; letter-spacing: -0.04em; color: #fff;">500</span>
+              <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px;">
+                <span style="font-size: 18px; font-weight: 700; color: #A5B4FC; font-family: 'Inter', sans-serif;">EGP</span>
+                <span style="font-size: 11px; color: #8B949E; direction: rtl;">/ مدى الحياة</span>
+              </div>
+            </div>
+            <div style="margin-top: 12px; font-size: 13.5px; font-weight: 600; color: #A5B4FC;">تدفع مرة واحدة، مفيش اشتراكات شهرية.</div>
+          </div>
+
+          <!-- trial-price note -->
+          <div style="margin-top: 16px; padding: 12px 14px; border-radius: 12px; background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25); font-size: 12px; line-height: 1.7; color: #FCD34D; text-align: center;">
+            ⏳ ده سعر فترة النسخة التجريبية. اللي يشترك دلوقتي يدفع <span class="pl-num" style="font-weight: 700;">500</span> بس مرة واحدة وخلاص. بعد كده السعر هيرجع <span class="pl-num" style="font-weight: 700;">1500</span> ويتضاف اشتراك شهري رمزي للتحديثات.
+          </div>
+
+          <!-- discount code -->
+          <button class="disc-btn" onclick="togglePromo()" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 20px; padding: 13px; border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #C9D1D9; font-size: 13.5px; font-weight: 500; font-family: inherit; cursor: pointer;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4l-7.2 7.2a2 2 0 01-2.8 0l-7.2-7.2a2 2 0 01-.6-1.4V4a2 2 0 012-2h8a2 2 0 011.4.6l6.4 6.4a2 2 0 010 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>
+            لديك كود خصم؟ اضغط هنا
+          </button>
+
+          <!-- promo input (revealed) -->
+          <div class="promo-body" id="promo-body">
+            <div class="promo-row">
+              <input class="promo-input" id="promo-input" placeholder="أدخل الكود هنا" maxlength="32" autocomplete="off" spellcheck="false">
+              <button class="promo-btn" id="promo-btn" onclick="redeemPromo()">تفعيل</button>
+            </div>
+            <div class="promo-msg" id="promo-msg"></div>
+          </div>
+
+          <!-- step 1 -->
+          <div style="position: relative; margin-top: 14px; padding: 18px 18px 16px; border-radius: 14px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);">
+            <span style="position: absolute; top: -11px; left: 16px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(140deg, #818CF8, #6366F1); color: #fff; font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif; box-shadow: 0 4px 12px rgba(99,102,241,0.5);">1</span>
+            <div style="font-size: 13px; color: #9BA6B4; margin-bottom: 12px; line-height: 1.6;">حوّل <span class="pl-num" id="pay-step-amount" style="color: #fff; font-weight: 700;">500</span> جنيه على إنستاباي أو المحفظة:</div>
+            <div style="display: flex; align-items: center; gap: 8px; padding: 4px 4px 4px 14px; border-radius: 10px; background: #0A0D13; border: 1px solid rgba(255,255,255,0.08);">
+              <span class="pl-num" id="payment-number" style="flex: 1; font-size: 17px; font-weight: 700; letter-spacing: 0.02em; color: #fff; direction: ltr; text-align: left;">01556318082</span>
+              <button id="copyBtn" onclick="copyNumber()" style="display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 8px; border: none; cursor: pointer; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; font-family: 'Inter', sans-serif; background: rgba(129,140,248,0.16); color: #A5B4FC; transition: background .2s ease, color .2s ease;">COPY</button>
+            </div>
+          </div>
+
+          <!-- step 2 -->
+          <div style="position: relative; margin-top: 16px; padding: 16px 18px; border-radius: 14px; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.07);">
+            <span style="position: absolute; top: -11px; left: 16px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(140deg, #818CF8, #6366F1); color: #fff; font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif; box-shadow: 0 4px 12px rgba(99,102,241,0.5);">2</span>
+            <div style="font-size: 13px; color: #9BA6B4; line-height: 1.6;">اضغط على الزر الأخضر وابعت صورة الإيصال + إيميلك على واتساب.</div>
+          </div>
+
+          <!-- CTA -->
+          <a class="cta-btn" id="wa-btn" href="#" target="_blank" rel="noopener" onclick="track('wa_checkout_click')" style="display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; margin-top: 18px; padding: 17px; border-radius: 14px; border: none; cursor: pointer; font-size: 15.5px; font-weight: 700; font-family: inherit; text-decoration: none; color: #052E16; background: linear-gradient(140deg, #34D399, #10B981); box-shadow: 0 0 40px -6px rgba(52,211,153,0.6), 0 14px 30px -10px rgba(16,185,129,0.7);">
+            أرسل الإيصال للتفعيل
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#052E16"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 004.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm5.8 14.16c-.25.7-1.44 1.33-1.99 1.41-.51.08-1.15.11-1.86-.12-.43-.14-.98-.32-1.69-.62-2.97-1.28-4.91-4.27-5.06-4.47-.15-.2-1.21-1.61-1.21-3.07 0-1.46.77-2.18 1.04-2.48.27-.3.59-.37.79-.37.2 0 .39 0 .56.01.18.01.42-.07.66.5.25.59.84 2.05.91 2.2.07.15.12.32.02.52-.1.2-.15.32-.3.5-.15.17-.31.39-.45.52-.15.15-.3.31-.13.61.17.3.76 1.25 1.63 2.02 1.12.99 2.06 1.3 2.36 1.45.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.39-.25.66-.15.27.1 1.71.81 2 .96.3.15.5.22.57.35.07.12.07.72-.18 1.42z"/></svg>
+          </a>
+
+          <div style="margin-top: 14px; text-align: center; font-size: 11.5px; color: #6E7681;">دفع آمن · تفعيل فوري بعد المراجعة</div>
         </div>
-        <div class="promo-msg" id="promo-msg"></div>
       </div>
-    </div>
 
-    <div class="note-box">
-      <strong>ملاحظة:</strong> بعد تحويل المبلغ، ابعت على واتساب <strong>صورة الإيصال</strong> + <strong>إيميلك</strong> اللي سجلت بيه في التطبيق. هيتم تفعيل حسابك في أقل من 24 ساعة.
     </div>
-
-    <div class="trust">
-      <div class="trust-item">🔒 بياناتك محمية</div>
-      <div class="trust-item">♾️ مدى الحياة</div>
-      <div class="trust-item">💬 دعم واتساب</div>
-    </div>
-
   </div>
+</div>
 
-  <script>
-    // ── CONFIG — عدّل الأرقام دي حسب بياناتك ──
-    const PRICE_EGP       = '500';
-    const PRICE_ORIGINAL  = '1500';
-    const PAYMENT_NUMBER  = '01556318082';
-    const WHATSAPP_NUMBER = '201556318082';
-    // ────────────────────────────────────────
+<script>
+  // ── CONFIG — عدّل الأرقام دي حسب بياناتك ──
+  const PRICE_EGP       = '500';
+  const PRICE_ORIGINAL  = '1500';
+  const PAYMENT_NUMBER  = '01556318082';
+  const WHATSAPP_NUMBER = '201556318082';
+  // ────────────────────────────────────────
 
-    function track(event, params) {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push(Object.assign({ event: event }, params || {}));
-    }
+  // GTM dataLayer push helper
+  function track(event, params) {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push(Object.assign({ event: event }, params || {}));
+  }
+  track('view_pricing');
 
-    document.getElementById('price-amount').textContent  = PRICE_EGP;
-    document.getElementById('price-original').textContent = PRICE_ORIGINAL + ' EGP';
-    document.getElementById('pay-step-amount').textContent = PRICE_EGP;
-    const discount = Math.round((1 - parseInt(PRICE_EGP) / parseInt(PRICE_ORIGINAL)) * 100);
-    document.getElementById('price-badge').textContent = '-' + discount + '%';
-    document.getElementById('payment-number').textContent = PAYMENT_NUMBER;
-    document.getElementById('wa-btn').href =
-      'https://wa.me/' + WHATSAPP_NUMBER +
+  document.getElementById('price-amount').textContent   = PRICE_EGP;
+  document.getElementById('price-original').textContent = PRICE_ORIGINAL;
+  document.getElementById('pay-step-amount').textContent = PRICE_EGP;
+  const discount = Math.round((1 - parseInt(PRICE_EGP) / parseInt(PRICE_ORIGINAL)) * 100);
+  document.getElementById('price-badge').textContent = '-' + discount + '%';
+  document.getElementById('payment-number').textContent = PAYMENT_NUMBER;
+
+  function defaultWaHref() {
+    return 'https://wa.me/' + WHATSAPP_NUMBER +
       '?text=' + encodeURIComponent(
         'مرحبا، عايز أشترك في ProfitLens Pro\n\nإيميلي: '
       );
+  }
+  document.getElementById('wa-btn').href = defaultWaHref();
 
-    // Apply a promo discount to the price (discount is OFF the base/original price).
-    // The customer then pays the discounted amount manually; an admin activates them.
-    function applyCouponDiscount(discountPct, code) {
-      const base = parseInt(PRICE_ORIGINAL);
-      const newPrice = Math.max(0, Math.round(base * (1 - discountPct / 100)));
-      document.getElementById('price-amount').textContent   = newPrice;
-      document.getElementById('price-badge').textContent    = '-' + discountPct + '%';
-      document.getElementById('pay-step-amount').textContent = newPrice;
-      document.getElementById('wa-btn').href =
-        'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(
-          'مرحبا، عايز أشترك في ProfitLens Pro\n\n' +
-          'كوبون: ' + code + ' (خصم ' + discountPct + '%)\n' +
-          'المبلغ بعد الخصم: ' + newPrice + ' جنيه\n' +
-          'إيميلي: '
-        );
-      const input = document.getElementById('promo-input');
-      const pbtn  = document.getElementById('promo-btn');
-      input.disabled = true; pbtn.disabled = true; pbtn.textContent = 'تم التطبيق ✓';
-      return newPrice;
-    }
-    window.__applyCouponDiscount = applyCouponDiscount;
+  // Reset price/CTA back to the default (no coupon) state.
+  function resetPriceToDefault() {
+    document.getElementById('price-amount').textContent    = PRICE_EGP;
+    document.getElementById('price-badge').textContent     = '-' + discount + '%';
+    document.getElementById('pay-step-amount').textContent = PRICE_EGP;
+    document.getElementById('wa-btn').href = defaultWaHref();
+  }
 
-    function copyNumber() {
-      track('copy_payment_number');
-      navigator.clipboard.writeText(PAYMENT_NUMBER).then(() => {
-        const btn = document.querySelector('.copy-btn');
-        btn.textContent = 'Copied ✓';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
-      });
-    }
+  // Apply a promo discount to the price (discount is OFF the base/original price).
+  // The customer then pays the discounted amount manually; an admin activates them.
+  function applyCouponDiscount(discountPct, code) {
+    const base = parseInt(PRICE_ORIGINAL);
+    const newPrice = Math.max(0, Math.round(base * (1 - discountPct / 100)));
+    document.getElementById('price-amount').textContent   = newPrice;
+    document.getElementById('price-badge').textContent    = '-' + discountPct + '%';
+    document.getElementById('pay-step-amount').textContent = newPrice;
+    document.getElementById('wa-btn').href =
+      'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(
+        'مرحبا، عايز أشترك في ProfitLens Pro\n\n' +
+        'كوبون: ' + code + ' (خصم ' + discountPct + '%)\n' +
+        'المبلغ بعد الخصم: ' + newPrice + ' جنيه\n' +
+        'إيميلي: '
+      );
+    const input = document.getElementById('promo-input');
+    const pbtn  = document.getElementById('promo-btn');
+    input.disabled = true; pbtn.disabled = true; pbtn.textContent = 'تم التطبيق ✓';
+    return newPrice;
+  }
+  window.__applyCouponDiscount = applyCouponDiscount;
 
-    document.getElementById('wa-btn').addEventListener('click', function() {
-      track('wa_checkout_click');
-    });
+  // Adds a "remove coupon" link under the promo message (idempotent).
+  function appendPromoRemoveButton() {
+    const msg = document.getElementById('promo-msg');
+    if (msg.querySelector('.promo-remove')) return;
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'promo-remove';
+    removeBtn.textContent = '✕ شيل الكوبون وارجع للسعر الأصلي';
+    removeBtn.onclick = removeCouponCode;
+    msg.appendChild(removeBtn);
+  }
 
-    // Auth check
-    let __sb = null;
-    async function init() {
-      let userStatus = 'guest';
-      try {
-        const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
-        if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) { track('view_pricing', { user_status: userStatus }); return; }
-        const { createClient } = supabase;
-        __sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
-        const { data: { session } } = await __sb.auth.getSession();
-        if (session) {
-          // If already paid, send to app
-          const { data: profile } = await __sb.from('profiles')
-            .select('plan, redeemed_code, redeemed_discount_pct').eq('id', session.user.id).maybeSingle();
-          if (profile?.plan && profile.plan !== 'free') {
-            window.location.replace('/app');
-            return;
-          }
-          userStatus = 'logged_in';
-          document.getElementById('sign-out-btn').style.display = 'block';
-          // already applied a discount code but not paid yet → show their discounted price
-          if (profile?.redeemed_code && profile.redeemed_discount_pct != null && profile.redeemed_discount_pct < 100) {
-            window.__applyCouponDiscount(profile.redeemed_discount_pct, profile.redeemed_code);
-            const m = document.getElementById('promo-msg');
-            m.textContent = 'كوبون ' + profile.redeemed_code + ' متطبّق (خصم ' + profile.redeemed_discount_pct +
-              '%). حوّل المبلغ وابعت الإيصال على واتساب.';
-            m.className = 'promo-msg success';
-            document.getElementById('promo-body').classList.add('open');
-            document.querySelector('.promo-toggle-arrow').classList.add('open');
-          }
-        }
-      } catch(e) {}
-      track('view_pricing', { user_status: userStatus });
-    }
+  async function removeCouponCode() {
+    if (!__sb) return;
+    if (!confirm('متأكد إنك عايز تشيل الكوبون؟ السعر هيرجع للسعر الأصلي.')) return;
 
-    async function doSignOut() {
-      if (__sb) { try { await __sb.auth.signOut(); } catch(e){} }
-      window.location.replace('/');
-    }
+    const msg = document.getElementById('promo-msg');
+    const removeBtn = msg.querySelector('.promo-remove');
+    if (removeBtn) { removeBtn.disabled = true; removeBtn.textContent = '…جاري الإلغاء'; }
 
-    function togglePromo(btn) {
-      const body  = document.getElementById('promo-body');
-      const arrow = btn.querySelector('.promo-toggle-arrow');
-      body.classList.toggle('open');
-      arrow.classList.toggle('open');
-      if (body.classList.contains('open')) {
-        track('promo_code_reveal');
-        document.getElementById('promo-input').focus();
-      }
-    }
-
-    async function redeemPromo() {
-      const code = document.getElementById('promo-input').value.trim();
-      const msg  = document.getElementById('promo-msg');
-      const btn  = document.getElementById('promo-btn');
-      msg.className = 'promo-msg';
-
-      if (!code) { msg.textContent = 'ادخل الكود الأول'; msg.className = 'promo-msg error'; return; }
-      if (!__sb)  { msg.textContent = 'مفيش اتصال بالسيرفر، جرّب تاني'; msg.className = 'promo-msg error'; return; }
-
+    try {
       const { data: { session } } = await __sb.auth.getSession();
       if (!session) { window.location.replace('/'); return; }
 
-      track('promo_code_submit');
-      btn.disabled = true; btn.textContent = '…جاري التحقق';
-      try {
-        const res = await fetch('/api/redeem', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
-          body: JSON.stringify({ code })
-        });
-        const json = await res.json();
-        if (!res.ok) {
-          msg.textContent = json.error || 'كود غلط أو منتهي';
-          msg.className = 'promo-msg error';
-          btn.disabled = false; btn.textContent = 'تفعيل';
+      const res = await fetch('/api/redeem-cancel', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + session.access_token }
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        msg.textContent = json.error || 'حصل خطأ، حاول تاني';
+        msg.className = 'promo-msg error';
+        return;
+      }
+
+      resetPriceToDefault();
+      msg.textContent = '';
+      msg.className = 'promo-msg';
+      const input = document.getElementById('promo-input');
+      const pbtn  = document.getElementById('promo-btn');
+      input.disabled = false; input.value = '';
+      pbtn.disabled = false; pbtn.textContent = 'تفعيل';
+    } catch (e) {
+      msg.textContent = 'حصل خطأ، حاول تاني';
+      msg.className = 'promo-msg error';
+    }
+  }
+
+  function copyNumber() {
+    track('copy_payment_number');
+    try { navigator.clipboard && navigator.clipboard.writeText(PAYMENT_NUMBER); } catch (e) {}
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'COPIED';
+    btn.style.background = '#34D399';
+    btn.style.color = '#052E16';
+    clearTimeout(window.__copyT);
+    window.__copyT = setTimeout(function () {
+      btn.textContent = 'COPY';
+      btn.style.background = 'rgba(129,140,248,0.16)';
+      btn.style.color = '#A5B4FC';
+    }, 1800);
+  }
+
+  function openPromo() {
+    document.getElementById('promo-body').style.display = 'block';
+  }
+  function togglePromo() {
+    const body = document.getElementById('promo-body');
+    const isOpen = body.style.display === 'block';
+    body.style.display = isOpen ? 'none' : 'block';
+    if (!isOpen) document.getElementById('promo-input').focus();
+  }
+
+  // Auth check
+  let __sb = null;
+  async function init() {
+    try {
+      const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
+      if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) return;
+      const { createClient } = supabase;
+      __sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+      const { data: { session } } = await __sb.auth.getSession();
+      if (session) {
+        // If already paid, send to app
+        const { data: profile } = await __sb.from('profiles')
+          .select('plan, redeemed_code, redeemed_discount_pct').eq('id', session.user.id).maybeSingle();
+        if (profile?.plan && profile.plan !== 'free') {
+          window.location.replace('/app');
           return;
         }
-        if (json.activated) {
-          // 100% code → free unlock, go straight to the app
-          track('promo_code_success', { type: 'free_unlock' });
-          msg.textContent = '✓ تم التفعيل! بيتم تحويلك…';
-          msg.className = 'promo-msg success';
-          setTimeout(() => window.location.replace('/app'), 1200);
-        } else {
-          // discount code → apply discount to the price; customer pays it manually
-          track('promo_code_success', { type: 'discount', discount_pct: json.discount_pct });
-          const newPrice = window.__applyCouponDiscount(json.discount_pct, code.toUpperCase());
-          msg.textContent = '✓ تم تطبيق الكوبون: خصم ' + json.discount_pct + '% — السعر بقى ' + newPrice +
-            ' جنيه. حوّل المبلغ وابعت الإيصال على واتساب وهنفعّلك.';
-          msg.className = 'promo-msg success';
+        document.getElementById('sign-out-btn').style.display = 'block';
+        // already applied a discount code but not paid yet → show their discounted price
+        if (profile?.redeemed_code && profile.redeemed_discount_pct != null && profile.redeemed_discount_pct < 100) {
+          window.__applyCouponDiscount(profile.redeemed_discount_pct, profile.redeemed_code);
+          const m = document.getElementById('promo-msg');
+          m.textContent = 'كوبون ' + profile.redeemed_code + ' متطبّق (خصم ' + profile.redeemed_discount_pct +
+            '%). حوّل المبلغ وابعت الإيصال على واتساب.';
+          m.className = 'promo-msg success';
+          appendPromoRemoveButton();
+          openPromo();
         }
-      } catch(e) {
-        msg.textContent = 'حصل خطأ، حاول تاني';
+      }
+    } catch(e) {}
+  }
+
+  async function doSignOut() {
+    if (__sb) { try { await __sb.auth.signOut(); } catch(e){} }
+    window.location.replace('/');
+  }
+
+  async function redeemPromo() {
+    const code = document.getElementById('promo-input').value.trim();
+    const msg  = document.getElementById('promo-msg');
+    const btn  = document.getElementById('promo-btn');
+    msg.className = 'promo-msg';
+
+    if (!code) { msg.textContent = 'ادخل الكود الأول'; msg.className = 'promo-msg error'; return; }
+    if (!__sb)  { msg.textContent = 'مفيش اتصال بالسيرفر، جرّب تاني'; msg.className = 'promo-msg error'; return; }
+    track('promo_code_submit');
+
+    const { data: { session } } = await __sb.auth.getSession();
+    if (!session) { window.location.replace('/'); return; }
+
+    btn.disabled = true; btn.textContent = '…جاري التحقق';
+    try {
+      const res = await fetch('/api/redeem', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + session.access_token },
+        body: JSON.stringify({ code })
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        msg.textContent = json.error || 'كود غلط أو منتهي';
         msg.className = 'promo-msg error';
         btn.disabled = false; btn.textContent = 'تفعيل';
+        return;
       }
+      if (json.activated) {
+        // 100% code → free unlock, go straight to the app
+        track('promo_code_success', { type: 'free_unlock' });
+        msg.textContent = '✓ تم التفعيل! بيتم تحويلك…';
+        msg.className = 'promo-msg success';
+        setTimeout(() => window.location.replace('/app'), 1200);
+      } else {
+        // discount code → apply discount to the price; customer pays it manually
+        track('promo_code_success', { type: 'discount', discount_pct: json.discount_pct });
+        const newPrice = window.__applyCouponDiscount(json.discount_pct, code.toUpperCase());
+        msg.textContent = '✓ تم تطبيق الكوبون: خصم ' + json.discount_pct + '% — السعر بقى ' + newPrice +
+          ' جنيه. حوّل المبلغ وابعت الإيصال على واتساب وهنفعّلك.';
+        msg.className = 'promo-msg success';
+        appendPromoRemoveButton();
+      }
+    } catch(e) {
+      msg.textContent = 'حصل خطأ، حاول تاني';
+      msg.className = 'promo-msg error';
+      btn.disabled = false; btn.textContent = 'تفعيل';
     }
+  }
 
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Enter' && document.activeElement === document.getElementById('promo-input'))
-        redeemPromo();
-    });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.activeElement === document.getElementById('promo-input'))
+      redeemPromo();
+  });
 
-    init();
-  </script>
+  init();
+</script>
 </body>
 </html>
