@@ -8531,27 +8531,22 @@ function renameProduct(idx, name){
 
 // ── Excel Import / Export ─────────────────────────────────────
 const XL_COLS = [
-  { field:'name',              label:'Product Name',                   example:'Product A'  },
-  { field:'i_price',           label:'Selling Price (EGP)',             example:1000         },
-  { field:'i_cost',            label:'Product Cost (EGP)',              example:300          },
-  { field:'i_units',           label:'Avg Units / Order',               example:1            },
-  { field:'i_fulfill_del',     label:'Fulfillment Fee Delivery (EGP)',  example:40           },
-  { field:'i_fulfill_ret',     label:'Return Cost All-in (EGP)',        example:40           },
-  { field:'i_ship_c',          label:'Avg Shipping Cost (EGP)',         example:95           },
-  { field:'i_courier',         label:'Courier Cost (EGP)',              example:0            },
-  { field:'i_comm',            label:'Commission %',                    example:5            },
-  { field:'i_gateway_fee',     label:'Gateway Fee %',                   example:2.5          },
-  { field:'i_plat',            label:'Platform Fee per Lead (EGP)',     example:1            },
-  { field:'i_ads',             label:'Ad Budget (EGP)',                 example:10000        },
-  { field:'i_avg_cpp',         label:'Avg CPA (EGP)',                   example:''           },
-  { field:'i_conf',            label:'Confirmation Rate %',             example:70           },
-  { field:'i_del',             label:'Delivery Rate %',                 example:70           },
-  { field:'i_stock',           label:'Stock / Target Orders',           example:500          },
-  { field:'i_orders_per_cust', label:'Orders per Customer',            example:1            },
-  { field:'i_buy_interval',    label:'Buy Interval',                    example:1            },
-  { field:'i_buy_unit',        label:'Buy Unit (day/week/month)',       example:'month'      },
-  { field:'i_cust_lifespan',   label:'Customer Lifespan',              example:12           },
-  { field:'i_life_unit',       label:'Lifespan Unit (month/year)',      example:'month'      },
+  { field:'name',          label:'Product Name',                    label_ar:'اسم المنتج',                          example:'Product A' },
+  { field:'i_price',       label:'Selling Price (EGP)',             label_ar:'سعر البيع (ج.م)',                     example:1000        },
+  { field:'i_cost',        label:'Product Cost (EGP)',              label_ar:'تكلفة المنتج (ج.م)',                  example:300         },
+  { field:'i_units',       label:'Avg Units / Order',               label_ar:'متوسط الوحدات / الطلب',              example:1           },
+  { field:'i_fulfill_del', label:'Fulfillment Fee Delivery (EGP)',  label_ar:'رسوم الشحن - التوصيل (ج.م)',         example:40          },
+  { field:'i_fulfill_ret', label:'Return Cost All-in (EGP)',        label_ar:'تكلفة الإرجاع الكاملة (ج.م)',        example:40          },
+  { field:'i_courier',     label:'Avg Shipping Cost (EGP)',         label_ar:'متوسط تكلفة الشحن (ج.م)',            example:95          },
+  { field:'i_ship_c',      label:'Shipping Charged to Customer (EGP)', label_ar:'الشحن المحصّل من العميل (ج.م)',  example:50          },
+  { field:'i_comm',        label:'Commission %',                    label_ar:'العمولة %',                           example:5           },
+  { field:'i_gateway_fee', label:'Gateway Fee %',                   label_ar:'رسوم بوابة الدفع %',                 example:2.5         },
+  { field:'i_plat',        label:'Platform Fee per Lead (EGP)',     label_ar:'رسوم المنصة / ليد (ج.م)',            example:1           },
+  { field:'i_ads',         label:'Ad Budget (EGP)',                 label_ar:'ميزانية الإعلانات (ج.م)',            example:10000       },
+  { field:'i_avg_cpp',     label:'Avg CPA (EGP)',                   label_ar:'متوسط تكلفة الطلب - CPA (ج.م)',     example:''          },
+  { field:'i_conf',        label:'Confirmation Rate %',             label_ar:'معدل التأكيد %',                      example:70          },
+  { field:'i_del',         label:'Delivery Rate %',                 label_ar:'معدل التوصيل %',                      example:70          },
+  { field:'i_stock',       label:'Stock / Target Orders',           label_ar:'المخزون / الأوردرات المستهدفة',      example:500         },
 ];
 
 function openXlModal(){
@@ -8572,15 +8567,16 @@ function closeXlModal(){
 
 function downloadExcelTemplate(){
   if(!window.XLSX){ alert(T[LANG].xl_err_nolib || 'Excel library not loaded yet. Please try again.'); return; }
-  const headers = XL_COLS.map(c => c.label);
+  const isAr   = LANG === 'ar';
+  const headers = XL_COLS.map(c => isAr ? c.label_ar : c.label);
   const example = XL_COLS.map(c => c.example === '' ? '' : c.example);
   const aoa = [headers, example, ...Array(5).fill(XL_COLS.map(() => ''))];
   const ws  = XLSX.utils.aoa_to_sheet(aoa);
-  ws['!cols'] = XL_COLS.map((_, i) => ({ wch: i === 0 ? 22 : 20 }));
-  // freeze header row
+  ws['!cols'] = XL_COLS.map((_, i) => ({ wch: i === 0 ? 24 : 22 }));
   ws['!freeze'] = { xSplit:0, ySplit:1 };
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Products');
+  const sheetName = isAr ? 'المنتجات' : 'Products';
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
   XLSX.writeFile(wb, 'ProfitLens_Products_Template.xlsx');
 }
 
@@ -8597,10 +8593,17 @@ function handleExcelUpload(input){
       const ws   = wb.Sheets[wb.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
       if(rows.length < 2) throw new Error(T[LANG].xl_err_norows || 'File has no data rows.');
-      // build label→field map (lower-case for resilience)
+      // build label→field map — supports both English and Arabic headers
       const lblMap = {};
-      XL_COLS.forEach(c => { lblMap[c.label.toLowerCase()] = c.field; });
-      const hdrs    = rows[0].map(h => String(h).trim().toLowerCase());
+      XL_COLS.forEach(c => {
+        lblMap[c.label.toLowerCase()] = c.field;
+        if(c.label_ar) lblMap[c.label_ar.trim()] = c.field;
+      });
+      // normalise: lowercase English, trim Arabic (Arabic has no case)
+      const hdrs = rows[0].map(h => {
+        const s = String(h).trim();
+        return /[؀-ۿ]/.test(s) ? s : s.toLowerCase();
+      });
       const dataRows = rows.slice(1).filter(r => r.some(c => String(c).trim() !== ''));
       if(!dataRows.length) throw new Error(T[LANG].xl_err_nodatarows || 'No data found. Fill in the rows below the header.');
       const newProds = dataRows.map((row, ri) => {
