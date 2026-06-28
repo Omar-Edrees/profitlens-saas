@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ProfitLens Pro</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <!-- preconnect to speed up font + CDN loading -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -502,6 +503,24 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 }
 @media(max-width:560px){
   .input-groups{grid-template-columns:1fr;grid-template-areas:"pricing""fulfill""commfees""media""fc"}
+  /* Ranking & verdict tables — turn each row into a card on mobile */
+  .rank-table{min-width:0}
+  .rank-table thead{display:none}
+  .rank-table,.rank-table tbody{display:block;width:100%}
+  .rank-table tr{display:block;border:1px solid var(--bdr2);border-radius:10px;
+    margin-bottom:10px;padding:2px 12px;background:var(--surf2)}
+  .rank-table tr:hover td{background:transparent}
+  .rank-table td{display:flex;justify-content:space-between;align-items:center;gap:12px;
+    padding:9px 0!important;border:none!important;border-bottom:1px solid var(--bdr)!important;
+    text-align:end;font-size:13px}
+  .rank-table tr td:last-child{border-bottom:none!important}
+  .rank-table td::before{content:attr(data-label);font-size:10px;text-transform:uppercase;
+    letter-spacing:.04em;color:var(--txt3);font-weight:700;white-space:nowrap;flex-shrink:0}
+  .rank-table td[data-label='']::before,.rank-table td:not([data-label])::before{content:''}
+  .rank-table .rk-hide-m{display:none!important}
+  .rank-table .rk-edit{padding-top:11px!important}
+  .rank-table .rk-edit .rank-go-btn{width:100%;padding:9px}
+  .rank-bar-wrap{display:none}
 }
 .input-card{
   background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);
@@ -1893,6 +1912,34 @@ input[type=range]::-moz-range-thumb{
 }
 .rank-table tr:last-child td{border-bottom:none}
 .rank-table tr:hover td{background:var(--surf2)}
+
+/* ── All-Products: scrollable growing sections ──────────────────── */
+/* Tables: cap height & scroll vertically with a sticky header so the
+   page stays manageable no matter how many products are added. */
+.ap-tbl-scroll{max-height:62vh;overflow:auto;border-radius:10px}
+.ap-tbl-scroll thead th{position:sticky;top:0;z-index:2}
+.ap-tbl-scroll::-webkit-scrollbar{width:9px;height:9px}
+.ap-tbl-scroll::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:5px}
+.ap-tbl-scroll::-webkit-scrollbar-track{background:transparent}
+/* Charts: keep a readable bar width — scroll sideways when many products. */
+.ch-wrap--scroll{overflow-x:auto;overflow-y:hidden}
+.ch-inner{position:relative;height:100%}
+.ch-wrap--scroll::-webkit-scrollbar{height:9px}
+.ch-wrap--scroll::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:5px}
+.ch-wrap--scroll::-webkit-scrollbar-track{background:transparent}
+
+/* ── All-Products: per-table filter/sort toolbar ────────────────── */
+.ap-tb{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.ap-tb-chips{display:flex;gap:4px;flex-wrap:wrap}
+.ap-tb-chip{padding:6px 13px;border-radius:8px;border:1px solid var(--bdr2);background:var(--surf2);
+  color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s}
+.ap-tb-chip:hover{border-color:var(--c1)}
+.ap-tb-chip.active{background:var(--c1);border-color:var(--c1);color:#0a0a0a}
+.ap-tb-sort{display:flex;align-items:center;gap:6px;margin-inline-start:auto}
+.ap-tb-sortlbl{font-size:11px;color:var(--txt3);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.ap-tb-sel{background:var(--surf2);border:1px solid var(--bdr2);border-radius:8px;color:var(--txt);
+  font-family:inherit;font-size:12px;font-weight:600;padding:6px 10px;cursor:pointer;outline:none}
+.ap-tb-sel:hover{border-color:var(--c1)}
 .rank-num{
   width:24px;height:24px;border-radius:50%;
   display:inline-flex;align-items:center;justify-content:center;
@@ -2006,6 +2053,24 @@ input[type=range]::-moz-range-thumb{
 .mini-toggle.on{background:var(--c1);border-color:var(--c1)}
 .mini-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .2s}
 .mini-toggle.on .mini-thumb{left:18px}
+/* ── Shipping Zones ── */
+.shipzone-head{display:grid;grid-template-columns:1.4fr 1fr 1fr 0.9fr;gap:10px;padding:2px 12px 4px;font-size:10px;color:var(--txt3)}
+.shipzone-list{display:flex;flex-direction:column;gap:8px}
+.shipzone-row{display:grid;grid-template-columns:1.4fr 1fr 1fr 0.9fr;gap:10px;align-items:center;background:var(--surf);border:1px solid var(--bdr2);border-radius:var(--r);padding:8px 12px}
+.shipzone-name{font-size:12px;color:var(--txt);font-weight:500;display:flex;align-items:center;gap:8px;line-height:1.3}
+.shipzone-name .zn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:var(--surf3);color:var(--txt2);font-family:var(--mono);font-size:11px;font-weight:700;flex-shrink:0}
+.shipzone-field{display:flex;align-items:center;gap:6px}
+.shipzone-field input{width:100%;height:34px;padding:0 10px;background:var(--surf2);border:1px solid var(--bdr2);border-radius:var(--r);color:var(--txt);font-family:var(--mono);font-size:13px;outline:none}
+.shipzone-field input:focus{border-color:var(--c4)}
+.shipzone-field input:disabled{background:var(--surf3);color:var(--txt3);cursor:not-allowed}
+.shipzone-field .unit{color:var(--txt3);font-size:11px;font-family:var(--mono);flex-shrink:0}
+.shipzone-blended{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--bdr)}
+.ship-zone-override-hint{font-size:11px;color:var(--c4);margin-top:8px;display:flex;align-items:center;gap:6px;line-height:1.4}
+#i_courier:disabled,#i_ship_c:disabled{opacity:.5;cursor:not-allowed}
+.shipzone-blended-item{background:var(--surf);border:1px solid var(--bdr2);border-radius:var(--r);padding:8px 12px}
+.shipzone-blended-lbl{font-size:10px;color:var(--txt3);margin-bottom:2px}
+.shipzone-blended-val{font-size:14px;font-family:var(--mono);font-weight:600;color:var(--c1)}
+.shipzone-blended-val.warn{color:var(--c3)}
 .cycle-kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
 .cycle-kpi{background:var(--surf);border:1px solid var(--bdr2);border-radius:var(--r);padding:10px 12px}
 .cycle-kpi-lbl{font-size:10px;color:var(--txt3);margin-bottom:4px}
@@ -2016,7 +2081,7 @@ input[type=range]::-moz-range-thumb{
 .ops-section-title{font-size:10px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--bdr)}
 .ops-ccc-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.2);border-radius:var(--r);padding:7px 14px;font-size:12px;font-family:var(--mono);color:var(--c2)}
 .ops-scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-@media(max-width:600px){.bundle-card{grid-template-columns:1fr 1fr;position:relative;padding:12px}.bundle-card-label{grid-column:1/-1}.bundle-del-btn{position:absolute;top:10px;right:10px}.cycle-kpi-row{grid-template-columns:1fr 1fr}.ops-inputs{grid-template-columns:1fr}.bundle-blended{grid-template-columns:1fr}.ops-scenario-grid{grid-template-columns:1fr}}
+@media(max-width:600px){.bundle-card{grid-template-columns:1fr 1fr;position:relative;padding:12px}.bundle-card-label{grid-column:1/-1}.bundle-del-btn{position:absolute;top:10px;right:10px}.cycle-kpi-row{grid-template-columns:1fr 1fr}.ops-inputs{grid-template-columns:1fr}.bundle-blended{grid-template-columns:1fr}.ops-scenario-grid{grid-template-columns:1fr}.shipzone-head{display:none}.shipzone-row{grid-template-columns:1fr 1fr;padding:12px}.shipzone-name{grid-column:1/-1}.shipzone-blended{grid-template-columns:1fr}}
 /* ── Respect reduced-motion preference ── */
 @media (prefers-reduced-motion: reduce){
   *,*::before,*::after{
@@ -2199,6 +2264,7 @@ input[type=range]::-moz-range-thumb{
         <div class="field"><label data-t="lbl_courier">Avg. shipping cost (your cost)</label><div class="f-row"><input type="number" id="i_courier" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
         <div class="field"><label data-t="lbl_ship_charged">Shipping charged to customer</label><div class="f-row"><input type="number" id="i_ship_c" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
       </div>
+      <div id="ship_zone_override_hint" class="ship-zone-override-hint" style="display:none">🚚 <span data-t="ship_zone_override_hint">Managed by Shipping zones (advanced) — these two fields are calculated from your zones.</span></div>
       <div style="border-top:1px solid var(--bdr2);margin:12px 0"></div>
       <div class="field-pair">
         <div class="field">
@@ -3318,6 +3384,61 @@ input[type=range]::-moz-range-thumb{
         <div class="adv-item-hint" id="adv_pdr_hint" data-t="adv_pdr_hint_off">Locked → no post-delivery returns in calculations</div>
       </div>
 
+      <!-- Shipping Zones -->
+      <div class="adv-item locked" id="adv_shipzone_item" style="grid-column:1/-1">
+        <div class="adv-item-header">
+          <div class="adv-item-title">
+            🚚 <span data-t="adv_shipzone_lbl">Shipping zones</span>
+            <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_shipzone">Split your orders across 5 delivery zones. For each zone enter the shipping cost you pay (your cost), the shipping you charge the customer, and the % share of your orders that go there. The tool computes weighted-average values (weighted by order share) and uses them as your "Avg. shipping cost (your cost)" and "Shipping charged to customer". When unlocked, those two basic fields up in the Shipping section are locked and driven by these zones. Shares don't have to sum to exactly 100% — the averages are normalised by the total you enter.</span></span>
+          </div>
+          <button class="adv-lock-btn" id="adv_shipzone_lock" onclick="toggleAdvLock('shipzone')" title="Unlock to enable">🔒</button>
+        </div>
+        <div class="shipzone-head">
+          <div data-t="shipzone_col_zone">Zone</div>
+          <div data-t="shipzone_col_cost">Shipping cost (your cost)</div>
+          <div data-t="shipzone_col_chg">Shipping charged to customer</div>
+          <div data-t="shipzone_col_share">% of orders</div>
+        </div>
+        <div class="shipzone-list" id="adv_shipzone_list">
+          <div class="shipzone-row">
+            <div class="shipzone-name"><span class="zn">1</span><span data-t="shipzone_z1">Cairo &amp; Giza</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_cost_1" placeholder="e.g. 50" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_chg_1" placeholder="e.g. 60" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_share_1" placeholder="e.g. 45" min="0" max="100" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">%</span></div>
+          </div>
+          <div class="shipzone-row">
+            <div class="shipzone-name"><span class="zn">2</span><span data-t="shipzone_z2">Alexandria</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_cost_2" placeholder="e.g. 55" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_chg_2" placeholder="e.g. 65" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_share_2" placeholder="e.g. 12" min="0" max="100" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">%</span></div>
+          </div>
+          <div class="shipzone-row">
+            <div class="shipzone-name"><span class="zn">3</span><span data-t="shipzone_z3">Delta &amp; Canal cities</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_cost_3" placeholder="e.g. 65" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_chg_3" placeholder="e.g. 70" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_share_3" placeholder="e.g. 25" min="0" max="100" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">%</span></div>
+          </div>
+          <div class="shipzone-row">
+            <div class="shipzone-name"><span class="zn">4</span><span data-t="shipzone_z4">Upper Egypt</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_cost_4" placeholder="e.g. 75" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_chg_4" placeholder="e.g. 80" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_share_4" placeholder="e.g. 13" min="0" max="100" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">%</span></div>
+          </div>
+          <div class="shipzone-row">
+            <div class="shipzone-name"><span class="zn">5</span><span data-t="shipzone_z5">Border &amp; remote areas</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_cost_5" placeholder="e.g. 100" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_chg_5" placeholder="e.g. 100" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_share_5" placeholder="e.g. 5" min="0" max="100" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">%</span></div>
+          </div>
+        </div>
+        <div class="shipzone-blended" id="adv_shipzone_blended" style="display:none">
+          <div class="shipzone-blended-item"><div class="shipzone-blended-lbl" data-t="shipzone_avg">Weighted avg shipping cost</div><div class="shipzone-blended-val" id="szn_avg">—</div></div>
+          <div class="shipzone-blended-item"><div class="shipzone-blended-lbl" data-t="shipzone_chg">Weighted avg charged to customer</div><div class="shipzone-blended-val" id="szn_chg">—</div></div>
+          <div class="shipzone-blended-item"><div class="shipzone-blended-lbl" data-t="shipzone_total">Total order share</div><div class="shipzone-blended-val" id="szn_total">—</div></div>
+        </div>
+        <div class="adv-item-hint" id="adv_shipzone_hint" data-t="adv_shipzone_hint_off">Locked → single "Avg. shipping cost" used in calculations</div>
+      </div>
+
       <div class="adv-item locked" id="adv_bundle_item" style="grid-column:1/-1">
         <div class="adv-item-header"><div class="adv-item-title"><span data-t="bundle_pricing_title">&#x1F381; Bundle Pricing</span><span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_bundle">Enter each bundle and order count. Tool auto-calculates blended avg price and shipping.</span></span></div><button class="adv-lock-btn" id="adv_bundle_lock" onclick="toggleAdvLock('bundle')" title="Unlock">&#x1F512;</button></div>
         <div id="adv_bundle_list"></div>
@@ -3393,9 +3514,22 @@ input[type=range]::-moz-range-thumb{
       <div class="kpi" style="--kc:var(--txt2)"><div class="kpi-lbl" data-t="ap_total_leads_lbl">Total Leads</div><div class="kpi-val" id="ap_m_leads" style="color:var(--txt)">—</div><div class="kpi-hint" data-t="hint_leads">All incoming leads</div></div>
       <div class="kpi" style="--kc:var(--c3)"><div class="kpi-lbl" data-t="ap_total_conf_lbl">Total Confirmed</div><div class="kpi-val" id="ap_m_conf" style="color:var(--c3)">—</div><div class="kpi-hint" data-t="ap_after_conf_hint">After confirmation rates</div></div>
       <div class="kpi" style="--kc:var(--c4)"><div class="kpi-lbl" data-t="ap_total_del_lbl">Total Delivered</div><div class="kpi-val" id="ap_m_del" style="color:var(--c4)">—</div><div class="kpi-hint" data-t="ap_after_del_hint">After delivery rates</div></div>
+      <div class="kpi" style="--kc:var(--c1)"><div class="kpi-lbl"><span data-t="ap_safety_lbl">Safety margin</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_safety_tip">How far your blended CPA sits below the weighted break-even CPA. Higher = more room to scale spend safely.<br>= (BE CPA − Blended CPA) ÷ BE CPA</span></span></div><div class="kpi-val" id="ap_m_safety">—</div><div class="kpi-hint" data-t="ap_safety_hint">Room below break-even</div></div>
+      <div class="kpi" style="--kc:var(--red)"><div class="kpi-lbl"><span data-t="ap_wasted_lbl">Wasted spend</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_wasted_tip">Share of total ad budget spent on leads that never became delivered orders.<br>= Budget × (1 − Lead→Delivered rate)<br>Some is the normal cost of confirmation — but lower is better.</span></span></div><div class="kpi-val" id="ap_m_wasted">—</div><div class="kpi-hint" id="ap_m_wasted_hint" data-t="ap_wasted_hint">On undelivered leads</div></div>
+      <div class="kpi" style="--kc:var(--c2)"><div class="kpi-lbl"><span data-t="ap_ceiling_lbl">Spend ceiling</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_ceiling_tip">Maximum total ad budget the whole business can absorb before profit hits zero (holding delivered volume constant).<br>= Current ad spend + Total net profit</span></span></div><div class="kpi-val" id="ap_m_ceiling">—</div><div class="kpi-hint" id="ap_m_ceiling_hint" data-t="ap_ceiling_hint">Max before break-even</div></div>
+    </div>
+    <!-- Per-product decision table: Scale / Hold / Cut -->
+    <div class="chart-card" style="margin-top:16px">
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span><span data-t="ap_verdict_title">Per-product verdict — where to put your money</span></div>
+      <div id="ap_verdict_wrap"></div>
+    </div>
+    <!-- Portfolio bubble chart: safety vs profit, size = budget -->
+    <div class="chart-card" style="margin-top:14px">
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c4)"></span><span data-t="ap_bubble_title">Portfolio map — safety vs profit (bubble size = ad budget)</span></div>
+      <div class="ch-wrap"><canvas id="ap_ch_bubble"></canvas></div>
     </div>
     <!-- Per-product CPA comparison chart -->
-    <div class="chart-card" style="margin-top:16px">
+    <div class="chart-card" style="margin-top:14px">
       <div class="chart-lbl"><span class="cdot" style="background:var(--c2)"></span><span data-t="ap_cpa_chart">CPA vs Break-even CPA — per product</span></div>
       <div class="ch-wrap"><canvas id="ap_ch_cpa"></canvas></div>
     </div>
@@ -3496,7 +3630,22 @@ input[type=range]::-moz-range-thumb{
       <div class="kpi-val" id="m_ltv_cac">—</div>
       <div class="kpi-hint" data-t="hint_ltv_cac">Target ≥ 3×</div>
     </div>
+    <div class="kpi" id="be_ads_budget_card" style="--kc:var(--c2);display:none">
+      <div class="kpi-lbl">
+        <span data-t="bud_rec_title">Ad Budget Gauge</span>
+        <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_bud_rec">🔴 Max = break-even (contribution margin × stock − salary) — spend more and you lose.<br>🟡 70% = moderate, healthy margin.<br>🟢 50% = conservative, comfortable profit.<br>Actual = your entered ad budget.</span></span>
+      </div>
+      <div style="display:flex;gap:3px;margin:4px 0 2px;flex-wrap:wrap">
+        <button type="button" id="be_bud_btn_100" class="mb-io-seg-btn" onclick="advBudgetSelect(1.0)" style="padding:2px 8px;font-size:10px">🔴</button>
+        <button type="button" id="be_bud_btn_70"  class="mb-io-seg-btn" onclick="advBudgetSelect(0.7)" style="padding:2px 8px;font-size:10px">🟡</button>
+        <button type="button" id="be_bud_btn_50"  class="mb-io-seg-btn" onclick="advBudgetSelect(0.5)" style="padding:2px 8px;font-size:10px">🟢</button>
+        <button type="button" id="be_bud_btn_act" class="mb-io-seg-btn active" onclick="advBudgetSelect('actual')" data-t="bud_rec_actual" style="padding:2px 8px;font-size:9.5px">Actual</button>
+      </div>
+      <div class="kpi-val" id="be_bud_val">—</div>
+      <div class="kpi-hint" id="be_bud_hint" data-t="bud_rec_hint_actual">Your entered ad budget</div>
+    </div>
   </div>
+
   <div id="m_net_delivered" style="display:none;font-size:12px;font-family:var(--mono);margin-top:-8px;margin-bottom:12px;padding:8px 12px;background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);border-radius:var(--r);color:var(--red)">—</div>
 
   <div class="kpi-pool" id="kpi_pool">
@@ -3885,8 +4034,21 @@ input[type=range]::-moz-range-thumb{
       <div class="kpi" style="--kc:var(--c1)"><div class="kpi-lbl" data-t="ap_sh_collected_lbl">Avg Collected / unit</div><div class="kpi-val" id="ap_sh_collected" style="color:var(--c1)">—</div><div class="kpi-hint" data-t="ap_sh_weighted_hint">Weighted across products</div></div>
       <div class="kpi" style="--kc:var(--red)"><div class="kpi-lbl" data-t="ap_sh_net_lbl">Avg Net Shipping on you</div><div class="kpi-val" id="ap_sh_net" style="color:var(--red)">—</div><div class="kpi-hint" data-t="sh_hint_real_collected">Real − Collected</div></div>
       <div class="kpi" style="--kc:var(--c4)"><div class="kpi-lbl" data-t="ap_sh_total_lbl">Total Shipping Cost</div><div class="kpi-val" id="ap_sh_total" style="color:var(--c4)">—</div><div class="kpi-hint" data-t="ap_sh_all_hint">All products combined</div></div>
+      <div class="kpi" style="--kc:var(--c1)"><div class="kpi-lbl"><span data-t="ap_sh_recovery_lbl">Shipping recovery</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_sh_recovery_tip">Share of your real shipping cost that customers cover through shipping charges.<br>= Total collected ÷ Total real shipping<br>Below 100% means you pay the rest out of pocket.</span></span></div><div class="kpi-val" id="ap_sh_recovery">—</div><div class="kpi-hint" data-t="ap_sh_recovery_hint">Covered by customers</div></div>
+      <div class="kpi" style="--kc:var(--red)"><div class="kpi-lbl"><span data-t="ap_sh_burden_lbl">Net burden you absorb</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_sh_burden_tip">Total shipping money the business eats after what customers pay.<br>= Total real shipping − Total collected</span></span></div><div class="kpi-val" id="ap_sh_burden">—</div><div class="kpi-hint" id="ap_sh_burden_hint" data-t="ap_sh_burden_hint">Out of your pocket</div></div>
+      <div class="kpi" style="--kc:var(--red)"><div class="kpi-lbl"><span data-t="ap_sh_rto_lbl">Return (RTO) cost</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_sh_rto_tip">Total cost of orders confirmed but never delivered (returns) — courier charges both legs with zero revenue back.<br>= (Confirmed − Delivered) × return cost per order</span></span></div><div class="kpi-val" id="ap_sh_rto">—</div><div class="kpi-hint" id="ap_sh_rto_hint" data-t="ap_sh_rto_hint">Confirmed but not delivered</div></div>
     </div>
+    <!-- Per-product shipping verdict -->
     <div class="chart-card" style="margin-top:16px">
+      <div class="chart-lbl"><span class="cdot" style="background:var(--c1)"></span><span data-t="ap_sh_verdict_title">Per-product shipping verdict — who's underwater</span></div>
+      <div id="ap_sh_verdict_wrap"></div>
+    </div>
+    <!-- Net shipping burden (total) per product -->
+    <div class="chart-card" style="margin-top:14px">
+      <div class="chart-lbl"><span class="cdot" style="background:var(--red)"></span><span data-t="ap_sh_burden_chart">Net shipping burden (total) — per product</span></div>
+      <div class="ch-wrap"><canvas id="ap_ch_shburden"></canvas></div>
+    </div>
+    <div class="chart-card" style="margin-top:14px">
       <div class="chart-lbl"><span class="cdot" style="background:var(--c3)"></span><span data-t="ap_sh_chart">Real shipping cost vs collected — per product</span></div>
       <div class="ch-wrap"><canvas id="ap_ch_ship"></canvas></div>
     </div>
@@ -4075,6 +4237,13 @@ input[type=range]::-moz-range-thumb{
       </div>
     </div>
 
+    <!-- ══ BUSINESS HEALTH STRIP ══ -->
+    <div class="kpi-row" style="margin-bottom:16px">
+      <div class="kpi" style="--kc:var(--c1)"><div class="kpi-lbl"><span data-t="ap_ov_safety_lbl">Margin of safety</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_ov_safety_tip">How far total revenue can fall before the whole business hits break-even.<br>= Net profit ÷ Contribution margin<br>Higher = more cushion against a bad month.</span></span></div><div class="kpi-val" id="ap_ov_safety">—</div><div class="kpi-hint" id="ap_ov_safety_hint" data-t="ap_ov_safety_hint">Room before break-even</div></div>
+      <div class="kpi" style="--kc:var(--c4)"><div class="kpi-lbl"><span data-t="ap_ov_roi_lbl">Overall ROI</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_ov_roi_tip">Net profit as a share of every pound the business spends (product, shipping, fees, ads, salaries).<br>= Net profit ÷ Total all-in costs</span></span></div><div class="kpi-val" id="ap_ov_roi">—</div><div class="kpi-hint" id="ap_ov_roi_hint" data-t="ap_ov_roi_hint">Profit per 100 spent</div></div>
+      <div class="kpi" style="--kc:var(--c3)"><div class="kpi-lbl"><span data-t="ap_ov_conc_lbl">Profit concentration</span> <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="ap_ov_conc_tip">Share of total profit coming from your single biggest product. High concentration = fragile — one product failing hurts the whole business.</span></span></div><div class="kpi-val" id="ap_ov_conc">—</div><div class="kpi-hint" id="ap_ov_conc_hint" data-t="ap_ov_conc_hint">Top product share</div></div>
+    </div>
+
     <!-- ══ ADS + SHIPPING ══ -->
     <div class="ov2-insight-row" style="margin-bottom:16px">
 
@@ -4182,6 +4351,16 @@ input[type=range]::-moz-range-thumb{
 
     </div>
 
+    <!-- ══ Ranking ══ -->
+    <div class="master-ov" style="border-top:3px solid var(--c4);margin-bottom:14px">
+      <div class="rank-title" style="margin-bottom:12px">
+        <span data-t="ap_ranked_by">Products ranked by Total Net Profit</span>
+        <span class="rank-sep"></span>
+        <span id="ap_rank_count" class="master-ov-badge" style="background:rgba(167,139,250,.12);color:var(--c4)">— products</span>
+      </div>
+      <div id="ap_rank_wrap"><div class="master-empty">—</div></div>
+    </div>
+
     <!-- ══ P&L + Charts ══ -->
     <div class="chart-card" style="margin-bottom:14px">
       <div class="chart-lbl"><span class="cdot" style="background:var(--c2)"></span><span data-t="ap_net_profit_chart">Net Profit per product</span></div>
@@ -4207,16 +4386,6 @@ input[type=range]::-moz-range-thumb{
           <tbody id="ap_pl_tbody"></tbody>
         </table>
       </div>
-    </div>
-
-    <!-- ══ Ranking ══ -->
-    <div class="master-ov" style="border-top:3px solid var(--c4)">
-      <div class="rank-title" style="margin-bottom:12px">
-        <span data-t="ap_ranked_by">Products ranked by Total Net Profit</span>
-        <span class="rank-sep"></span>
-        <span id="ap_rank_count" class="master-ov-badge" style="background:rgba(167,139,250,.12);color:var(--c4)">— products</span>
-      </div>
-      <div id="ap_rank_wrap"><div class="master-empty">—</div></div>
     </div>
 
   </div>
@@ -5253,6 +5422,46 @@ function fcToggleAdv(){
   arrow.style.transform = open ? 'rotate(90deg)' : '';
 }
 
+// ── Budget Recommendation Card ──────────────────────────────────
+let BE_BUD_SEL = 'actual'; // 1.0 | 0.7 | 0.5 | 'actual'
+
+function advBudgetSelect(sel){
+  BE_BUD_SEL = sel;
+  [[1.0,'be_bud_btn_100'],[0.7,'be_bud_btn_70'],[0.5,'be_bud_btn_50'],['actual','be_bud_btn_act']].forEach(([p,id])=>{
+    const b = document.getElementById(id);
+    if(b) b.classList.toggle('active', p === sel);
+  });
+  updateBeBudgetCard();
+}
+
+function updateBeBudgetCard(){
+  const card   = document.getElementById('be_ads_budget_card');
+  const valEl  = document.getElementById('be_bud_val');
+  const hintEl = document.getElementById('be_bud_hint');
+  if(!card || !valEl) return;
+  const beMax = window.LAST_BE_ADS_BUDGET;
+  if(!beMax || beMax <= 0){ card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  const CUR = window.CURRENCY || 'EGP';
+  if(BE_BUD_SEL === 'actual'){
+    const actual = (window.LAST_ACTUAL_ADS > 0)
+      ? window.LAST_ACTUAL_ADS
+      : (parseFloat(String(document.getElementById('i_ads')?.value||'').replace(/,/g,'')) || 0);
+    valEl.textContent = actual > 0 ? Math.round(actual).toLocaleString('en')+' '+CUR : '—';
+    valEl.style.color = actual > beMax ? 'var(--red)' : actual > beMax*0.7 ? 'var(--c3)' : 'var(--c1)';
+    if(hintEl){ const k='bud_rec_hint_actual'; hintEl.textContent=T[LANG][k]||hintEl.textContent; hintEl.dataset.t=k; }
+  } else {
+    const rec = beMax * BE_BUD_SEL;
+    valEl.textContent = Math.round(rec).toLocaleString('en')+' '+CUR;
+    valEl.style.color = BE_BUD_SEL <= 0.5 ? 'var(--c1)' : BE_BUD_SEL <= 0.7 ? 'var(--c3)' : 'var(--red)';
+    if(hintEl){
+      const key = BE_BUD_SEL <= 0.5 ? 'bud_rec_hint_50' : BE_BUD_SEL <= 0.7 ? 'bud_rec_hint_70' : 'bud_rec_hint_max';
+      hintEl.textContent = T[LANG][key] || hintEl.textContent;
+      hintEl.dataset.t = key;
+    }
+  }
+}
+
 // Pricing card → Advanced options (holds Avg orders per customer)
 function pricingToggleAdv(){
   const panel = document.getElementById('pricing_adv_panel');
@@ -5425,6 +5634,7 @@ let ADV_DUR_LOCKED = true;   // Campaign duration: locked → treated as 1 month
 let ADV_VAT_LOCKED = true;   // VAT rate: locked → treated as 0
 let ADV_PDR_LOCKED    = true;   // Post-Delivery Return: locked → ignored
 let ADV_BUNDLE_LOCKED = true;   // Bundle Pricing: locked → single price
+let ADV_SHIPZONE_LOCKED = true; // Shipping Zones: locked → single "Avg. shipping cost" used
 let ADV_OPS_LOCKED    = true;   // Operations & Cash Flow: locked
 let ADV_CASH_LOCKED   = false;  // Available cash toggle: false = cash active (default)
 
@@ -5457,6 +5667,62 @@ function returnDamageFrac(){
   const el = document.getElementById('adv_pdr_damaged_pct');
   const pct = el ? (parseFloat(String(el.value).replace(/,/g,'')) || 0) : 0;
   return Math.max(0, Math.min(pct, 100)) / 100;
+}
+
+// Read Shipping Zones → order-share-weighted avg courier cost (YOUR cost) per order.
+// weightedAvg = Σ(zoneCost × zoneShare) / Σ(zoneShare). Returns null when locked or
+// when no order shares are entered → calc falls back to the basic i_courier field.
+function advShipZones(){
+  if(ADV_SHIPZONE_LOCKED) return null;
+  let wsum = 0, ssum = 0;
+  for(let i = 1; i <= 5; i++){
+    const cost  = parseFloat(document.getElementById('sz_cost_'  + i)?.value) || 0;
+    const share = parseFloat(document.getElementById('sz_share_' + i)?.value) || 0;
+    if(share > 0){ wsum += cost * share; ssum += share; }
+  }
+  return ssum > 0 ? wsum / ssum : null;
+}
+
+// Read Shipping Zones → order-share-weighted avg shipping CHARGED to the customer.
+// Same weighting as advShipZones, but on the per-zone customer-charged amount.
+// Returns null when locked or when no order shares are entered → calc falls back
+// to the basic i_ship_c field.
+function advShipCharged(){
+  if(ADV_SHIPZONE_LOCKED) return null;
+  let wsum = 0, ssum = 0;
+  for(let i = 1; i <= 5; i++){
+    const chg   = parseFloat(document.getElementById('sz_chg_'   + i)?.value) || 0;
+    const share = parseFloat(document.getElementById('sz_share_' + i)?.value) || 0;
+    if(share > 0){ wsum += chg * share; ssum += share; }
+  }
+  return ssum > 0 ? wsum / ssum : null;
+}
+
+// Recompute the weighted-avg shipping (your cost + charged) + total order share shown inside the card.
+function shipzoneRecalc(){
+  if(ADV_SHIPZONE_LOCKED) return;
+  let wsum = 0, csum = 0, ssum = 0;
+  for(let i = 1; i <= 5; i++){
+    const cost  = parseFloat(document.getElementById('sz_cost_'  + i)?.value) || 0;
+    const chg   = parseFloat(document.getElementById('sz_chg_'   + i)?.value) || 0;
+    const share = parseFloat(document.getElementById('sz_share_' + i)?.value) || 0;
+    if(share > 0){ wsum += cost * share; csum += chg * share; ssum += share; }
+  }
+  const avg    = ssum > 0 ? wsum / ssum : 0;
+  const avgChg = ssum > 0 ? csum / ssum : 0;
+  const bl  = document.getElementById('adv_shipzone_blended');
+  if(bl) bl.style.display = ssum > 0 ? 'grid' : 'none';
+  const f  = n => (Math.round(n * 10) / 10).toLocaleString('en', {minimumFractionDigits:1, maximumFractionDigits:1});
+  const se = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
+  se('szn_avg', f(avg) + ' ' + (window.CURRENCY || 'EGP'));
+  se('szn_chg', f(avgChg) + ' ' + (window.CURRENCY || 'EGP'));
+  const totEl = document.getElementById('szn_total');
+  if(totEl){
+    totEl.textContent = f(ssum) + '%';
+    // Shares need not sum to 100 (avg is normalised) — just flag it visually.
+    totEl.classList.toggle('warn', ssum > 0 && Math.abs(ssum - 100) > 0.5);
+  }
+  dCalc();
 }
 
 function toggleAdvanced(){
@@ -5541,6 +5807,43 @@ function toggleAdvLock(which){
     const bb=document.getElementById('adv_bundle_lock'),bi=document.getElementById('adv_bundle_item'),bh=document.getElementById('adv_bundle_hint'),ba=document.getElementById('adv_bundle_add');
     if(ADV_BUNDLE_LOCKED){bb.textContent='\uD83D\uDD12';bb.classList.remove('unlocked');bi.classList.add('locked');if(ba)ba.disabled=true;document.querySelectorAll('#adv_bundle_list input').forEach(e=>e.disabled=true);bh.textContent=T[LANG].js_bundle_locked;bh.classList.remove('active');const bl2=document.getElementById('adv_bundle_blended');if(bl2)bl2.style.display='none';}
     else{bb.textContent='\uD83D\uDD13';bb.classList.add('unlocked');bi.classList.remove('locked');if(ba)ba.disabled=false;document.querySelectorAll('#adv_bundle_list input').forEach(e=>e.disabled=false);bh.textContent=T[LANG].js_bundle_unlocked;bh.classList.add('active');if(!document.querySelectorAll('#adv_bundle_list .bundle-card').length)bundleAddRow();}
+  } else if(which==='shipzone'){
+    ADV_SHIPZONE_LOCKED = !ADV_SHIPZONE_LOCKED;
+    const btn  = document.getElementById('adv_shipzone_lock');
+    const item = document.getElementById('adv_shipzone_item');
+    const hint = document.getElementById('adv_shipzone_hint');
+    const inps = item.querySelectorAll('input');
+    const bl   = document.getElementById('adv_shipzone_blended');
+    // Basic Shipping fields that the zones take over when unlocked
+    const baseCourier = document.getElementById('i_courier');
+    const baseShipC   = document.getElementById('i_ship_c');
+    const baseHint    = document.getElementById('ship_zone_override_hint');
+    if(ADV_SHIPZONE_LOCKED){
+      btn.textContent = '\uD83D\uDD12';
+      btn.classList.remove('unlocked');
+      item.classList.add('locked');
+      inps.forEach(e => e.disabled = true);
+      hint.textContent = T[LANG].adv_shipzone_hint_off || 'Locked \u2192 single "Avg. shipping cost" used in calculations';
+      hint.classList.remove('active');
+      if(bl) bl.style.display = 'none';
+      // Hand the basic Shipping fields back to the user
+      if(baseCourier) baseCourier.disabled = false;
+      if(baseShipC)   baseShipC.disabled   = false;
+      if(baseHint)    baseHint.style.display = 'none';
+    } else {
+      btn.textContent = '\uD83D\uDD13';
+      btn.classList.add('unlocked');
+      item.classList.remove('locked');
+      inps.forEach(e => e.disabled = false);
+      hint.textContent = T[LANG].adv_shipzone_hint_on || 'Unlocked \u2192 weighted-avg shipping (by zone) overrides "Avg. shipping cost"';
+      hint.classList.add('active');
+      // Lock the basic Shipping fields \u2014 the zones drive "your cost" + "charged to customer" now
+      if(baseCourier) baseCourier.disabled = true;
+      if(baseShipC)   baseShipC.disabled   = true;
+      if(baseHint)    baseHint.style.display = '';
+      shipzoneRecalc();
+      document.getElementById('sz_cost_1')?.focus();
+    }
   } else if(which==='ops'){
     ADV_OPS_LOCKED=!ADV_OPS_LOCKED;
     // ops section is "coming soon" — no toggle behaviour needed
@@ -5728,11 +6031,16 @@ function calc(){
   const priceRaw=v('i_price'), costRaw=v('i_cost'), shipCRaw=v('i_ship_c');
   const units_m = Math.max(v('i_units') || 1, 0.1);
   const _bndl = (typeof advBundles==='function') ? advBundles() : null;
+  // Shipping Zones (advanced): weighted-avg shipping CHARGED to customer overrides the basic field
+  const _szShipC = (typeof advShipCharged==='function') ? advShipCharged() : null;
   const price = _bndl ? _bndl.price : priceRaw * units_m;
   const cost  = costRaw * units_m;
-  const shipC = _bndl ? _bndl.ship  : shipCRaw;
+  const shipC = _bndl ? _bndl.ship  : ((_szShipC != null) ? _szShipC : shipCRaw);
   const fulfillDel=v('i_fulfill_del'), fulfillRet=v('i_fulfill_ret');
-  const courier=v('i_courier'), commPct=v('i_comm')/100, plat=v('i_plat');
+  const commPct=v('i_comm')/100, plat=v('i_plat');
+  // Shipping Zones (advanced): order-share-weighted courier cost overrides the basic field
+  const _szCourier = (typeof advShipZones==='function') ? advShipZones() : null;
+  const courier = (_szCourier != null) ? _szCourier : v('i_courier');
   const gatewayPct = v('i_gateway_fee')/100;
   // Custom fees per delivered order (from cf_custom_rows)
   const cfCustomPerOrder = cfGetTotalPerOrder();
@@ -5989,6 +6297,11 @@ function calc(){
       } else { _e.textContent = '—'; _e.style.color = 'var(--txt2)'; }
     } }
   // ─────────────────────────────────────────────────────────────
+
+  // ── Budget Recommendation Card ────────────────────────────────
+  window.LAST_BE_ADS_BUDGET = profitPU > 0 ? Math.max(0, profitPU * stock - salary) : 0;
+  window.LAST_ACTUAL_ADS    = ads || 0;
+  if(typeof updateBeBudgetCard === 'function') updateBeBudgetCard();
 
   // ── Ads Health Banner ────────────────────────────────────────
   (function(){
@@ -6948,9 +7261,13 @@ function _simUpdateUI(){
 }
 
 function _roasInputs(){
-  const price      = v('i_price'), cost = v('i_cost'), shipC = v('i_ship_c');
+  const price      = v('i_price'), cost = v('i_cost');
   const fulfillDel = v('i_fulfill_del'), fulfillRet = v('i_fulfill_ret');
-  const courier    = v('i_courier'), commPct = v('i_comm')/100, plat = v('i_plat');
+  const commPct = v('i_comm')/100, plat = v('i_plat');
+  const _szCourier = (typeof advShipZones==='function') ? advShipZones() : null;
+  const courier    = (_szCourier != null) ? _szCourier : v('i_courier');
+  const _szShipC   = (typeof advShipCharged==='function') ? advShipCharged() : null;
+  const shipC      = (_szShipC != null) ? _szShipC : v('i_ship_c');
   const salaryRaw  = v('i_salary');
   const confR      = v('i_conf')/100||.001, delR = v('i_del')/100||.001;
   // Advanced Options
@@ -7183,7 +7500,9 @@ function rcRecalc(){
   const netContribution = grossProfit - adSpend;     // profit before fixed costs
   const salary = (v('i_salary') || 0) * advDurMonths();
   const netAfterFixed = netContribution - salary;    // net total profit (after fixed)
-  const price = v('i_price'), shipC = v('i_ship_c');
+  const price = v('i_price');
+  const _szShipC = (typeof advShipCharged==='function') ? advShipCharged() : null;
+  const shipC = (_szShipC != null) ? _szShipC : v('i_ship_c');
   const actualROAS = adSpend > 0 ? (price + shipC) * delivered / adSpend : 0;
   const beROAS = window.LAST_BE_ROAS || 0;
   const roasOk = beROAS > 0 && actualROAS >= beROAS;
@@ -7360,9 +7679,13 @@ function updateSlider(type){
   _sliderDelta(document.getElementById('sl_conf_delta'),  confR*100,B.conf,  false);
   _sliderDelta(document.getElementById('sl_cpa_delta'),   cpa,      B.cpa,   true);
 
-  const cost=v('i_cost'), shipC=v('i_ship_c');
+  const cost=v('i_cost');
   const fulfillDel=v('i_fulfill_del'), fulfillRet=v('i_fulfill_ret');
-  const courier=v('i_courier'), commPct=v('i_comm')/100, plat=v('i_plat'), salaryRaw=v('i_salary');
+  const commPct=v('i_comm')/100, plat=v('i_plat'), salaryRaw=v('i_salary');
+  const _szCourier = (typeof advShipZones==='function') ? advShipZones() : null;
+  const courier=(_szCourier != null) ? _szCourier : v('i_courier');
+  const _szShipC = (typeof advShipCharged==='function') ? advShipCharged() : null;
+  const shipC=(_szShipC != null) ? _szShipC : v('i_ship_c');
   const stock=v('i_stock');
   const ads=v('i_ads'); // actual ad budget from inputs (not a slider anymore)
   const durMonths = advDurMonths();
@@ -7439,8 +7762,8 @@ function updateSlider(type){
   }
 
   // Row 1 — Revenue (all stock) = delivered units × (price + shipC)
-  const totalRev = stock * (price + v('i_ship_c'));
-  const bTotalRev = stock * (bPrice + v('i_ship_c'));
+  const totalRev = stock * (price + shipC);
+  const bTotalRev = stock * (bPrice + shipC);
   const revEl = document.getElementById('si_revenue');
   if(revEl){ revEl.textContent = Math.round(totalRev).toLocaleString('en') + ' ' + CURRENCY; }
   const revSub = document.getElementById('si_revenue_sub');
@@ -7580,7 +7903,7 @@ function updateProdIndicators(){
   const p = PRODUCTS[ACTIVE_PROD];
   if(!p) return;
   const color = PROD_COLORS[ACTIVE_PROD % PROD_COLORS.length];
-  const html = `<span class="pi-dot" style="background:${color}"></span>${escapeHtml(p.name)} <span style="opacity:.5;font-size:10px">↗ switch</span>`;
+  const html = `<span class="pi-dot" style="background:${color}"></span>${escapeHtml(p.name)} <span style="opacity:.5;font-size:10px">↗ ${T[LANG].pi_switch||'switch'}</span>`;
   ['s1','s2','s3'].forEach(id=>{
     const el=document.getElementById('prod_indicator_'+id);
     if(!el) return;
@@ -7598,7 +7921,7 @@ function renderProdTabs(){
   bar.innerHTML =
     // "All Products" tab — only when 2+ products
     (multi ? `<button class="prod-tab prod-tab-all ${SHOW_ALL_PRODUCTS?'active':''}" onclick="switchToAllProducts()">
-      📦 All Products
+      📦 ${T[LANG].ov_all_products||'All Products'}
     </button>` : '') +
     // individual product tabs
     PRODUCTS.map((p, i) => `
@@ -7607,7 +7930,8 @@ function renderProdTabs(){
       <span class="pt-name">${escapeHtml(p.name)}</span>
       ${PRODUCTS.length > 1 ? `<span class="pt-del" onclick="event.stopPropagation();deleteProduct(${i})">×</span>` : ''}
     </button>
-  `).join('') + `<button class="prod-tab-add" onclick="addProduct()">+ Add product</button>`;
+  `).join('') + `<button class="prod-tab-add" onclick="addProduct()">${T[LANG].prod_add||'+ Add product'}</button>` +
+    `<button class="prod-tab-add" onclick="openXlModal()" title="${T[LANG].xl_modal_title||'Import / Export Excel'}" style="margin-inline-start:4px;background:rgba(129,140,248,.12);color:var(--c1);border-color:rgba(129,140,248,.25)">📊 Excel</button>`;
 
   // show/hide panels
   const inp = document.getElementById('inputs_panel');
@@ -7652,10 +7976,39 @@ function switchToAllProducts(){
   calcAllProducts();
 }
 
+// ── Per-table filter & sort state (All Products) ─────────────────
+let AP_MKT  = { status:'all', sort:'budget_desc' };  // marketing verdict table
+let AP_SHIP = { status:'all', sort:'burden_desc' };  // shipping verdict table
+let AP_RANK = { status:'all', sort:'profit_desc' };  // profit ranking table
+function apMktSet(k,v){ AP_MKT[k]=v;  calcAllProducts(); }
+function apShipSet(k,v){ AP_SHIP[k]=v; calcAllProducts(); }
+function apRankSet(k,v){ AP_RANK[k]=v; calcAllProducts(); }
+
+// Build a small toolbar: status chips + a sort dropdown.
+// items  = [[value, labelKey], …]   sorts = [[value, metricKey, 'hi'|'lo'], …]
+function apToolbar(setter, state, items, sorts){
+  const t = T[LANG] || {};
+  const chips = items.map(([v,k])=>
+    `<button class="ap-tb-chip${v===state.status?' active':''}" onclick="${setter}('status','${v}')">${escapeHtml(t[k]||k)}</button>`
+  ).join('');
+  const opts = sorts.map(([v,mk,dir])=>
+    `<option value="${v}"${v===state.sort?' selected':''}>${escapeHtml((t[mk]||mk)+' · '+(dir==='hi'?(t.ap_hi||'High first'):(t.ap_lo||'Low first')))}</option>`
+  ).join('');
+  return `<div class="ap-tb">
+    <div class="ap-tb-chips">${chips}</div>
+    <div class="ap-tb-sort"><span class="ap-tb-sortlbl">${escapeHtml(t.ap_sort||'Sort')}</span>
+      <select class="ap-tb-sel" onchange="${setter}('sort',this.value)">${opts}</select></div>
+  </div>`;
+}
+
 function calcAllProducts(){
   if(!SHOW_ALL_PRODUCTS) return;
   const all = getAllProductsData().filter(p => p.calc.stock > 0 || p.calc.price > 0);
   if(!all.length) return;
+
+  // Charts always show every product. Filtering & sorting live inside each of
+  // the three per-product tables below (their own toolbars + state).
+  const view = all;
 
   const CUR = typeof CURRENCY !== 'undefined' ? CURRENCY : 'EGP';
   const eg  = n => (Math.round(Math.abs(n)*10)/10).toLocaleString('en',{minimumFractionDigits:1,maximumFractionDigits:1})+' '+CUR;
@@ -7705,11 +8058,155 @@ function calcAllProducts(){
   _s('ap_m_conf',    Math.round(totalConf).toLocaleString(),  'var(--c3)');
   _s('ap_m_del',     Math.round(totalDel).toLocaleString(),   'var(--c4)');
 
+  // ─── HEALTH & SAFETY ───
+  // Safety margin = how far blended CPA sits below the weighted break-even CPA
+  const safetyMargin = weightedBECPA > 0 ? (weightedBECPA - blendedCPA) / weightedBECPA * 100 : 0;
+  _s('ap_m_safety', (blendedCPA > 0 && weightedBECPA > 0) ? (safetyMargin>=0?'+':'')+safetyMargin.toFixed(0)+'%' : '—',
+     safetyMargin >= 30 ? 'var(--c1)' : safetyMargin >= 0 ? 'var(--c3)' : 'var(--red)');
+  // Wasted spend = budget on leads that never delivered
+  const lead2del   = totalLeads > 0 ? totalDel / totalLeads : 0;
+  const wastedPct  = (1 - lead2del) * 100;
+  const wastedAmt  = totalAds * (1 - lead2del);
+  _s('ap_m_wasted', totalAds > 0 ? wastedPct.toFixed(0)+'%' : '—', 'var(--red)');
+  { const h=document.getElementById('ap_m_wasted_hint');
+    if(h) h.textContent = totalAds>0 ? '≈ '+fmtM(wastedAmt)+' '+(T[LANG].ap_wasted_hint_amt||'on undelivered leads') : (T[LANG].ap_wasted_hint||'On undelivered leads'); }
+  // Spend ceiling = max ad budget before whole business hits break-even
+  const spendCeiling = totalAds + totalProfit;
+  _s('ap_m_ceiling', totalAds > 0 ? fmtM(spendCeiling) : '—', totalProfit > 0 ? 'var(--c2)' : 'var(--red)');
+  { const h=document.getElementById('ap_m_ceiling_hint');
+    if(h) h.textContent = totalProfit > 0
+      ? '+'+fmtM(totalProfit)+' '+(T[LANG].ap_ceiling_hint_room||'more before break-even')
+      : (T[LANG].ap_ceiling_hint_over||'Already at/over break-even'); }
+
+  // ─── PER-PRODUCT VERDICT (Scale / Hold / Cut) ───
+  // safety% per product = (BE CPA − Actual CPA) ÷ BE CPA. Verdict combines safety + profitability.
+  const verdictOf = c => {
+    if(!c.actualCPP || c.actualCPP <= 0) return {key:'none', lbl:T[LANG].ap_v_none||'No ads', col:'var(--txt3)', bg:'transparent'};
+    const safety = c.beCPP > 0 ? (c.beCPP - c.actualCPP)/c.beCPP*100 : -100;
+    if(c.totalProf < 0 || safety < 0)  return {key:'cut',  lbl:T[LANG].ap_v_cut ||'Cut',  col:'#fff', bg:'var(--red)'};
+    if(safety < 25)                    return {key:'hold', lbl:T[LANG].ap_v_hold||'Hold', col:'#1a1a1a', bg:'var(--c3)'};
+    return {key:'scale', lbl:T[LANG].ap_v_scale||'Scale', col:'#0a0a0a', bg:'var(--c1)'};
+  };
+  const vWrap = document.getElementById('ap_verdict_wrap');
+  if(vWrap){
+    const mktSafety = p => p.calc.beCPP>0 ? (p.calc.beCPP-p.calc.actualCPP)/p.calc.beCPP : -Infinity;
+    const vSorted = [...all]
+      .filter(p => AP_MKT.status==='all' ? true : AP_MKT.status==='profit' ? p.calc.totalProf>=0 : p.calc.totalProf<0)
+      .sort((a,b)=>{
+        switch(AP_MKT.sort){
+          case 'budget_asc':  return a.calc.ads - b.calc.ads;
+          case 'safety_desc': return mktSafety(b) - mktSafety(a);
+          case 'safety_asc':  return mktSafety(a) - mktSafety(b);
+          case 'budget_desc':
+          default:            return b.calc.ads - a.calc.ads;
+        }
+      });
+    const mktTb = apToolbar('apMktSet', AP_MKT,
+      [['all','ap_f_all'],['profit','ap_f_profit'],['loss','ap_f_loss']],
+      [['budget_desc','ap_sm_budget','hi'],['budget_asc','ap_sm_budget','lo'],['safety_desc','ap_sm_safety','hi'],['safety_asc','ap_sm_safety','lo']]);
+    vWrap.innerHTML = mktTb + `<div class="ap-tbl-scroll"><table class="rank-table">
+      <thead><tr>
+        <th>${T[LANG].ap_vc_product||'Product'}</th>
+        <th style="text-align:right">${T[LANG].ap_vc_budget||'Budget'}</th>
+        <th style="text-align:right">${T[LANG].ap_vc_cpa||'Actual CPA'}</th>
+        <th style="text-align:right">${T[LANG].ap_vc_be||'BE CPA'}</th>
+        <th style="text-align:right">${T[LANG].ap_vc_safety||'Safety'}</th>
+        <th style="text-align:center">${T[LANG].ap_vc_verdict||'Verdict'}</th>
+        <th></th>
+      </tr></thead><tbody>${vSorted.map(p=>{
+        const c=p.calc, v=verdictOf(c);
+        const share = totalAds>0 ? c.ads/totalAds*100 : 0;
+        const safety = c.beCPP>0 ? (c.beCPP-c.actualCPP)/c.beCPP*100 : null;
+        const safetyCol = safety===null ? 'var(--txt3)' : safety>=25?'var(--c1)':safety>=0?'var(--c3)':'var(--red)';
+        return `<tr>
+          <td data-label="${T[LANG].ap_vc_product||'Product'}"><div class="rank-prod-name">${escapeHtml(p.name)}</div></td>
+          <td style="text-align:right;font-family:var(--mono)" data-label="${T[LANG].ap_vc_budget||'Budget'}">${fmtM(c.ads)}<div class="rank-margin">${share.toFixed(0)}%</div></td>
+          <td style="text-align:right;font-family:var(--mono)" data-label="${T[LANG].ap_vc_cpa||'Actual CPA'}">${c.actualCPP>0?eg(c.actualCPP):'—'}</td>
+          <td style="text-align:right;font-family:var(--mono);color:var(--txt3)" data-label="${T[LANG].ap_vc_be||'BE CPA'}">${c.beCPP>0?eg(c.beCPP):'—'}</td>
+          <td style="text-align:right;font-family:var(--mono);color:${safetyCol}" data-label="${T[LANG].ap_vc_safety||'Safety'}">${safety===null?'—':(safety>=0?'+':'')+safety.toFixed(0)+'%'}</td>
+          <td style="text-align:center" data-label="${T[LANG].ap_vc_verdict||'Verdict'}"><span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:${v.bg};color:${v.col};border:${v.bg==='transparent'?'1px solid var(--bdr2)':'none'}">${v.lbl}</span></td>
+          <td style="text-align:right" class="rk-edit"><button class="rank-go-btn" onclick="switchProduct(${p.index})">${T[LANG].ap_edit||'Edit ↗'}</button></td>
+        </tr>`;
+      }).join('')}</tbody></table></div>`;
+  }
+
   // ─── SHIPPING ───
   _s('ap_sh_real',      eg(wAvgShipReal), 'var(--c3)');
   _s('ap_sh_collected', eg(wAvgShipColl), 'var(--c1)');
   _s('ap_sh_net',       eg(wAvgShipNet),  wAvgShipNet>0?'var(--red)':'var(--c1)');
   _s('ap_sh_total',     fmtM(totalShipCost), 'var(--c4)');
+
+  // Shipping recovery = % of real shipping cost customers cover
+  const shRecovery = totalShipCost > 0 ? totalShipColl/totalShipCost*100 : 0;
+  _s('ap_sh_recovery', totalShipCost>0 ? shRecovery.toFixed(0)+'%' : '—',
+     shRecovery >= 90 ? 'var(--c1)' : shRecovery >= 60 ? 'var(--c3)' : 'var(--red)');
+  // Net burden you absorb = real − collected (total $)
+  const shBurden = totalShipCost - totalShipColl;
+  _s('ap_sh_burden', totalShipCost>0 ? fmtM(shBurden) : '—', shBurden > 0 ? 'var(--red)' : 'var(--c1)');
+  { const h=document.getElementById('ap_sh_burden_hint');
+    if(h){ const pct = totalProfit>0 ? Math.round(shBurden/totalProfit*100) : null;
+      h.textContent = (shBurden>0 && pct!==null) ? '≈ '+pct+'% '+(T[LANG].ap_sh_burden_of_profit||'of net profit') : (T[LANG].ap_sh_burden_hint||'Out of your pocket'); } }
+  // Total return (RTO) cost = (confirmed − delivered) × return cost per order
+  const totalRtoCost = all.reduce((s,p)=>s + Math.max(0, p.calc.confNeeded - p.calc.delivNeeded) * p.calc.costRet, 0);
+  const totalReturns = all.reduce((s,p)=>s + Math.max(0, p.calc.confNeeded - p.calc.delivNeeded), 0);
+  _s('ap_sh_rto', totalRtoCost>0 ? fmtM(totalRtoCost) : '—', 'var(--red)');
+  { const h=document.getElementById('ap_sh_rto_hint');
+    if(h) h.textContent = totalReturns>0 ? '≈ '+Math.round(totalReturns).toLocaleString('en')+' '+(T[LANG].ap_sh_rto_orders||'returned orders') : (T[LANG].ap_sh_rto_hint||'Confirmed but not delivered'); }
+
+  // ─── PER-PRODUCT SHIPPING VERDICT ───
+  const shVerdictOf = c => {
+    if(!(c.stock > 0)) return {key:'none', lbl:T[LANG].ap_shv_none||'—', col:'var(--txt3)', bg:'transparent'};
+    const rec = c.effShip > 0 ? c.shipC/c.effShip*100 : 100;
+    if(rec < 60)  return {key:'sink', lbl:T[LANG].ap_shv_sink||'Underwater', col:'#fff',     bg:'var(--red)'};
+    if(rec < 90)  return {key:'raise',lbl:T[LANG].ap_shv_raise||'Raise fee', col:'#1a1a1a',  bg:'var(--c3)'};
+    return {key:'ok', lbl:T[LANG].ap_shv_ok||'OK', col:'#0a0a0a', bg:'var(--c1)'};
+  };
+  const shvWrap = document.getElementById('ap_sh_verdict_wrap');
+  if(shvWrap){
+    const shBurdenOf = p => p.calc.netShip * p.calc.stock;
+    const shRecOf    = p => p.calc.effShip>0 ? p.calc.shipC/p.calc.effShip*100 : 100;
+    const shSorted = [...all]
+      .filter(p => AP_SHIP.status==='all' ? true : (shVerdictOf(p.calc).key==='sink') === (AP_SHIP.status==='sink'))
+      .sort((a,b)=>{
+        switch(AP_SHIP.sort){
+          case 'burden_asc': return shBurdenOf(a) - shBurdenOf(b);
+          case 'rec_desc':   return shRecOf(b) - shRecOf(a);
+          case 'rec_asc':    return shRecOf(a) - shRecOf(b);
+          case 'burden_desc':
+          default:           return shBurdenOf(b) - shBurdenOf(a);
+        }
+      });
+    const shTb = apToolbar('apShipSet', AP_SHIP,
+      [['all','ap_f_all'],['sink','ap_f_sink'],['ok','ap_f_ok']],
+      [['burden_desc','ap_sm_burden','hi'],['burden_asc','ap_sm_burden','lo'],['rec_desc','ap_sm_recovery','hi'],['rec_asc','ap_sm_recovery','lo']]);
+    shvWrap.innerHTML = shTb + `<div class="ap-tbl-scroll"><table class="rank-table">
+      <thead><tr>
+        <th>${T[LANG].ap_vc_product||'Product'}</th>
+        <th style="text-align:right">${T[LANG].ap_sh_real_lbl||'Real/unit'}</th>
+        <th style="text-align:right">${T[LANG].ap_sh_collected_lbl||'Collected/unit'}</th>
+        <th style="text-align:right">${T[LANG].ap_shc_net||'Net/unit'}</th>
+        <th style="text-align:right">${T[LANG].ap_shc_burden||'Total burden'}</th>
+        <th style="text-align:right">${T[LANG].ap_sh_recovery_lbl||'Recovery'}</th>
+        <th style="text-align:center">${T[LANG].ap_vc_verdict||'Verdict'}</th>
+        <th></th>
+      </tr></thead><tbody>${shSorted.map(p=>{
+        const c=p.calc, v=shVerdictOf(c);
+        const rec = c.effShip>0 ? c.shipC/c.effShip*100 : 0;
+        const burden = c.netShip*c.stock;
+        const netCol = c.netShip>0?'var(--red)':'var(--c1)';
+        const recCol = rec>=90?'var(--c1)':rec>=60?'var(--c3)':'var(--red)';
+        return `<tr>
+          <td data-label="${T[LANG].ap_vc_product||'Product'}"><div class="rank-prod-name">${escapeHtml(p.name)}</div></td>
+          <td style="text-align:right;font-family:var(--mono)" data-label="${T[LANG].ap_sh_real_lbl||'Real/unit'}">${eg(c.effShip)}</td>
+          <td style="text-align:right;font-family:var(--mono)" data-label="${T[LANG].ap_sh_collected_lbl||'Collected/unit'}">${eg(c.shipC)}</td>
+          <td style="text-align:right;font-family:var(--mono);color:${netCol}" data-label="${T[LANG].ap_shc_net||'Net/unit'}">${c.netShip>0?'+':''}${eg(c.netShip)}</td>
+          <td style="text-align:right;font-family:var(--mono);color:${burden>0?'var(--red)':'var(--c1)'}" data-label="${T[LANG].ap_shc_burden||'Total burden'}">${fmtM(burden)}</td>
+          <td style="text-align:right;font-family:var(--mono);color:${recCol}" data-label="${T[LANG].ap_sh_recovery_lbl||'Recovery'}">${c.stock>0?rec.toFixed(0)+'%':'—'}</td>
+          <td style="text-align:center" data-label="${T[LANG].ap_vc_verdict||'Verdict'}"><span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:${v.bg};color:${v.col};border:${v.bg==='transparent'?'1px solid var(--bdr2)':'none'}">${v.lbl}</span></td>
+          <td style="text-align:right" class="rk-edit"><button class="rank-go-btn" onclick="switchProduct(${p.index})">${T[LANG].ap_edit||'Edit ↗'}</button></td>
+        </tr>`;
+      }).join('')}</tbody></table></div>`;
+  }
 
   // ─── OVERVIEW ───
   _s('ap_ov_profit', (isProfit?'':'-')+Math.round(Math.abs(totalProfit)).toLocaleString('en')+' '+CUR, isProfit?'var(--c1)':'var(--red)');
@@ -7721,6 +8218,38 @@ function calcAllProducts(){
   // ── New overview IDs ──
   const totalMarginAll = all.reduce((s,p)=>s+p.calc.profitPU*p.calc.stock,0);
   _s('ap_ov_total_margin', fmtM(totalMarginAll), totalMarginAll>=0?'var(--c1)':'var(--red)');
+
+  // ── Business health (executive) ──
+  // Margin of safety = how far revenue can fall before break-even = profit ÷ contribution margin
+  const marginOfSafety = totalMarginAll > 0 ? totalProfit/totalMarginAll*100 : 0;
+  const breakEvenRev   = totalRev * (1 - Math.max(0, Math.min(1, marginOfSafety/100)));
+  _s('ap_ov_safety', totalMarginAll > 0 ? (marginOfSafety>=0?'':'-')+Math.abs(marginOfSafety).toFixed(0)+'%' : '—',
+     marginOfSafety >= 30 ? 'var(--c1)' : marginOfSafety >= 0 ? 'var(--c3)' : 'var(--red)');
+  { const h=document.getElementById('ap_ov_safety_hint');
+    if(h) h.textContent = totalMarginAll>0
+      ? (T[LANG].ap_ov_be_rev||'Break-even revenue')+': '+fmtM(breakEvenRev)
+      : (T[LANG].ap_ov_safety_hint||'Room before break-even'); }
+  // Overall ROI = net profit ÷ total all-in costs
+  const totalCostsAllIn = totalCost + totalShipCost + totalCommission + totalAds + totalSalary;
+  const overallROI = totalCostsAllIn > 0 ? totalProfit/totalCostsAllIn*100 : 0;
+  _s('ap_ov_roi', totalCostsAllIn > 0 ? (overallROI>=0?'+':'')+overallROI.toFixed(0)+'%' : '—',
+     overallROI >= 20 ? 'var(--c1)' : overallROI >= 0 ? 'var(--c3)' : 'var(--red)');
+  { const h=document.getElementById('ap_ov_roi_hint');
+    if(h) h.textContent = totalCostsAllIn>0
+      ? (overallROI>=0?'+':'')+Math.round(overallROI)+' '+(T[LANG].ap_ov_roi_per100||'profit per 100 spent')
+      : (T[LANG].ap_ov_roi_hint||'Profit per 100 spent'); }
+  // Profit concentration = top product's share of total positive profit
+  const posProfits = all.map(p=>p.calc.totalProf).filter(x=>x>0).sort((a,b)=>b-a);
+  const sumPos = posProfits.reduce((a,b)=>a+b,0);
+  const concentration = sumPos > 0 ? posProfits[0]/sumPos*100 : 0;
+  let cum=0, n80=0; for(const v of posProfits){ cum+=v; n80++; if(cum>=sumPos*0.8) break; }
+  const lossDrag = all.map(p=>p.calc.totalProf).filter(x=>x<0).reduce((a,b)=>a+b,0);
+  _s('ap_ov_conc', sumPos > 0 ? concentration.toFixed(0)+'%' : '—',
+     concentration >= 60 ? 'var(--red)' : concentration >= 40 ? 'var(--c3)' : 'var(--c1)');
+  { const h=document.getElementById('ap_ov_conc_hint');
+    if(h) h.textContent = lossDrag < 0
+      ? '⚠ '+fmtM(Math.abs(lossDrag))+' '+(T[LANG].ap_ov_loss_drag||'lost to weak products')
+      : (sumPos>0 ? n80+' '+(T[LANG].ap_of||'of')+' '+all.length+' '+(T[LANG].ap_ov_make80||'make 80% of profit') : (T[LANG].ap_ov_conc_hint||'Top product share')); }
   _s('ap_ov_cpa',   blendedCPA>0  ? eg(blendedCPA)  : '—', blendedCPA>0&&blendedCPA<=weightedBECPA?'var(--c1)':'var(--red)');
   _s('ap_ov_roas',  blendedROAS>0 ? blendedROAS.toFixed(1)+'x' : '—');
   _s('ap_ov_becpa', weightedBECPA>0 ? eg(weightedBECPA) : '—');
@@ -7774,14 +8303,15 @@ function calcAllProducts(){
   const tbody = document.getElementById('ap_pl_tbody');
   if(tbody){
     const totalVarCost = totalCost + totalShipCost;
+    const TL = T[LANG];
     const rows = [
-      ['Revenue from products',  totalRev - totalShipColl, 'tg'],
-      ['Revenue from shipping',  totalShipColl,             'tg'],
-      ['Product costs',         -totalCost,                 'tr'],
-      ['Real shipping costs',   -totalShipCost,             'tr'],
-      ...(totalCommission > 0 ? [['Commission & fees', -totalCommission, 'tr']] : []),
-      ['Total ad budget',       -totalAds,                  'ta'],
-      ['Total salaries',        -totalSalary,               'ta'],
+      [TL.ap_pl_rev_prod||'Revenue from products', totalRev - totalShipColl, 'tg'],
+      [TL.ap_pl_rev_ship||'Revenue from shipping', totalShipColl,            'tg'],
+      [TL.ap_pl_prod_cost||'Product costs',       -totalCost,                'tr'],
+      [TL.ap_pl_ship_cost||'Real shipping costs', -totalShipCost,            'tr'],
+      ...(totalCommission > 0 ? [[TL.ap_pl_comm||'Commission & fees', -totalCommission, 'tr']] : []),
+      [TL.ap_pl_ads||'Total ad budget',           -totalAds,                 'ta'],
+      [TL.ap_pl_salaries||'Total fixed costs',    -totalSalary,              'ta'],
     ];
     tbody.innerHTML = rows.map(([lbl,val,cls])=>`
       <tr><td>${lbl}</td>
@@ -7789,104 +8319,194 @@ function calcAllProducts(){
           <td style="text-align:right"><span class="tag ${cls}">${cls==='tg'?T[LANG].income_tag:cls==='tr'?T[LANG].variable_tag:T[LANG].fixed_tag}</span></td>
       </tr>`).join('') +
       `<tr style="font-weight:600;border-top:2px solid var(--bdr2)">
-        <td>Net Profit / Loss</td>
+        <td>${TL.ap_pl_net||'Net Profit / Loss'}</td>
         <td style="text-align:right;font-family:var(--mono);font-size:15px;color:${isProfit?'var(--c1)':'var(--red)'}">${isProfit?'+':'-'}${eg(Math.abs(totalProfit))}</td>
-        <td style="text-align:right"><span class="tag ${isProfit?'tg':'tr'}">${isProfit?'Profit':'Loss'}</span></td>
+        <td style="text-align:right"><span class="tag ${isProfit?'tg':'tr'}">${isProfit?(TL.ap_pl_profit||'Profit'):(TL.ap_pl_loss||'Loss')}</span></td>
       </tr>`;
   }
 
   // ─── RANKING ───
-  const sorted = [...all].sort((a,b)=>b.calc.totalProf-a.calc.totalProf);
+  const sorted = [...all]
+    .filter(p => AP_RANK.status==='all' ? true : AP_RANK.status==='profit' ? p.calc.totalProf>=0 : p.calc.totalProf<0)
+    .sort((a,b)=>{
+      switch(AP_RANK.sort){
+        case 'profit_asc': return a.calc.totalProf - b.calc.totalProf;
+        case 'margin_desc': return (b.calc.marginPct||0) - (a.calc.marginPct||0);
+        case 'margin_asc':  return (a.calc.marginPct||0) - (b.calc.marginPct||0);
+        case 'profit_desc':
+        default:            return b.calc.totalProf - a.calc.totalProf;
+      }
+    });
   const maxAbs = Math.max(...sorted.map(p=>Math.abs(p.calc.totalProf)),1);
   const medals=['🥇','🥈','🥉'], rnCls=['r1','r2','r3'];
-  _s('ap_rank_count', all.length+' products');
+  _s('ap_rank_count', (sorted.length<all.length ? sorted.length+'/'+all.length : all.length)+' '+(T[LANG].ap_products_word||'products'));
+  const rankTb = apToolbar('apRankSet', AP_RANK,
+    [['all','ap_f_all'],['profit','ap_f_profit'],['loss','ap_f_loss']],
+    [['profit_desc','ap_sm_profit','hi'],['profit_asc','ap_sm_profit','lo'],['margin_desc','ap_sm_margin','hi'],['margin_asc','ap_sm_margin','lo']]);
   const rankWrap = document.getElementById('ap_rank_wrap');
-  if(rankWrap) rankWrap.innerHTML = `<div style="overflow-x:auto"><table class="rank-table">
-    <thead><tr><th>#</th><th>Product</th><th style="text-align:right">Net Profit</th><th style="text-align:right">Revenue / Stock</th><th></th></tr></thead>
+  const RT = T[LANG];
+  if(rankWrap) rankWrap.innerHTML = rankTb + `<div class="ap-tbl-scroll"><table class="rank-table">
+    <thead><tr><th>#</th><th>${RT.ap_vc_product||'Product'}</th><th style="text-align:right">${RT.ap_th_net||'Net Profit'}</th><th style="text-align:right">${RT.ap_th_rev_stock||'Revenue / Stock'}</th><th></th></tr></thead>
     <tbody>${sorted.map((p,i)=>{
       const c=p.calc,isP=c.totalProf>=0,barW=Math.round(Math.abs(c.totalProf)/maxAbs*100);
       return `<tr>
-        <td style="width:32px"><span class="rank-num ${i<3?rnCls[i]:'rn'}">${i<3?medals[i]:'#'+(i+1)}</span></td>
-        <td><div class="rank-prod-name">${escapeHtml(p.name)}</div>
+        <td style="width:32px" data-label="#"><span class="rank-num ${i<3?rnCls[i]:'rn'}">${i<3?medals[i]:'#'+(i+1)}</span></td>
+        <td data-label="${RT.ap_vc_product||'Product'}"><div class="rank-prod-name">${escapeHtml(p.name)}</div>
             <div class="rank-bar-wrap"><div class="rank-bar" style="width:${barW}%;background:${isP?'var(--profit)':'var(--red)'}"></div></div></td>
-        <td style="text-align:right"><div class="rank-profit-val" style="color:${isP?'var(--profit)':'var(--red)'}">${fmtM(c.totalProf)}</div>
-            <div class="rank-margin">${c.marginPct!==undefined?c.marginPct.toFixed(1)+'% margin':''}</div></td>
-        <td style="text-align:right"><div class="rank-margin">${fmtM(c.totalRev)} rev</div>
-            <div class="rank-margin">${c.stock>0?Math.round(c.stock)+' units':'—'}</div></td>
-        <td style="text-align:right"><button class="rank-go-btn" onclick="switchProduct(${p.index})">Edit ↗</button></td>
+        <td style="text-align:right" data-label="${RT.ap_th_net||'Net Profit'}"><div class="rank-profit-val" style="color:${isP?'var(--profit)':'var(--red)'}">${fmtM(c.totalProf)}</div>
+            <div class="rank-margin">${c.marginPct!==undefined?c.marginPct.toFixed(1)+'% '+(RT.ap_u_margin||'margin'):''}</div></td>
+        <td style="text-align:right" data-label="${RT.ap_th_rev_stock||'Revenue / Stock'}"><div class="rank-margin">${fmtM(c.totalRev)} ${RT.ap_u_rev||'rev'}</div>
+            <div class="rank-margin">${c.stock>0?Math.round(c.stock)+' '+(RT.ap_u_units||'units'):'—'}</div></td>
+        <td style="text-align:right" class="rk-edit"><button class="rank-go-btn" onclick="switchProduct(${p.index})">${RT.ap_edit||'Edit ↗'}</button></td>
       </tr>`;
     }).join('')}</tbody></table></div>`;
 
   // ─── CHARTS ───
   if(typeof Chart !== 'undefined'){
-    const names  = all.map(p=>escapeHtml(p.name));
-    const colors = all.map((_,i)=>PROD_COLORS[i%PROD_COLORS.length]
+    const rawNames = view.map(p=>p.name);
+    const names  = rawNames.map(n=> n.length>16 ? n.slice(0,15)+'…' : n);
+    const colors = view.map((_,i)=>PROD_COLORS[i%PROD_COLORS.length]
       .replace('var(--c1)','#00e5a0').replace('var(--c2)','#4f8ff7')
       .replace('var(--c3)','#f59e0b').replace('var(--c4)','#a78bfa')
       .replace('var(--red)','#f43f5e'));
-    const profitColors = all.map(p=>p.calc.totalProf>=0?'#00e5a0':'#f43f5e');
+    const profitColors = view.map(p=>p.calc.totalProf>=0?'#00e5a0':'#f43f5e');
+    const apTip = { title:items=> rawNames[items[0].dataIndex] || '' };
+    const apXax = { ticks:{color:'#8896ab',autoSkip:false,maxRotation:60,minRotation:0,font:{size:10}} };
+    const dsL = T[LANG];
+    // Horizontal-scroll wrapper: keep a readable bar width by giving each product
+    // a fixed slot and letting the chart scroll sideways when products are many,
+    // instead of squashing the bars + overlapping the labels.
+    const apScroll = (canvasEl, perProduct)=>{
+      const wrap = canvasEl && canvasEl.parentElement;
+      if(!wrap || !wrap.classList.contains('ch-wrap')) return;
+      let inner = wrap.querySelector(':scope > .ch-inner');
+      if(!inner){
+        inner = document.createElement('div');
+        inner.className = 'ch-inner';
+        wrap.insertBefore(inner, canvasEl);
+        inner.appendChild(canvasEl);
+        wrap.classList.add('ch-wrap--scroll');
+      }
+      inner.style.minWidth = Math.max(0, view.length*perProduct) + 'px';
+    };
 
     // CPA chart
-    if(CH['ap_cpa']){CH['ap_cpa'].destroy();} 
+    if(CH['ap_cpa']){CH['ap_cpa'].destroy();}
     const apCpaEl=document.getElementById('ap_ch_cpa');
-    if(apCpaEl) CH['ap_cpa']=new Chart(apCpaEl,{type:'bar',
+    if(apCpaEl){ apScroll(apCpaEl,90);
+      CH['ap_cpa']=new Chart(apCpaEl,{type:'bar',
       data:{labels:names,datasets:[
-        {label:'Actual CPA',data:all.map(p=>+p.calc.actualCPP.toFixed(1)),backgroundColor:profitColors,borderRadius:4},
-        {label:'BE CPA',data:all.map(p=>+p.calc.beCPP.toFixed(1)),backgroundColor:'rgba(59,130,246,.3)',borderRadius:4}
+        {label:dsL.ap_ds_actual_cpa||'Actual CPA',data:view.map(p=>+p.calc.actualCPP.toFixed(1)),backgroundColor:profitColors,borderRadius:4},
+        {label:dsL.ap_ds_be_cpa||'BE CPA',data:view.map(p=>+p.calc.beCPP.toFixed(1)),backgroundColor:'rgba(59,130,246,.3)',borderRadius:4}
       ]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:'#8896ab',font:{size:11}}}},
-        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab',callback:v=>Math.round(v)}}}}});
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:'#8896ab',font:{size:11}}},tooltip:{callbacks:apTip}},
+        scales:{x:apXax,y:{ticks:{color:'#8896ab',callback:v=>Math.round(v)}}}}});
+    }
+
+    // Portfolio bubble chart — safety (x) vs net profit (y), size = ad budget
+    if(CH['ap_bubble']){CH['ap_bubble'].destroy();}
+    const apBubEl=document.getElementById('ap_ch_bubble');
+    if(apBubEl){
+      const vHex = {scale:'#00e5a0', hold:'#f59e0b', cut:'#f43f5e', none:'#8896ab'};
+      const maxAds = Math.max(...view.map(p=>p.calc.ads), 1);
+      const pts = view.map(p=>{
+        const c=p.calc;
+        const safety = c.beCPP>0 ? (c.beCPP-c.actualCPP)/c.beCPP*100 : 0;
+        const r = Math.max(6, Math.min(40, Math.sqrt((c.ads||0)/maxAds)*40));
+        return { x:+safety.toFixed(1), y:Math.round(c.totalProf), r, _name:p.name, _ads:c.ads, _col:vHex[verdictOf(c).key] };
+      });
+      CH['ap_bubble']=new Chart(apBubEl,{type:'bubble',
+        data:{datasets:[{
+          data:pts,
+          backgroundColor:pts.map(p=>p._col+'66'),
+          borderColor:pts.map(p=>p._col),
+          borderWidth:1.5
+        }]},
+        options:{responsive:true,maintainAspectRatio:false,
+          plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{
+            const d=ctx.raw;
+            return `${d._name}: ${T[LANG].ap_vc_safety||'Safety'} ${d.x>=0?'+':''}${d.x}% · ${T[LANG].hero_total||'Profit'} ${fmtM(d.y)} · ${T[LANG].ap_total_budget||'Budget'} ${fmtM(d._ads)}`;
+          }}}},
+          scales:{
+            x:{title:{display:true,text:(T[LANG].ap_bubble_x||'Safety margin % (right = safer)'),color:'#8896ab',font:{size:11}},ticks:{color:'#8896ab',callback:v=>v+'%'},grid:{color:'rgba(136,150,171,.1)'}},
+            y:{title:{display:true,text:(T[LANG].ap_bubble_y||'Net profit'),color:'#8896ab',font:{size:11}},ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v<=-1000?'-'+Math.round(Math.abs(v)/1000)+'K':v},grid:{color:'rgba(136,150,171,.1)'}}
+          }}});
+    }
 
     // Budget chart
     if(CH['ap_bud']){CH['ap_bud'].destroy();}
     const apBudEl=document.getElementById('ap_ch_budget');
-    if(apBudEl) CH['ap_bud']=new Chart(apBudEl,{type:'bar',
-      data:{labels:names,datasets:[{label:'Ad Budget',data:all.map(p=>Math.round(p.calc.ads)),backgroundColor:colors,borderRadius:4}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v}}}}});
+    if(apBudEl){ apScroll(apBudEl,64);
+      CH['ap_bud']=new Chart(apBudEl,{type:'bar',
+      data:{labels:names,datasets:[{label:dsL.ap_ds_budget||'Ad Budget',data:view.map(p=>Math.round(p.calc.ads)),backgroundColor:colors,borderRadius:4}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
+        scales:{x:apXax,y:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v}}}}});
+    }
 
     // Orders chart
     if(CH['ap_ord']){CH['ap_ord'].destroy();}
     const apOrdEl=document.getElementById('ap_ch_orders');
-    if(apOrdEl) CH['ap_ord']=new Chart(apOrdEl,{type:'bar',
-      data:{labels:names,datasets:[{label:'Delivered Orders',data:all.map(p=>Math.round(p.calc.delivNeeded)),backgroundColor:colors,borderRadius:4}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab'}}}}});
+    if(apOrdEl){ apScroll(apOrdEl,64);
+      CH['ap_ord']=new Chart(apOrdEl,{type:'bar',
+      data:{labels:names,datasets:[{label:dsL.ap_ds_orders||'Delivered Orders',data:view.map(p=>Math.round(p.calc.delivNeeded)),backgroundColor:colors,borderRadius:4}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
+        scales:{x:apXax,y:{ticks:{color:'#8896ab'}}}}});
+    }
+
+    // Net shipping burden (total) per product — where the real money leaks
+    if(CH['ap_shburden']){CH['ap_shburden'].destroy();}
+    const apShBEl=document.getElementById('ap_ch_shburden');
+    if(apShBEl){ apScroll(apShBEl,64);
+      CH['ap_shburden']=new Chart(apShBEl,{type:'bar',
+      data:{labels:names,datasets:[{label:dsL.ap_ds_burden||'Net burden',
+        data:view.map(p=>Math.round(p.calc.netShip*p.calc.stock)),
+        backgroundColor:view.map(p=>p.calc.netShip>0?'#f43f5e':'#00e5a0'),borderRadius:4}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
+        scales:{x:apXax,y:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v<=-1000?'-'+Math.round(Math.abs(v)/1000)+'K':v}}}}});
+    }
 
     // Shipping chart
     if(CH['ap_shp']){CH['ap_shp'].destroy();}
     const apShpEl=document.getElementById('ap_ch_ship');
-    if(apShpEl) CH['ap_shp']=new Chart(apShpEl,{type:'bar',
+    if(apShpEl){ apScroll(apShpEl,90);
+      CH['ap_shp']=new Chart(apShpEl,{type:'bar',
       data:{labels:names,datasets:[
-        {label:'Real Shipping/unit',data:all.map(p=>+p.calc.effShip.toFixed(1)),backgroundColor:'#f59e0b',borderRadius:4},
-        {label:'Collected/unit',data:all.map(p=>+p.calc.shipC.toFixed(1)),backgroundColor:'#00e5a0',borderRadius:4}
+        {label:dsL.ap_ds_real_ship||'Real Shipping/unit',data:view.map(p=>+p.calc.effShip.toFixed(1)),backgroundColor:'#f59e0b',borderRadius:4},
+        {label:dsL.ap_ds_collected||'Collected/unit',data:view.map(p=>+p.calc.shipC.toFixed(1)),backgroundColor:'#00e5a0',borderRadius:4}
       ]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:'#8896ab',font:{size:11}}}},
-        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab'}}}}});
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:'#8896ab',font:{size:11}}},tooltip:{callbacks:apTip}},
+        scales:{x:apXax,y:{ticks:{color:'#8896ab'}}}}});
+    }
 
     // Profit chart
     if(CH['ap_prf']){CH['ap_prf'].destroy();}
     const apPrfEl=document.getElementById('ap_ch_profit');
-    if(apPrfEl) CH['ap_prf']=new Chart(apPrfEl,{type:'bar',
-      data:{labels:names,datasets:[{label:'Net Profit',data:all.map(p=>Math.round(p.calc.totalProf)),backgroundColor:profitColors,borderRadius:4}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v>=0?v:'-'+Math.abs(v)}}}}});
+    if(apPrfEl){ apScroll(apPrfEl,64);
+      CH['ap_prf']=new Chart(apPrfEl,{type:'bar',
+      data:{labels:names,datasets:[{label:dsL.ap_ds_profit||'Net Profit',data:view.map(p=>Math.round(p.calc.totalProf)),backgroundColor:profitColors,borderRadius:4}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
+        scales:{x:apXax,y:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v>=0?v:'-'+Math.abs(v)}}}}});
+    }
 
     // Revenue chart
     if(CH['ap_rv']){CH['ap_rv'].destroy();}
     const apRvEl=document.getElementById('ap_ch_rev');
-    if(apRvEl) CH['ap_rv']=new Chart(apRvEl,{type:'bar',
-      data:{labels:names,datasets:[{label:'Revenue',data:all.map(p=>Math.round(p.calc.totalRev)),backgroundColor:colors,borderRadius:4}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v}}}}});
+    if(apRvEl){ apScroll(apRvEl,64);
+      CH['ap_rv']=new Chart(apRvEl,{type:'bar',
+      data:{labels:names,datasets:[{label:dsL.ap_ds_revenue||'Revenue',data:view.map(p=>Math.round(p.calc.totalRev)),backgroundColor:colors,borderRadius:4}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
+        scales:{x:apXax,y:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v}}}}});
+    }
 
     // Margin chart
     if(CH['ap_mg']){CH['ap_mg'].destroy();}
     const apMgEl=document.getElementById('ap_ch_margin');
-    if(apMgEl) CH['ap_mg']=new Chart(apMgEl,{type:'bar',
-      data:{labels:names,datasets:[{label:'Margin %',data:all.map(p=>+p.calc.marginPct.toFixed(1)),backgroundColor:profitColors,borderRadius:4}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab',callback:v=>v+'%'}}}}});
+    if(apMgEl){ apScroll(apMgEl,64);
+      CH['ap_mg']=new Chart(apMgEl,{type:'bar',
+      data:{labels:names,datasets:[{label:dsL.ap_ds_margin||'Margin %',data:view.map(p=>+p.calc.marginPct.toFixed(1)),backgroundColor:profitColors,borderRadius:4}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
+        scales:{x:apXax,y:{ticks:{color:'#8896ab',callback:v=>v+'%'}}}}});
+    }
   }
 
   // Show/hide panels in each section
@@ -7934,7 +8554,7 @@ function renderAllProductsRanking(){
     </tr>`;
   }).join('');
   const w=document.getElementById('ap_ranking_wrap');
-  if(w) w.innerHTML=`<div style="overflow-x:auto"><table class="rank-table">
+  if(w) w.innerHTML=`<div class="ap-tbl-scroll"><table class="rank-table">
     <thead><tr><th>#</th><th>${T[LANG].rank_product}</th><th style="text-align:right">${T[LANG].rank_net_profit}</th><th style="text-align:right">${T[LANG].rank_rev_stock}</th><th></th></tr></thead>
     <tbody>${rows}</tbody></table></div>`;
 }
@@ -8037,6 +8657,128 @@ function renameProduct(idx, name){
   persistSave();
 }
 
+// ── Excel Import / Export ─────────────────────────────────────
+const XL_COLS = [
+  { field:'name',          label:'Product Name',                    label_ar:'اسم المنتج',                          example:'Product A' },
+  { field:'i_price',       label:'Selling Price (EGP)',             label_ar:'سعر البيع (ج.م)',                     example:1000        },
+  { field:'i_cost',        label:'Product Cost (EGP)',              label_ar:'تكلفة المنتج (ج.م)',                  example:300         },
+  { field:'i_units',       label:'Avg Units / Order',               label_ar:'متوسط الوحدات / الطلب',              example:1           },
+  { field:'i_fulfill_del', label:'Fulfillment Fee Delivery (EGP)',  label_ar:'رسوم الشحن - التوصيل (ج.م)',         example:40          },
+  { field:'i_fulfill_ret', label:'Return Cost All-in (EGP)',        label_ar:'تكلفة الإرجاع الكاملة (ج.م)',        example:40          },
+  { field:'i_courier',     label:'Avg Shipping Cost (EGP)',         label_ar:'متوسط تكلفة الشحن (ج.م)',            example:95          },
+  { field:'i_ship_c',      label:'Shipping Charged to Customer (EGP)', label_ar:'الشحن المحصّل من العميل (ج.م)',  example:50          },
+  { field:'i_comm',        label:'Commission %',                    label_ar:'العمولة %',                           example:5           },
+  { field:'i_gateway_fee', label:'Gateway Fee %',                   label_ar:'رسوم بوابة الدفع %',                 example:2.5         },
+  { field:'i_plat',        label:'Platform Fee per Lead (EGP)',     label_ar:'رسوم المنصة / ليد (ج.م)',            example:1           },
+  { field:'i_ads',         label:'Ad Budget (EGP)',                 label_ar:'ميزانية الإعلانات (ج.م)',            example:10000       },
+  { field:'i_avg_cpp',     label:'Avg CPA (EGP)',                   label_ar:'متوسط تكلفة الطلب - CPA (ج.م)',     example:''          },
+  { field:'i_conf',        label:'Confirmation Rate %',             label_ar:'معدل التأكيد %',                      example:70          },
+  { field:'i_del',         label:'Delivery Rate %',                 label_ar:'معدل التوصيل %',                      example:70          },
+  { field:'i_stock',       label:'Stock / Target Orders',           label_ar:'المخزون / الأوردرات المستهدفة',      example:500         },
+  { field:'i_salary',      label:'Total Fixed Costs (EGP) [business-wide]', label_ar:'إجمالي التكاليف الثابتة (ج.م) [مشتركة]', example:5000, global:true },
+];
+
+function openXlModal(){
+  const m = document.getElementById('xl_modal');
+  if(!m) return;
+  m.style.display = 'flex';
+  document.getElementById('xl_status').textContent = '';
+  document.getElementById('xl_file_inp').value = '';
+  const lbl = document.getElementById('xl_file_lbl');
+  lbl.textContent = T[LANG].xl_drop_lbl || 'Click to choose or drag & drop';
+  lbl.dataset.t = 'xl_drop_lbl';
+}
+
+function closeXlModal(){
+  const m = document.getElementById('xl_modal');
+  if(m) m.style.display = 'none';
+}
+
+function downloadExcelTemplate(){
+  if(!window.XLSX){ alert(T[LANG].xl_err_nolib || 'Excel library not loaded yet. Please try again.'); return; }
+  const isAr   = LANG === 'ar';
+  const headers = XL_COLS.map(c => isAr ? c.label_ar : c.label);
+  const example = XL_COLS.map(c => c.example === '' ? '' : c.example);
+  const aoa = [headers, example, ...Array(5).fill(XL_COLS.map(() => ''))];
+  const ws  = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = XL_COLS.map((_, i) => ({ wch: i === 0 ? 24 : 22 }));
+  ws['!freeze'] = { xSplit:0, ySplit:1 };
+  const wb = XLSX.utils.book_new();
+  const sheetName = isAr ? 'المنتجات' : 'Products';
+  XLSX.utils.book_append_sheet(wb, ws, sheetName);
+  XLSX.writeFile(wb, 'ProfitLens_Products_Template.xlsx');
+}
+
+function handleExcelUpload(input){
+  const file = input.files?.[0];
+  if(!file) return;
+  document.getElementById('xl_file_lbl').textContent = file.name;
+  document.getElementById('xl_status').textContent   = T[LANG].xl_reading || 'Reading file…';
+  if(!window.XLSX){ document.getElementById('xl_status').innerHTML = `<span style="color:var(--red)">✗ ${T[LANG].xl_err_nolib||'Excel library not loaded yet.'}</span>`; return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb   = XLSX.read(e.target.result, { type:'binary' });
+      const ws   = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
+      if(rows.length < 2) throw new Error(T[LANG].xl_err_norows || 'File has no data rows.');
+      // build label→field map — supports both English and Arabic headers
+      const lblMap = {};
+      XL_COLS.forEach(c => {
+        lblMap[c.label.toLowerCase()] = c.field;
+        if(c.label_ar) lblMap[c.label_ar.trim()] = c.field;
+      });
+      // normalise: lowercase English, trim Arabic (Arabic has no case)
+      const hdrs = rows[0].map(h => {
+        const s = String(h).trim();
+        return /[؀-ۿ]/.test(s) ? s : s.toLowerCase();
+      });
+      const dataRows = rows.slice(1).filter(r => r.some(c => String(c).trim() !== ''));
+      if(!dataRows.length) throw new Error(T[LANG].xl_err_nodatarows || 'No data found. Fill in the rows below the header.');
+      let globalFixedCost = '';
+      const newProds = dataRows.map((row, ri) => {
+        const data = {};
+        INPUT_IDS.forEach(id => { data[id] = ''; });
+        let prodName = 'Product ' + (ri + 1);
+        hdrs.forEach((h, ci) => {
+          const fld = lblMap[h];
+          if(!fld) return;
+          const val = String(row[ci] ?? '').trim();
+          if(fld === 'name'){ if(val) prodName = val; }
+          else if(fld === 'i_salary'){ if(val && !globalFixedCost) globalFixedCost = val; }
+          else if(INPUT_IDS.includes(fld)) data[fld] = val;
+        });
+        return { name: prodName, data };
+      });
+      // replace current products
+      PRODUCTS.splice(0, PRODUCTS.length, ...newProds);
+      ACTIVE_PROD      = 0;
+      SHOW_ALL_PRODUCTS = false;
+      loadProduct(0);
+      // apply business-wide fixed cost (take first non-empty value from any row)
+      if(globalFixedCost){
+        const salEl = document.getElementById('i_salary');
+        if(salEl){ salEl.value = globalFixedCost; fcManualInput(); }
+      }
+      renderProdTabs();
+      persistSave();
+      dCalc();
+      const n   = newProds.length;
+      const t   = T[LANG];
+      const plu = n !== 1 ? (t.xl_ok_products||'products') : (t.xl_ok_product||'product');
+      document.getElementById('xl_status').innerHTML =
+        `<span style="color:var(--grn)">✓ ${t.xl_ok||'Imported'} ${n} ${plu} ${t.xl_ok_suf||'successfully!'}</span>`;
+    } catch(err){
+      document.getElementById('xl_status').innerHTML =
+        `<span style="color:var(--red)">✗ ${err.message}</span>`;
+    }
+  };
+  reader.onerror = () => {
+    document.getElementById('xl_status').innerHTML = '<span style="color:var(--red)">✗ Could not read the file.</span>';
+  };
+  reader.readAsBinaryString(file);
+}
+
 // ── LOCALSTORAGE PERSISTENCE ────────────────
 const LS_KEY = 'profitlens_v6';
 
@@ -8073,6 +8815,8 @@ function persistSave(){
       advPdrShip: document.getElementById('adv_pdr_ship') ? document.getElementById('adv_pdr_ship').value : '',
       advPdrDamagedPct: document.getElementById('adv_pdr_damaged_pct') ? document.getElementById('adv_pdr_damaged_pct').value : '',
       advBundleRows:(()=>{const r=[];document.querySelectorAll('#adv_bundle_list .bundle-card').forEach(card=>{r.push({units:card.querySelector('.b-units')?.value||'2',price:card.querySelector('.b-price')?.value||'',freeShip:card.querySelector('.mini-toggle')?.classList.contains('on')||false,orders:card.querySelector('.b-orders')?.value||''});});return r;})(),
+      advShipzoneLocked: ADV_SHIPZONE_LOCKED,
+      advShipzones:(()=>{const r=[];for(let i=1;i<=5;i++){r.push({cost:document.getElementById('sz_cost_'+i)?.value||'',chg:document.getElementById('sz_chg_'+i)?.value||'',share:document.getElementById('sz_share_'+i)?.value||''});}return r;})(),
       advCycleDays: document.getElementById('adv_cycle_days')?.value||'',
       advCfDays: document.getElementById('adv_cf_days')?.value||'',
       advCfCash: document.getElementById('adv_cf_cash')?.value||'',
@@ -8127,6 +8871,8 @@ function persistLoad(){
     window.__advOpsLocked    = state.advOpsLocked    !== undefined ? state.advOpsLocked    : true;
     window.__advCashLocked   = state.advCashLocked   !== undefined ? state.advCashLocked   : false;
     window.__advBundleRows   = state.advBundleRows || [];
+    window.__advShipzoneLocked = state.advShipzoneLocked !== undefined ? state.advShipzoneLocked : true;
+    window.__advShipzones      = Array.isArray(state.advShipzones) ? state.advShipzones : [];
     window.__advCycleDays    = state.advCycleDays   || '';
     window.__advCfDays       = state.advCfDays      || '';
     window.__advCfCash       = state.advCfCash      || '';
@@ -8172,9 +8918,13 @@ function initProducts(){
 
 function _tpInputs(){
   // جيب كل الـ inputs المطلوبة
-  const price      = v('i_price'), cost = v('i_cost'), shipC = v('i_ship_c');
+  const price      = v('i_price'), cost = v('i_cost');
   const fulfillDel = v('i_fulfill_del'), fulfillRet = v('i_fulfill_ret');
-  const courier    = v('i_courier'), commPct = v('i_comm')/100, plat = v('i_plat');
+  const commPct = v('i_comm')/100, plat = v('i_plat');
+  const _szCourier = (typeof advShipZones==='function') ? advShipZones() : null;
+  const courier    = (_szCourier != null) ? _szCourier : v('i_courier');
+  const _szShipC   = (typeof advShipCharged==='function') ? advShipCharged() : null;
+  const shipC      = (_szShipC != null) ? _szShipC : v('i_ship_c');
   const salaryRaw  = v('i_salary');
   const confR      = v('i_conf')/100||.001, delR = v('i_del')/100||.001;
   // Advanced Options
@@ -8322,9 +9072,14 @@ function calcTargetProfitFromStock(){ onTpStock(); }
 
 function calcProductData(data, salaryRawOverride){
   const n = id => parseFloat(data[id]) || 0;
-  const price      = n('i_price'),  cost    = n('i_cost'),  shipC = n('i_ship_c');
+  const price      = n('i_price'),  cost    = n('i_cost');
   const fulfillDel = n('i_fulfill_del'), fulfillRet = n('i_fulfill_ret');
-  const courier    = n('i_courier'), commPct = n('i_comm')/100, plat = n('i_plat');
+  const commPct = n('i_comm')/100, plat = n('i_plat');
+  // Shipping Zones are global (like VAT/PDR) → read weighted-avg courier + charged from the DOM
+  const _szCourier = (typeof advShipZones==='function') ? advShipZones() : null;
+  const courier    = (_szCourier != null) ? _szCourier : n('i_courier');
+  const _szShipC   = (typeof advShipCharged==='function') ? advShipCharged() : null;
+  const shipC      = (_szShipC != null) ? _szShipC : n('i_ship_c');
   const stock      = n('i_stock');
   // Fixed costs are business-wide (shared). The overview passes this product's
   // allocated share; fall back to the global field for any direct call.
@@ -9140,6 +9895,12 @@ const T = {
     hero_pu:'Net profit / unit', hero_total:'Total profit (all stock)',
     hero_rev:'Revenue', hero_rev_sub:'Total incl. shipping',
     adv_title:'Advanced options', adv_show:'Show', adv_hide:'Hide',
+    bud_rec_title:'Ad Budget Gauge', bud_rec_max:'Max', bud_rec_actual:'Actual',
+    bud_rec_hint_max:'Break-even — spend more and you lose',
+    bud_rec_hint_70:'Moderate — healthy profit margin',
+    bud_rec_hint_50:'Conservative — comfortable profit',
+    bud_rec_hint_actual:'Your entered ad budget',
+    tip_bud_rec:'🔴 Max = break-even (contribution margin × stock − salary). 🟡 70% = moderate. 🟢 50% = conservative. Actual = your entered budget.',
     adv_dur_lbl:'Campaign duration (months)',
     adv_dur_hint_off:'Locked → campaign treated as 1 month',
     adv_dur_hint_on:'Unlocked → salary × number of months',
@@ -9149,6 +9910,23 @@ const T = {
     adv_pdr_lbl:'Post-delivery return rate',
     adv_pdr_hint_off:'Locked → no post-delivery returns in calculations',
     adv_pdr_hint_on:'Unlocked → post-delivery returns affect profitPU & net orders',
+    adv_shipzone_lbl:'Shipping zones',
+    adv_shipzone_hint_off:'Locked → the basic "Avg. shipping cost" + "Shipping charged to customer" are used in calculations',
+    adv_shipzone_hint_on:'Unlocked → weighted-avg shipping (by zone) drives both basic shipping fields',
+    tip_shipzone:'Split your orders across 5 delivery zones. For each zone enter the shipping cost you pay (your cost), the shipping you charge the customer, and the % share of your orders that go there. The tool computes weighted-average values (weighted by order share) and uses them as your "Avg. shipping cost (your cost)" and "Shipping charged to customer". When unlocked, those two basic fields up in the Shipping section are locked and driven by these zones. Shares don\'t have to sum to exactly 100% — the averages are normalised by the total you enter.',
+    ship_zone_override_hint:'Managed by Shipping zones (advanced) — these two fields are calculated from your zones.',
+    shipzone_col_zone:'Zone',
+    shipzone_col_cost:'Shipping cost (your cost)',
+    shipzone_col_chg:'Shipping charged to customer',
+    shipzone_col_share:'% of orders',
+    shipzone_z1:'Cairo & Giza',
+    shipzone_z2:'Alexandria',
+    shipzone_z3:'Delta & Canal cities',
+    shipzone_z4:'Upper Egypt',
+    shipzone_z5:'Border & remote areas',
+    shipzone_avg:'Weighted avg shipping cost',
+    shipzone_chg:'Weighted avg charged to customer',
+    shipzone_total:'Total order share',
     adv_pdr_rate_lbl:'Return rate (% of delivered)',
     adv_pdr_ship_lbl:'Return shipping cost',
     adv_pdr_damaged_lbl:'Product damaged? (lose product cost)',
@@ -9260,6 +10038,16 @@ const T = {
     ap_sh_real_lbl:'Avg Real Shipping / unit', ap_sh_collected_lbl:'Avg Collected / unit',
     ap_sh_net_lbl:'Avg Net Shipping on you', ap_sh_total_lbl:'Total Shipping Cost',
     ap_sh_weighted_hint:'Weighted across products', ap_sh_all_hint:'All products combined',
+    ap_sh_recovery_lbl:'Shipping recovery', ap_sh_recovery_hint:'Covered by customers',
+    ap_sh_recovery_tip:'Share of your real shipping cost that customers cover through shipping charges. = Total collected ÷ Total real shipping. Below 100% means you pay the rest out of pocket.',
+    ap_sh_burden_lbl:'Net burden you absorb', ap_sh_burden_hint:'Out of your pocket', ap_sh_burden_of_profit:'of net profit',
+    ap_sh_burden_tip:'Total shipping money the business eats after what customers pay. = Total real shipping − Total collected',
+    ap_sh_rto_lbl:'Return (RTO) cost', ap_sh_rto_hint:'Confirmed but not delivered', ap_sh_rto_orders:'returned orders',
+    ap_sh_rto_tip:'Total cost of orders confirmed but never delivered (returns) — courier charges both legs with zero revenue back. = (Confirmed − Delivered) × return cost per order',
+    ap_sh_verdict_title:"Per-product shipping verdict — who's underwater",
+    ap_sh_burden_chart:'Net shipping burden (total) — per product',
+    ap_shc_net:'Net/unit', ap_shc_burden:'Total burden',
+    ap_shv_sink:'Underwater', ap_shv_raise:'Raise fee', ap_shv_ok:'OK', ap_shv_none:'—',
     ap_cpa_chart:'CPA vs Break-even CPA — per product',
     ap_budget_chart:'Ad Budget — per product',
     ap_sh_chart:'Real shipping cost vs collected — per product',
@@ -9270,9 +10058,27 @@ const T = {
     ap_blended_cpa_lbl:'Blended CPA', ap_blended_roas_lbl:'Blended ROAS', ap_weighted_be_lbl:'Weighted BE CPA',
     ap_total_leads_lbl:'Total Leads', ap_total_conf_lbl:'Total Confirmed', ap_total_del_lbl:'Total Delivered',
     ap_del_orders_chart:'Delivered Orders — per product',
+    ap_safety_lbl:'Safety margin', ap_safety_hint:'Room below break-even',
+    ap_safety_tip:'How far your blended CPA sits below the weighted break-even CPA. Higher = more room to scale spend safely. = (BE CPA − Blended CPA) ÷ BE CPA',
+    ap_wasted_lbl:'Wasted spend', ap_wasted_hint:'On undelivered leads', ap_wasted_hint_amt:'on undelivered leads',
+    ap_wasted_tip:'Share of total ad budget spent on leads that never became delivered orders. = Budget × (1 − Lead→Delivered rate). Some is the normal cost of confirmation — but lower is better.',
+    ap_ceiling_lbl:'Spend ceiling', ap_ceiling_hint:'Max before break-even',
+    ap_ceiling_hint_room:'more before break-even', ap_ceiling_hint_over:'Already at/over break-even',
+    ap_ceiling_tip:'Maximum total ad budget the whole business can absorb before profit hits zero (holding delivered volume constant). = Current ad spend + Total net profit',
+    ap_verdict_title:'Per-product verdict — where to put your money',
+    ap_bubble_title:'Portfolio map — safety vs profit (bubble size = ad budget)',
+    ap_bubble_x:'Safety margin % (right = safer)', ap_bubble_y:'Net profit',
+    ap_v_scale:'Scale', ap_v_hold:'Hold', ap_v_cut:'Cut', ap_v_none:'No ads',
+    ap_vc_product:'Product', ap_vc_budget:'Budget', ap_vc_cpa:'Actual CPA', ap_vc_be:'BE CPA', ap_vc_safety:'Safety', ap_vc_verdict:'Verdict',
     ap_net_profit_chart:'Net Profit per product', ap_rev_breakdown_chart:'Revenue breakdown',
     ap_margin_chart:'Profit margin % per product', ap_pl_summary_chart:'Full Business P&L Summary',
     ap_ranked_by:'Products ranked by Total Net Profit',
+    ap_ov_safety_lbl:'Margin of safety', ap_ov_safety_hint:'Room before break-even', ap_ov_be_rev:'Break-even revenue',
+    ap_ov_safety_tip:'How far total revenue can fall before the whole business hits break-even. = Net profit ÷ Contribution margin. Higher = more cushion against a bad month.',
+    ap_ov_roi_lbl:'Overall ROI', ap_ov_roi_hint:'Profit per 100 spent', ap_ov_roi_per100:'profit per 100 spent',
+    ap_ov_roi_tip:'Net profit as a share of every pound the business spends (product, shipping, fees, ads, salaries). = Net profit ÷ Total all-in costs',
+    ap_ov_conc_lbl:'Profit concentration', ap_ov_conc_hint:'Top product share', ap_ov_make80:'make 80% of profit', ap_ov_loss_drag:'lost to weak products',
+    ap_ov_conc_tip:'Share of total profit coming from your single biggest product. High concentration = fragile — one product failing hurts the whole business.',
     ov_ads_title:'Advertising', ov_ads_card_sub:'CPA & ROAS vs break-even',
     ov_delivery_title:'Delivery', ov_delivery_sub:'Units distribution', ov_del_ret_lbl:'Delivered / Returned',
     ov_ship_title:'Shipping costs', ov_ship_sub:'Per unit breakdown', ov_ship_panel_sub:'weighted across all products',
@@ -9517,6 +10323,27 @@ const T = {
     mymsg_you:'You', mymsg_admin:'Support',
     mymsg_refresh:'Refresh',
     mymsg_type_complaint:'Complaint', mymsg_type_suggestion:'Suggestion', mymsg_type_customization:'Customization',
+    xl_modal_title:'📊 Excel Import / Export', xl_modal_sub:'Add up to 15+ products at once',
+    xl_step1_lbl:'Download the template', xl_step1_desc:'Download the Excel template, fill in your products (you can use any AI model to help), then upload it below.',
+    xl_dl_btn:'⬇ Download Template (.xlsx)',
+    xl_step2_lbl:'Upload your filled file', xl_step2_desc:'Accepts .xlsx or .csv — your current products will be replaced.',
+    xl_drop_lbl:'Click to choose or drag & drop', xl_drop_sub:'.xlsx / .csv',
+    xl_ai_title:'AI tip', xl_ai_body:'You can share the template with ChatGPT / Gemini and say: "Fill this template with my product data: [paste your data]"',
+    xl_reading:'Reading file…', xl_ok:'Imported', xl_ok_products:'products', xl_ok_product:'product', xl_ok_suf:'successfully!',
+    xl_err_norows:'File has no data rows.', xl_err_nodatarows:'No data found. Fill in the rows below the header.', xl_err_nolib:'Excel library not loaded yet. Please try again.',
+    ap_products_word:'products',
+    ap_sort:'Sort', ap_hi:'High first', ap_lo:'Low first',
+    ap_f_all:'All', ap_f_profit:'Profitable', ap_f_loss:'Loss', ap_f_sink:'Drowning', ap_f_ok:'Healthy',
+    ap_sm_budget:'Budget', ap_sm_safety:'Safety', ap_sm_burden:'Burden', ap_sm_recovery:'Recovery', ap_sm_profit:'Net profit', ap_sm_margin:'Margin',
+    ap_edit:'Edit ↗', ap_u_margin:'margin', ap_u_rev:'rev', ap_u_units:'units',
+    ap_th_net:'Net Profit', ap_th_rev_stock:'Revenue / Stock',
+    ap_pl_net:'Net Profit / Loss', ap_pl_profit:'Profit', ap_pl_loss:'Loss',
+    ap_pl_rev_prod:'Revenue from products', ap_pl_rev_ship:'Revenue from shipping', ap_pl_prod_cost:'Product costs',
+    ap_pl_ship_cost:'Real shipping costs', ap_pl_comm:'Commission & fees', ap_pl_ads:'Total ad budget', ap_pl_salaries:'Total fixed costs',
+    ap_ds_actual_cpa:'Actual CPA', ap_ds_be_cpa:'BE CPA', ap_ds_budget:'Ad Budget', ap_ds_orders:'Delivered Orders',
+    ap_ds_burden:'Net burden', ap_ds_real_ship:'Real Shipping/unit', ap_ds_collected:'Collected/unit',
+    ap_ds_profit:'Net Profit', ap_ds_revenue:'Revenue', ap_ds_margin:'Margin %',
+    prod_add:'+ Add product', pi_switch:'switch',
   },
   ar: {
     nav_inputs:'المدخلات', nav_marketing:'الإعلانات', nav_shipping:'الشحن', nav_overview:'نظرة عامة',
@@ -9526,7 +10353,7 @@ const T = {
     sec2_eye:'تحليلات الشحن', sec2_title:'تحليل تكاليف التوصيل', sec2_sub:'تكلفة الشحن الحقيقية بعد حساب المرتجعات والأوردرات الفاشلة.',
     sec3_eye:'نظرة شاملة', sec3_title:'الصورة المالية الكاملة', sec3_sub:'P&L كامل — الإيرادات والتكاليف والربح ونقطة التعادل.',
     card_pricing:'التسعير', card_fulfill:'تكاليف الشحن والتوصيل', card_media:'الميديا باينج', card_rates:'المعدلات والمخزون',
-    lbl_sell_price:'سعر البيع', lbl_prod_cost:'تكلفة المنتج', lbl_avg_units:'متوسط الوحدات / أوردر', lbl_ship_charged:'رسوم الشحن من العميل',
+    lbl_sell_price:'سعر البيع', lbl_prod_cost:'تكلفة المنتج', lbl_avg_units:'متوسط القطع / أوردر', lbl_ship_charged:'رسوم الشحن من العميل',
     lbl_ff_del:'فولفلمينت — أوردر محصّل', lbl_ff_ret:'تكلفة المرتجع الكلية (شاملة)',
     seg_ff_fulfill:'فولفلمينت', seg_ff_pack:'تغليف (باكينج)',
     ff_hint_fulfill:'بتتحسب على كل أوردر متوصّل — زي شركة فولفلمينت / 3PL.',
@@ -9595,6 +10422,12 @@ const T = {
     hero_pu:'صافي الربح / وحدة', hero_total:'الربح الكلي (كل المخزون)',
     hero_rev:'الإيراد', hero_rev_sub:'شامل الشحن',
     adv_title:'الإعدادات المتقدمة', adv_show:'إظهار', adv_hide:'إخفاء',
+    bud_rec_title:'مؤشر بادجت الإعلانات', bud_rec_max:'الحد الأقصى', bud_rec_actual:'الفعلي',
+    bud_rec_hint_max:'نقطة التعادل — لو صرفت أكتر هتخسر',
+    bud_rec_hint_70:'معتدل — هامش ربح كويس',
+    bud_rec_hint_50:'محافظ — ربح مريح',
+    bud_rec_hint_actual:'البادجت المُدخَل فعلياً',
+    tip_bud_rec:'🔴 الحد الأقصى = نقطة التعادل (هامش الربح × المخزون − الراتب). 🟡 70% = معتدل. 🟢 50% = محافظ. الفعلي = البادجت المُدخَل.',
     adv_dur_lbl:'مدة الحملة (بالشهور)',
     adv_dur_hint_off:'مقفول → الحملة محسوبة كشهر واحد',
     adv_dur_hint_on:'مفتوح → الراتب × عدد الشهور',
@@ -9604,6 +10437,23 @@ const T = {
     adv_pdr_lbl:'نسبة المرتجع بعد الاستلام',
     adv_pdr_hint_off:'مقفول → مفيش مرتجع بعد الاستلام في الحسابات',
     adv_pdr_hint_on:'مفتوح → المرتجع بعد الاستلام بيأثر على ربح الوحدة وصافي الأوردرات',
+    adv_shipzone_lbl:'مناطق الشحن',
+    adv_shipzone_hint_off:'مقفول → بيتحسب "متوسط تكلفة الشحن" و"الشحن المحصّل من العميل" الأساسيين في الحسابات',
+    adv_shipzone_hint_on:'مفتوح → متوسط الشحن المرجّح حسب المنطقة بيتحكّم في حقلَي الشحن الأساسيين',
+    tip_shipzone:'قسّم أوردراتك على 5 مناطق توصيل. لكل منطقة اكتب تكلفة الشحن اللي بتدفعها (عليك)، والشحن اللي بتحصّله من العميل، ونسبة الأوردرات اللي بتروح للمنطقة دي. الأداة بتحسب متوسطات مرجّحة (حسب نسبة الأوردرات) وبتستخدمها كـ "متوسط تكلفة الشحن (عليك)" و"الشحن المحصّل من العميل". لما تفتح القسم ده، الحقلين الأساسيين فوق في قسم الشحن بيتقفلوا وبيتحسبوا من الزونز دي. النِسَب مش لازم تطلع 100% بالظبط — المتوسطات بتتظبط على إجمالي اللي كتبته.',
+    ship_zone_override_hint:'بيتحسب من مناطق الشحن (المتقدّم) — الحقلين دول محسوبين من الزونز بتاعتك.',
+    shipzone_col_zone:'المنطقة',
+    shipzone_col_cost:'تكلفة الشحن (عليك)',
+    shipzone_col_chg:'الشحن المحصّل من العميل',
+    shipzone_col_share:'% الأوردرات',
+    shipzone_z1:'القاهرة والجيزة',
+    shipzone_z2:'الإسكندرية',
+    shipzone_z3:'الدلتا ومدن القناة',
+    shipzone_z4:'الصعيد',
+    shipzone_z5:'المناطق الحدودية والنائية',
+    shipzone_avg:'متوسط الشحن المرجّح',
+    shipzone_chg:'متوسط المحصّل من العميل المرجّح',
+    shipzone_total:'إجمالي نسبة الأوردرات',
     adv_pdr_rate_lbl:'نسبة المرتجع (% من الموصّل)',
     adv_pdr_ship_lbl:'تكلفة شحن المرتجع',
     adv_pdr_damaged_lbl:'المنتج بيتتلف؟ (خسارة تكلفة المنتج)',
@@ -9715,6 +10565,16 @@ const T = {
     ap_sh_real_lbl:'متوسط الشحن الحقيقي / وحدة', ap_sh_collected_lbl:'متوسط المحصّل / وحدة',
     ap_sh_net_lbl:'متوسط صافي الشحن عليك', ap_sh_total_lbl:'إجمالي تكلفة الشحن',
     ap_sh_weighted_hint:'موزون عبر المنتجات', ap_sh_all_hint:'كل المنتجات مجتمعة',
+    ap_sh_recovery_lbl:'استرداد الشحن', ap_sh_recovery_hint:'بيغطيه العملاء',
+    ap_sh_recovery_tip:'نسبة تكلفة الشحن الحقيقية اللي العملاء بيغطوها من رسوم الشحن اللي بتاخدها منهم. = إجمالي المحصّل ÷ إجمالي الشحن الحقيقي. أقل من 100% يعني الباقي من جيبك.',
+    ap_sh_burden_lbl:'العبء الصافي عليك', ap_sh_burden_hint:'من جيبك', ap_sh_burden_of_profit:'من صافي الربح',
+    ap_sh_burden_tip:'إجمالي فلوس الشحن اللي البيزنس بياكلها بعد اللي العملاء بيدفعوه. = إجمالي الشحن الحقيقي − إجمالي المحصّل',
+    ap_sh_rto_lbl:'تكلفة المرتجعات (RTO)', ap_sh_rto_hint:'مؤكد بس مووصلش', ap_sh_rto_orders:'أوردر مرتجع',
+    ap_sh_rto_tip:'إجمالي تكلفة الأوردرات اللي اتأكدت ومووصلتش (مرتجعات) — الكورير بياخد رايح وجاي من غير أي إيراد راجع. = (المؤكد − الموصّل) × تكلفة المرتجع لكل أوردر',
+    ap_sh_verdict_title:'حُكم الشحن لكل منتج — مين بيغرق',
+    ap_sh_burden_chart:'العبء الصافي للشحن (الإجمالي) — لكل منتج',
+    ap_shc_net:'الصافي/وحدة', ap_shc_burden:'العبء الكلي',
+    ap_shv_sink:'بيغرق', ap_shv_raise:'ارفع الرسوم', ap_shv_ok:'تمام', ap_shv_none:'—',
     ap_cpa_chart:'CPA مقابل CPA التعادل — لكل منتج',
     ap_budget_chart:'ميزانية الإعلانات — لكل منتج',
     ap_sh_chart:'تكلفة الشحن الحقيقية مقابل المحصّل — لكل منتج',
@@ -9725,9 +10585,27 @@ const T = {
     ap_blended_cpa_lbl:'CPA مدمج', ap_blended_roas_lbl:'ROAS مدمج', ap_weighted_be_lbl:'BE CPA الموزون',
     ap_total_leads_lbl:'إجمالي الليدز', ap_total_conf_lbl:'إجمالي المؤكدات', ap_total_del_lbl:'إجمالي الموصّلات',
     ap_del_orders_chart:'الأوردرات الموصّلة — لكل منتج',
+    ap_safety_lbl:'مساحة الأمان', ap_safety_hint:'المساحة تحت نقطة التعادل',
+    ap_safety_tip:'قد إيه الـ CPA المدمج بتاعك تحت الـ BE CPA الموزون. كل ما زادت → مساحة أكبر تكبّر الصرف بأمان. = (BE CPA − CPA المدمج) ÷ BE CPA',
+    ap_wasted_lbl:'الهدر', ap_wasted_hint:'على ليدز محولتش', ap_wasted_hint_amt:'على ليدز محولتش',
+    ap_wasted_tip:'نسبة ميزانية الإعلانات اللي راحت على ليدز معملتش أوردرات موصّلة. = الميزانية × (1 − معدل تحويل الليد للتوصيل). جزء منها تكلفة تأكيد طبيعية — بس كل ما قلّت أحسن.',
+    ap_ceiling_lbl:'سقف الصرف', ap_ceiling_hint:'الحد الأقصى قبل التعادل',
+    ap_ceiling_hint_room:'كمان قبل التعادل', ap_ceiling_hint_over:'وصلت/عدّيت نقطة التعادل',
+    ap_ceiling_tip:'أقصى ميزانية إعلانات يقدر البزنس كله يستحملها قبل ما الربح يوصل صفر (بثبات عدد الأوردرات الموصّلة). = الصرف الحالي + صافي الربح الكلي',
+    ap_verdict_title:'حُكم لكل منتج — تحط فلوسك فين',
+    ap_bubble_title:'خريطة المحفظة — الأمان مقابل الربح (حجم الفقاعة = ميزانية الإعلان)',
+    ap_bubble_x:'مساحة الأمان % (يمين = أأمن)', ap_bubble_y:'صافي الربح',
+    ap_v_scale:'كبّر', ap_v_hold:'سيب زي ما هو', ap_v_cut:'أوقف', ap_v_none:'بدون إعلان',
+    ap_vc_product:'المنتج', ap_vc_budget:'الميزانية', ap_vc_cpa:'CPA الفعلي', ap_vc_be:'BE CPA', ap_vc_safety:'الأمان', ap_vc_verdict:'الحُكم',
     ap_net_profit_chart:'صافي الربح لكل منتج', ap_rev_breakdown_chart:'توزيع الإيرادات',
     ap_margin_chart:'هامش الربح % لكل منتج', ap_pl_summary_chart:'ملخص P&L الكامل للبزنس',
     ap_ranked_by:'المنتجات مرتبة بالربح الكلي الصافي',
+    ap_ov_safety_lbl:'هامش الأمان', ap_ov_safety_hint:'المساحة قبل التعادل', ap_ov_be_rev:'إيراد التعادل',
+    ap_ov_safety_tip:'الإيراد الكلي ينزل قد إيه قبل ما البيزنس كله يوصل نقطة التعادل. = صافي الربح ÷ هامش المساهمة. كل ما زاد → وسادة أمان أكبر ضد أي شهر وحش.',
+    ap_ov_roi_lbl:'العائد الكلي ROI', ap_ov_roi_hint:'ربح لكل 100 مصروفة', ap_ov_roi_per100:'ربح لكل 100 مصروفة',
+    ap_ov_roi_tip:'صافي الربح كنسبة من كل جنيه بيصرفه البيزنس (منتج، شحن، رسوم، إعلانات، رواتب). = صافي الربح ÷ إجمالي التكاليف الشاملة',
+    ap_ov_conc_lbl:'تركّز الربح', ap_ov_conc_hint:'حصة أكبر منتج', ap_ov_make80:'بيعملوا 80% من الربح', ap_ov_loss_drag:'ضايعة على منتجات ضعيفة',
+    ap_ov_conc_tip:'نسبة الربح الكلي الجاية من أكبر منتج عندك. التركّز العالي = هشاشة — لو المنتج ده وقع بيضر البيزنس كله.',
     ov_ads_title:'الإعلانات', ov_ads_card_sub:'CPA و ROAS مقابل نقطة التعادل',
     ov_delivery_title:'التوصيل', ov_delivery_sub:'توزيع الوحدات', ov_del_ret_lbl:'وصلت / رجعت',
     ov_ship_title:'تكاليف الشحن', ov_ship_sub:'تفصيل لكل وحدة', ov_ship_panel_sub:'موزون عبر كل المنتجات',
@@ -9923,7 +10801,7 @@ const T = {
     exp_tab_compare:'⚖️ مقارنة',
     exp_preview:'معاينة',
     tip_pdr_info:'العميل استلم المنتج وبعدين طلب يرجّعه. بيأثر على صافي الأوردرات الموصّلة وربح الوحدة عن طريق تكلفة شحن إضافية وخسارة محتملة لتكلفة المنتج.',
-    cf_seg_units:'متوسط الوحدات / أوردر',
+    cf_seg_units:'متوسط القطع / أوردر',
     unit_units_word:'وحدة',
     fc_mode_preset:'📋 فئات جاهزة',
     fc_mode_custom:'✏️ جدول مخصّص',
@@ -9972,6 +10850,27 @@ const T = {
     mymsg_you:'أنت', mymsg_admin:'الدعم',
     mymsg_refresh:'تحديث',
     mymsg_type_complaint:'شكوى', mymsg_type_suggestion:'اقتراح', mymsg_type_customization:'كاستمايزيشن',
+    xl_modal_title:'📊 استيراد / تصدير Excel', xl_modal_sub:'أضف 15+ منتج دفعة واحدة',
+    xl_step1_lbl:'نزّل التمبلت', xl_step1_desc:'نزّل تمبلت Excel، ابدأ ملء بياناتك (أو استخدم أي AI يساعدك)، ثم ارفعه أدناه.',
+    xl_dl_btn:'⬇ تنزيل التمبلت (.xlsx)',
+    xl_step2_lbl:'ارفع الملف بعد ملئه', xl_step2_desc:'يقبل .xlsx أو .csv — سيتم استبدال منتجاتك الحالية.',
+    xl_drop_lbl:'اضغط للاختيار أو اسحب الملف هنا', xl_drop_sub:'.xlsx / .csv',
+    xl_ai_title:'تلميح AI', xl_ai_body:'يمكنك مشاركة التمبلت مع ChatGPT أو Gemini وتقول: "امل هذا التمبلت ببيانات منتجاتي: [الصق بياناتك]"',
+    xl_reading:'جاري قراءة الملف…', xl_ok:'تم استيراد', xl_ok_products:'منتجات', xl_ok_product:'منتج', xl_ok_suf:'بنجاح!',
+    xl_err_norows:'الملف لا يحتوي على بيانات.', xl_err_nodatarows:'لم يُعثر على بيانات. امل الصفوف أسفل الهيدر.', xl_err_nolib:'مكتبة Excel لم تُحمَّل بعد. حاول مرة أخرى.',
+    ap_products_word:'منتج',
+    ap_sort:'ترتيب', ap_hi:'الأعلى أولاً', ap_lo:'الأقل أولاً',
+    ap_f_all:'الكل', ap_f_profit:'رابحة', ap_f_loss:'خاسرة', ap_f_sink:'بيغرق', ap_f_ok:'سليم',
+    ap_sm_budget:'الميزانية', ap_sm_safety:'الأمان', ap_sm_burden:'العبء', ap_sm_recovery:'الاسترداد', ap_sm_profit:'الربح الصافي', ap_sm_margin:'الهامش',
+    ap_edit:'تعديل ↗', ap_u_margin:'هامش', ap_u_rev:'إيراد', ap_u_units:'وحدة',
+    ap_th_net:'صافي الربح', ap_th_rev_stock:'الإيراد / المخزون',
+    ap_pl_net:'صافي الربح / الخسارة', ap_pl_profit:'ربح', ap_pl_loss:'خسارة',
+    ap_pl_rev_prod:'إيراد المنتجات', ap_pl_rev_ship:'إيراد الشحن', ap_pl_prod_cost:'تكاليف المنتجات',
+    ap_pl_ship_cost:'تكاليف الشحن الحقيقية', ap_pl_comm:'العمولات والرسوم', ap_pl_ads:'إجمالي ميزانية الإعلانات', ap_pl_salaries:'إجمالي التكاليف الثابتة',
+    ap_ds_actual_cpa:'CPA الفعلي', ap_ds_be_cpa:'CPA التعادل', ap_ds_budget:'ميزانية الإعلانات', ap_ds_orders:'الأوردرات الموصّلة',
+    ap_ds_burden:'صافي العبء', ap_ds_real_ship:'الشحن الحقيقي/وحدة', ap_ds_collected:'المحصّل/وحدة',
+    ap_ds_profit:'صافي الربح', ap_ds_revenue:'الإيراد', ap_ds_margin:'الهامش %',
+    prod_add:'+ إضافة منتج', pi_switch:'تبديل',
   }
 };
 
@@ -10005,7 +10904,10 @@ function applyLang(){
 function toggleLang(){
   LANG = LANG==='en'?'ar':'en';
   applyLang();
+  // Re-render every dynamically-built view so nothing is left in the old language.
+  if(typeof renderProdTabs==='function') renderProdTabs();
   if(typeof calc==='function') calc();
+  if(SHOW_ALL_PRODUCTS && typeof calcAllProducts==='function') calcAllProducts();
   persistSave();
 }
 
@@ -10142,7 +11044,7 @@ window.addEventListener('load', ()=>{
             '</a>'+
             '<a class="pl-menu-btn" href="/admin-feedback" style="text-decoration:none">'+
               '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>'+
-              '<span>'+( T[LANG].fb_admin_feedback||T.en.fb_admin_feedback )+'</span>'+
+              '<span data-t="fb_admin_feedback">'+( T[LANG].fb_admin_feedback||T.en.fb_admin_feedback )+'</span>'+
             '</a>'+
             '<div class="pl-menu-div"></div>'
           : '';
@@ -10150,22 +11052,22 @@ window.addEventListener('load', ()=>{
         const feedbackItems =
           '<button class="pl-menu-btn" onclick="openFeedback(\'complaint\')">'+
             '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>'+
-            '<span>'+( T[LANG].fb_btn_complaint||T.en.fb_btn_complaint )+'</span>'+
+            '<span data-t="fb_btn_complaint">'+( T[LANG].fb_btn_complaint||T.en.fb_btn_complaint )+'</span>'+
           '</button>'+
           '<button class="pl-menu-btn" onclick="openFeedback(\'suggestion\')">'+
             '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>'+
-            '<span>'+( T[LANG].fb_btn_suggestion||T.en.fb_btn_suggestion )+'</span>'+
+            '<span data-t="fb_btn_suggestion">'+( T[LANG].fb_btn_suggestion||T.en.fb_btn_suggestion )+'</span>'+
           '</button>'+
           '<button class="pl-menu-btn" onclick="openFeedback(\'customization\')">'+
             '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>'+
-            '<span>'+( T[LANG].fb_btn_customization||T.en.fb_btn_customization )+'</span>'+
+            '<span data-t="fb_btn_customization">'+( T[LANG].fb_btn_customization||T.en.fb_btn_customization )+'</span>'+
           '</button>'+
           '<div class="pl-menu-div"></div>';
 
         const myMsgItem =
           '<button class="pl-menu-btn" onclick="myMsgOpen()">'+
             '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'+
-            '<span>'+( T[LANG].mymsg_btn||T.en.mymsg_btn )+'</span>'+
+            '<span data-t="mymsg_btn">'+( T[LANG].mymsg_btn||T.en.mymsg_btn )+'</span>'+
           '</button>';
 
         const wrap = document.createElement('div');
@@ -10533,6 +11435,17 @@ window.addEventListener('load', ()=>{
     });
     bundleRecalc();
   }
+  // Restore shipping zones (set values first, then unlock so the blended avg recomputes)
+  if(Array.isArray(window.__advShipzones)){
+    window.__advShipzones.forEach((z,i)=>{
+      const ci=document.getElementById('sz_cost_'+(i+1));  if(ci) ci.value = (z && z.cost  != null) ? z.cost  : '';
+      const hi=document.getElementById('sz_chg_'+(i+1));   if(hi) hi.value = (z && z.chg   != null) ? z.chg   : '';
+      const si=document.getElementById('sz_share_'+(i+1)); if(si) si.value = (z && z.share != null) ? z.share : '';
+    });
+  }
+  if(window.__advShipzoneLocked===false && ADV_SHIPZONE_LOCKED===true){
+    toggleAdvLock('shipzone');
+  }
   // Restore ops state
   const ci=document.getElementById('adv_cycle_days');if(ci&&window.__advCycleDays)ci.value=window.__advCycleDays;
   const cfi=document.getElementById('adv_cf_days');if(cfi&&window.__advCfDays)cfi.value=window.__advCfDays;
@@ -10790,6 +11703,63 @@ function toggleRevShipping(){
       <div class="fb-success-msg">استلمنا رسالتك وهنرد عليك على الإيميل.</div>
       <button class="fb-btn" style="margin-top:16px" onclick="fbClose()">إغلاق</button>
     </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     Excel Import / Export Modal
+═══════════════════════════════════════════════════════════════ -->
+<div id="xl_modal" style="display:none;position:fixed;inset:0;z-index:9100;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);align-items:center;justify-content:center" onclick="if(event.target===this)closeXlModal()">
+  <div style="background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;padding:24px;width:min(520px,92vw);max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div>
+        <div style="font-weight:700;font-size:16px;color:var(--txt)" data-t="xl_modal_title">📊 Excel Import / Export</div>
+        <div style="font-size:12px;color:var(--txt3);margin-top:2px" data-t="xl_modal_sub">Add up to 15+ products at once</div>
+      </div>
+      <button onclick="closeXlModal()" style="background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt2);font-size:16px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
+    </div>
+
+    <!-- Step 1: Download Template -->
+    <div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;padding:16px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="background:var(--c1);color:#000;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</span>
+        <span style="font-weight:600;font-size:14px;color:var(--txt)" data-t="xl_step1_lbl">Download the template</span>
+      </div>
+      <div style="font-size:12px;color:var(--txt3);margin-bottom:12px;padding-left:28px" data-t="xl_step1_desc">Download the Excel template, fill in your products (you can use any AI model to help), then upload it below.</div>
+      <button onclick="downloadExcelTemplate()" style="width:100%;padding:10px;background:var(--c1);border:none;border-radius:9px;color:#000;font-weight:600;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px" data-t="xl_dl_btn">
+        ⬇ Download Template (.xlsx)
+      </button>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;padding:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="background:var(--c2);color:#000;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</span>
+        <span style="font-weight:600;font-size:14px;color:var(--txt)" data-t="xl_step2_lbl">Upload your filled file</span>
+      </div>
+      <div style="font-size:12px;color:var(--txt3);margin-bottom:12px;padding-left:28px" data-t="xl_step2_desc">Accepts .xlsx or .csv — your current products will be replaced.</div>
+      <label for="xl_file_inp" style="display:block;cursor:pointer">
+        <input type="file" id="xl_file_inp" accept=".xlsx,.xls,.csv" onchange="handleExcelUpload(this)" style="display:none">
+        <div id="xl_drop_zone" style="border:2px dashed var(--bdr2);border-radius:9px;padding:20px;text-align:center;transition:border-color .2s"
+             ondragover="event.preventDefault();this.style.borderColor='var(--c1)'"
+             ondragleave="this.style.borderColor='var(--bdr2)'"
+             ondrop="event.preventDefault();this.style.borderColor='var(--bdr2)';document.getElementById('xl_file_inp').files=event.dataTransfer.files;handleExcelUpload(document.getElementById('xl_file_inp'))">
+          <div style="font-size:24px;margin-bottom:6px">📂</div>
+          <div id="xl_file_lbl" style="font-size:13px;color:var(--txt2)" data-t="xl_drop_lbl">Click to choose or drag & drop</div>
+          <div style="font-size:11px;color:var(--txt3);margin-top:3px" data-t="xl_drop_sub">.xlsx / .csv</div>
+        </div>
+      </label>
+      <div id="xl_status" style="margin-top:10px;font-size:13px;min-height:20px;text-align:center"></div>
+    </div>
+
+    <!-- AI Prompt hint -->
+    <div style="margin-top:12px;background:rgba(129,140,248,.08);border:1px solid rgba(129,140,248,.2);border-radius:10px;padding:12px">
+      <div style="font-size:11px;font-weight:600;color:var(--c1);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em" data-t="xl_ai_title">AI tip</div>
+      <div style="font-size:12px;color:var(--txt3);line-height:1.6" data-t="xl_ai_body">You can share the template with ChatGPT / Gemini and say: "Fill this template with my product data: [paste your data]"</div>
+    </div>
+
   </div>
 </div>
 
