@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProfitLens — إدارة الرسائل</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:#0d0f14; --bg2:#13161e; --bg3:#1a1e28; --bg4:#1f2435; --bg5:#252b3b;
+      --bdr:#2a2f3d; --bdr2:#3a4055;
+      --txt:#e8eaf0; --txt2:#8890a6; --txt3:#555e78;
+      --acc:#5b6af5; --acc2:#4a58e8;
+      --grn:#22c55e; --red:#ef4444; --ylw:#f59e0b; --pur:#8b5cf6; --blue:#38bdf8;
+      --mono:'JetBrains Mono','Fira Code',monospace;
+      --body:'Inter',system-ui,sans-serif;
+      --panel-w:320px;
+    }
+
+    body {
+      background:var(--bg); color:var(--txt); font-family:var(--body);
+      height:100dvh; display:flex; flex-direction:column; overflow:hidden;
+    }
+
+    /* ── Nav ── */
+    nav {
+      flex-shrink:0; z-index:100;
+      background:rgba(13,15,20,.96); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--bdr);
+      height:52px; display:flex; align-items:center; padding:0 16px; gap:10px;
+    }
+    .nav-logo { font-weight:700; font-size:15px; }
+    .nav-logo span { color:var(--acc); }
+    .badge { font-size:10px; font-weight:600; padding:2px 8px; background:rgba(239,68,68,.15); color:var(--red); border:1px solid rgba(239,68,68,.2); border-radius:20px; }
+    .nav-spacer { flex:1; }
+    .nav-back { font-size:12px; color:var(--txt2); text-decoration:none; display:flex; align-items:center; gap:6px; padding:6px 10px; border-radius:7px; transition:background .15s; }
+    .nav-back:hover { background:var(--bg3); color:var(--txt); }
+
+    /* ── Layout ── */
+    .layout {
+      flex:1; display:flex; overflow:hidden;
+    }
+
+    /* ── Left panel (list) ── */
+    .panel-list {
+      width:var(--panel-w); flex-shrink:0;
+      border-left:1px solid var(--bdr);
+      display:flex; flex-direction:column;
+      background:var(--bg2);
+    }
+    .panel-list-head {
+      padding:14px 14px 10px;
+      border-bottom:1px solid var(--bdr);
+    }
+    .panel-title { font-size:15px; font-weight:700; margin-bottom:10px; }
+
+    /* Tabs */
+    .tabs { display:flex; gap:3px; }
+    .tab-btn {
+      flex:1; padding:6px 4px; border:none; border-radius:6px;
+      font-family:var(--body); font-size:11px; font-weight:600; cursor:pointer;
+      color:var(--txt2); background:transparent; transition:all .15s; white-space:nowrap;
+      display:flex; align-items:center; justify-content:center; gap:4px;
+    }
+    .tab-btn.active { background:var(--acc); color:#fff; }
+    .tab-count {
+      display:inline-flex; align-items:center; justify-content:center;
+      background:rgba(255,255,255,.18); border-radius:20px;
+      font-size:9px; padding:1px 5px; font-weight:700; min-width:18px;
+    }
+    .tab-btn:not(.active) .tab-count { background:var(--bg3); color:var(--txt3); }
+
+    /* Conversation list */
+    .conv-list { flex:1; overflow-y:auto; padding:6px; }
+    .conv-list::-webkit-scrollbar { width:4px; }
+    .conv-list::-webkit-scrollbar-track { background:transparent; }
+    .conv-list::-webkit-scrollbar-thumb { background:var(--bdr2); border-radius:4px; }
+
+    .conv-item {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 10px; border-radius:9px; cursor:pointer;
+      transition:background .12s; margin-bottom:2px;
+    }
+    .conv-item:hover { background:var(--bg3); }
+    .conv-item.active { background:var(--bg4); }
+
+    .conv-avatar {
+      width:40px; height:40px; border-radius:50%; flex-shrink:0;
+      background:linear-gradient(135deg,var(--acc),var(--pur));
+      display:flex; align-items:center; justify-content:center;
+      font-weight:700; font-size:16px; color:#fff;
+    }
+    .conv-info { flex:1; min-width:0; }
+    .conv-email { font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .conv-preview { font-size:11px; color:var(--txt3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:2px; }
+    .conv-right { display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0; }
+    .conv-time { font-size:10px; color:var(--txt3); white-space:nowrap; }
+    .conv-status { font-size:9px; font-weight:600; padding:2px 6px; border-radius:20px; white-space:nowrap; }
+    .s-pending  { background:rgba(245,158,11,.12); color:var(--ylw); }
+    .s-reviewed { background:rgba(56,189,248,.12); color:var(--blue); }
+    .s-resolved { background:rgba(34,197,94,.12);  color:var(--grn); }
+
+    .list-empty { text-align:center; padding:40px 16px; color:var(--txt3); font-size:13px; }
+
+    /* ── Right panel (chat) ── */
+    .panel-chat {
+      flex:1; display:flex; flex-direction:column; background:var(--bg);
+      min-width:0;
+    }
+
+    /* Chat empty state */
+    .chat-empty {
+      flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      color:var(--txt3); gap:14px;
+    }
+    .chat-empty svg { opacity:.2; }
+    .chat-empty p { font-size:14px; }
+
+    /* Chat header */
+    .chat-head {
+      flex-shrink:0; padding:12px 16px;
+      border-bottom:1px solid var(--bdr);
+      background:var(--bg2);
+      display:flex; align-items:center; gap:12px;
+    }
+    .chat-head-avatar {
+      width:38px; height:38px; border-radius:50%; flex-shrink:0;
+      background:linear-gradient(135deg,var(--acc),var(--pur));
+      display:flex; align-items:center; justify-content:center;
+      font-weight:700; font-size:15px; color:#fff;
+    }
+    .chat-head-info { flex:1; min-width:0; }
+    .chat-head-email { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .chat-head-sub { font-size:11px; color:var(--txt2); margin-top:2px; display:flex; align-items:center; gap:8px; }
+    .type-badge { font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px; }
+    .t-complaint    { background:rgba(239,68,68,.12); color:var(--red); }
+    .t-suggestion   { background:rgba(34,197,94,.12); color:var(--grn); }
+    .t-customization{ background:rgba(139,92,246,.12); color:var(--pur); }
+
+    .chat-head-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+
+    .status-select {
+      font-size:11px; font-weight:600; padding:4px 10px; border-radius:7px; cursor:pointer;
+      border:1px solid var(--bdr2); font-family:var(--body);
+      background:var(--bg3); color:var(--txt);
+      -webkit-appearance:none; appearance:none; padding-left:28px;
+    }
+    .status-select-wrap { position:relative; }
+    .status-select-wrap::before {
+      content:''; position:absolute; left:9px; top:50%; transform:translateY(-50%);
+      width:8px; height:8px; border-radius:50%; pointer-events:none;
+    }
+    .status-select-wrap.s-pending::before  { background:var(--ylw); }
+    .status-select-wrap.s-reviewed::before { background:var(--blue); }
+    .status-select-wrap.s-resolved::before { background:var(--grn); }
+
+    .btn-icon {
+      width:32px; height:32px; border:none; border-radius:7px; cursor:pointer;
+      background:rgba(239,68,68,.08); color:var(--red); display:flex; align-items:center; justify-content:center;
+      transition:background .15s;
+    }
+    .btn-icon:hover { background:rgba(239,68,68,.18); }
+    .btn-icon.mobile-back { background:var(--bg3); color:var(--txt2); display:none; }
+    .btn-icon.mobile-back:hover { background:var(--bg4); color:var(--txt); }
+
+    /* Chat body */
+    .chat-body {
+      flex:1; overflow-y:auto; padding:16px;
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .chat-body::-webkit-scrollbar { width:4px; }
+    .chat-body::-webkit-scrollbar-track { background:transparent; }
+    .chat-body::-webkit-scrollbar-thumb { background:var(--bdr2); border-radius:4px; }
+
+    /* Bubbles */
+    .bubble-wrap {
+      display:flex; gap:8px; max-width:72%;
+    }
+    .bubble-wrap.incoming { align-self:flex-start; flex-direction:row; }
+    .bubble-wrap.outgoing { align-self:flex-end; flex-direction:row-reverse; }
+
+    .bubble-avatar {
+      width:30px; height:30px; border-radius:50%; flex-shrink:0; margin-top:2px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:700; color:#fff;
+    }
+    .bubble-wrap.incoming .bubble-avatar { background:linear-gradient(135deg,var(--acc),var(--pur)); }
+    .bubble-wrap.outgoing .bubble-avatar { background:linear-gradient(135deg,var(--grn),#16a34a); }
+
+    .bubble {
+      padding:10px 14px; border-radius:14px; font-size:13px; line-height:1.6;
+      white-space:pre-wrap; word-break:break-word;
+    }
+    .bubble-wrap.incoming .bubble {
+      background:var(--bg3); border:1px solid var(--bdr);
+      border-top-right-radius:4px;
+    }
+    .bubble-wrap.outgoing .bubble {
+      background:rgba(91,106,245,.18); border:1px solid rgba(91,106,245,.25);
+      border-top-left-radius:4px; color:var(--txt);
+    }
+    .bubble-time { font-size:10px; color:var(--txt3); margin-top:4px; text-align:end; }
+
+    .bubble-img { margin-top:8px; }
+    .bubble-img img { max-width:200px; max-height:140px; border-radius:8px; border:1px solid var(--bdr); object-fit:cover; cursor:zoom-in; transition:opacity .15s; }
+    .bubble-img img:hover { opacity:.85; }
+
+    /* ── Lightbox ── */
+    .lightbox {
+      display:none; position:fixed; inset:0; z-index:999;
+      background:rgba(0,0,0,.85); backdrop-filter:blur(6px);
+      align-items:center; justify-content:center;
+    }
+    .lightbox.open { display:flex; }
+    .lightbox img {
+      max-width:90vw; max-height:88vh; border-radius:10px;
+      object-fit:contain; box-shadow:0 16px 64px rgba(0,0,0,.6);
+    }
+    .lightbox-close {
+      position:fixed; top:16px; left:16px;
+      width:38px; height:38px; border-radius:50%; border:none; cursor:pointer;
+      background:rgba(255,255,255,.12); color:#fff; font-size:20px;
+      display:flex; align-items:center; justify-content:center;
+      transition:background .15s;
+    }
+    .lightbox-close:hover { background:rgba(255,255,255,.22); }
+
+    /* Date separator */
+    .date-sep {
+      text-align:center; font-size:11px; color:var(--txt3);
+      padding:4px 12px; background:var(--bg4); border-radius:20px;
+      align-self:center; margin:4px 0;
+    }
+
+    /* Chat footer */
+    .chat-foot {
+      flex-shrink:0; padding:12px 16px;
+      border-top:1px solid var(--bdr);
+      background:var(--bg2);
+      display:flex; align-items:flex-end; gap:10px;
+    }
+    .reply-textarea {
+      flex:1; resize:none; min-height:42px; max-height:120px;
+      background:var(--bg3); border:1px solid var(--bdr2); border-radius:10px;
+      padding:10px 12px; color:var(--txt); font-family:var(--body); font-size:13px;
+      line-height:1.5; overflow-y:auto; outline:none;
+      transition:border-color .15s;
+    }
+    .reply-textarea:focus { border-color:var(--acc); }
+    .reply-textarea::placeholder { color:var(--txt3); }
+    .btn-send {
+      width:42px; height:42px; border:none; border-radius:10px; cursor:pointer;
+      background:var(--acc); color:#fff; display:flex; align-items:center; justify-content:center;
+      transition:background .15s, transform .1s; flex-shrink:0;
+    }
+    .btn-send:hover { background:var(--acc2); }
+    .btn-send:active { transform:scale(.93); }
+    .btn-send:disabled { background:var(--bg4); color:var(--txt3); cursor:not-allowed; transform:none; }
+
+    /* Loading spinner */
+    .chat-loading { flex:1; display:flex; align-items:center; justify-content:center; color:var(--txt3); font-size:13px; }
+
+    /* ── Mobile ── */
+    @media(max-width:640px) {
+      :root { --panel-w:100vw; }
+      .panel-list { border-left:none; }
+      .panel-chat { position:absolute; inset:52px 0 0 0; z-index:10; transform:translateX(100%); transition:transform .25s; }
+      .panel-chat.mobile-open { transform:translateX(0); }
+      .btn-icon.mobile-back { display:flex; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Profit<span>Lens</span></div>
+  <span class="badge">ADMIN</span>
+  <div class="nav-spacer"></div>
+  <a class="nav-back" href="/admin">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    لوحة التحكم
+  </a>
+</nav>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()" title="إغلاق">✕</button>
+  <img id="lightboxImg" src="" alt="preview" onclick="event.stopPropagation()">
+</div>
+
+<div class="layout">
+
+  <!-- ── Left: conversation list ── -->
+  <div class="panel-list" id="panelList">
+    <div class="panel-list-head">
+      <div class="panel-title">الرسائل</div>
+      <div class="tabs">
+        <button class="tab-btn active" data-type="all" onclick="switchTab('all')">
+          <span class="tab-count" id="cnt_all">—</span>الكل
+        </button>
+        <button class="tab-btn" data-type="complaint" onclick="switchTab('complaint')">
+          <span class="tab-count" id="cnt_complaint">—</span>شكاوي
+        </button>
+        <button class="tab-btn" data-type="suggestion" onclick="switchTab('suggestion')">
+          <span class="tab-count" id="cnt_suggestion">—</span>اقتراح
+        </button>
+        <button class="tab-btn" data-type="customization" onclick="switchTab('customization')">
+          <span class="tab-count" id="cnt_customization">—</span>كاستم
+        </button>
+      </div>
+    </div>
+    <div class="conv-list" id="convList">
+      <div class="list-empty">جاري التحميل…</div>
+    </div>
+  </div>
+
+  <!-- ── Right: chat panel ── -->
+  <div class="panel-chat" id="panelChat">
+    <div class="chat-empty" id="chatEmpty">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      <p>اختر رسالة للعرض والرد</p>
+    </div>
+
+    <!-- Chat view (hidden until a convo is selected) -->
+    <div id="chatView" style="display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden;">
+
+      <div class="chat-head">
+        <button class="btn-icon mobile-back" onclick="closeMobileChat()" title="رجوع">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        </button>
+        <div class="chat-head-avatar" id="chatAvatar">?</div>
+        <div class="chat-head-info">
+          <div class="chat-head-email" id="chatEmail">—</div>
+          <div class="chat-head-sub">
+            <span class="type-badge" id="chatTypeBadge"></span>
+            <span id="chatDate" style="color:var(--txt3);font-size:11px;"></span>
+          </div>
+        </div>
+        <div class="chat-head-actions">
+          <div class="status-select-wrap" id="statusWrap">
+            <select class="status-select" id="statusSelect" onchange="changeStatus(this.value)">
+              <option value="pending">قيد الانتظار</option>
+              <option value="reviewed">تمت المراجعة</option>
+              <option value="resolved">تم الحل</option>
+            </select>
+          </div>
+          <button class="btn-icon" onclick="deleteCurrentFb()" title="حذف">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="chat-body" id="chatBody"></div>
+
+      <div class="chat-foot">
+        <textarea class="reply-textarea" id="replyInput" placeholder="اكتب ردك هنا…" rows="1"
+          onkeydown="replyKeydown(event)" oninput="autoResize(this)"></textarea>
+        <button class="btn-send" id="sendBtn" onclick="sendReply()" title="إرسال">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+const TYPE_LABELS = { complaint:'شكوى', suggestion:'اقتراح', customization:'كاستمايزيشن' };
+const TYPE_CLASSES = { complaint:'t-complaint', suggestion:'t-suggestion', customization:'t-customization' };
+const STATUS_LABELS = { pending:'قيد الانتظار', reviewed:'تمت المراجعة', resolved:'تم الحل' };
+const STATUS_CLASSES = { pending:'s-pending', reviewed:'s-reviewed', resolved:'s-resolved' };
+
+let __sb, __token;
+let __allData = [];
+let __activeType = 'all';
+let __activeEmail = null;   // email of open conversation
+let __currentItems = [];    // full items (with replies) for active email
+
+async function init() {
+  const cfgRes = await fetch('/api/config');
+  const cfg = await cfgRes.json();
+  __sb = supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+  const { data: { session } } = await __sb.auth.getSession();
+  if (!session) { window.location.replace('/'); return; }
+  __token = session.access_token;
+  const { data: profile } = await __sb.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+  if (profile?.role !== 'admin') {
+    document.body.innerHTML = '<div style="text-align:center;padding:80px;color:#ef4444;font-size:16px">⛔ Admin access only</div>';
+    return;
+  }
+  await loadAll();
+}
+
+async function loadAll() {
+  const r = await fetch('/api/admin/feedback', { headers:{ Authorization:'Bearer '+__token } });
+  const j = await r.json();
+  __allData = j.data || [];
+  updateCounts();
+  renderList();
+}
+
+function updateCounts() {
+  const types = ['complaint','suggestion','customization'];
+  document.getElementById('cnt_all').textContent = __allData.length;
+  types.forEach(t => {
+    const el = document.getElementById('cnt_'+t);
+    if (el) el.textContent = __allData.filter(i => i.type === t).length;
+  });
+}
+
+function emailGroups() {
+  const items = __activeType === 'all' ? __allData : __allData.filter(i => i.type === __activeType);
+  const map = new Map();
+  items.forEach(item => {
+    if (!map.has(item.email)) map.set(item.email, []);
+    map.get(item.email).push(item);
+  });
+  map.forEach(arr => arr.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)));
+  return [...map.entries()]
+    .sort((a,b) => new Date(b[1][0].created_at) - new Date(a[1][0].created_at))
+    .map(([email, items]) => ({ email, items }));
+}
+
+function switchTab(type) {
+  __activeType = type;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.type === type));
+  renderList();
+}
+
+function renderList() {
+  const groups = emailGroups();
+  const wrap = document.getElementById('convList');
+  if (!groups.length) {
+    wrap.innerHTML = '<div class="list-empty">لا توجد رسائل</div>';
+    return;
+  }
+  wrap.innerHTML = groups.map(g => convGroupHTML(g)).join('');
+  if (__activeEmail) {
+    const safeE = safeEmailId(__activeEmail);
+    const el = document.getElementById('cg_'+safeE);
+    if (el) el.classList.add('active');
+  }
+}
+
+function safeEmailId(email) {
+  return email.replace(/[^a-z0-9]/gi, '_');
+}
+
+function convGroupHTML(g) {
+  const { email, items } = g;
+  const latest = items[0];
+  const initial = (email||'?').charAt(0).toUpperCase();
+  const date = fmtDate(latest.created_at);
+  const preview = (latest.message||'').slice(0,60);
+  const statusPriority = { pending:0, reviewed:1, resolved:2 };
+  const worstStatus = items.reduce((best, i) => (statusPriority[i.status]??2) < (statusPriority[best]??2) ? i.status : best, items[0].status);
+  const scls = STATUS_CLASSES[worstStatus] || 's-pending';
+  const slbl = STATUS_LABELS[worstStatus] || worstStatus;
+  const countBadge = items.length > 1
+    ? `<span style="font-size:9px;background:rgba(91,106,245,.2);color:var(--acc);border-radius:20px;padding:1px 6px;font-weight:700;margin-right:4px;">${items.length}</span>`
+    : '';
+  const safeE = safeEmailId(email);
+  return `
+  <div class="conv-item" id="cg_${safeE}" onclick="openEmailConvo('${esc(email)}')">
+    <div class="conv-avatar">${esc(initial)}</div>
+    <div class="conv-info">
+      <div class="conv-email">${countBadge}${esc(email)}</div>
+      <div class="conv-preview">${esc(preview)}</div>
+    </div>
+    <div class="conv-right">
+      <span class="conv-time">${esc(date)}</span>
+      <span class="conv-status ${scls}">${slbl}</span>
+    </div>
+  </div>`;
+}
+
+async function openEmailConvo(email) {
+  __activeEmail = email;
+  document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
+  const safeE = safeEmailId(email);
+  const el = document.getElementById('cg_'+safeE);
+  if (el) el.classList.add('active');
+
+  document.getElementById('chatEmpty').style.display = 'none';
+  const chatView = document.getElementById('chatView');
+  chatView.style.display = 'flex';
+  document.getElementById('chatBody').innerHTML = '<div class="chat-loading">جاري التحميل…</div>';
+  document.getElementById('panelChat').classList.add('mobile-open');
+
+  const emailItems = __allData.filter(i => i.email === email && (__activeType === 'all' || i.type === __activeType));
+  const fullItems = await Promise.all(
+    emailItems.map(item =>
+      fetch('/api/admin/feedback?id='+encodeURIComponent(item.id), { headers:{ Authorization:'Bearer '+__token } })
+        .then(r => r.json()).then(j => j.data).catch(() => null)
+    )
+  );
+  __currentItems = fullItems.filter(Boolean).sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+  renderEmailChatView();
+}
+
+function renderEmailChatView() {
+  if (!__currentItems.length) return;
+  const latestItem = __currentItems[__currentItems.length - 1];
+  const email = latestItem.email;
+
+  document.getElementById('chatAvatar').textContent = (email||'?').charAt(0).toUpperCase();
+  document.getElementById('chatEmail').textContent = email;
+
+  const typeBadge = document.getElementById('chatTypeBadge');
+  if (__currentItems.length === 1) {
+    typeBadge.textContent = TYPE_LABELS[latestItem.type] || latestItem.type;
+    typeBadge.className = 'type-badge ' + (TYPE_CLASSES[latestItem.type] || '');
+    typeBadge.style.cssText = '';
+  } else {
+    typeBadge.textContent = __currentItems.length + ' رسائل';
+    typeBadge.className = 'type-badge';
+    typeBadge.style.cssText = 'background:rgba(91,106,245,.12);color:var(--acc);border:1px solid rgba(91,106,245,.25)';
+  }
+
+  document.getElementById('chatDate').textContent = fmtDateFull(latestItem.created_at);
+
+  const sel = document.getElementById('statusSelect');
+  sel.value = latestItem.status || 'pending';
+  const wrap = document.getElementById('statusWrap');
+  wrap.className = 'status-select-wrap ' + (STATUS_CLASSES[latestItem.status] || 's-pending');
+
+  // Merge all messages + replies into one timeline
+  const nodes = [];
+  __currentItems.forEach(item => {
+    nodes.push({ ts: item.created_at, incoming: true, text: item.message, image_url: item.image_url, type: item.type });
+    (item.replies || []).forEach(r => {
+      nodes.push({ ts: r.created_at, incoming: false, text: r.message });
+    });
+  });
+  nodes.sort((a,b) => new Date(a.ts) - new Date(b.ts));
+
+  const body = document.getElementById('chatBody');
+  let html = '';
+  let lastDay = '';
+  nodes.forEach(n => {
+    const day = new Date(n.ts).toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' });
+    if (day !== lastDay) {
+      html += `<div class="date-sep">${esc(day)}</div>`;
+      lastDay = day;
+    }
+    html += bubbleHTML(n);
+  });
+  body.innerHTML = html;
+  body.scrollTop = body.scrollHeight;
+}
+
+function bubbleHTML(n) {
+  const direction = n.incoming ? 'incoming' : 'outgoing';
+  const avatarLetter = n.incoming ? (__currentItems[0]?.email||'?').charAt(0).toUpperCase() : 'أ';
+  const time = fmtTime(n.ts);
+  const imgHtml = n.image_url
+    ? `<div class="bubble-img"><img src="${esc(n.image_url)}" alt="attachment" loading="lazy" onclick="openLightbox('${esc(n.image_url)}')"></div>`
+    : '';
+  const typePill = (n.incoming && __currentItems.length > 1)
+    ? `<span class="type-badge ${TYPE_CLASSES[n.type]||''}" style="font-size:9px;padding:1px 7px;margin-bottom:5px;display:inline-block;">${TYPE_LABELS[n.type]||n.type}</span><br>`
+    : '';
+  return `
+  <div class="bubble-wrap ${direction}">
+    <div class="bubble-avatar">${esc(avatarLetter)}</div>
+    <div>
+      <div class="bubble">${typePill}${esc(n.text)}${imgHtml}</div>
+      <div class="bubble-time">${esc(time)}</div>
+    </div>
+  </div>`;
+}
+
+async function sendReply() {
+  const input = document.getElementById('replyInput');
+  const msg = input.value.trim();
+  if (!msg || !__activeEmail || !__currentItems.length) return;
+
+  const btn = document.getElementById('sendBtn');
+  btn.disabled = true;
+
+  // Reply goes to the most recent item
+  const targetItem = __currentItems[__currentItems.length - 1];
+
+  const r = await fetch('/api/admin/feedback', {
+    method: 'POST',
+    headers: { Authorization:'Bearer '+__token, 'Content-Type':'application/json' },
+    body: JSON.stringify({ feedback_id: targetItem.id, message: msg })
+  });
+
+  btn.disabled = false;
+  if (!r.ok) { alert('خطأ في الإرسال، حاول مرة أخرى'); return; }
+
+  input.value = '';
+  input.style.height = '';
+
+  targetItem.replies = targetItem.replies || [];
+  targetItem.replies.push({ created_at: new Date().toISOString(), message: msg });
+  if (targetItem.status === 'pending') {
+    targetItem.status = 'reviewed';
+    const src = __allData.find(i => i.id === targetItem.id);
+    if (src) src.status = 'reviewed';
+    updateCounts();
+    renderList();
+  }
+  renderEmailChatView();
+}
+
+function replyKeydown(e) {
+  // Ctrl+Enter or Cmd+Enter to send
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    sendReply();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+async function changeStatus(status) {
+  if (!__activeEmail || !__currentItems.length) return;
+  const targetItem = __currentItems[__currentItems.length - 1];
+  const wrap = document.getElementById('statusWrap');
+  wrap.className = 'status-select-wrap ' + (STATUS_CLASSES[status] || 's-pending');
+
+  const r = await fetch('/api/admin/feedback', {
+    method:'PATCH',
+    headers:{ Authorization:'Bearer '+__token, 'Content-Type':'application/json' },
+    body: JSON.stringify({ id: targetItem.id, status })
+  });
+  if (!r.ok) { alert('خطأ في تحديث الحالة'); return; }
+
+  targetItem.status = status;
+  const src = __allData.find(i => i.id === targetItem.id);
+  if (src) src.status = status;
+  updateCounts();
+  renderList();
+}
+
+async function deleteCurrentFb() {
+  if (!__activeEmail || !__currentItems.length) return;
+  const count = __currentItems.length;
+  const confirmMsg = count === 1
+    ? 'هل أنت متأكد من حذف هذه الرسالة؟'
+    : `هل أنت متأكد من حذف جميع رسائل هذا المستخدم؟ (${count} رسائل)`;
+  if (!confirm(confirmMsg)) return;
+
+  await Promise.all(__currentItems.map(item =>
+    fetch('/api/admin/feedback?id='+encodeURIComponent(item.id), {
+      method:'DELETE', headers:{ Authorization:'Bearer '+__token }
+    }).catch(() => null)
+  ));
+
+  const deletedIds = new Set(__currentItems.map(i => i.id));
+  __allData = __allData.filter(i => !deletedIds.has(i.id));
+  __activeEmail = null;
+  __currentItems = [];
+  updateCounts();
+  renderList();
+
+  document.getElementById('chatView').style.display = 'none';
+  document.getElementById('chatEmpty').style.display = 'flex';
+  document.getElementById('panelChat').classList.remove('mobile-open');
+}
+
+function closeMobileChat() {
+  document.getElementById('panelChat').classList.remove('mobile-open');
+  __activeEmail = null;
+  document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
+}
+
+// ── Date helpers ──
+function fmtDate(iso) {
+  const d = new Date(iso);
+  const now = new Date();
+  const diffDays = Math.floor((now - d) / 86400000);
+  if (diffDays === 0) return d.toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
+  if (diffDays === 1) return 'أمس';
+  if (diffDays < 7)  return d.toLocaleDateString('ar-EG', { weekday:'short' });
+  return d.toLocaleDateString('ar-EG', { month:'short', day:'numeric' });
+}
+function fmtDateFull(iso) {
+  return new Date(iso).toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' });
+}
+function fmtTime(iso) {
+  return new Date(iso).toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' });
+}
+
+function openLightbox(url) {
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightboxImg').src = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+init().catch(console.error);
+</script>
+</body>
+</html>
