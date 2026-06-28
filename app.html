@@ -7901,7 +7901,8 @@ function renderProdTabs(){
       <span class="pt-name">${escapeHtml(p.name)}</span>
       ${PRODUCTS.length > 1 ? `<span class="pt-del" onclick="event.stopPropagation();deleteProduct(${i})">×</span>` : ''}
     </button>
-  `).join('') + `<button class="prod-tab-add" onclick="addProduct()">+ Add product</button>`;
+  `).join('') + `<button class="prod-tab-add" onclick="addProduct()">+ Add product</button>` +
+    `<button class="prod-tab-add" onclick="openXlModal()" title="Import / Export Excel" style="margin-left:4px;background:rgba(129,140,248,.12);color:var(--c1);border-color:rgba(129,140,248,.25)">📊 Excel</button>`;
 
   // show/hide panels
   const inp = document.getElementById('inputs_panel');
@@ -8526,6 +8527,113 @@ function renameProduct(idx, name){
   if(PRODUCTS[idx]) PRODUCTS[idx].name = name.trim() || (T[LANG].product_default+' '+(idx+1));
   renderProdTabs();
   persistSave();
+}
+
+// ── Excel Import / Export ─────────────────────────────────────
+const XL_COLS = [
+  { field:'name',              label:'Product Name',                   example:'Product A'  },
+  { field:'i_price',           label:'Selling Price (EGP)',             example:1000         },
+  { field:'i_cost',            label:'Product Cost (EGP)',              example:300          },
+  { field:'i_units',           label:'Avg Units / Order',               example:1            },
+  { field:'i_fulfill_del',     label:'Fulfillment Fee Delivery (EGP)',  example:40           },
+  { field:'i_fulfill_ret',     label:'Return Cost All-in (EGP)',        example:40           },
+  { field:'i_ship_c',          label:'Avg Shipping Cost (EGP)',         example:95           },
+  { field:'i_courier',         label:'Courier Cost (EGP)',              example:0            },
+  { field:'i_comm',            label:'Commission %',                    example:5            },
+  { field:'i_gateway_fee',     label:'Gateway Fee %',                   example:2.5          },
+  { field:'i_plat',            label:'Platform Fee per Lead (EGP)',     example:1            },
+  { field:'i_ads',             label:'Ad Budget (EGP)',                 example:10000        },
+  { field:'i_avg_cpp',         label:'Avg CPA (EGP)',                   example:''           },
+  { field:'i_conf',            label:'Confirmation Rate %',             example:70           },
+  { field:'i_del',             label:'Delivery Rate %',                 example:70           },
+  { field:'i_stock',           label:'Stock / Target Orders',           example:500          },
+  { field:'i_orders_per_cust', label:'Orders per Customer',            example:1            },
+  { field:'i_buy_interval',    label:'Buy Interval',                    example:1            },
+  { field:'i_buy_unit',        label:'Buy Unit (day/week/month)',       example:'month'      },
+  { field:'i_cust_lifespan',   label:'Customer Lifespan',              example:12           },
+  { field:'i_life_unit',       label:'Lifespan Unit (month/year)',      example:'month'      },
+];
+
+function openXlModal(){
+  const m = document.getElementById('xl_modal');
+  if(!m) return;
+  m.style.display = 'flex';
+  document.getElementById('xl_status').textContent = '';
+  document.getElementById('xl_file_inp').value = '';
+  document.getElementById('xl_file_lbl').textContent = 'Click to choose or drag & drop';
+}
+
+function closeXlModal(){
+  const m = document.getElementById('xl_modal');
+  if(m) m.style.display = 'none';
+}
+
+function downloadExcelTemplate(){
+  if(!window.XLSX){ alert('Excel library not loaded yet. Please wait a moment and try again.'); return; }
+  const headers = XL_COLS.map(c => c.label);
+  const example = XL_COLS.map(c => c.example === '' ? '' : c.example);
+  const aoa = [headers, example, ...Array(5).fill(XL_COLS.map(() => ''))];
+  const ws  = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = XL_COLS.map((_, i) => ({ wch: i === 0 ? 22 : 20 }));
+  // freeze header row
+  ws['!freeze'] = { xSplit:0, ySplit:1 };
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Products');
+  XLSX.writeFile(wb, 'ProfitLens_Products_Template.xlsx');
+}
+
+function handleExcelUpload(input){
+  const file = input.files?.[0];
+  if(!file) return;
+  document.getElementById('xl_file_lbl').textContent = file.name;
+  document.getElementById('xl_status').textContent   = 'Reading file…';
+  if(!window.XLSX){ document.getElementById('xl_status').innerHTML = '<span style="color:var(--red)">✗ Excel library not loaded yet. Please try again.</span>'; return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const wb   = XLSX.read(e.target.result, { type:'binary' });
+      const ws   = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
+      if(rows.length < 2) throw new Error('File has no data rows.');
+      // build label→field map (lower-case for resilience)
+      const lblMap = {};
+      XL_COLS.forEach(c => { lblMap[c.label.toLowerCase()] = c.field; });
+      const hdrs    = rows[0].map(h => String(h).trim().toLowerCase());
+      const dataRows = rows.slice(1).filter(r => r.some(c => String(c).trim() !== ''));
+      if(!dataRows.length) throw new Error('No data found. Fill in the rows below the header.');
+      const newProds = dataRows.map((row, ri) => {
+        const data = {};
+        INPUT_IDS.forEach(id => { data[id] = ''; });
+        let prodName = 'Product ' + (ri + 1);
+        hdrs.forEach((h, ci) => {
+          const fld = lblMap[h];
+          if(!fld) return;
+          const val = String(row[ci] ?? '').trim();
+          if(fld === 'name'){ if(val) prodName = val; }
+          else if(INPUT_IDS.includes(fld)) data[fld] = val;
+        });
+        return { name: prodName, data };
+      });
+      // replace current products
+      PRODUCTS.splice(0, PRODUCTS.length, ...newProds);
+      ACTIVE_PROD      = 0;
+      SHOW_ALL_PRODUCTS = false;
+      loadProduct(0);
+      renderProdTabs();
+      persistSave();
+      dCalc();
+      const n = newProds.length;
+      document.getElementById('xl_status').innerHTML =
+        `<span style="color:var(--grn)">✓ Imported ${n} product${n!==1?'s':''} successfully!</span>`;
+    } catch(err){
+      document.getElementById('xl_status').innerHTML =
+        `<span style="color:var(--red)">✗ ${err.message}</span>`;
+    }
+  };
+  reader.onerror = () => {
+    document.getElementById('xl_status').innerHTML = '<span style="color:var(--red)">✗ Could not read the file.</span>';
+  };
+  reader.readAsBinaryString(file);
 }
 
 // ── LOCALSTORAGE PERSISTENCE ────────────────
@@ -11407,6 +11515,63 @@ function toggleRevShipping(){
       <div class="fb-success-msg">استلمنا رسالتك وهنرد عليك على الإيميل.</div>
       <button class="fb-btn" style="margin-top:16px" onclick="fbClose()">إغلاق</button>
     </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     Excel Import / Export Modal
+═══════════════════════════════════════════════════════════════ -->
+<div id="xl_modal" style="display:none;position:fixed;inset:0;z-index:9100;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);align-items:center;justify-content:center" onclick="if(event.target===this)closeXlModal()">
+  <div style="background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;padding:24px;width:min(520px,92vw);max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5)">
+
+    <!-- Header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <div>
+        <div style="font-weight:700;font-size:16px;color:var(--txt)">📊 Excel Import / Export</div>
+        <div style="font-size:12px;color:var(--txt3);margin-top:2px">Add up to 15+ products at once</div>
+      </div>
+      <button onclick="closeXlModal()" style="background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;color:var(--txt2);font-size:16px;width:32px;height:32px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
+    </div>
+
+    <!-- Step 1: Download Template -->
+    <div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;padding:16px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="background:var(--c1);color:#000;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</span>
+        <span style="font-weight:600;font-size:14px;color:var(--txt)">Download the template</span>
+      </div>
+      <div style="font-size:12px;color:var(--txt3);margin-bottom:12px;padding-left:28px">Download the Excel template, fill in your products (you can use any AI model to help), then upload it below.</div>
+      <button onclick="downloadExcelTemplate()" style="width:100%;padding:10px;background:var(--c1);border:none;border-radius:9px;color:#000;font-weight:600;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+        ⬇ Download Template (.xlsx)
+      </button>
+    </div>
+
+    <!-- Step 2: Upload -->
+    <div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:12px;padding:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+        <span style="background:var(--c2);color:#000;border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</span>
+        <span style="font-weight:600;font-size:14px;color:var(--txt)">Upload your filled file</span>
+      </div>
+      <div style="font-size:12px;color:var(--txt3);margin-bottom:12px;padding-left:28px">Accepts .xlsx or .csv — your current products will be replaced.</div>
+      <label for="xl_file_inp" style="display:block;cursor:pointer">
+        <input type="file" id="xl_file_inp" accept=".xlsx,.xls,.csv" onchange="handleExcelUpload(this)" style="display:none">
+        <div id="xl_drop_zone" style="border:2px dashed var(--bdr2);border-radius:9px;padding:20px;text-align:center;transition:border-color .2s"
+             ondragover="event.preventDefault();this.style.borderColor='var(--c1)'"
+             ondragleave="this.style.borderColor='var(--bdr2)'"
+             ondrop="event.preventDefault();this.style.borderColor='var(--bdr2)';document.getElementById('xl_file_inp').files=event.dataTransfer.files;handleExcelUpload(document.getElementById('xl_file_inp'))">
+          <div style="font-size:24px;margin-bottom:6px">📂</div>
+          <div id="xl_file_lbl" style="font-size:13px;color:var(--txt2)">Click to choose or drag & drop</div>
+          <div style="font-size:11px;color:var(--txt3);margin-top:3px">.xlsx / .csv</div>
+        </div>
+      </label>
+      <div id="xl_status" style="margin-top:10px;font-size:13px;min-height:20px;text-align:center"></div>
+    </div>
+
+    <!-- AI Prompt hint -->
+    <div style="margin-top:12px;background:rgba(129,140,248,.08);border:1px solid rgba(129,140,248,.2);border-radius:10px;padding:12px">
+      <div style="font-size:11px;font-weight:600;color:var(--c1);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em">AI tip</div>
+      <div style="font-size:12px;color:var(--txt3);line-height:1.6">You can share the template with ChatGPT / Gemini and say: <em style="color:var(--txt2)">"Fill this template with my product data: [paste your data]"</em></div>
+    </div>
+
   </div>
 </div>
 
