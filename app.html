@@ -8271,23 +8271,33 @@ function calcAllProducts(){
 
   // ─── CHARTS ───
   if(typeof Chart !== 'undefined'){
-    const names  = all.map(p=>escapeHtml(p.name));
+    const rawNames = all.map(p=>p.name);
+    const names  = rawNames.map(n=> n.length>22 ? n.slice(0,21)+'…' : n);
     const colors = all.map((_,i)=>PROD_COLORS[i%PROD_COLORS.length]
       .replace('var(--c1)','#00e5a0').replace('var(--c2)','#4f8ff7')
       .replace('var(--c3)','#f59e0b').replace('var(--c4)','#a78bfa')
       .replace('var(--red)','#f43f5e'));
     const profitColors = all.map(p=>p.calc.totalProf>=0?'#00e5a0':'#f43f5e');
+    // Horizontal bars scale to any number of products: give each product a fixed
+    // row height and let the card grow vertically (page scrolls) instead of
+    // cramming thin vertical bars + rotated, overlapping labels.
+    const apH    = nDs => Math.max(200, all.length*(nDs>1?40:28) + 60);
+    const apSetH = (el,nDs)=>{ if(el&&el.parentElement) el.parentElement.style.height = apH(nDs)+'px'; };
+    const apTip  = { title:items=> rawNames[items[0].dataIndex] || '' };
+    const apYax  = { ticks:{color:'#8896ab',autoSkip:false,font:{size:10}} };
 
     // CPA chart
-    if(CH['ap_cpa']){CH['ap_cpa'].destroy();} 
+    if(CH['ap_cpa']){CH['ap_cpa'].destroy();}
     const apCpaEl=document.getElementById('ap_ch_cpa');
-    if(apCpaEl) CH['ap_cpa']=new Chart(apCpaEl,{type:'bar',
+    if(apCpaEl){ apSetH(apCpaEl,2);
+      CH['ap_cpa']=new Chart(apCpaEl,{type:'bar',
       data:{labels:names,datasets:[
         {label:'Actual CPA',data:all.map(p=>+p.calc.actualCPP.toFixed(1)),backgroundColor:profitColors,borderRadius:4},
         {label:'BE CPA',data:all.map(p=>+p.calc.beCPP.toFixed(1)),backgroundColor:'rgba(59,130,246,.3)',borderRadius:4}
       ]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:'#8896ab',font:{size:11}}}},
-        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab',callback:v=>Math.round(v)}}}}});
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:'#8896ab',font:{size:11}}},tooltip:{callbacks:apTip}},
+        scales:{x:{ticks:{color:'#8896ab',callback:v=>Math.round(v)}},y:apYax}}});
+    }
 
     // Portfolio bubble chart — safety (x) vs net profit (y), size = ad budget
     if(CH['ap_bubble']){CH['ap_bubble'].destroy();}
@@ -8322,63 +8332,77 @@ function calcAllProducts(){
     // Budget chart
     if(CH['ap_bud']){CH['ap_bud'].destroy();}
     const apBudEl=document.getElementById('ap_ch_budget');
-    if(apBudEl) CH['ap_bud']=new Chart(apBudEl,{type:'bar',
+    if(apBudEl){ apSetH(apBudEl,1);
+      CH['ap_bud']=new Chart(apBudEl,{type:'bar',
       data:{labels:names,datasets:[{label:'Ad Budget',data:all.map(p=>Math.round(p.calc.ads)),backgroundColor:colors,borderRadius:4}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v}}}}});
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
+        scales:{x:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v}},y:apYax}}});
+    }
 
     // Orders chart
     if(CH['ap_ord']){CH['ap_ord'].destroy();}
     const apOrdEl=document.getElementById('ap_ch_orders');
-    if(apOrdEl) CH['ap_ord']=new Chart(apOrdEl,{type:'bar',
+    if(apOrdEl){ apSetH(apOrdEl,1);
+      CH['ap_ord']=new Chart(apOrdEl,{type:'bar',
       data:{labels:names,datasets:[{label:'Delivered Orders',data:all.map(p=>Math.round(p.calc.delivNeeded)),backgroundColor:colors,borderRadius:4}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab'}}}}});
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
+        scales:{x:{ticks:{color:'#8896ab'}},y:apYax}}});
+    }
 
     // Net shipping burden (total) per product — where the real money leaks
     if(CH['ap_shburden']){CH['ap_shburden'].destroy();}
     const apShBEl=document.getElementById('ap_ch_shburden');
-    if(apShBEl) CH['ap_shburden']=new Chart(apShBEl,{type:'bar',
+    if(apShBEl){ apSetH(apShBEl,1);
+      CH['ap_shburden']=new Chart(apShBEl,{type:'bar',
       data:{labels:names,datasets:[{label:'Net burden',
         data:all.map(p=>Math.round(p.calc.netShip*p.calc.stock)),
         backgroundColor:all.map(p=>p.calc.netShip>0?'#f43f5e':'#00e5a0'),borderRadius:4}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v<=-1000?'-'+Math.round(Math.abs(v)/1000)+'K':v}}}}});
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
+        scales:{x:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v<=-1000?'-'+Math.round(Math.abs(v)/1000)+'K':v}},y:apYax}}});
+    }
 
     // Shipping chart
     if(CH['ap_shp']){CH['ap_shp'].destroy();}
     const apShpEl=document.getElementById('ap_ch_ship');
-    if(apShpEl) CH['ap_shp']=new Chart(apShpEl,{type:'bar',
+    if(apShpEl){ apSetH(apShpEl,2);
+      CH['ap_shp']=new Chart(apShpEl,{type:'bar',
       data:{labels:names,datasets:[
         {label:'Real Shipping/unit',data:all.map(p=>+p.calc.effShip.toFixed(1)),backgroundColor:'#f59e0b',borderRadius:4},
         {label:'Collected/unit',data:all.map(p=>+p.calc.shipC.toFixed(1)),backgroundColor:'#00e5a0',borderRadius:4}
       ]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:'#8896ab',font:{size:11}}}},
-        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab'}}}}});
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:'#8896ab',font:{size:11}}},tooltip:{callbacks:apTip}},
+        scales:{x:{ticks:{color:'#8896ab'}},y:apYax}}});
+    }
 
     // Profit chart
     if(CH['ap_prf']){CH['ap_prf'].destroy();}
     const apPrfEl=document.getElementById('ap_ch_profit');
-    if(apPrfEl) CH['ap_prf']=new Chart(apPrfEl,{type:'bar',
+    if(apPrfEl){ apSetH(apPrfEl,1);
+      CH['ap_prf']=new Chart(apPrfEl,{type:'bar',
       data:{labels:names,datasets:[{label:'Net Profit',data:all.map(p=>Math.round(p.calc.totalProf)),backgroundColor:profitColors,borderRadius:4}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v>=0?v:'-'+Math.abs(v)}}}}});
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
+        scales:{x:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v>=0?v:'-'+Math.abs(v)}},y:apYax}}});
+    }
 
     // Revenue chart
     if(CH['ap_rv']){CH['ap_rv'].destroy();}
     const apRvEl=document.getElementById('ap_ch_rev');
-    if(apRvEl) CH['ap_rv']=new Chart(apRvEl,{type:'bar',
+    if(apRvEl){ apSetH(apRvEl,1);
+      CH['ap_rv']=new Chart(apRvEl,{type:'bar',
       data:{labels:names,datasets:[{label:'Revenue',data:all.map(p=>Math.round(p.calc.totalRev)),backgroundColor:colors,borderRadius:4}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v}}}}});
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
+        scales:{x:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v}},y:apYax}}});
+    }
 
     // Margin chart
     if(CH['ap_mg']){CH['ap_mg'].destroy();}
     const apMgEl=document.getElementById('ap_ch_margin');
-    if(apMgEl) CH['ap_mg']=new Chart(apMgEl,{type:'bar',
+    if(apMgEl){ apSetH(apMgEl,1);
+      CH['ap_mg']=new Chart(apMgEl,{type:'bar',
       data:{labels:names,datasets:[{label:'Margin %',data:all.map(p=>+p.calc.marginPct.toFixed(1)),backgroundColor:profitColors,borderRadius:4}]},
-      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-        scales:{x:{ticks:{color:'#8896ab'}},y:{ticks:{color:'#8896ab',callback:v=>v+'%'}}}}});
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
+        scales:{x:{ticks:{color:'#8896ab',callback:v=>v+'%'}},y:apYax}}});
+    }
   }
 
   // Show/hide panels in each section
