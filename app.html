@@ -7902,7 +7902,7 @@ function updateProdIndicators(){
   const p = PRODUCTS[ACTIVE_PROD];
   if(!p) return;
   const color = PROD_COLORS[ACTIVE_PROD % PROD_COLORS.length];
-  const html = `<span class="pi-dot" style="background:${color}"></span>${escapeHtml(p.name)} <span style="opacity:.5;font-size:10px">↗ switch</span>`;
+  const html = `<span class="pi-dot" style="background:${color}"></span>${escapeHtml(p.name)} <span style="opacity:.5;font-size:10px">↗ ${T[LANG].pi_switch||'switch'}</span>`;
   ['s1','s2','s3'].forEach(id=>{
     const el=document.getElementById('prod_indicator_'+id);
     if(!el) return;
@@ -7920,7 +7920,7 @@ function renderProdTabs(){
   bar.innerHTML =
     // "All Products" tab — only when 2+ products
     (multi ? `<button class="prod-tab prod-tab-all ${SHOW_ALL_PRODUCTS?'active':''}" onclick="switchToAllProducts()">
-      📦 All Products
+      📦 ${T[LANG].ov_all_products||'All Products'}
     </button>` : '') +
     // individual product tabs
     PRODUCTS.map((p, i) => `
@@ -7929,8 +7929,8 @@ function renderProdTabs(){
       <span class="pt-name">${escapeHtml(p.name)}</span>
       ${PRODUCTS.length > 1 ? `<span class="pt-del" onclick="event.stopPropagation();deleteProduct(${i})">×</span>` : ''}
     </button>
-  `).join('') + `<button class="prod-tab-add" onclick="addProduct()">+ Add product</button>` +
-    `<button class="prod-tab-add" onclick="openXlModal()" title="Import / Export Excel" style="margin-left:4px;background:rgba(129,140,248,.12);color:var(--c1);border-color:rgba(129,140,248,.25)">📊 Excel</button>`;
+  `).join('') + `<button class="prod-tab-add" onclick="addProduct()">${T[LANG].prod_add||'+ Add product'}</button>` +
+    `<button class="prod-tab-add" onclick="openXlModal()" title="${T[LANG].xl_modal_title||'Import / Export Excel'}" style="margin-inline-start:4px;background:rgba(129,140,248,.12);color:var(--c1);border-color:rgba(129,140,248,.25)">📊 Excel</button>`;
 
   // show/hide panels
   const inp = document.getElementById('inputs_panel');
@@ -8124,7 +8124,7 @@ function calcAllProducts(){
           <td style="text-align:right;font-family:var(--mono);color:var(--txt3)" data-label="${T[LANG].ap_vc_be||'BE CPA'}">${c.beCPP>0?eg(c.beCPP):'—'}</td>
           <td style="text-align:right;font-family:var(--mono);color:${safetyCol}" data-label="${T[LANG].ap_vc_safety||'Safety'}">${safety===null?'—':(safety>=0?'+':'')+safety.toFixed(0)+'%'}</td>
           <td style="text-align:center" data-label="${T[LANG].ap_vc_verdict||'Verdict'}"><span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:${v.bg};color:${v.col};border:${v.bg==='transparent'?'1px solid var(--bdr2)':'none'}">${v.lbl}</span></td>
-          <td style="text-align:right" class="rk-edit"><button class="rank-go-btn" onclick="switchProduct(${p.index})">Edit ↗</button></td>
+          <td style="text-align:right" class="rk-edit"><button class="rank-go-btn" onclick="switchProduct(${p.index})">${T[LANG].ap_edit||'Edit ↗'}</button></td>
         </tr>`;
       }).join('')}</tbody></table></div>`;
   }
@@ -8202,7 +8202,7 @@ function calcAllProducts(){
           <td style="text-align:right;font-family:var(--mono);color:${burden>0?'var(--red)':'var(--c1)'}" data-label="${T[LANG].ap_shc_burden||'Total burden'}">${fmtM(burden)}</td>
           <td style="text-align:right;font-family:var(--mono);color:${recCol}" data-label="${T[LANG].ap_sh_recovery_lbl||'Recovery'}">${c.stock>0?rec.toFixed(0)+'%':'—'}</td>
           <td style="text-align:center" data-label="${T[LANG].ap_vc_verdict||'Verdict'}"><span style="display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;background:${v.bg};color:${v.col};border:${v.bg==='transparent'?'1px solid var(--bdr2)':'none'}">${v.lbl}</span></td>
-          <td style="text-align:right" class="rk-edit"><button class="rank-go-btn" onclick="switchProduct(${p.index})">Edit ↗</button></td>
+          <td style="text-align:right" class="rk-edit"><button class="rank-go-btn" onclick="switchProduct(${p.index})">${T[LANG].ap_edit||'Edit ↗'}</button></td>
         </tr>`;
       }).join('')}</tbody></table></div>`;
   }
@@ -8302,14 +8302,15 @@ function calcAllProducts(){
   const tbody = document.getElementById('ap_pl_tbody');
   if(tbody){
     const totalVarCost = totalCost + totalShipCost;
+    const TL = T[LANG];
     const rows = [
-      ['Revenue from products',  totalRev - totalShipColl, 'tg'],
-      ['Revenue from shipping',  totalShipColl,             'tg'],
-      ['Product costs',         -totalCost,                 'tr'],
-      ['Real shipping costs',   -totalShipCost,             'tr'],
-      ...(totalCommission > 0 ? [['Commission & fees', -totalCommission, 'tr']] : []),
-      ['Total ad budget',       -totalAds,                  'ta'],
-      ['Total salaries',        -totalSalary,               'ta'],
+      [TL.ap_pl_rev_prod||'Revenue from products', totalRev - totalShipColl, 'tg'],
+      [TL.ap_pl_rev_ship||'Revenue from shipping', totalShipColl,            'tg'],
+      [TL.ap_pl_prod_cost||'Product costs',       -totalCost,                'tr'],
+      [TL.ap_pl_ship_cost||'Real shipping costs', -totalShipCost,            'tr'],
+      ...(totalCommission > 0 ? [[TL.ap_pl_comm||'Commission & fees', -totalCommission, 'tr']] : []),
+      [TL.ap_pl_ads||'Total ad budget',           -totalAds,                 'ta'],
+      [TL.ap_pl_salaries||'Total fixed costs',    -totalSalary,              'ta'],
     ];
     tbody.innerHTML = rows.map(([lbl,val,cls])=>`
       <tr><td>${lbl}</td>
@@ -8317,9 +8318,9 @@ function calcAllProducts(){
           <td style="text-align:right"><span class="tag ${cls}">${cls==='tg'?T[LANG].income_tag:cls==='tr'?T[LANG].variable_tag:T[LANG].fixed_tag}</span></td>
       </tr>`).join('') +
       `<tr style="font-weight:600;border-top:2px solid var(--bdr2)">
-        <td>Net Profit / Loss</td>
+        <td>${TL.ap_pl_net||'Net Profit / Loss'}</td>
         <td style="text-align:right;font-family:var(--mono);font-size:15px;color:${isProfit?'var(--c1)':'var(--red)'}">${isProfit?'+':'-'}${eg(Math.abs(totalProfit))}</td>
-        <td style="text-align:right"><span class="tag ${isProfit?'tg':'tr'}">${isProfit?'Profit':'Loss'}</span></td>
+        <td style="text-align:right"><span class="tag ${isProfit?'tg':'tr'}">${isProfit?(TL.ap_pl_profit||'Profit'):(TL.ap_pl_loss||'Loss')}</span></td>
       </tr>`;
   }
 
@@ -8342,19 +8343,20 @@ function calcAllProducts(){
     [['all','ap_f_all'],['profit','ap_f_profit'],['loss','ap_f_loss']],
     [['profit_desc','ap_sm_profit','hi'],['profit_asc','ap_sm_profit','lo'],['margin_desc','ap_sm_margin','hi'],['margin_asc','ap_sm_margin','lo']]);
   const rankWrap = document.getElementById('ap_rank_wrap');
+  const RT = T[LANG];
   if(rankWrap) rankWrap.innerHTML = rankTb + `<div class="ap-tbl-scroll"><table class="rank-table">
-    <thead><tr><th>#</th><th>Product</th><th style="text-align:right">Net Profit</th><th style="text-align:right">Revenue / Stock</th><th></th></tr></thead>
+    <thead><tr><th>#</th><th>${RT.ap_vc_product||'Product'}</th><th style="text-align:right">${RT.ap_th_net||'Net Profit'}</th><th style="text-align:right">${RT.ap_th_rev_stock||'Revenue / Stock'}</th><th></th></tr></thead>
     <tbody>${sorted.map((p,i)=>{
       const c=p.calc,isP=c.totalProf>=0,barW=Math.round(Math.abs(c.totalProf)/maxAbs*100);
       return `<tr>
         <td style="width:32px" data-label="#"><span class="rank-num ${i<3?rnCls[i]:'rn'}">${i<3?medals[i]:'#'+(i+1)}</span></td>
-        <td data-label="${T[LANG].ap_vc_product||'Product'}"><div class="rank-prod-name">${escapeHtml(p.name)}</div>
+        <td data-label="${RT.ap_vc_product||'Product'}"><div class="rank-prod-name">${escapeHtml(p.name)}</div>
             <div class="rank-bar-wrap"><div class="rank-bar" style="width:${barW}%;background:${isP?'var(--profit)':'var(--red)'}"></div></div></td>
-        <td style="text-align:right" data-label="${T[LANG].ov_net_profit||'Net Profit'}"><div class="rank-profit-val" style="color:${isP?'var(--profit)':'var(--red)'}">${fmtM(c.totalProf)}</div>
-            <div class="rank-margin">${c.marginPct!==undefined?c.marginPct.toFixed(1)+'% margin':''}</div></td>
-        <td style="text-align:right" data-label="${T[LANG].th_rev_stock||'Revenue / Stock'}"><div class="rank-margin">${fmtM(c.totalRev)} rev</div>
-            <div class="rank-margin">${c.stock>0?Math.round(c.stock)+' units':'—'}</div></td>
-        <td style="text-align:right" class="rk-edit"><button class="rank-go-btn" onclick="switchProduct(${p.index})">Edit ↗</button></td>
+        <td style="text-align:right" data-label="${RT.ap_th_net||'Net Profit'}"><div class="rank-profit-val" style="color:${isP?'var(--profit)':'var(--red)'}">${fmtM(c.totalProf)}</div>
+            <div class="rank-margin">${c.marginPct!==undefined?c.marginPct.toFixed(1)+'% '+(RT.ap_u_margin||'margin'):''}</div></td>
+        <td style="text-align:right" data-label="${RT.ap_th_rev_stock||'Revenue / Stock'}"><div class="rank-margin">${fmtM(c.totalRev)} ${RT.ap_u_rev||'rev'}</div>
+            <div class="rank-margin">${c.stock>0?Math.round(c.stock)+' '+(RT.ap_u_units||'units'):'—'}</div></td>
+        <td style="text-align:right" class="rk-edit"><button class="rank-go-btn" onclick="switchProduct(${p.index})">${RT.ap_edit||'Edit ↗'}</button></td>
       </tr>`;
     }).join('')}</tbody></table></div>`;
 
@@ -8369,6 +8371,7 @@ function calcAllProducts(){
     const profitColors = view.map(p=>p.calc.totalProf>=0?'#00e5a0':'#f43f5e');
     const apTip = { title:items=> rawNames[items[0].dataIndex] || '' };
     const apXax = { ticks:{color:'#8896ab',autoSkip:false,maxRotation:60,minRotation:0,font:{size:10}} };
+    const dsL = T[LANG];
     // Horizontal-scroll wrapper: keep a readable bar width by giving each product
     // a fixed slot and letting the chart scroll sideways when products are many,
     // instead of squashing the bars + overlapping the labels.
@@ -8392,8 +8395,8 @@ function calcAllProducts(){
     if(apCpaEl){ apScroll(apCpaEl,90);
       CH['ap_cpa']=new Chart(apCpaEl,{type:'bar',
       data:{labels:names,datasets:[
-        {label:'Actual CPA',data:view.map(p=>+p.calc.actualCPP.toFixed(1)),backgroundColor:profitColors,borderRadius:4},
-        {label:'BE CPA',data:view.map(p=>+p.calc.beCPP.toFixed(1)),backgroundColor:'rgba(59,130,246,.3)',borderRadius:4}
+        {label:dsL.ap_ds_actual_cpa||'Actual CPA',data:view.map(p=>+p.calc.actualCPP.toFixed(1)),backgroundColor:profitColors,borderRadius:4},
+        {label:dsL.ap_ds_be_cpa||'BE CPA',data:view.map(p=>+p.calc.beCPP.toFixed(1)),backgroundColor:'rgba(59,130,246,.3)',borderRadius:4}
       ]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:'#8896ab',font:{size:11}}},tooltip:{callbacks:apTip}},
         scales:{x:apXax,y:{ticks:{color:'#8896ab',callback:v=>Math.round(v)}}}}});
@@ -8434,7 +8437,7 @@ function calcAllProducts(){
     const apBudEl=document.getElementById('ap_ch_budget');
     if(apBudEl){ apScroll(apBudEl,64);
       CH['ap_bud']=new Chart(apBudEl,{type:'bar',
-      data:{labels:names,datasets:[{label:'Ad Budget',data:view.map(p=>Math.round(p.calc.ads)),backgroundColor:colors,borderRadius:4}]},
+      data:{labels:names,datasets:[{label:dsL.ap_ds_budget||'Ad Budget',data:view.map(p=>Math.round(p.calc.ads)),backgroundColor:colors,borderRadius:4}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
         scales:{x:apXax,y:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v}}}}});
     }
@@ -8444,7 +8447,7 @@ function calcAllProducts(){
     const apOrdEl=document.getElementById('ap_ch_orders');
     if(apOrdEl){ apScroll(apOrdEl,64);
       CH['ap_ord']=new Chart(apOrdEl,{type:'bar',
-      data:{labels:names,datasets:[{label:'Delivered Orders',data:view.map(p=>Math.round(p.calc.delivNeeded)),backgroundColor:colors,borderRadius:4}]},
+      data:{labels:names,datasets:[{label:dsL.ap_ds_orders||'Delivered Orders',data:view.map(p=>Math.round(p.calc.delivNeeded)),backgroundColor:colors,borderRadius:4}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
         scales:{x:apXax,y:{ticks:{color:'#8896ab'}}}}});
     }
@@ -8454,7 +8457,7 @@ function calcAllProducts(){
     const apShBEl=document.getElementById('ap_ch_shburden');
     if(apShBEl){ apScroll(apShBEl,64);
       CH['ap_shburden']=new Chart(apShBEl,{type:'bar',
-      data:{labels:names,datasets:[{label:'Net burden',
+      data:{labels:names,datasets:[{label:dsL.ap_ds_burden||'Net burden',
         data:view.map(p=>Math.round(p.calc.netShip*p.calc.stock)),
         backgroundColor:view.map(p=>p.calc.netShip>0?'#f43f5e':'#00e5a0'),borderRadius:4}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
@@ -8467,8 +8470,8 @@ function calcAllProducts(){
     if(apShpEl){ apScroll(apShpEl,90);
       CH['ap_shp']=new Chart(apShpEl,{type:'bar',
       data:{labels:names,datasets:[
-        {label:'Real Shipping/unit',data:view.map(p=>+p.calc.effShip.toFixed(1)),backgroundColor:'#f59e0b',borderRadius:4},
-        {label:'Collected/unit',data:view.map(p=>+p.calc.shipC.toFixed(1)),backgroundColor:'#00e5a0',borderRadius:4}
+        {label:dsL.ap_ds_real_ship||'Real Shipping/unit',data:view.map(p=>+p.calc.effShip.toFixed(1)),backgroundColor:'#f59e0b',borderRadius:4},
+        {label:dsL.ap_ds_collected||'Collected/unit',data:view.map(p=>+p.calc.shipC.toFixed(1)),backgroundColor:'#00e5a0',borderRadius:4}
       ]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{color:'#8896ab',font:{size:11}}},tooltip:{callbacks:apTip}},
         scales:{x:apXax,y:{ticks:{color:'#8896ab'}}}}});
@@ -8479,7 +8482,7 @@ function calcAllProducts(){
     const apPrfEl=document.getElementById('ap_ch_profit');
     if(apPrfEl){ apScroll(apPrfEl,64);
       CH['ap_prf']=new Chart(apPrfEl,{type:'bar',
-      data:{labels:names,datasets:[{label:'Net Profit',data:view.map(p=>Math.round(p.calc.totalProf)),backgroundColor:profitColors,borderRadius:4}]},
+      data:{labels:names,datasets:[{label:dsL.ap_ds_profit||'Net Profit',data:view.map(p=>Math.round(p.calc.totalProf)),backgroundColor:profitColors,borderRadius:4}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
         scales:{x:apXax,y:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v>=0?v:'-'+Math.abs(v)}}}}});
     }
@@ -8489,7 +8492,7 @@ function calcAllProducts(){
     const apRvEl=document.getElementById('ap_ch_rev');
     if(apRvEl){ apScroll(apRvEl,64);
       CH['ap_rv']=new Chart(apRvEl,{type:'bar',
-      data:{labels:names,datasets:[{label:'Revenue',data:view.map(p=>Math.round(p.calc.totalRev)),backgroundColor:colors,borderRadius:4}]},
+      data:{labels:names,datasets:[{label:dsL.ap_ds_revenue||'Revenue',data:view.map(p=>Math.round(p.calc.totalRev)),backgroundColor:colors,borderRadius:4}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
         scales:{x:apXax,y:{ticks:{color:'#8896ab',callback:v=>v>=1000?Math.round(v/1000)+'K':v}}}}});
     }
@@ -8499,7 +8502,7 @@ function calcAllProducts(){
     const apMgEl=document.getElementById('ap_ch_margin');
     if(apMgEl){ apScroll(apMgEl,64);
       CH['ap_mg']=new Chart(apMgEl,{type:'bar',
-      data:{labels:names,datasets:[{label:'Margin %',data:view.map(p=>+p.calc.marginPct.toFixed(1)),backgroundColor:profitColors,borderRadius:4}]},
+      data:{labels:names,datasets:[{label:dsL.ap_ds_margin||'Margin %',data:view.map(p=>+p.calc.marginPct.toFixed(1)),backgroundColor:profitColors,borderRadius:4}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:apTip}},
         scales:{x:apXax,y:{ticks:{color:'#8896ab',callback:v=>v+'%'}}}}});
     }
@@ -10331,6 +10334,15 @@ const T = {
     ap_sort:'Sort', ap_hi:'High first', ap_lo:'Low first',
     ap_f_all:'All', ap_f_profit:'Profitable', ap_f_loss:'Loss', ap_f_sink:'Drowning', ap_f_ok:'Healthy',
     ap_sm_budget:'Budget', ap_sm_safety:'Safety', ap_sm_burden:'Burden', ap_sm_recovery:'Recovery', ap_sm_profit:'Net profit', ap_sm_margin:'Margin',
+    ap_edit:'Edit ↗', ap_u_margin:'margin', ap_u_rev:'rev', ap_u_units:'units',
+    ap_th_net:'Net Profit', ap_th_rev_stock:'Revenue / Stock',
+    ap_pl_net:'Net Profit / Loss', ap_pl_profit:'Profit', ap_pl_loss:'Loss',
+    ap_pl_rev_prod:'Revenue from products', ap_pl_rev_ship:'Revenue from shipping', ap_pl_prod_cost:'Product costs',
+    ap_pl_ship_cost:'Real shipping costs', ap_pl_comm:'Commission & fees', ap_pl_ads:'Total ad budget', ap_pl_salaries:'Total fixed costs',
+    ap_ds_actual_cpa:'Actual CPA', ap_ds_be_cpa:'BE CPA', ap_ds_budget:'Ad Budget', ap_ds_orders:'Delivered Orders',
+    ap_ds_burden:'Net burden', ap_ds_real_ship:'Real Shipping/unit', ap_ds_collected:'Collected/unit',
+    ap_ds_profit:'Net Profit', ap_ds_revenue:'Revenue', ap_ds_margin:'Margin %',
+    prod_add:'+ Add product', pi_switch:'switch',
   },
   ar: {
     nav_inputs:'المدخلات', nav_marketing:'الإعلانات', nav_shipping:'الشحن', nav_overview:'نظرة عامة',
@@ -10849,6 +10861,15 @@ const T = {
     ap_sort:'ترتيب', ap_hi:'الأعلى أولاً', ap_lo:'الأقل أولاً',
     ap_f_all:'الكل', ap_f_profit:'رابحة', ap_f_loss:'خاسرة', ap_f_sink:'بيغرق', ap_f_ok:'سليم',
     ap_sm_budget:'الميزانية', ap_sm_safety:'الأمان', ap_sm_burden:'العبء', ap_sm_recovery:'الاسترداد', ap_sm_profit:'الربح الصافي', ap_sm_margin:'الهامش',
+    ap_edit:'تعديل ↗', ap_u_margin:'هامش', ap_u_rev:'إيراد', ap_u_units:'وحدة',
+    ap_th_net:'صافي الربح', ap_th_rev_stock:'الإيراد / المخزون',
+    ap_pl_net:'صافي الربح / الخسارة', ap_pl_profit:'ربح', ap_pl_loss:'خسارة',
+    ap_pl_rev_prod:'إيراد المنتجات', ap_pl_rev_ship:'إيراد الشحن', ap_pl_prod_cost:'تكاليف المنتجات',
+    ap_pl_ship_cost:'تكاليف الشحن الحقيقية', ap_pl_comm:'العمولات والرسوم', ap_pl_ads:'إجمالي ميزانية الإعلانات', ap_pl_salaries:'إجمالي التكاليف الثابتة',
+    ap_ds_actual_cpa:'CPA الفعلي', ap_ds_be_cpa:'CPA التعادل', ap_ds_budget:'ميزانية الإعلانات', ap_ds_orders:'الأوردرات الموصّلة',
+    ap_ds_burden:'صافي العبء', ap_ds_real_ship:'الشحن الحقيقي/وحدة', ap_ds_collected:'المحصّل/وحدة',
+    ap_ds_profit:'صافي الربح', ap_ds_revenue:'الإيراد', ap_ds_margin:'الهامش %',
+    prod_add:'+ إضافة منتج', pi_switch:'تبديل',
   }
 };
 
@@ -10882,7 +10903,10 @@ function applyLang(){
 function toggleLang(){
   LANG = LANG==='en'?'ar':'en';
   applyLang();
+  // Re-render every dynamically-built view so nothing is left in the old language.
+  if(typeof renderProdTabs==='function') renderProdTabs();
   if(typeof calc==='function') calc();
+  if(SHOW_ALL_PRODUCTS && typeof calcAllProducts==='function') calcAllProducts();
   persistSave();
 }
 
