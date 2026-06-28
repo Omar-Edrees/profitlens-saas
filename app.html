@@ -3608,13 +3608,13 @@ input[type=range]::-moz-range-thumb{
         <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_bud_rec">🔴 Max = break-even (contribution margin × stock − salary) — spend more and you lose.<br>🟡 70% = moderate, healthy margin.<br>🟢 50% = conservative, comfortable profit.<br>Actual = your entered ad budget.</span></span>
       </div>
       <div style="display:flex;gap:3px;margin:4px 0 2px;flex-wrap:wrap">
-        <button type="button" id="be_bud_btn_100" class="mb-io-seg-btn active" onclick="advBudgetSelect(1.0)" style="padding:2px 8px;font-size:10px">🔴</button>
+        <button type="button" id="be_bud_btn_100" class="mb-io-seg-btn" onclick="advBudgetSelect(1.0)" style="padding:2px 8px;font-size:10px">🔴</button>
         <button type="button" id="be_bud_btn_70"  class="mb-io-seg-btn" onclick="advBudgetSelect(0.7)" style="padding:2px 8px;font-size:10px">🟡</button>
         <button type="button" id="be_bud_btn_50"  class="mb-io-seg-btn" onclick="advBudgetSelect(0.5)" style="padding:2px 8px;font-size:10px">🟢</button>
-        <button type="button" id="be_bud_btn_act" class="mb-io-seg-btn" onclick="advBudgetSelect('actual')" data-t="bud_rec_actual" style="padding:2px 8px;font-size:9.5px">Actual</button>
+        <button type="button" id="be_bud_btn_act" class="mb-io-seg-btn active" onclick="advBudgetSelect('actual')" data-t="bud_rec_actual" style="padding:2px 8px;font-size:9.5px">Actual</button>
       </div>
       <div class="kpi-val" id="be_bud_val">—</div>
-      <div class="kpi-hint" id="be_bud_hint" data-t="bud_rec_hint_max">Break-even — spend more and you lose</div>
+      <div class="kpi-hint" id="be_bud_hint" data-t="bud_rec_hint_actual">Your entered ad budget</div>
     </div>
   </div>
 
@@ -5395,7 +5395,7 @@ function fcToggleAdv(){
 }
 
 // ── Budget Recommendation Card ──────────────────────────────────
-let BE_BUD_SEL = 1.0; // 1.0 | 0.7 | 0.5 | 'actual'
+let BE_BUD_SEL = 'actual'; // 1.0 | 0.7 | 0.5 | 'actual'
 
 function advBudgetSelect(sel){
   BE_BUD_SEL = sel;
@@ -5416,7 +5416,9 @@ function updateBeBudgetCard(){
   card.style.display = 'block';
   const CUR = window.CURRENCY || 'EGP';
   if(BE_BUD_SEL === 'actual'){
-    const actual = parseFloat(String(document.getElementById('i_ads')?.value||'').replace(/,/g,'')) || 0;
+    const actual = (window.LAST_ACTUAL_ADS > 0)
+      ? window.LAST_ACTUAL_ADS
+      : (parseFloat(String(document.getElementById('i_ads')?.value||'').replace(/,/g,'')) || 0);
     valEl.textContent = actual > 0 ? Math.round(actual).toLocaleString('en')+' '+CUR : '—';
     valEl.style.color = actual > beMax ? 'var(--red)' : actual > beMax*0.7 ? 'var(--c3)' : 'var(--c1)';
     if(hintEl){ const k='bud_rec_hint_actual'; hintEl.textContent=T[LANG][k]||hintEl.textContent; hintEl.dataset.t=k; }
@@ -6270,6 +6272,7 @@ function calc(){
 
   // ── Budget Recommendation Card ────────────────────────────────
   window.LAST_BE_ADS_BUDGET = profitPU > 0 ? Math.max(0, profitPU * stock - salary) : 0;
+  window.LAST_ACTUAL_ADS    = ads || 0;
   if(typeof updateBeBudgetCard === 'function') updateBeBudgetCard();
 
   // ── Ads Health Banner ────────────────────────────────────────
