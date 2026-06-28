@@ -8547,6 +8547,7 @@ const XL_COLS = [
   { field:'i_conf',        label:'Confirmation Rate %',             label_ar:'معدل التأكيد %',                      example:70          },
   { field:'i_del',         label:'Delivery Rate %',                 label_ar:'معدل التوصيل %',                      example:70          },
   { field:'i_stock',       label:'Stock / Target Orders',           label_ar:'المخزون / الأوردرات المستهدفة',      example:500         },
+  { field:'i_salary',      label:'Total Fixed Costs (EGP) [business-wide]', label_ar:'إجمالي التكاليف الثابتة (ج.م) [مشتركة]', example:5000, global:true },
 ];
 
 function openXlModal(){
@@ -8606,6 +8607,7 @@ function handleExcelUpload(input){
       });
       const dataRows = rows.slice(1).filter(r => r.some(c => String(c).trim() !== ''));
       if(!dataRows.length) throw new Error(T[LANG].xl_err_nodatarows || 'No data found. Fill in the rows below the header.');
+      let globalFixedCost = '';
       const newProds = dataRows.map((row, ri) => {
         const data = {};
         INPUT_IDS.forEach(id => { data[id] = ''; });
@@ -8615,6 +8617,7 @@ function handleExcelUpload(input){
           if(!fld) return;
           const val = String(row[ci] ?? '').trim();
           if(fld === 'name'){ if(val) prodName = val; }
+          else if(fld === 'i_salary'){ if(val && !globalFixedCost) globalFixedCost = val; }
           else if(INPUT_IDS.includes(fld)) data[fld] = val;
         });
         return { name: prodName, data };
@@ -8624,6 +8627,11 @@ function handleExcelUpload(input){
       ACTIVE_PROD      = 0;
       SHOW_ALL_PRODUCTS = false;
       loadProduct(0);
+      // apply business-wide fixed cost (take first non-empty value from any row)
+      if(globalFixedCost){
+        const salEl = document.getElementById('i_salary');
+        if(salEl){ salEl.value = globalFixedCost; fcManualInput(); }
+      }
       renderProdTabs();
       persistSave();
       dCalc();
