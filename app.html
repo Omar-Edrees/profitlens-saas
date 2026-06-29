@@ -3452,6 +3452,19 @@ input[type=range]::-moz-range-thumb{
       </div>
 
 
+      <!-- Organic Orders -->
+      <div class="adv-item locked" id="adv_organic_item">
+        <div class="adv-item-header">
+          <div class="adv-item-title">
+            🌿 <span data-t="adv_organic_lbl">Organic orders / month</span>
+            <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_organic">Average monthly orders that arrive without paid ads (organic search, social media, word-of-mouth). They earn profit at your standard margin but cost zero ad spend. Added on top of paid delivered orders in total units and net profit.</span></span>
+          </div>
+          <button class="adv-lock-btn" id="adv_organic_lock" onclick="toggleAdvLock('organic')" title="Unlock to enable">🔒</button>
+        </div>
+        <input type="number" id="adv_organic" placeholder="e.g. 30" min="0" step="1" disabled oninput="dCalc()">
+        <div class="adv-item-hint" id="adv_organic_hint" data-t="adv_organic_hint_off">Locked → organic orders not included</div>
+      </div>
+
       <div class="adv-item" id="adv_ops_item" style="grid-column:1/-1;cursor:default;opacity:1">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
           <div class="adv-item-title" style="opacity:.5" data-t="adv_cashflow_title">⚙️ Operations &amp; Cash Flow</div>
@@ -5635,6 +5648,7 @@ let ADV_VAT_LOCKED = true;   // VAT rate: locked → treated as 0
 let ADV_PDR_LOCKED    = true;   // Post-Delivery Return: locked → ignored
 let ADV_BUNDLE_LOCKED = true;   // Bundle Pricing: locked → single price
 let ADV_SHIPZONE_LOCKED = true; // Shipping Zones: locked → single "Avg. shipping cost" used
+let ADV_ORGANIC_LOCKED = true;  // Organic orders: locked → 0 extra orders
 let ADV_OPS_LOCKED    = true;   // Operations & Cash Flow: locked
 let ADV_CASH_LOCKED   = false;  // Available cash toggle: false = cash active (default)
 
@@ -5696,6 +5710,12 @@ function advShipCharged(){
     if(share > 0){ wsum += chg * share; ssum += share; }
   }
   return ssum > 0 ? wsum / ssum : null;
+}
+
+function advOrganicOrders(){
+  if(ADV_ORGANIC_LOCKED) return 0;
+  const val = parseFloat(document.getElementById('adv_organic')?.value) || 0;
+  return val >= 0 ? Math.round(val) : 0;
 }
 
 // Recompute the weighted-avg shipping (your cost + charged) + total order share shown inside the card.
@@ -5843,6 +5863,28 @@ function toggleAdvLock(which){
       if(baseHint)    baseHint.style.display = '';
       shipzoneRecalc();
       document.getElementById('sz_cost_1')?.focus();
+    }
+  } else if(which === 'organic'){
+    ADV_ORGANIC_LOCKED = !ADV_ORGANIC_LOCKED;
+    const btn  = document.getElementById('adv_organic_lock');
+    const item = document.getElementById('adv_organic_item');
+    const inp  = document.getElementById('adv_organic');
+    const hint = document.getElementById('adv_organic_hint');
+    if(ADV_ORGANIC_LOCKED){
+      btn.textContent = '🔒';
+      btn.classList.remove('unlocked');
+      item.classList.add('locked');
+      inp.disabled = true;
+      hint.textContent = T[LANG].adv_organic_hint_off || 'Locked → organic orders not included';
+      hint.classList.remove('active');
+    } else {
+      btn.textContent = '🔓';
+      btn.classList.add('unlocked');
+      item.classList.remove('locked');
+      inp.disabled = false;
+      hint.textContent = T[LANG].adv_organic_hint_on || 'Unlocked → organic orders add to profit and total units';
+      hint.classList.add('active');
+      inp.focus();
     }
   } else if(which==='ops'){
     ADV_OPS_LOCKED=!ADV_OPS_LOCKED;
@@ -6222,7 +6264,9 @@ function calc(){
   const totalRev    = stock*(priceNet+shipCNet);
   const totalVar    = stock*(costNet+effShip+platPerOrder+pdrCostPerUnit+commAmt);
   const totalProf   = totalRev-totalVar-totalFixed;
-  const isP         = totalProf>=0;
+  const organicOrders = typeof advOrganicOrders === 'function' ? advOrganicOrders() : 0;
+  const totalProfFinal = totalProf + organicOrders * profitPU;
+  const isP         = totalProfFinal>=0;
   const pc          = isP?'var(--profit)':'var(--red)';
 
   // ── Section 1: Marketing ──
@@ -6467,7 +6511,7 @@ function calc(){
   set('ov_margin', pct(cmPct));
   { const _mb=document.getElementById('ov_margin_bar'); if(_mb) _mb.style.width=Math.max(0,Math.min(100,cmPct))+'%'; }
   (function(){
-    const _absProf = Math.abs(Math.round(totalProf*10)/10);
+    const _absProf = Math.abs(Math.round(totalProfFinal*10)/10);
     const _np = document.getElementById('ov_total');
     if(_np){
       _np.innerHTML = (isP?'':'-')+Math.round(_absProf).toLocaleString('en')+' <span class="ov2-cur">'+CURRENCY+'</span>';
@@ -6577,7 +6621,7 @@ function calc(){
   const fAlert=document.getElementById('final_alert');
   fAlert.className='alert '+(isP?'ag':'ar');
   set('final_msg', isP
-    ? tfmt('final_profit', Math.ceil(beUnits), stock.toFixed(1), eg(totalProf))
+    ? tfmt('final_profit', Math.ceil(beUnits), stock.toFixed(1), eg(totalProfFinal))
     : profitPU<0
       ? T[LANG].final_loss_pu
       : tfmt('final_loss_stock', Math.ceil(beUnits), stock.toFixed(1))
@@ -6592,7 +6636,9 @@ function calc(){
   set('ov_be_cpa',     beCPP>0 ? d1(beCPP)+' '+CURRENCY : '—');
   set('ov_actual_roas',actualROAS>0 ? (Math.round(actualROAS*100)/100).toFixed(1)+'x' : '—', actualROAS<=0?'#6E7681':(roasOkOv?'#A5B4FC':'#F87171'));
   set('ov_be_roas',    beROAS>0 ? (Math.round(beROAS*100)/100).toFixed(1)+'x' : '—');
-  set('ov_orders',     Math.round(delivNeeded).toLocaleString('en')+' units');
+  { const totalUnits = Math.round(delivNeeded + organicOrders);
+    const orgSuffix = organicOrders > 0 ? ' (+'+organicOrders+' '+(T[LANG].organic_suffix||'organic')+')' : '';
+    set('ov_orders', totalUnits.toLocaleString('en')+' units'+orgSuffix); }
   set('ov_ad_per_order', adPerOrder>0 ? eg(adPerOrder) : '—');
   set('ov_be_orders',  isFinite(beUnits) ? Math.ceil(beUnits).toLocaleString('en')+' units' : '—');
 
@@ -7865,7 +7911,8 @@ const PROD_COLORS = ['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--red)
 const INPUT_IDS = ['i_price','i_cost','i_units','i_ship_c','i_fulfill_del','i_fulfill_ret',
                    'i_courier','i_comm','i_gateway_fee','i_plat','i_ads','i_avg_cpp',
                    'i_conf','i_del','i_stock','i_orders_per_cust',
-                   'i_buy_interval','i_buy_unit','i_cust_lifespan','i_life_unit'];
+                   'i_buy_interval','i_buy_unit','i_cust_lifespan','i_life_unit',
+                   'adv_organic'];
 
 function saveCurrentProduct(){
   if(PRODUCTS.length === 0) return;
@@ -9913,6 +9960,11 @@ const T = {
     adv_shipzone_lbl:'Shipping zones',
     adv_shipzone_hint_off:'Locked → the basic "Avg. shipping cost" + "Shipping charged to customer" are used in calculations',
     adv_shipzone_hint_on:'Unlocked → weighted-avg shipping (by zone) drives both basic shipping fields',
+    adv_organic_lbl:'Organic orders / month',
+    adv_organic_hint_off:'Locked → organic orders not included in totals',
+    adv_organic_hint_on:'Unlocked → organic orders added to total units and net profit',
+    tip_organic:'Average monthly orders that arrive without paid ads (organic search, social media, word-of-mouth). They earn profit at your standard margin but cost zero ad spend. Added on top of paid delivered orders in total units and net profit.',
+    organic_suffix:'organic',
     tip_shipzone:'Split your orders across 5 delivery zones. For each zone enter the shipping cost you pay (your cost), the shipping you charge the customer, and the % share of your orders that go there. The tool computes weighted-average values (weighted by order share) and uses them as your "Avg. shipping cost (your cost)" and "Shipping charged to customer". When unlocked, those two basic fields up in the Shipping section are locked and driven by these zones. Shares don\'t have to sum to exactly 100% — the averages are normalised by the total you enter.',
     ship_zone_override_hint:'Managed by Shipping zones (advanced) — these two fields are calculated from your zones.',
     shipzone_col_zone:'Zone',
@@ -10440,6 +10492,11 @@ const T = {
     adv_shipzone_lbl:'مناطق الشحن',
     adv_shipzone_hint_off:'مقفول → بيتحسب "متوسط تكلفة الشحن" و"الشحن المحصّل من العميل" الأساسيين في الحسابات',
     adv_shipzone_hint_on:'مفتوح → متوسط الشحن المرجّح حسب المنطقة بيتحكّم في حقلَي الشحن الأساسيين',
+    adv_organic_lbl:'متوسط الأوردرات الأورجانيك / شهر',
+    adv_organic_hint_off:'مقفول → الأوردرات الأورجانيك مش محتسبة في الإجماليات',
+    adv_organic_hint_on:'مفتوح → الأوردرات الأورجانيك بتتضاف للوحدات الكلية وصافي الربح',
+    tip_organic:'متوسط الأوردرات الشهرية اللي بتيجي من غير إعلانات مدفوعة (سيرش أورجانيك، سوشيال ميديا، توصية). بتكسب نفس هامش الربح بدون أي تكلفة إعلانية. بتتضاف فوق الأوردرات المدفوعة في إجمالي الوحدات وصافي الربح.',
+    organic_suffix:'أورجانيك',
     tip_shipzone:'قسّم أوردراتك على 5 مناطق توصيل. لكل منطقة اكتب تكلفة الشحن اللي بتدفعها (عليك)، والشحن اللي بتحصّله من العميل، ونسبة الأوردرات اللي بتروح للمنطقة دي. الأداة بتحسب متوسطات مرجّحة (حسب نسبة الأوردرات) وبتستخدمها كـ "متوسط تكلفة الشحن (عليك)" و"الشحن المحصّل من العميل". لما تفتح القسم ده، الحقلين الأساسيين فوق في قسم الشحن بيتقفلوا وبيتحسبوا من الزونز دي. النِسَب مش لازم تطلع 100% بالظبط — المتوسطات بتتظبط على إجمالي اللي كتبته.',
     ship_zone_override_hint:'بيتحسب من مناطق الشحن (المتقدّم) — الحقلين دول محسوبين من الزونز بتاعتك.',
     shipzone_col_zone:'المنطقة',
