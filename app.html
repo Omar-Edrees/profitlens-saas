@@ -2197,54 +2197,8 @@ input[type=range]::-moz-range-thumb{
         <div id="uo_aov_field" class="f-row" style="display:none"><input type="number" id="i_aov" value="" min="0" step="0.1" oninput="uoAovInput()" placeholder="e.g. 600"><span class="unit">EGP</span></div>
       </div>
 
-      <!-- Advanced options toggle -->
-      <div style="margin-top:10px">
-        <button onclick="pricingToggleAdv()" id="pricing_adv_btn" style="
-          display:flex;align-items:center;gap:6px;
-          background:var(--surf2);border:1px solid var(--bdr2);border-radius:7px;
-          color:var(--txt3);font-size:11px;cursor:pointer;padding:6px 12px;
-          font-family:inherit;width:100%;transition:all .2s;justify-content:center">
-          <span id="pricing_adv_arrow" style="transition:transform .25s;display:inline-block;font-size:9px">▶</span>
-          <span data-t="adv_title">Advanced options</span>
-        </button>
-      </div>
-
-      <!-- Advanced options panel -->
-      <div id="pricing_adv_panel" style="display:none;margin-top:12px">
-        <!-- How often a customer buys (purchase frequency) -->
-        <div class="field">
-          <label data-t="lbl_buy_freq">How often does a customer buy? <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_buy_freq">How often a returning customer places an order — drives total orders and LTV.</span></span></label>
-          <div style="display:flex;gap:8px;align-items:center">
-            <span style="font-size:12px;color:var(--txt3);white-space:nowrap" data-t="lbl_every">every</span>
-            <div class="f-row" style="flex:1;min-width:0">
-              <input type="number" id="i_buy_interval" value="1" min="0.1" step="1" placeholder="1" oninput="ordersFreqRecalc()">
-              <select id="i_buy_unit" class="freq-unit" onchange="ordersFreqRecalc()">
-                <option value="day" data-t="opt_days">days</option>
-                <option value="week" data-t="opt_weeks">weeks</option>
-                <option value="month" selected data-t="opt_months">months</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <!-- How long they stay a customer (lifespan) -->
-        <div class="field">
-          <label data-t="lbl_cust_lifespan">How long do they stay a customer? <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_cust_lifespan">Average time a customer keeps buying from you before they stop.</span></span></label>
-          <div class="f-row" style="min-width:0">
-            <input type="number" id="i_cust_lifespan" value="1" min="0.1" step="1" placeholder="1" oninput="ordersFreqRecalc()">
-            <select id="i_life_unit" class="freq-unit" onchange="ordersFreqRecalc()">
-              <option value="month" selected data-t="opt_months">months</option>
-              <option value="year" data-t="opt_years">years</option>
-            </select>
-          </div>
-        </div>
-        <!-- Derived: lifetime orders per customer → feeds LTV -->
-        <div style="margin-top:8px;padding:9px 11px;border-radius:8px;background:var(--surf2);border:1px solid var(--bdr2);display:flex;justify-content:space-between;align-items:center;gap:10px">
-          <span style="font-size:11px;color:var(--txt3)" data-t="lbl_orders_derived">Orders per customer (lifetime)</span>
-          <span style="font-family:var(--mono);font-weight:700;font-size:13px;color:var(--c1)"><span id="orders_derived_val">1</span> <span data-t="unit_orders">orders</span></span>
-        </div>
-        <!-- Canonical value consumed by the calc (derived from the two inputs above) -->
-        <input type="hidden" id="i_orders_per_cust" value="1">
-      </div>
+      <!-- i_orders_per_cust, i_buy_interval, i_buy_unit, i_cust_lifespan, i_life_unit moved to Advanced Settings → LTV section -->
+      <input type="hidden" id="i_orders_per_cust" value="1">
     </div>
 
     <div class="input-card">
@@ -3463,6 +3417,48 @@ input[type=range]::-moz-range-thumb{
         </div>
         <input type="number" id="adv_organic" placeholder="e.g. 30" min="0" step="1" disabled oninput="dCalc()">
         <div class="adv-item-hint" id="adv_organic_hint" data-t="adv_organic_hint_off">Locked → organic orders not included</div>
+      </div>
+
+      <!-- Customer Purchase Frequency & Lifetime -->
+      <div class="adv-item locked" id="adv_ltv_item" style="grid-column:1/-1">
+        <div class="adv-item-header">
+          <div class="adv-item-title">
+            🔁 <span data-t="adv_ltv_lbl">Customer purchase frequency &amp; lifetime</span>
+            <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_ltv">How often does a returning customer buy, and how long do they stay? Used to calculate lifetime orders per customer which drives the LTV metric in the Marketing section.</span></span>
+          </div>
+          <button class="adv-lock-btn" id="adv_ltv_lock" onclick="toggleAdvLock('ltv')" title="Unlock to enable">🔒</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px">
+          <div class="field" style="margin:0">
+            <label data-t="lbl_buy_freq">How often does a customer buy? <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_buy_freq">How often a returning customer places an order — drives total orders and LTV.</span></span></label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span style="font-size:12px;color:var(--txt3);white-space:nowrap" data-t="lbl_every">every</span>
+              <div class="f-row" style="flex:1;min-width:0">
+                <input type="number" id="i_buy_interval" value="1" min="0.1" step="1" placeholder="1" disabled oninput="ordersFreqRecalc()">
+                <select id="i_buy_unit" class="freq-unit" disabled onchange="ordersFreqRecalc()">
+                  <option value="day" data-t="opt_days">days</option>
+                  <option value="week" data-t="opt_weeks">weeks</option>
+                  <option value="month" selected data-t="opt_months">months</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="field" style="margin:0">
+            <label data-t="lbl_cust_lifespan">How long do they stay a customer? <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_cust_lifespan">Average time a customer keeps buying from you before they stop.</span></span></label>
+            <div class="f-row" style="min-width:0">
+              <input type="number" id="i_cust_lifespan" value="1" min="0.1" step="1" placeholder="1" disabled oninput="ordersFreqRecalc()">
+              <select id="i_life_unit" class="freq-unit" disabled onchange="ordersFreqRecalc()">
+                <option value="month" selected data-t="opt_months">months</option>
+                <option value="year" data-t="opt_years">years</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:10px;padding:9px 11px;border-radius:8px;background:var(--surf2);border:1px solid var(--bdr2);display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <span style="font-size:11px;color:var(--txt3)" data-t="lbl_orders_derived">Orders per customer (lifetime)</span>
+          <span style="font-family:var(--mono);font-weight:700;font-size:13px;color:var(--c1)"><span id="orders_derived_val">1</span> <span data-t="unit_orders">orders</span></span>
+        </div>
+        <div class="adv-item-hint" id="adv_ltv_hint" data-t="adv_ltv_hint_off">Locked → repeat purchases not included (1 order / customer)</div>
       </div>
 
       <div class="adv-item" id="adv_ops_item" style="grid-column:1/-1;cursor:default;opacity:1">
@@ -5485,17 +5481,16 @@ function pricingToggleAdv(){
   if(arrow) arrow.style.transform = open ? 'rotate(90deg)' : '';
 }
 
-// Auto-reveal the Pricing → Advanced panel when a non-default value is present
-// (e.g. restored from a saved product) so the value is never hidden from view.
+// Auto-unlock the Advanced → LTV section when a non-default ordersPerCust is restored
+// from a saved product, so the value is visible and applied correctly.
 function pricingSyncAdv(){
   const el = document.getElementById('i_orders_per_cust');
-  const panel = document.getElementById('pricing_adv_panel');
-  if(!el || !panel) return;
+  if(!el) return;
   const val = parseFloat(String(el.value).replace(/,/g,''));
-  if(!isNaN(val) && val !== 1 && panel.style.display === 'none'){
-    panel.style.display = 'block';
-    const arrow = document.getElementById('pricing_adv_arrow');
-    if(arrow) arrow.style.transform = 'rotate(90deg)';
+  if(!isNaN(val) && val !== 1 && ADV_LTV_LOCKED){
+    toggleAdvLock('ltv');  // unlock and enable inputs
+    const grid = document.getElementById('adv_grid');
+    if(grid && !grid.classList.contains('show')) toggleAdvanced();
   }
 }
 
@@ -5649,6 +5644,7 @@ let ADV_PDR_LOCKED    = true;   // Post-Delivery Return: locked → ignored
 let ADV_BUNDLE_LOCKED = true;   // Bundle Pricing: locked → single price
 let ADV_SHIPZONE_LOCKED = true; // Shipping Zones: locked → single "Avg. shipping cost" used
 let ADV_ORGANIC_LOCKED = true;  // Organic orders: locked → 0 extra orders
+let ADV_LTV_LOCKED    = true;   // LTV / purchase frequency: locked → 1 order per customer
 let ADV_OPS_LOCKED    = true;   // Operations & Cash Flow: locked
 let ADV_CASH_LOCKED   = false;  // Available cash toggle: false = cash active (default)
 
@@ -5716,6 +5712,11 @@ function advOrganicOrders(){
   if(ADV_ORGANIC_LOCKED) return 0;
   const val = parseFloat(document.getElementById('adv_organic')?.value) || 0;
   return val >= 0 ? Math.round(val) : 0;
+}
+
+function advOrdersPerCust(){
+  if(ADV_LTV_LOCKED) return 1;
+  return Math.max(parseFloat(document.getElementById('i_orders_per_cust')?.value) || 1, 1);
 }
 
 // Recompute the weighted-avg shipping (your cost + charged) + total order share shown inside the card.
@@ -5885,6 +5886,34 @@ function toggleAdvLock(which){
       hint.textContent = T[LANG].adv_organic_hint_on || 'Unlocked → organic orders add to profit and total units';
       hint.classList.add('active');
       inp.focus();
+    }
+  } else if(which === 'ltv'){
+    ADV_LTV_LOCKED = !ADV_LTV_LOCKED;
+    const btn    = document.getElementById('adv_ltv_lock');
+    const item   = document.getElementById('adv_ltv_item');
+    const hint   = document.getElementById('adv_ltv_hint');
+    const inputs = ['i_buy_interval','i_buy_unit','i_cust_lifespan','i_life_unit']
+                   .map(id => document.getElementById(id));
+    if(ADV_LTV_LOCKED){
+      btn.textContent = '🔒';
+      btn.classList.remove('unlocked');
+      item.classList.add('locked');
+      inputs.forEach(el => { if(el) el.disabled = true; });
+      const hidden = document.getElementById('i_orders_per_cust');
+      if(hidden) hidden.value = '1';
+      const disp = document.getElementById('orders_derived_val');
+      if(disp) disp.textContent = '1';
+      hint.textContent = T[LANG].adv_ltv_hint_off || 'Locked → repeat purchases not included (1 order / customer)';
+      hint.classList.remove('active');
+    } else {
+      btn.textContent = '🔓';
+      btn.classList.add('unlocked');
+      item.classList.remove('locked');
+      inputs.forEach(el => { if(el) el.disabled = false; });
+      ordersFreqRecalc();
+      hint.textContent = T[LANG].adv_ltv_hint_on || 'Unlocked → lifetime orders calculated from frequency & lifespan';
+      hint.classList.add('active');
+      document.getElementById('i_buy_interval')?.focus();
     }
   } else if(which==='ops'){
     ADV_OPS_LOCKED=!ADV_OPS_LOCKED;
@@ -6327,7 +6356,7 @@ function calc(){
   const spentDelivered = ads > 0 ? ads * (confR * delR) : 0;
   set('m_spent_delivered', spentDelivered > 0 ? Math.round(spentDelivered).toLocaleString()+' '+CURRENCY : '—', 'var(--c1)');
   // 6. Customer economics — CAC, LTV, LTV:CAC
-  const ordersPerCust = Math.max(v('i_orders_per_cust') || 1, 1);
+  const ordersPerCust = typeof advOrdersPerCust === 'function' ? advOrdersPerCust() : Math.max(v('i_orders_per_cust') || 1, 1);
   const cac    = costPerDel;                 // ad cost to acquire one delivered customer
   const ltv    = profitPU * ordersPerCust;   // lifetime net profit per customer
   const ltvCac = cac > 0 ? ltv / cac : 0;
@@ -9965,6 +9994,10 @@ const T = {
     adv_organic_hint_on:'Unlocked → organic orders added to total units and net profit',
     tip_organic:'Average monthly orders that arrive without paid ads (organic search, social media, word-of-mouth). They earn profit at your standard margin but cost zero ad spend. Added on top of paid delivered orders in total units and net profit.',
     organic_suffix:'organic',
+    adv_ltv_lbl:'Customer purchase frequency & lifetime',
+    adv_ltv_hint_off:'Locked → repeat purchases not included (1 order / customer)',
+    adv_ltv_hint_on:'Unlocked → lifetime orders calculated from frequency & lifespan',
+    tip_ltv:'How often does a returning customer buy, and how long do they stay? Used to calculate lifetime orders per customer which drives the LTV metric in the Marketing section.',
     tip_shipzone:'Split your orders across 5 delivery zones. For each zone enter the shipping cost you pay (your cost), the shipping you charge the customer, and the % share of your orders that go there. The tool computes weighted-average values (weighted by order share) and uses them as your "Avg. shipping cost (your cost)" and "Shipping charged to customer". When unlocked, those two basic fields up in the Shipping section are locked and driven by these zones. Shares don\'t have to sum to exactly 100% — the averages are normalised by the total you enter.',
     ship_zone_override_hint:'Managed by Shipping zones (advanced) — these two fields are calculated from your zones.',
     shipzone_col_zone:'Zone',
@@ -10497,6 +10530,10 @@ const T = {
     adv_organic_hint_on:'مفتوح → الأوردرات الأورجانيك بتتضاف للوحدات الكلية وصافي الربح',
     tip_organic:'متوسط الأوردرات الشهرية اللي بتيجي من غير إعلانات مدفوعة (سيرش أورجانيك، سوشيال ميديا، توصية). بتكسب نفس هامش الربح بدون أي تكلفة إعلانية. بتتضاف فوق الأوردرات المدفوعة في إجمالي الوحدات وصافي الربح.',
     organic_suffix:'أورجانيك',
+    adv_ltv_lbl:'تكرار شراء العميل ومدة تعامله',
+    adv_ltv_hint_off:'مقفول → الشراء المتكرر مش محتسب (أوردر واحد لكل عميل)',
+    adv_ltv_hint_on:'مفتوح → عدد أوردرات العميل طول فترة تعامله بيتحسب من التكرار والمدة',
+    tip_ltv:'العميل بيشتري كل قد إيه وبيفضل بيتعامل معاك لمدة قد إيه؟ بيستخدم في حساب عدد أوردرات العميل طول فترة تعامله اللي بيحدد الـ LTV في قسم التسويق.',
     tip_shipzone:'قسّم أوردراتك على 5 مناطق توصيل. لكل منطقة اكتب تكلفة الشحن اللي بتدفعها (عليك)، والشحن اللي بتحصّله من العميل، ونسبة الأوردرات اللي بتروح للمنطقة دي. الأداة بتحسب متوسطات مرجّحة (حسب نسبة الأوردرات) وبتستخدمها كـ "متوسط تكلفة الشحن (عليك)" و"الشحن المحصّل من العميل". لما تفتح القسم ده، الحقلين الأساسيين فوق في قسم الشحن بيتقفلوا وبيتحسبوا من الزونز دي. النِسَب مش لازم تطلع 100% بالظبط — المتوسطات بتتظبط على إجمالي اللي كتبته.',
     ship_zone_override_hint:'بيتحسب من مناطق الشحن (المتقدّم) — الحقلين دول محسوبين من الزونز بتاعتك.',
     shipzone_col_zone:'المنطقة',
