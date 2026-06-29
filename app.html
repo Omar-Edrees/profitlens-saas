@@ -8139,7 +8139,7 @@ function calcAllProducts(){
   // Shipping recovery = % of real shipping cost customers cover
   const shRecovery = totalShipCost > 0 ? totalShipColl/totalShipCost*100 : 0;
   _s('ap_sh_recovery', totalShipCost>0 ? shRecovery.toFixed(0)+'%' : '—',
-     shRecovery >= 90 ? 'var(--c1)' : shRecovery >= 60 ? 'var(--c3)' : 'var(--red)');
+     shRecovery >= 70 ? 'var(--c1)' : shRecovery >= 40 ? 'var(--c3)' : 'var(--red)');
   // Net burden you absorb = real − collected (total $)
   const shBurden = totalShipCost - totalShipColl;
   _s('ap_sh_burden', totalShipCost>0 ? fmtM(shBurden) : '—', shBurden > 0 ? 'var(--red)' : 'var(--c1)');
@@ -8157,9 +8157,9 @@ function calcAllProducts(){
   const shVerdictOf = c => {
     if(!(c.stock > 0)) return {key:'none', lbl:T[LANG].ap_shv_none||'—', col:'var(--txt3)', bg:'transparent'};
     const rec = c.effShip > 0 ? c.shipC/c.effShip*100 : 100;
-    if(rec < 60)  return {key:'sink', lbl:T[LANG].ap_shv_sink||'Underwater', col:'#fff',     bg:'var(--red)'};
-    if(rec < 90)  return {key:'raise',lbl:T[LANG].ap_shv_raise||'Raise fee', col:'#1a1a1a',  bg:'var(--c3)'};
-    return {key:'ok', lbl:T[LANG].ap_shv_ok||'OK', col:'#0a0a0a', bg:'var(--c1)'};
+    if(rec < 40)  return {key:'sink', lbl:T[LANG].ap_shv_sink||'Losing',        col:'#fff',    bg:'var(--red)'};
+    if(rec < 70)  return {key:'raise',lbl:T[LANG].ap_shv_raise||'Raise shipping',col:'#1a1a1a',bg:'var(--c3)'};
+    return {key:'ok', lbl:T[LANG].ap_shv_ok||'Healthy', col:'#0a0a0a', bg:'var(--c1)'};
   };
   const shvWrap = document.getElementById('ap_sh_verdict_wrap');
   if(shvWrap){
@@ -10047,7 +10047,7 @@ const T = {
     ap_sh_verdict_title:"Per-product shipping verdict — who's underwater",
     ap_sh_burden_chart:'Net shipping burden (total) — per product',
     ap_shc_net:'Net/unit', ap_shc_burden:'Total burden',
-    ap_shv_sink:'Underwater', ap_shv_raise:'Raise fee', ap_shv_ok:'OK', ap_shv_none:'—',
+    ap_shv_sink:'Losing', ap_shv_raise:'Raise shipping', ap_shv_ok:'Healthy', ap_shv_none:'—',
     ap_cpa_chart:'CPA vs Break-even CPA — per product',
     ap_budget_chart:'Ad Budget — per product',
     ap_sh_chart:'Real shipping cost vs collected — per product',
@@ -10333,7 +10333,7 @@ const T = {
     xl_err_norows:'File has no data rows.', xl_err_nodatarows:'No data found. Fill in the rows below the header.', xl_err_nolib:'Excel library not loaded yet. Please try again.',
     ap_products_word:'products',
     ap_sort:'Sort', ap_hi:'High first', ap_lo:'Low first',
-    ap_f_all:'All', ap_f_profit:'Profitable', ap_f_loss:'Loss', ap_f_sink:'Drowning', ap_f_ok:'Healthy',
+    ap_f_all:'All', ap_f_profit:'Profitable', ap_f_loss:'Loss', ap_f_sink:'Losing', ap_f_ok:'Healthy',
     ap_sm_budget:'Budget', ap_sm_safety:'Safety', ap_sm_burden:'Burden', ap_sm_recovery:'Recovery', ap_sm_profit:'Net profit', ap_sm_margin:'Margin',
     ap_edit:'Edit ↗', ap_u_margin:'margin', ap_u_rev:'rev', ap_u_units:'units',
     ap_th_net:'Net Profit', ap_th_rev_stock:'Revenue / Stock',
@@ -10574,7 +10574,7 @@ const T = {
     ap_sh_verdict_title:'حُكم الشحن لكل منتج — مين بيغرق',
     ap_sh_burden_chart:'العبء الصافي للشحن (الإجمالي) — لكل منتج',
     ap_shc_net:'الصافي/وحدة', ap_shc_burden:'العبء الكلي',
-    ap_shv_sink:'بيغرق', ap_shv_raise:'ارفع الرسوم', ap_shv_ok:'تمام', ap_shv_none:'—',
+    ap_shv_sink:'بيخسر', ap_shv_raise:'ارفع تكلفة الشحن', ap_shv_ok:'مظبوط', ap_shv_none:'—',
     ap_cpa_chart:'CPA مقابل CPA التعادل — لكل منتج',
     ap_budget_chart:'ميزانية الإعلانات — لكل منتج',
     ap_sh_chart:'تكلفة الشحن الحقيقية مقابل المحصّل — لكل منتج',
@@ -10860,7 +10860,7 @@ const T = {
     xl_err_norows:'الملف لا يحتوي على بيانات.', xl_err_nodatarows:'لم يُعثر على بيانات. امل الصفوف أسفل الهيدر.', xl_err_nolib:'مكتبة Excel لم تُحمَّل بعد. حاول مرة أخرى.',
     ap_products_word:'منتج',
     ap_sort:'ترتيب', ap_hi:'الأعلى أولاً', ap_lo:'الأقل أولاً',
-    ap_f_all:'الكل', ap_f_profit:'رابحة', ap_f_loss:'خاسرة', ap_f_sink:'بيغرق', ap_f_ok:'سليم',
+    ap_f_all:'الكل', ap_f_profit:'رابحة', ap_f_loss:'خاسرة', ap_f_sink:'بيخسر', ap_f_ok:'مظبوط',
     ap_sm_budget:'الميزانية', ap_sm_safety:'الأمان', ap_sm_burden:'العبء', ap_sm_recovery:'الاسترداد', ap_sm_profit:'الربح الصافي', ap_sm_margin:'الهامش',
     ap_edit:'تعديل ↗', ap_u_margin:'هامش', ap_u_rev:'إيراد', ap_u_units:'وحدة',
     ap_th_net:'صافي الربح', ap_th_rev_stock:'الإيراد / المخزون',
