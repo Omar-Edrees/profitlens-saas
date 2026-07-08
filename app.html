@@ -370,38 +370,19 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 }
 .mymsg-lightbox-close:hover{background:rgba(255,255,255,.26)}
 
-/* ─── TUTORIAL VIDEOS MODAL ─── */
-.tut-overlay{
-  position:fixed;inset:0;z-index:1200;
-  background:rgba(0,0,0,.6);backdrop-filter:blur(4px);
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;transition:opacity .2s;
-  padding:20px;
+/* ─── TUTORIAL VIDEOS PAGE ─── */
+.tut-back-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  border:1px solid var(--bdr);background:var(--surf2);color:var(--txt2);
+  border-radius:9px;padding:7px 12px;font-size:13px;font-weight:600;
+  cursor:pointer;transition:background .15s,color .15s;margin-bottom:18px;
 }
-.tut-overlay.open{opacity:1;pointer-events:all}
-.tut-modal{
-  background:var(--surf);border:1px solid var(--bdr2);
-  border-radius:16px;
-  width:100%;max-width:640px;height:min(82dvh,680px);
-  display:flex;flex-direction:column;
-  transform:scale(.97) translateY(8px);transition:transform .22s;
-  overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.55);
+.tut-back-btn:hover{background:var(--surf3);color:var(--txt)}
+.tut-back-btn svg{flex-shrink:0}
+[dir="rtl"] .tut-back-btn svg{transform:scaleX(-1)}
+.tut-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;
 }
-.tut-overlay.open .tut-modal{transform:scale(1) translateY(0)}
-.tut-head{
-  display:flex;align-items:center;gap:10px;
-  padding:16px 18px;border-bottom:1px solid var(--bdr);flex-shrink:0;
-}
-.tut-head-title{font-size:15px;font-weight:700;flex:1;color:var(--txt)}
-.tut-close-btn{
-  width:28px;height:28px;border:none;background:transparent;border-radius:8px;
-  cursor:pointer;color:var(--txt2);display:flex;align-items:center;justify-content:center;
-  transition:background .15s;
-}
-.tut-close-btn:hover{background:var(--surf3)}
-.tut-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:14px 16px;display:flex;flex-direction:column;gap:12px;}
-.tut-body::-webkit-scrollbar{width:4px}
-.tut-body::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:4px}
 .tut-item{
   border:1px solid var(--bdr);border-radius:12px;overflow:hidden;background:var(--surf2);
 }
@@ -420,8 +401,8 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 .tut-player-wrap:hover .tut-play-btn svg{transform:scale(1.08)}
 .tut-player-wrap iframe{width:100%;height:100%;border:0;display:block}
 .tut-empty{
-  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:32px 20px;gap:10px;
+  grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:48px 20px;gap:10px;
 }
 .tut-empty-icon{font-size:36px;opacity:.4}
 .tut-empty-title{font-size:14px;font-weight:600;color:var(--txt2)}
@@ -540,6 +521,7 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 .s1 .section-eyebrow .num{background:rgba(129,140,248,.15);color:#A5B4FC}
 .s2 .section-eyebrow .num{background:rgba(245,158,11,.15);color:var(--c3)}
 .s3 .section-eyebrow .num{background:rgba(167,139,250,.15);color:var(--c4)}
+#s_tut .section-eyebrow .num{background:rgba(0,229,160,.15);color:var(--c1)}
 .section-title{font-family:var(--head);font-size:28px;font-weight:800;letter-spacing:-.5px;color:var(--txt-title)}
 .section-sub{color:var(--txt3);font-size:14px;font-weight:400;margin-top:6px}
 
@@ -4740,6 +4722,20 @@ input[type=range]::-moz-range-thumb{
     </button>
   </div>
   </div><!-- /sp_ov_panel -->
+</section>
+
+<!-- Tutorial videos page -->
+<section class="section" id="s_tut">
+  <div class="section-header">
+    <button class="tut-back-btn" onclick="tutClose()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      <span data-t="tut_back">Back to the tool</span>
+    </button>
+    <div class="section-eyebrow"><span class="num">🎬</span><span data-t="tut_eye">Tutorials</span></div>
+    <div class="section-title" id="tut_title_el" data-t="tut_title">Tutorial videos</div>
+    <div class="section-sub" data-t="tut_sub">Short videos explaining how to use the tool.</div>
+  </div>
+  <div class="tut-grid" id="tut_body"></div>
 </section>
 
 <script>
@@ -10460,6 +10456,7 @@ const T = {
     fb_err_size:'File too large (max 5MB).',
     fb_err_send:'Failed to send. Please try again.',
     tut_btn:'Tutorial videos', tut_title:'Tutorial videos',
+    tut_eye:'Tutorials', tut_sub:'Short videos explaining how to use the tool.', tut_back:'Back to the tool',
     tut_empty:'No tutorial videos yet.',
     tut_empty_sub:'We\'re working on it — check back soon.',
     mymsg_btn:'My messages', mymsg_title:'My messages',
@@ -10999,6 +10996,7 @@ const T = {
     fb_err_size:'الملف كبير جداً (الحد الأقصى 5MB).',
     fb_err_send:'فشل الإرسال. حاول مرة أخرى.',
     tut_btn:'شرح التول', tut_title:'شرح التول',
+    tut_eye:'شرح', tut_sub:'فيديوهات قصيرة بتشرح إزاي تستخدم التول.', tut_back:'رجوع للتول',
     tut_empty:'لسه مفيش فيديوهات شرح.',
     tut_empty_sub:'بنجهزها دلوقتي — تابعنا قريب.',
     mymsg_btn:'رسائلي', mymsg_title:'رسائلي',
@@ -11479,15 +11477,20 @@ window.addEventListener('load', ()=>{
       }).join('');
     }
 
-    document.getElementById('tut_overlay').classList.add('open');
-    document.body.style.overflow = 'hidden';
+    // Remember which section (Inputs/Ads/Shipping/Overview) was open so tutClose() can restore it.
+    const sections = document.querySelectorAll('.section');
+    const prevIdx = [...sections].findIndex(s => s.classList.contains('active') && s.id !== 's_tut');
+    if (prevIdx >= 0) window.__tutPrevSection = prevIdx;
+    sections.forEach(s => s.classList.remove('active'));
+    document.getElementById('s_tut').classList.add('active');
+    window.scrollTo(0, 0);
   };
 
   window.tutClose = function() {
-    document.getElementById('tut_overlay').classList.remove('open');
-    document.body.style.overflow = '';
-    // Stop playback by clearing any playing iframe's src when the modal closes.
+    // Stop playback by clearing any playing iframe's src before leaving the page.
     document.querySelectorAll('#tut_body .tut-player-wrap iframe').forEach(f => { f.src = ''; });
+    const idx = (typeof window.__tutPrevSection === 'number' && window.__tutPrevSection >= 0) ? window.__tutPrevSection : 0;
+    go(idx);
   };
 
   window.tutPlay = function(wrap) {
@@ -11871,20 +11874,6 @@ function toggleRevShipping(){
 </script>
 
 <!-- ── FEEDBACK MODAL ──────────────────────────────────── -->
-<!-- Tutorial videos overlay -->
-<div class="tut-overlay" id="tut_overlay" onclick="if(event.target===this)tutClose()">
-  <div class="tut-modal">
-    <div class="tut-head">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-      <span class="tut-head-title" id="tut_title_el">Tutorial videos</span>
-      <button class="tut-close-btn" onclick="tutClose()">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="tut-body" id="tut_body"></div>
-  </div>
-</div>
-
 <!-- My Messages overlay -->
 <div class="mymsg-overlay" id="mymsg_overlay" onclick="if(event.target===this)myMsgClose()">
   <div class="mymsg-modal">
