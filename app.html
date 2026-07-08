@@ -369,6 +369,45 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
   display:flex;align-items:center;justify-content:center;transition:background .15s;
 }
 .mymsg-lightbox-close:hover{background:rgba(255,255,255,.26)}
+
+/* ─── TUTORIAL VIDEOS PAGE ─── */
+.tut-back-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  border:1px solid var(--bdr);background:var(--surf2);color:var(--txt2);
+  border-radius:9px;padding:7px 12px;font-size:13px;font-weight:600;
+  cursor:pointer;transition:background .15s,color .15s;margin-bottom:18px;
+}
+.tut-back-btn:hover{background:var(--surf3);color:var(--txt)}
+.tut-back-btn svg{flex-shrink:0}
+[dir="rtl"] .tut-back-btn svg{transform:scaleX(-1)}
+.tut-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;
+}
+.tut-item{
+  border:1px solid var(--bdr);border-radius:12px;overflow:hidden;background:var(--surf2);
+}
+.tut-item-title{padding:10px 12px;font-size:13px;font-weight:600;color:var(--txt)}
+.tut-player-wrap{
+  position:relative;width:100%;aspect-ratio:16/9;background:#000;cursor:pointer;
+}
+.tut-player-wrap img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85}
+.tut-play-btn{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+}
+.tut-play-btn svg{
+  width:56px;height:56px;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5));
+  transition:transform .15s;
+}
+.tut-player-wrap:hover .tut-play-btn svg{transform:scale(1.08)}
+.tut-player-wrap iframe{width:100%;height:100%;border:0;display:block}
+.tut-empty{
+  grid-column:1/-1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:48px 20px;gap:10px;
+}
+.tut-empty-icon{font-size:36px;opacity:.4}
+.tut-empty-title{font-size:14px;font-weight:600;color:var(--txt2)}
+.tut-empty-sub{font-size:12px;color:var(--txt3);line-height:1.5;max-width:320px}
+
 .fb-btn:not(:disabled):hover{opacity:.88}
 .fb-success{text-align:center;padding:10px 20px 24px}
 .fb-success-icon{font-size:40px;margin-bottom:10px}
@@ -482,6 +521,7 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 .s1 .section-eyebrow .num{background:rgba(129,140,248,.15);color:#A5B4FC}
 .s2 .section-eyebrow .num{background:rgba(245,158,11,.15);color:var(--c3)}
 .s3 .section-eyebrow .num{background:rgba(167,139,250,.15);color:var(--c4)}
+#s_tut .section-eyebrow .num{background:rgba(0,229,160,.15);color:var(--c1)}
 .section-title{font-family:var(--head);font-size:28px;font-weight:800;letter-spacing:-.5px;color:var(--txt-title)}
 .section-sub{color:var(--txt3);font-size:14px;font-weight:400;margin-top:6px}
 
@@ -4682,6 +4722,20 @@ input[type=range]::-moz-range-thumb{
     </button>
   </div>
   </div><!-- /sp_ov_panel -->
+</section>
+
+<!-- Tutorial videos page -->
+<section class="section" id="s_tut">
+  <div class="section-header">
+    <button class="tut-back-btn" onclick="tutClose()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      <span data-t="tut_back">Back to the tool</span>
+    </button>
+    <div class="section-eyebrow"><span class="num">🎬</span><span data-t="tut_eye">Tutorials</span></div>
+    <div class="section-title" id="tut_title_el" data-t="tut_title">Tutorial videos</div>
+    <div class="section-sub" data-t="tut_sub">Short videos explaining how to use the tool.</div>
+  </div>
+  <div class="tut-grid" id="tut_body"></div>
 </section>
 
 <script>
@@ -10401,6 +10455,10 @@ const T = {
     fb_err_msg:'Please enter a message.',
     fb_err_size:'File too large (max 5MB).',
     fb_err_send:'Failed to send. Please try again.',
+    tut_btn:'Tutorial videos', tut_title:'Tutorial videos',
+    tut_eye:'Tutorials', tut_sub:'Short videos explaining how to use the tool.', tut_back:'Back to the tool',
+    tut_empty:'No tutorial videos yet.',
+    tut_empty_sub:'We\'re working on it — check back soon.',
     mymsg_btn:'My messages', mymsg_title:'My messages',
     mymsg_empty:'You haven\'t sent any messages yet.',
     mymsg_empty_sub:'Use the buttons below to send a complaint, suggestion, or customization request.',
@@ -10937,6 +10995,10 @@ const T = {
     fb_err_msg:'الرجاء كتابة رسالتك.',
     fb_err_size:'الملف كبير جداً (الحد الأقصى 5MB).',
     fb_err_send:'فشل الإرسال. حاول مرة أخرى.',
+    tut_btn:'شرح التول', tut_title:'شرح التول',
+    tut_eye:'شرح', tut_sub:'فيديوهات قصيرة بتشرح إزاي تستخدم التول.', tut_back:'رجوع للتول',
+    tut_empty:'لسه مفيش فيديوهات شرح.',
+    tut_empty_sub:'بنجهزها دلوقتي — تابعنا قريب.',
     mymsg_btn:'رسائلي', mymsg_title:'رسائلي',
     mymsg_empty:'لم ترسل أي رسائل بعد.',
     mymsg_empty_sub:'استخدم الأزرار أدناه لإرسال شكوى أو اقتراح أو طلب كاستمايزيشن.',
@@ -11158,6 +11220,12 @@ window.addEventListener('load', ()=>{
           '</button>'+
           '<div class="pl-menu-div"></div>';
 
+        const tutorialItem =
+          '<button class="pl-menu-btn" onclick="tutOpen()">'+
+            '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>'+
+            '<span data-t="tut_btn">'+( T[LANG].tut_btn||T.en.tut_btn )+'</span>'+
+          '</button>';
+
         const myMsgItem =
           '<button class="pl-menu-btn" onclick="myMsgOpen()">'+
             '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'+
@@ -11179,6 +11247,7 @@ window.addEventListener('load', ()=>{
             '</div>'+
             '<div class="pl-menu-div"></div>'+
             adminItem +
+            tutorialItem +
             feedbackItems +
             myMsgItem +
             '<div class="pl-menu-div"></div>'+
@@ -11204,6 +11273,7 @@ window.addEventListener('load', ()=>{
           if (e.key === 'Escape') {
             menu.classList.remove('open');
             myMsgClose();
+            tutClose();
           }
         });
       }
@@ -11365,6 +11435,75 @@ window.addEventListener('load', ()=>{
 
   window.fbOverlayClick = function(e) {
     if (e.target === document.getElementById('fb_overlay')) fbClose();
+  };
+
+  // ── TUTORIAL VIDEOS ──────────────────────────────────────────────────────
+  // Fill in real YouTube video IDs here (upload as Unlisted, no ads/setup cost).
+  // id: the part after "v=" in the YouTube URL. Leave the array empty to show
+  // the "coming soon" state instead of broken thumbnails.
+  const TUT_VIDEOS = [
+    { id:'ejKOGYj8_Uo', title_ar:'ProfitLens - نظرة عامة على التول', title_en:'ProfitLens - Tool Overview' },
+  ];
+  const TUT_ESC = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  window.tutOpen = function() {
+    document.querySelectorAll('.curr-menu').forEach(m=>m.classList.remove('show'));
+    document.querySelectorAll('.curr-btn').forEach(b=>b.classList.remove('open'));
+    const menu = document.getElementById('__pl_menu');
+    if (menu) menu.classList.remove('open');
+    const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
+    document.getElementById('tut_title_el').textContent = L('tut_title');
+
+    const body = document.getElementById('tut_body');
+    if (!TUT_VIDEOS.length) {
+      body.innerHTML =
+        '<div class="tut-empty">'+
+          '<div class="tut-empty-icon">🎬</div>'+
+          '<div class="tut-empty-title">'+TUT_ESC(L('tut_empty'))+'</div>'+
+          '<div class="tut-empty-sub">'+TUT_ESC(L('tut_empty_sub'))+'</div>'+
+        '</div>';
+    } else {
+      body.innerHTML = TUT_VIDEOS.map((v, i) => {
+        const title = TUT_ESC(LANG === 'ar' ? (v.title_ar || v.title_en) : (v.title_en || v.title_ar));
+        return (
+          '<div class="tut-item">'+
+            '<div class="tut-item-title">'+title+'</div>'+
+            '<div class="tut-player-wrap" data-vid="'+TUT_ESC(v.id)+'" onclick="tutPlay(this)">'+
+              '<img src="https://i.ytimg.com/vi/'+TUT_ESC(v.id)+'/hqdefault.jpg" alt="" loading="lazy">'+
+              '<div class="tut-play-btn"><svg viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55C3.97 2.33 2.27 4.81 1.48 7.74.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="#f00"/><path d="M45 24 27 14v20" fill="#fff"/></svg></div>'+
+            '</div>'+
+          '</div>'
+        );
+      }).join('');
+    }
+
+    // Remember which section (Inputs/Ads/Shipping/Overview) was open so tutClose() can restore it.
+    const sections = document.querySelectorAll('.section');
+    const prevIdx = [...sections].findIndex(s => s.classList.contains('active') && s.id !== 's_tut');
+    if (prevIdx >= 0) window.__tutPrevSection = prevIdx;
+    sections.forEach(s => s.classList.remove('active'));
+    document.getElementById('s_tut').classList.add('active');
+    window.scrollTo(0, 0);
+  };
+
+  window.tutClose = function() {
+    // Stop playback by clearing any playing iframe's src before leaving the page.
+    document.querySelectorAll('#tut_body .tut-player-wrap iframe').forEach(f => { f.src = ''; });
+    const idx = (typeof window.__tutPrevSection === 'number' && window.__tutPrevSection >= 0) ? window.__tutPrevSection : 0;
+    go(idx);
+  };
+
+  window.tutPlay = function(wrap) {
+    const vid = wrap.getAttribute('data-vid');
+    if (!vid) return;
+    const iframe = document.createElement('iframe');
+    iframe.src = 'https://www.youtube-nocookie.com/embed/'+encodeURIComponent(vid)+'?autoplay=1&rel=0';
+    iframe.title = 'YouTube video player';
+    iframe.setAttribute('frameborder', '0');
+    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+    iframe.setAttribute('allowfullscreen', '');
+    wrap.innerHTML = '';
+    wrap.appendChild(iframe);
   };
 
   // ── MY MESSAGES ───────────────────────────────────────────────────────────
