@@ -11964,8 +11964,15 @@ function toggleRevShipping(){
     updateInfo();
   }
 
+  // Default layout for users who haven't customized yet: the 10 most decision-
+  // relevant cards, in this order; the rest start hidden in the pool.
+  const DEFAULT={
+    ord:['m_be_roas','m_actual_roas','m_maxcpp','m_acpp','be_bud_val','m_l2o_rate','m_cost_per_del','m_delivered','m_confirmed','m_leads'],
+    hid:['m_cpa_eff','m_wasted_spend','m_spent_delivered','m_cac','m_ltv','m_ltv_cac']
+  };
+
   function load(){
-    try{return JSON.parse(localStorage.getItem(STORE)||'null');}catch(e){return null;}
+    try{return JSON.parse(localStorage.getItem(STORE)||'null')||DEFAULT;}catch(e){return DEFAULT;}
   }
 
   function apply(){
