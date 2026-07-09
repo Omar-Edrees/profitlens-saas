@@ -412,10 +412,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       __sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
       const { data: { session } } = await __sb.auth.getSession();
       if (session) {
-        // If already paid, send to app
+        // If already paid, send to app (admins can still browse the pricing page)
         const { data: profile } = await __sb.from('profiles')
-          .select('plan, redeemed_code, redeemed_discount_pct').eq('id', session.user.id).maybeSingle();
-        if (profile?.plan && profile.plan !== 'free') {
+          .select('plan, role, redeemed_code, redeemed_discount_pct').eq('id', session.user.id).maybeSingle();
+        if (profile?.plan && profile.plan !== 'free' && profile.role !== 'admin') {
           window.location.replace('/app');
           return;
         }
