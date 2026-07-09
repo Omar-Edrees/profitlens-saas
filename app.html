@@ -4127,10 +4127,10 @@ input[type=range]::-moz-range-thumb{
 
     <!-- ── ITEM DISCOUNT ── -->
     <div id="oi_panel_item">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px">
         <div class="field" style="margin:0"><label data-t="oi_disc_pct_lbl">Discount %</label><div class="f-row"><input type="number" id="oi_it_disc" value="20" min="0" max="95" oninput="oiItemRecalc()"><span class="unit">%</span></div></div>
         <div class="field" style="margin:0"><label data-t="oi_orders_mo_lbl">Current orders / month</label><div class="f-row"><input type="number" id="oi_it_orders" min="0" oninput="oiItemRecalc()"><span class="unit" data-t="unit_orders">orders</span></div></div>
-        <div class="field" style="margin:0;grid-column:1/-1"><label data-t="oi_lift_lbl">Expected order increase</label><div class="f-row"><input type="number" id="oi_it_lift" value="20" min="0" max="500" oninput="oiItemRecalc()"><span class="unit">%</span></div></div>
+        <div class="field" style="margin:0"><label data-t="oi_lift_lbl">Expected order increase</label><div class="f-row"><input type="number" id="oi_it_lift" value="20" min="0" max="500" oninput="oiItemRecalc()"><span class="unit">%</span></div></div>
       </div>
       <div class="target-profit-results">
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_price_after_lbl">Price after discount</div><div class="tp-kpi-val" id="oi_it_price_after" style="color:var(--c4)">—</div></div>
