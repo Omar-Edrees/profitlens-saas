@@ -2094,9 +2094,9 @@ input[type=range]::-moz-range-thumb{
 .mini-thumb{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .2s}
 .mini-toggle.on .mini-thumb{left:18px}
 /* ── Shipping Zones ── */
-.shipzone-head{display:grid;grid-template-columns:1.4fr 1fr 1fr 0.9fr;gap:10px;padding:2px 12px 4px;font-size:10px;color:var(--txt3)}
+.shipzone-head{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 0.8fr;gap:10px;padding:2px 12px 4px;font-size:10px;color:var(--txt3)}
 .shipzone-list{display:flex;flex-direction:column;gap:8px}
-.shipzone-row{display:grid;grid-template-columns:1.4fr 1fr 1fr 0.9fr;gap:10px;align-items:center;background:var(--surf);border:1px solid var(--bdr2);border-radius:var(--r);padding:8px 12px}
+.shipzone-row{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr 0.8fr;gap:10px;align-items:center;background:var(--surf);border:1px solid var(--bdr2);border-radius:var(--r);padding:8px 12px}
 .shipzone-name{font-size:12px;color:var(--txt);font-weight:500;display:flex;align-items:center;gap:8px;line-height:1.3}
 .shipzone-name .zn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:6px;background:var(--surf3);color:var(--txt2);font-family:var(--mono);font-size:11px;font-weight:700;flex-shrink:0}
 .shipzone-field{display:flex;align-items:center;gap:6px}
@@ -2104,9 +2104,9 @@ input[type=range]::-moz-range-thumb{
 .shipzone-field input:focus{border-color:var(--c4)}
 .shipzone-field input:disabled{background:var(--surf3);color:var(--txt3);cursor:not-allowed}
 .shipzone-field .unit{color:var(--txt3);font-size:11px;font-family:var(--mono);flex-shrink:0}
-.shipzone-blended{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--bdr)}
+.shipzone-blended{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--bdr)}
 .ship-zone-override-hint{font-size:11px;color:var(--c4);margin-top:8px;display:flex;align-items:center;gap:6px;line-height:1.4}
-#i_courier:disabled,#i_ship_c:disabled{opacity:.5;cursor:not-allowed}
+#i_courier:disabled,#i_ship_c:disabled,#i_fulfill_ret:disabled{opacity:.5;cursor:not-allowed}
 .shipzone-blended-item{background:var(--surf);border:1px solid var(--bdr2);border-radius:var(--r);padding:8px 12px}
 .shipzone-blended-lbl{font-size:10px;color:var(--txt3);margin-bottom:2px}
 .shipzone-blended-val{font-size:14px;font-family:var(--mono);font-weight:600;color:var(--c1)}
@@ -2258,7 +2258,7 @@ input[type=range]::-moz-range-thumb{
         <div class="field"><label data-t="lbl_courier">Avg. shipping cost (your cost)</label><div class="f-row"><input type="number" id="i_courier" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
         <div class="field"><label data-t="lbl_ship_charged">Shipping charged to customer</label><div class="f-row"><input type="number" id="i_ship_c" value="" oninput="dCalc()"><span class="unit">EGP</span></div></div>
       </div>
-      <div id="ship_zone_override_hint" class="ship-zone-override-hint" style="display:none">🚚 <span data-t="ship_zone_override_hint">Managed by Shipping zones (advanced) — these two fields are calculated from your zones.</span></div>
+      <div id="ship_zone_override_hint" class="ship-zone-override-hint" style="display:none">🚚 <span data-t="ship_zone_override_hint">Managed by Shipping zones (advanced) — these fields are calculated from your zones.</span></div>
       <div style="border-top:1px solid var(--bdr2);margin:12px 0"></div>
       <div class="field-pair">
         <div class="field">
@@ -3383,7 +3383,7 @@ input[type=range]::-moz-range-thumb{
         <div class="adv-item-header">
           <div class="adv-item-title">
             🚚 <span data-t="adv_shipzone_lbl">Shipping zones</span>
-            <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_shipzone">Split your orders across 5 delivery zones. For each zone enter the shipping cost you pay (your cost), the shipping you charge the customer, and the % share of your orders that go there. The tool computes weighted-average values (weighted by order share) and uses them as your "Avg. shipping cost (your cost)" and "Shipping charged to customer". When unlocked, those two basic fields up in the Shipping section are locked and driven by these zones. Shares don't have to sum to exactly 100% — the averages are normalised by the total you enter.</span></span>
+            <span class="tip"><span class="tip-icon">?</span><span class="tip-box" data-t="tip_shipzone">Split your orders across 5 delivery zones. For each zone enter the shipping cost you pay (your cost), the shipping you charge the customer, the return cost for that zone, and the % share of your orders that go there. The tool computes weighted-average values (weighted by order share) and uses them as your "Avg. shipping cost (your cost)", "Shipping charged to customer", and "Total return cost (all-in)". When unlocked, those three basic fields up in the Shipping section are locked and driven by these zones. Shares don't have to sum to exactly 100% — the averages are normalised by the total you enter.</span></span>
           </div>
           <button class="adv-lock-btn" id="adv_shipzone_lock" onclick="toggleAdvLock('shipzone')" title="Unlock to enable">🔒</button>
         </div>
@@ -3391,6 +3391,7 @@ input[type=range]::-moz-range-thumb{
           <div data-t="shipzone_col_zone">Zone</div>
           <div data-t="shipzone_col_cost">Shipping cost (your cost)</div>
           <div data-t="shipzone_col_chg">Shipping charged to customer</div>
+          <div data-t="shipzone_col_ret">Return cost</div>
           <div data-t="shipzone_col_share">% of orders</div>
         </div>
         <div class="shipzone-list" id="adv_shipzone_list">
@@ -3398,36 +3399,42 @@ input[type=range]::-moz-range-thumb{
             <div class="shipzone-name"><span class="zn">1</span><span data-t="shipzone_z1">Cairo &amp; Giza</span></div>
             <div class="shipzone-field"><input type="number" id="sz_cost_1" placeholder="e.g. 50" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
             <div class="shipzone-field"><input type="number" id="sz_chg_1" placeholder="e.g. 60" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_ret_1" placeholder="e.g. 40" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
             <div class="shipzone-field"><input type="number" id="sz_share_1" placeholder="e.g. 45" min="0" max="100" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">%</span></div>
           </div>
           <div class="shipzone-row">
             <div class="shipzone-name"><span class="zn">2</span><span data-t="shipzone_z2">Alexandria</span></div>
             <div class="shipzone-field"><input type="number" id="sz_cost_2" placeholder="e.g. 55" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
             <div class="shipzone-field"><input type="number" id="sz_chg_2" placeholder="e.g. 65" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_ret_2" placeholder="e.g. 45" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
             <div class="shipzone-field"><input type="number" id="sz_share_2" placeholder="e.g. 12" min="0" max="100" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">%</span></div>
           </div>
           <div class="shipzone-row">
             <div class="shipzone-name"><span class="zn">3</span><span data-t="shipzone_z3">Delta &amp; Canal cities</span></div>
             <div class="shipzone-field"><input type="number" id="sz_cost_3" placeholder="e.g. 65" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
             <div class="shipzone-field"><input type="number" id="sz_chg_3" placeholder="e.g. 70" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_ret_3" placeholder="e.g. 55" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
             <div class="shipzone-field"><input type="number" id="sz_share_3" placeholder="e.g. 25" min="0" max="100" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">%</span></div>
           </div>
           <div class="shipzone-row">
             <div class="shipzone-name"><span class="zn">4</span><span data-t="shipzone_z4">Upper Egypt</span></div>
             <div class="shipzone-field"><input type="number" id="sz_cost_4" placeholder="e.g. 75" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
             <div class="shipzone-field"><input type="number" id="sz_chg_4" placeholder="e.g. 80" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_ret_4" placeholder="e.g. 65" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
             <div class="shipzone-field"><input type="number" id="sz_share_4" placeholder="e.g. 13" min="0" max="100" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">%</span></div>
           </div>
           <div class="shipzone-row">
             <div class="shipzone-name"><span class="zn">5</span><span data-t="shipzone_z5">Border &amp; remote areas</span></div>
             <div class="shipzone-field"><input type="number" id="sz_cost_5" placeholder="e.g. 100" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
             <div class="shipzone-field"><input type="number" id="sz_chg_5" placeholder="e.g. 100" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
+            <div class="shipzone-field"><input type="number" id="sz_ret_5" placeholder="e.g. 90" min="0" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">EGP</span></div>
             <div class="shipzone-field"><input type="number" id="sz_share_5" placeholder="e.g. 5" min="0" max="100" step="0.5" disabled oninput="shipzoneRecalc()"><span class="unit">%</span></div>
           </div>
         </div>
         <div class="shipzone-blended" id="adv_shipzone_blended" style="display:none">
           <div class="shipzone-blended-item"><div class="shipzone-blended-lbl" data-t="shipzone_avg">Weighted avg shipping cost</div><div class="shipzone-blended-val" id="szn_avg">—</div></div>
           <div class="shipzone-blended-item"><div class="shipzone-blended-lbl" data-t="shipzone_chg">Weighted avg charged to customer</div><div class="shipzone-blended-val" id="szn_chg">—</div></div>
+          <div class="shipzone-blended-item"><div class="shipzone-blended-lbl" data-t="shipzone_ret">Weighted avg return cost</div><div class="shipzone-blended-val" id="szn_ret">—</div></div>
           <div class="shipzone-blended-item"><div class="shipzone-blended-lbl" data-t="shipzone_total">Total order share</div><div class="shipzone-blended-val" id="szn_total">—</div></div>
         </div>
         <div class="adv-item-hint" id="adv_shipzone_hint" data-t="adv_shipzone_hint_off">Locked → single "Avg. shipping cost" used in calculations</div>
@@ -5762,6 +5769,21 @@ function advShipCharged(){
   return ssum > 0 ? wsum / ssum : null;
 }
 
+// Read Shipping Zones → order-share-weighted avg return cost (all-in) per zone.
+// Same weighting as advShipZones, but on the per-zone return cost amount.
+// Returns null when locked or when no order shares are entered → calc falls back
+// to the basic i_fulfill_ret field.
+function advShipReturn(){
+  if(ADV_SHIPZONE_LOCKED) return null;
+  let wsum = 0, ssum = 0;
+  for(let i = 1; i <= 5; i++){
+    const ret   = parseFloat(document.getElementById('sz_ret_'   + i)?.value) || 0;
+    const share = parseFloat(document.getElementById('sz_share_' + i)?.value) || 0;
+    if(share > 0){ wsum += ret * share; ssum += share; }
+  }
+  return ssum > 0 ? wsum / ssum : null;
+}
+
 function advOrganicOrders(){
   if(ADV_ORGANIC_LOCKED) return 0;
   const val = parseFloat(document.getElementById('adv_organic')?.value) || 0;
@@ -5773,24 +5795,27 @@ function advOrdersPerCust(){
   return Math.max(parseFloat(document.getElementById('i_orders_per_cust')?.value) || 1, 1);
 }
 
-// Recompute the weighted-avg shipping (your cost + charged) + total order share shown inside the card.
+// Recompute the weighted-avg shipping (your cost + charged + return) + total order share shown inside the card.
 function shipzoneRecalc(){
   if(ADV_SHIPZONE_LOCKED) return;
-  let wsum = 0, csum = 0, ssum = 0;
+  let wsum = 0, csum = 0, rsum = 0, ssum = 0;
   for(let i = 1; i <= 5; i++){
     const cost  = parseFloat(document.getElementById('sz_cost_'  + i)?.value) || 0;
     const chg   = parseFloat(document.getElementById('sz_chg_'   + i)?.value) || 0;
+    const ret   = parseFloat(document.getElementById('sz_ret_'   + i)?.value) || 0;
     const share = parseFloat(document.getElementById('sz_share_' + i)?.value) || 0;
-    if(share > 0){ wsum += cost * share; csum += chg * share; ssum += share; }
+    if(share > 0){ wsum += cost * share; csum += chg * share; rsum += ret * share; ssum += share; }
   }
   const avg    = ssum > 0 ? wsum / ssum : 0;
   const avgChg = ssum > 0 ? csum / ssum : 0;
+  const avgRet = ssum > 0 ? rsum / ssum : 0;
   const bl  = document.getElementById('adv_shipzone_blended');
   if(bl) bl.style.display = ssum > 0 ? 'grid' : 'none';
   const f  = n => (Math.round(n * 10) / 10).toLocaleString('en', {minimumFractionDigits:1, maximumFractionDigits:1});
   const se = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
   se('szn_avg', f(avg) + ' ' + (window.CURRENCY || 'EGP'));
   se('szn_chg', f(avgChg) + ' ' + (window.CURRENCY || 'EGP'));
+  se('szn_ret', f(avgRet) + ' ' + (window.CURRENCY || 'EGP'));
   const totEl = document.getElementById('szn_total');
   if(totEl){
     totEl.textContent = f(ssum) + '%';
@@ -5892,6 +5917,7 @@ function toggleAdvLock(which){
     // Basic Shipping fields that the zones take over when unlocked
     const baseCourier = document.getElementById('i_courier');
     const baseShipC   = document.getElementById('i_ship_c');
+    const baseRet     = document.getElementById('i_fulfill_ret');
     const baseHint    = document.getElementById('ship_zone_override_hint');
     if(ADV_SHIPZONE_LOCKED){
       btn.textContent = '\uD83D\uDD12';
@@ -5904,6 +5930,7 @@ function toggleAdvLock(which){
       // Hand the basic Shipping fields back to the user
       if(baseCourier) baseCourier.disabled = false;
       if(baseShipC)   baseShipC.disabled   = false;
+      if(baseRet)     baseRet.disabled     = false;
       if(baseHint)    baseHint.style.display = 'none';
     } else {
       btn.textContent = '\uD83D\uDD13';
@@ -5912,9 +5939,10 @@ function toggleAdvLock(which){
       inps.forEach(e => e.disabled = false);
       hint.textContent = T[LANG].adv_shipzone_hint_on || 'Unlocked \u2192 weighted-avg shipping (by zone) overrides "Avg. shipping cost"';
       hint.classList.add('active');
-      // Lock the basic Shipping fields \u2014 the zones drive "your cost" + "charged to customer" now
+      // Lock the basic Shipping fields \u2014 the zones drive "your cost" + "charged to customer" + "return cost" now
       if(baseCourier) baseCourier.disabled = true;
       if(baseShipC)   baseShipC.disabled   = true;
+      if(baseRet)     baseRet.disabled     = true;
       if(baseHint)    baseHint.style.display = '';
       shipzoneRecalc();
       document.getElementById('sz_cost_1')?.focus();
@@ -6161,7 +6189,10 @@ function calc(){
   const price = _bndl ? _bndl.price : priceRaw * units_m;
   const cost  = costRaw * units_m;
   const shipC = _bndl ? _bndl.ship  : ((_szShipC != null) ? _szShipC : shipCRaw);
-  const fulfillDel=v('i_fulfill_del'), fulfillRet=v('i_fulfill_ret');
+  const fulfillDel=v('i_fulfill_del');
+  // Shipping Zones (advanced): order-share-weighted return cost overrides the basic field
+  const _szRet = (typeof advShipReturn==='function') ? advShipReturn() : null;
+  const fulfillRet = (_szRet != null) ? _szRet : v('i_fulfill_ret');
   const commPct=v('i_comm')/100, plat=v('i_plat');
   // Shipping Zones (advanced): order-share-weighted courier cost overrides the basic field
   const _szCourier = (typeof advShipZones==='function') ? advShipZones() : null;
@@ -7391,7 +7422,9 @@ function _simUpdateUI(){
 
 function _roasInputs(){
   const price      = v('i_price'), cost = v('i_cost');
-  const fulfillDel = v('i_fulfill_del'), fulfillRet = v('i_fulfill_ret');
+  const fulfillDel = v('i_fulfill_del');
+  const _szRet     = (typeof advShipReturn==='function') ? advShipReturn() : null;
+  const fulfillRet = (_szRet != null) ? _szRet : v('i_fulfill_ret');
   const commPct = v('i_comm')/100, plat = v('i_plat');
   const _szCourier = (typeof advShipZones==='function') ? advShipZones() : null;
   const courier    = (_szCourier != null) ? _szCourier : v('i_courier');
@@ -7809,7 +7842,9 @@ function updateSlider(type){
   _sliderDelta(document.getElementById('sl_cpa_delta'),   cpa,      B.cpa,   true);
 
   const cost=v('i_cost');
-  const fulfillDel=v('i_fulfill_del'), fulfillRet=v('i_fulfill_ret');
+  const fulfillDel=v('i_fulfill_del');
+  const _szRet = (typeof advShipReturn==='function') ? advShipReturn() : null;
+  const fulfillRet = (_szRet != null) ? _szRet : v('i_fulfill_ret');
   const commPct=v('i_comm')/100, plat=v('i_plat'), salaryRaw=v('i_salary');
   const _szCourier = (typeof advShipZones==='function') ? advShipZones() : null;
   const courier=(_szCourier != null) ? _szCourier : v('i_courier');
@@ -8955,7 +8990,7 @@ function persistSave(){
       advPdrDamagedPct: document.getElementById('adv_pdr_damaged_pct') ? document.getElementById('adv_pdr_damaged_pct').value : '',
       advBundleRows:(()=>{const r=[];document.querySelectorAll('#adv_bundle_list .bundle-card').forEach(card=>{r.push({units:card.querySelector('.b-units')?.value||'2',price:card.querySelector('.b-price')?.value||'',freeShip:card.querySelector('.mini-toggle')?.classList.contains('on')||false,orders:card.querySelector('.b-orders')?.value||''});});return r;})(),
       advShipzoneLocked: ADV_SHIPZONE_LOCKED,
-      advShipzones:(()=>{const r=[];for(let i=1;i<=5;i++){r.push({cost:document.getElementById('sz_cost_'+i)?.value||'',chg:document.getElementById('sz_chg_'+i)?.value||'',share:document.getElementById('sz_share_'+i)?.value||''});}return r;})(),
+      advShipzones:(()=>{const r=[];for(let i=1;i<=5;i++){r.push({cost:document.getElementById('sz_cost_'+i)?.value||'',chg:document.getElementById('sz_chg_'+i)?.value||'',ret:document.getElementById('sz_ret_'+i)?.value||'',share:document.getElementById('sz_share_'+i)?.value||''});}return r;})(),
       advCycleDays: document.getElementById('adv_cycle_days')?.value||'',
       advCfDays: document.getElementById('adv_cf_days')?.value||'',
       advCfCash: document.getElementById('adv_cf_cash')?.value||'',
@@ -9058,7 +9093,9 @@ function initProducts(){
 function _tpInputs(){
   // جيب كل الـ inputs المطلوبة
   const price      = v('i_price'), cost = v('i_cost');
-  const fulfillDel = v('i_fulfill_del'), fulfillRet = v('i_fulfill_ret');
+  const fulfillDel = v('i_fulfill_del');
+  const _szRet     = (typeof advShipReturn==='function') ? advShipReturn() : null;
+  const fulfillRet = (_szRet != null) ? _szRet : v('i_fulfill_ret');
   const commPct = v('i_comm')/100, plat = v('i_plat');
   const _szCourier = (typeof advShipZones==='function') ? advShipZones() : null;
   const courier    = (_szCourier != null) ? _szCourier : v('i_courier');
@@ -9212,9 +9249,11 @@ function calcTargetProfitFromStock(){ onTpStock(); }
 function calcProductData(data, salaryRawOverride){
   const n = id => parseFloat(data[id]) || 0;
   const price      = n('i_price'),  cost    = n('i_cost');
-  const fulfillDel = n('i_fulfill_del'), fulfillRet = n('i_fulfill_ret');
+  const fulfillDel = n('i_fulfill_del');
+  // Shipping Zones are global (like VAT/PDR) → read weighted-avg courier + charged + return from the DOM
+  const _szRet     = (typeof advShipReturn==='function') ? advShipReturn() : null;
+  const fulfillRet = (_szRet != null) ? _szRet : n('i_fulfill_ret');
   const commPct = n('i_comm')/100, plat = n('i_plat');
-  // Shipping Zones are global (like VAT/PDR) → read weighted-avg courier + charged from the DOM
   const _szCourier = (typeof advShipZones==='function') ? advShipZones() : null;
   const courier    = (_szCourier != null) ? _szCourier : n('i_courier');
   const _szShipC   = (typeof advShipCharged==='function') ? advShipCharged() : null;
@@ -10050,8 +10089,8 @@ const T = {
     adv_pdr_hint_off:'Locked → no post-delivery returns in calculations',
     adv_pdr_hint_on:'Unlocked → post-delivery returns affect profitPU & net orders',
     adv_shipzone_lbl:'Shipping zones',
-    adv_shipzone_hint_off:'Locked → the basic "Avg. shipping cost" + "Shipping charged to customer" are used in calculations',
-    adv_shipzone_hint_on:'Unlocked → weighted-avg shipping (by zone) drives both basic shipping fields',
+    adv_shipzone_hint_off:'Locked → the basic "Avg. shipping cost", "Shipping charged to customer" + "Total return cost" are used in calculations',
+    adv_shipzone_hint_on:'Unlocked → weighted-avg shipping (by zone) drives all three basic shipping fields',
     adv_organic_lbl:'Organic orders / month',
     adv_organic_hint_off:'Locked → organic orders not included in totals',
     adv_organic_hint_on:'Unlocked → organic orders added to total units and net profit',
@@ -10061,11 +10100,12 @@ const T = {
     adv_ltv_hint_off:'Locked → repeat purchases not included (1 order / customer)',
     adv_ltv_hint_on:'Unlocked → lifetime orders calculated from frequency & lifespan',
     tip_ltv:'How often does a returning customer buy, and how long do they stay? Used to calculate lifetime orders per customer which drives the LTV metric in the Marketing section.',
-    tip_shipzone:'Split your orders across 5 delivery zones. For each zone enter the shipping cost you pay (your cost), the shipping you charge the customer, and the % share of your orders that go there. The tool computes weighted-average values (weighted by order share) and uses them as your "Avg. shipping cost (your cost)" and "Shipping charged to customer". When unlocked, those two basic fields up in the Shipping section are locked and driven by these zones. Shares don\'t have to sum to exactly 100% — the averages are normalised by the total you enter.',
-    ship_zone_override_hint:'Managed by Shipping zones (advanced) — these two fields are calculated from your zones.',
+    tip_shipzone:'Split your orders across 5 delivery zones. For each zone enter the shipping cost you pay (your cost), the shipping you charge the customer, the return cost for that zone, and the % share of your orders that go there. The tool computes weighted-average values (weighted by order share) and uses them as your "Avg. shipping cost (your cost)", "Shipping charged to customer", and "Total return cost (all-in)". When unlocked, those three basic fields up in the Shipping section are locked and driven by these zones. Shares don\'t have to sum to exactly 100% — the averages are normalised by the total you enter.',
+    ship_zone_override_hint:'Managed by Shipping zones (advanced) — these fields are calculated from your zones.',
     shipzone_col_zone:'Zone',
     shipzone_col_cost:'Shipping cost (your cost)',
     shipzone_col_chg:'Shipping charged to customer',
+    shipzone_col_ret:'Return cost',
     shipzone_col_share:'% of orders',
     shipzone_z1:'Cairo & Giza',
     shipzone_z2:'Alexandria',
@@ -10074,6 +10114,7 @@ const T = {
     shipzone_z5:'Border & remote areas',
     shipzone_avg:'Weighted avg shipping cost',
     shipzone_chg:'Weighted avg charged to customer',
+    shipzone_ret:'Weighted avg return cost',
     shipzone_total:'Total order share',
     adv_pdr_rate_lbl:'Return rate (% of delivered)',
     adv_pdr_ship_lbl:'Return shipping cost',
@@ -10590,8 +10631,8 @@ const T = {
     adv_pdr_hint_off:'مقفول → مفيش مرتجع بعد الاستلام في الحسابات',
     adv_pdr_hint_on:'مفتوح → المرتجع بعد الاستلام بيأثر على ربح الوحدة وصافي الأوردرات',
     adv_shipzone_lbl:'مناطق الشحن',
-    adv_shipzone_hint_off:'مقفول → بيتحسب "متوسط تكلفة الشحن" و"الشحن المحصّل من العميل" الأساسيين في الحسابات',
-    adv_shipzone_hint_on:'مفتوح → متوسط الشحن المرجّح حسب المنطقة بيتحكّم في حقلَي الشحن الأساسيين',
+    adv_shipzone_hint_off:'مقفول → بيتحسب "متوسط تكلفة الشحن" و"الشحن المحصّل من العميل" و"تكلفة المرتجع الكلية" الأساسيين في الحسابات',
+    adv_shipzone_hint_on:'مفتوح → متوسط الشحن المرجّح حسب المنطقة بيتحكّم في الحقول التلاتة الأساسية',
     adv_organic_lbl:'متوسط الأوردرات الأورجانيك / شهر',
     adv_organic_hint_off:'مقفول → الأوردرات الأورجانيك مش محتسبة في الإجماليات',
     adv_organic_hint_on:'مفتوح → الأوردرات الأورجانيك بتتضاف للوحدات الكلية وصافي الربح',
@@ -10601,11 +10642,12 @@ const T = {
     adv_ltv_hint_off:'مقفول → الشراء المتكرر مش محتسب (أوردر واحد لكل عميل)',
     adv_ltv_hint_on:'مفتوح → عدد أوردرات العميل طول فترة تعامله بيتحسب من التكرار والمدة',
     tip_ltv:'العميل بيشتري كل قد إيه وبيفضل بيتعامل معاك لمدة قد إيه؟ بيستخدم في حساب عدد أوردرات العميل طول فترة تعامله اللي بيحدد الـ LTV في قسم التسويق.',
-    tip_shipzone:'قسّم أوردراتك على 5 مناطق توصيل. لكل منطقة اكتب تكلفة الشحن اللي بتدفعها (عليك)، والشحن اللي بتحصّله من العميل، ونسبة الأوردرات اللي بتروح للمنطقة دي. الأداة بتحسب متوسطات مرجّحة (حسب نسبة الأوردرات) وبتستخدمها كـ "متوسط تكلفة الشحن (عليك)" و"الشحن المحصّل من العميل". لما تفتح القسم ده، الحقلين الأساسيين فوق في قسم الشحن بيتقفلوا وبيتحسبوا من الزونز دي. النِسَب مش لازم تطلع 100% بالظبط — المتوسطات بتتظبط على إجمالي اللي كتبته.',
-    ship_zone_override_hint:'بيتحسب من مناطق الشحن (المتقدّم) — الحقلين دول محسوبين من الزونز بتاعتك.',
+    tip_shipzone:'قسّم أوردراتك على 5 مناطق توصيل. لكل منطقة اكتب تكلفة الشحن اللي بتدفعها (عليك)، والشحن اللي بتحصّله من العميل، وتكلفة المرتجع للمنطقة دي، ونسبة الأوردرات اللي بتروح للمنطقة دي. الأداة بتحسب متوسطات مرجّحة (حسب نسبة الأوردرات) وبتستخدمها كـ "متوسط تكلفة الشحن (عليك)" و"الشحن المحصّل من العميل" و"تكلفة المرتجع الكلية (شامل)". لما تفتح القسم ده، الحقول التلاتة الأساسية فوق في قسم الشحن بتتقفل وبتتحسب من الزونز دي. النِسَب مش لازم تطلع 100% بالظبط — المتوسطات بتتظبط على إجمالي اللي كتبته.',
+    ship_zone_override_hint:'بيتحسب من مناطق الشحن (المتقدّم) — الحقول دي محسوبة من الزونز بتاعتك.',
     shipzone_col_zone:'المنطقة',
     shipzone_col_cost:'تكلفة الشحن (عليك)',
     shipzone_col_chg:'الشحن المحصّل من العميل',
+    shipzone_col_ret:'تكلفة المرتجع',
     shipzone_col_share:'% الأوردرات',
     shipzone_z1:'القاهرة والجيزة',
     shipzone_z2:'الإسكندرية',
@@ -10614,6 +10656,7 @@ const T = {
     shipzone_z5:'المناطق الحدودية والنائية',
     shipzone_avg:'متوسط الشحن المرجّح',
     shipzone_chg:'متوسط المحصّل من العميل المرجّح',
+    shipzone_ret:'متوسط تكلفة المرتجع المرجّح',
     shipzone_total:'إجمالي نسبة الأوردرات',
     adv_pdr_rate_lbl:'نسبة المرتجع (% من الموصّل)',
     adv_pdr_ship_lbl:'تكلفة شحن المرتجع',
@@ -11696,6 +11739,7 @@ window.addEventListener('load', ()=>{
     window.__advShipzones.forEach((z,i)=>{
       const ci=document.getElementById('sz_cost_'+(i+1));  if(ci) ci.value = (z && z.cost  != null) ? z.cost  : '';
       const hi=document.getElementById('sz_chg_'+(i+1));   if(hi) hi.value = (z && z.chg   != null) ? z.chg   : '';
+      const ri=document.getElementById('sz_ret_'+(i+1));   if(ri) ri.value = (z && z.ret   != null) ? z.ret   : '';
       const si=document.getElementById('sz_share_'+(i+1)); if(si) si.value = (z && z.share != null) ? z.share : '';
     });
   }
