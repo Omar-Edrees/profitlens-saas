@@ -1640,6 +1640,14 @@ body[data-theme="light"] #s0 .f-row .unit{ border-inline-start-color:rgba(15,23,
 .tp-kpi-lbl{font-size:10px;color:var(--txt2);margin-bottom:5px;font-family:var(--mono)}
 .tp-kpi-val{font-family:var(--mono);font-size:16px;font-weight:500}
 .tp-kpi-sub{font-size:10px;color:var(--txt3);margin-top:3px}
+.oi-kpi-toggle{background:none;border:none;color:var(--txt3);cursor:pointer;font-size:12px;padding:1px 4px;border-radius:4px;line-height:1;flex-shrink:0}
+.oi-kpi-toggle:hover{background:var(--surf3);color:var(--txt)}
+/* Offer Impact Simulator's input row goes 3-wide and Arabic labels run
+   long, so it needs to drop to 1 column earlier than the shared 480px
+   breakpoint other simulator cards use — scoped to #oi_body only. */
+@media(max-width:680px){
+  #oi_body [style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr !important}
+}
 
 /* ─── SCENARIO ───────────────────────── */
 .scenario-toggle{
@@ -4117,11 +4125,25 @@ input[type=range]::-moz-range-thumb{
         <div class="field" style="margin:0"><label data-t="oi_orders_mo_lbl">Current orders / month</label><div class="f-row"><input type="number" id="oi_it_orders" min="0" oninput="oiItemRecalc()"><span class="unit" data-t="unit_orders">orders</span></div></div>
         <div class="field" style="margin:0"><label data-t="oi_lift_lbl">Expected order increase</label><div class="f-row"><input type="number" id="oi_it_lift" value="20" min="0" max="500" oninput="oiItemRecalc()"><span class="unit">%</span></div></div>
       </div>
-      <div class="target-profit-results">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_price_after_lbl">Price after discount</div><div class="tp-kpi-val" id="oi_it_price_after" style="color:var(--c4)">—</div></div>
-        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_profit_unit_after_lbl">Profit / unit after</div><div class="tp-kpi-val" id="oi_it_profit_after">—</div><div class="tp-kpi-sub" id="oi_it_profit_before_sub"></div></div>
+        <div class="tp-kpi">
+          <div class="tp-kpi-lbl" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+            <span id="oi_it_profit_lbl_txt" data-t="oi_profit_unit_after_lbl">Profit / unit after</span>
+            <button type="button" class="oi-kpi-toggle" onclick="oiToggleView('it_profit')" title="Toggle view">⇄</button>
+          </div>
+          <div class="tp-kpi-val" id="oi_it_profit_after">—</div><div class="tp-kpi-sub" id="oi_it_profit_before_sub"></div>
+        </div>
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_profit_impact_lbl">Profit impact (Δ)</div><div class="tp-kpi-val" id="oi_it_impact">—</div></div>
-        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_lift_needed_lbl">Order lift needed to break even</div><div class="tp-kpi-val" id="oi_it_lift_needed" style="color:var(--c2)">—</div></div>
+        <div class="tp-kpi">
+          <div class="tp-kpi-lbl" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+            <span id="oi_it_lift_lbl_txt" data-t="oi_lift_needed_lbl">Order lift needed to break even</span>
+            <button type="button" class="oi-kpi-toggle" onclick="oiToggleView('it_lift')" title="Toggle view">⇄</button>
+          </div>
+          <div class="tp-kpi-val" id="oi_it_lift_needed" style="color:var(--c2)">—</div><div class="tp-kpi-sub" id="oi_it_lift_needed_sub"></div>
+        </div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_target_orders_lbl">Target delivered orders</div><div class="tp-kpi-val" id="oi_it_target_orders" style="color:var(--c1)">—</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_target_leads_lbl">Ad leads needed</div><div class="tp-kpi-val" id="oi_it_target_leads" style="color:var(--c3)">—</div></div>
       </div>
       <div id="oi_it_alert" class="alert ag" style="margin-top:12px;display:none"><span class="alert-icon" id="oi_it_alert_icon">✓</span><span id="oi_it_msg">—</span></div>
     </div>
@@ -4141,7 +4163,7 @@ input[type=range]::-moz-range-thumb{
         <div class="field" style="margin:0"><label data-t="oi_orders_mo_lbl">Current orders / month</label><div class="f-row"><input type="number" id="oi_ct_orders" min="0" oninput="oiCartRecalc()"><span class="unit" data-t="unit_orders">orders</span></div></div>
         <div class="field" style="margin:0;grid-column:1/-1"><label data-t="oi_ct_adopt_lbl">% of customers who'll hit the threshold</label><div class="f-row"><input type="number" id="oi_ct_adopt" value="35" min="0" max="100" oninput="oiCartRecalc()"><span class="unit">%</span></div></div>
       </div>
-      <div class="target-profit-results">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_ct_aov_after_lbl">AOV after</div><div class="tp-kpi-val" id="oi_ct_aov_after" style="color:var(--c4)">—</div><div class="tp-kpi-sub" id="oi_ct_aov_lift_sub"></div></div>
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_ct_rev_lbl">Revenue after</div><div class="tp-kpi-val" id="oi_ct_rev_after">—</div></div>
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_profit_impact_lbl">Profit impact (Δ)</div><div class="tp-kpi-val" id="oi_ct_impact">—</div></div>
@@ -4165,11 +4187,19 @@ input[type=range]::-moz-range-thumb{
         <div class="field" style="margin:0"><label data-t="oi_orders_mo_lbl">Current orders / month</label><div class="f-row"><input type="number" id="oi_bg_orders" min="0" oninput="oiBogoRecalc()"><span class="unit" data-t="unit_orders">orders</span></div></div>
         <div class="field" style="margin:0"><label data-t="oi_lift_lbl">Expected order increase</label><div class="f-row"><input type="number" id="oi_bg_lift" value="20" min="0" max="500" oninput="oiBogoRecalc()"><span class="unit">%</span></div></div>
       </div>
-      <div class="target-profit-results">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_bg_units_lbl">Units / order</div><div class="tp-kpi-val" id="oi_bg_units" style="color:var(--c1)">—</div></div>
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_bg_effdisc_lbl">Effective discount</div><div class="tp-kpi-val" id="oi_bg_effdisc" style="color:var(--c3)">—</div></div>
-        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_bg_profit_order_lbl">Profit / order</div><div class="tp-kpi-val" id="oi_bg_profit_order">—</div></div>
+        <div class="tp-kpi">
+          <div class="tp-kpi-lbl" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+            <span id="oi_bg_profit_lbl_txt" data-t="oi_bg_profit_order_lbl">Profit / order</span>
+            <button type="button" class="oi-kpi-toggle" onclick="oiToggleView('bg_profit')" title="Toggle view">⇄</button>
+          </div>
+          <div class="tp-kpi-val" id="oi_bg_profit_order">—</div><div class="tp-kpi-sub" id="oi_bg_profit_before_sub"></div>
+        </div>
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_profit_impact_lbl">Profit impact (Δ)</div><div class="tp-kpi-val" id="oi_bg_impact">—</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_target_orders_lbl">Target delivered orders</div><div class="tp-kpi-val" id="oi_bg_target_orders" style="color:var(--c1)">—</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_target_leads_lbl">Ad leads needed</div><div class="tp-kpi-val" id="oi_bg_target_leads" style="color:var(--c3)">—</div></div>
       </div>
       <div id="oi_bg_alert" class="alert ag" style="margin-top:12px;display:none"><span class="alert-icon" id="oi_bg_alert_icon">✓</span><span id="oi_bg_msg">—</span></div>
     </div>
@@ -4184,11 +4214,19 @@ input[type=range]::-moz-range-thumb{
           <div class="mini-toggle" id="oi_sh_threshold_toggle" onclick="this.classList.toggle('on');oiShipRecalc()"><div class="mini-thumb"></div></div>
         </div>
       </div>
-      <div class="target-profit-results">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_sh_baseline_lbl">Baseline profit</div><div class="tp-kpi-val" id="oi_sh_baseline" style="color:var(--c1)">—</div></div>
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_sh_net_after_lbl">Net profit after</div><div class="tp-kpi-val" id="oi_sh_net_after">—</div><div class="tp-kpi-sub" id="oi_sh_impact_sub"></div></div>
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_sh_burden_lbl">Shipping burden / month</div><div class="tp-kpi-val" id="oi_sh_burden" style="color:var(--red)">—</div></div>
-        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_lift_needed_lbl">Order lift needed to break even</div><div class="tp-kpi-val" id="oi_sh_lift_needed" style="color:var(--c2)">—</div></div>
+        <div class="tp-kpi">
+          <div class="tp-kpi-lbl" style="display:flex;align-items:center;justify-content:space-between;gap:6px">
+            <span id="oi_sh_lift_lbl_txt" data-t="oi_lift_needed_lbl">Order lift needed to break even</span>
+            <button type="button" class="oi-kpi-toggle" onclick="oiToggleView('sh_lift')" title="Toggle view">⇄</button>
+          </div>
+          <div class="tp-kpi-val" id="oi_sh_lift_needed" style="color:var(--c2)">—</div><div class="tp-kpi-sub" id="oi_sh_lift_needed_sub"></div>
+        </div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_target_orders_lbl">Target delivered orders</div><div class="tp-kpi-val" id="oi_sh_target_orders" style="color:var(--c1)">—</div></div>
+        <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_target_leads_lbl">Ad leads needed</div><div class="tp-kpi-val" id="oi_sh_target_leads" style="color:var(--c3)">—</div></div>
       </div>
       <div id="oi_sh_alert" class="alert ag" style="margin-top:12px;display:none"><span class="alert-icon" id="oi_sh_alert_icon">✓</span><span id="oi_sh_msg">—</span></div>
     </div>
@@ -4215,7 +4253,7 @@ input[type=range]::-moz-range-thumb{
         </table>
       </div>
 
-      <div class="target-profit-results" style="margin-top:14px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_vt_avgunits_lbl">Avg units / order</div><div class="tp-kpi-val" id="oi_vt_avgunits" style="color:var(--c1)">—</div></div>
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_bg_profit_order_lbl">Avg profit / order</div><div class="tp-kpi-val" id="oi_vt_avgprofit">—</div></div>
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_vt_totalrev_lbl">Total revenue</div><div class="tp-kpi-val" id="oi_vt_totalrev" style="color:var(--c4)">—</div></div>
@@ -7891,8 +7929,34 @@ function calcRoas(){ simResolve(); }
 // OFFER IMPACT SIMULATOR — model a discount/promo before running it
 // ══════════════════════════════════════════════
 function oiMoney(n){ return (n<0?'-':'') + Math.round(Math.abs(n)).toLocaleString('en') + ' ' + CURRENCY; }
+// Compact form for totals so they don't run long — e.g. 128,700 -> "129K EGP"
+function oiMoneyCompact(n){
+  const abs=Math.abs(n);
+  if(abs<1000) return oiMoney(n);
+  const k=abs/1000, val = k<10 ? (Math.round(k*10)/10) : Math.round(k);
+  return (n<0?'-':'') + val.toLocaleString('en') + 'K ' + CURRENCY;
+}
+// Ad leads needed to land a given number of delivered orders, using the
+// product's confirmation/delivery rates from the Inputs tab.
+function oiLeadsFor(orders){
+  const conf=v('i_conf')/100, del=v('i_del')/100;
+  if(!(conf>0) || !(del>0) || !(orders>0)) return null;
+  return orders/(conf*del);
+}
 function oiOut(id){ const el=document.getElementById(id); return el ? numClean(el.textContent) : 0; }
 function oiSet(id,val,color){ const el=document.getElementById(id); if(el){ el.textContent=val; if(color!==undefined) el.style.color=color; } }
+
+// Per-tile view toggles: 'unit'|'total' for profit tiles, 'pct'|'orders' for
+// break-even-lift tiles. Persist only for the session (not saved).
+let OI_VIEW = { it_profit:'unit', it_lift:'pct', bg_profit:'unit', sh_lift:'pct' };
+function oiToggleView(key){
+  const pairs = { it_profit:['unit','total'], it_lift:['pct','orders'], bg_profit:['unit','total'], sh_lift:['pct','orders'] };
+  const opts = pairs[key]; if(!opts) return;
+  OI_VIEW[key] = OI_VIEW[key]===opts[0] ? opts[1] : opts[0];
+  if(key==='it_profit'||key==='it_lift') oiItemRecalc();
+  else if(key==='bg_profit') oiBogoRecalc();
+  else if(key==='sh_lift') oiShipRecalc();
+}
 
 // Reads price/cost/shipping/ad cost straight from the Inputs tab (and the
 // computed actual CPA) instead of asking for them again — no separate copy
@@ -7949,18 +8013,43 @@ function oiItemRecalc(){
   const profitAfter  = priceAfter-cost-ship-ad;
 
   oiSet('oi_it_price_after', has?oiMoney(priceAfter):'—');
-  oiSet('oi_it_profit_after', has?oiMoney(profitAfter):'—', profitAfter>=0?'var(--profit)':'var(--red)');
-  { const sub=document.getElementById('oi_it_profit_before_sub'); if(sub) sub.textContent = has?((Tn.oi_was_lbl||'was')+' '+oiMoney(profitBefore)):''; }
 
   const totalBefore = profitBefore*orders;
   const ordersAfter = orders*(1+liftPct/100);
   const totalAfter  = profitAfter*ordersAfter;
   const impact = totalAfter-totalBefore;
+
+  if(OI_VIEW.it_profit==='total'){
+    oiSet('oi_it_profit_lbl_txt', Tn.oi_total_profit_lbl||'Total profit after');
+    oiSet('oi_it_profit_after', has?oiMoneyCompact(totalAfter):'—', totalAfter>=0?'var(--profit)':'var(--red)');
+    const sub=document.getElementById('oi_it_profit_before_sub'); if(sub) sub.textContent = has?((Tn.oi_was_lbl||'was')+' '+oiMoneyCompact(totalBefore)):'';
+  } else {
+    oiSet('oi_it_profit_lbl_txt', Tn.oi_profit_unit_after_lbl||'Profit / unit after');
+    oiSet('oi_it_profit_after', has?oiMoney(profitAfter):'—', profitAfter>=0?'var(--profit)':'var(--red)');
+    const sub=document.getElementById('oi_it_profit_before_sub'); if(sub) sub.textContent = has?((Tn.oi_was_lbl||'was')+' '+oiMoney(profitBefore)):'';
+  }
+
   oiSet('oi_it_impact', has?((impact>=0?'+':'')+oiMoney(impact)):'—', impact>=0?'var(--profit)':'var(--red)');
 
   let liftNeeded=null;
   if(has && profitAfter>0){ liftNeeded = ((totalBefore/profitAfter)/orders - 1)*100; }
-  oiSet('oi_it_lift_needed', (has && liftNeeded!=null && isFinite(liftNeeded)) ? (liftNeeded<=0?'0%':Math.round(liftNeeded)+'%') : '—');
+  const ordersNeeded = (has && liftNeeded!=null && isFinite(liftNeeded)) ? orders*(1+Math.max(0,liftNeeded)/100) : null;
+  if(OI_VIEW.it_lift==='orders'){
+    oiSet('oi_it_lift_lbl_txt', Tn.oi_lift_needed_orders_lbl||'Delivered orders needed');
+    oiSet('oi_it_lift_needed', ordersNeeded!=null ? Math.round(ordersNeeded).toLocaleString('en') : '—');
+    const leads = ordersNeeded!=null ? oiLeadsFor(ordersNeeded) : null;
+    const sub=document.getElementById('oi_it_lift_needed_sub');
+    if(sub) sub.textContent = leads!=null ? ('≈ '+Math.round(leads).toLocaleString('en')+' '+(Tn.oi_leads_word||'leads')) : '';
+  } else {
+    oiSet('oi_it_lift_lbl_txt', Tn.oi_lift_needed_lbl||'Order lift needed to break even');
+    oiSet('oi_it_lift_needed', (has && liftNeeded!=null && isFinite(liftNeeded)) ? (liftNeeded<=0?'0%':Math.round(liftNeeded)+'%') : '—');
+    const sub=document.getElementById('oi_it_lift_needed_sub'); if(sub) sub.textContent='';
+  }
+
+  const targetOrders = has ? ordersAfter : null;
+  const targetLeads = targetOrders!=null ? oiLeadsFor(targetOrders) : null;
+  oiSet('oi_it_target_orders', targetOrders!=null ? Math.round(targetOrders).toLocaleString('en') : '—');
+  oiSet('oi_it_target_leads', targetLeads!=null ? Math.round(targetLeads).toLocaleString('en') : '—');
 
   const alertEl=document.getElementById('oi_it_alert'), icon=document.getElementById('oi_it_alert_icon'), msg=document.getElementById('oi_it_msg');
   if(!alertEl) return;
@@ -8060,11 +8149,28 @@ function oiBogoRecalc(){
 
   oiSet('oi_bg_units', has?cfg.units.toLocaleString():'—');
   oiSet('oi_bg_effdisc', has?(Math.round(cfg.disc*10)/10+'%'):'—');
-  oiSet('oi_bg_profit_order', has?oiMoney(profitPerOrder):'—', profitPerOrder>=0?'var(--profit)':'var(--red)');
 
   const ordersAfter = orders*(1+liftPct/100);
-  const impact = profitPerOrder*ordersAfter - baselinePerOrder*orders;
+  const totalBefore = baselinePerOrder*orders;
+  const totalAfter = profitPerOrder*ordersAfter;
+  const impact = totalAfter-totalBefore;
+
+  if(OI_VIEW.bg_profit==='total'){
+    oiSet('oi_bg_profit_lbl_txt', Tn.oi_total_profit_lbl||'Total profit after');
+    oiSet('oi_bg_profit_order', has?oiMoneyCompact(totalAfter):'—', totalAfter>=0?'var(--profit)':'var(--red)');
+    const sub=document.getElementById('oi_bg_profit_before_sub'); if(sub) sub.textContent = has?((Tn.oi_was_lbl||'was')+' '+oiMoneyCompact(totalBefore)):'';
+  } else {
+    oiSet('oi_bg_profit_lbl_txt', Tn.oi_bg_profit_order_lbl||'Profit / order');
+    oiSet('oi_bg_profit_order', has?oiMoney(profitPerOrder):'—', profitPerOrder>=0?'var(--profit)':'var(--red)');
+    const sub=document.getElementById('oi_bg_profit_before_sub'); if(sub) sub.textContent='';
+  }
+
   oiSet('oi_bg_impact', has?((impact>=0?'+':'')+oiMoney(impact)):'—', impact>=0?'var(--profit)':'var(--red)');
+
+  const targetOrders = has ? ordersAfter : null;
+  const targetLeads = targetOrders!=null ? oiLeadsFor(targetOrders) : null;
+  oiSet('oi_bg_target_orders', targetOrders!=null ? Math.round(targetOrders).toLocaleString('en') : '—');
+  oiSet('oi_bg_target_leads', targetLeads!=null ? Math.round(targetLeads).toLocaleString('en') : '—');
 
   const alertEl=document.getElementById('oi_bg_alert'), icon=document.getElementById('oi_bg_alert_icon'), msg=document.getElementById('oi_bg_msg');
   if(!alertEl) return;
@@ -8105,7 +8211,23 @@ function oiShipRecalc(){
   let liftNeeded=null;
   const denom = profitPerOrder-shipCost;
   if(has && denom>0){ liftNeeded = ((baseline/denom)/orders - 1)*100; }
-  oiSet('oi_sh_lift_needed', (has && liftNeeded!=null && isFinite(liftNeeded)) ? (liftNeeded<=0?'0%':Math.round(liftNeeded)+'%') : '—');
+  const ordersNeeded = (has && liftNeeded!=null && isFinite(liftNeeded)) ? orders*(1+Math.max(0,liftNeeded)/100) : null;
+  if(OI_VIEW.sh_lift==='orders'){
+    oiSet('oi_sh_lift_lbl_txt', Tn.oi_lift_needed_orders_lbl||'Delivered orders needed');
+    oiSet('oi_sh_lift_needed', ordersNeeded!=null ? Math.round(ordersNeeded).toLocaleString('en') : '—');
+    const leads = ordersNeeded!=null ? oiLeadsFor(ordersNeeded) : null;
+    const sub=document.getElementById('oi_sh_lift_needed_sub');
+    if(sub) sub.textContent = leads!=null ? ('≈ '+Math.round(leads).toLocaleString('en')+' '+(Tn.oi_leads_word||'leads')) : '';
+  } else {
+    oiSet('oi_sh_lift_lbl_txt', Tn.oi_lift_needed_lbl||'Order lift needed to break even');
+    oiSet('oi_sh_lift_needed', (has && liftNeeded!=null && isFinite(liftNeeded)) ? (liftNeeded<=0?'0%':Math.round(liftNeeded)+'%') : '—');
+    const sub=document.getElementById('oi_sh_lift_needed_sub'); if(sub) sub.textContent='';
+  }
+
+  const targetOrders = has ? ordersAfter : null;
+  const targetLeads = targetOrders!=null ? oiLeadsFor(targetOrders) : null;
+  oiSet('oi_sh_target_orders', targetOrders!=null ? Math.round(targetOrders).toLocaleString('en') : '—');
+  oiSet('oi_sh_target_leads', targetLeads!=null ? Math.round(targetLeads).toLocaleString('en') : '—');
 
   const alertEl=document.getElementById('oi_sh_alert'), icon=document.getElementById('oi_sh_alert_icon'), msg=document.getElementById('oi_sh_msg');
   if(!alertEl) return;
@@ -10773,6 +10895,8 @@ const T = {
     oi_disc_pct_lbl:'Discount %', oi_orders_mo_lbl:'Current orders / month', oi_lift_lbl:'Expected order increase',
     oi_price_after_lbl:'Price after discount', oi_profit_unit_after_lbl:'Profit / unit after', oi_profit_impact_lbl:'Profit impact (Δ)',
     oi_lift_needed_lbl:'Order lift needed to break even', oi_was_lbl:'was',
+    oi_total_profit_lbl:'Total profit after', oi_lift_needed_orders_lbl:'Delivered orders needed', oi_leads_word:'leads',
+    oi_target_orders_lbl:'Target delivered orders', oi_target_leads_lbl:'Ad leads needed',
     oi_it_v_loss:'This discount puts you below cost per unit — every order loses money regardless of volume.',
     oi_it_v_warn:'Expected increase', oi_it_v_warn2:'is below the', oi_it_v_warn3:'needed to offset the margin loss.',
     oi_it_v_ok:'The expected order increase covers the margin loss — this discount is profitable.',
@@ -11350,9 +11474,11 @@ const T = {
     oi_title:'محاكي تأثير العروض',
     oi_sub:'جرّب تأثير أي خصم أو عرض قبل ما تطلقه — شوف الأثر على الربح والزيادة المطلوبة في الأوردرات عشان تتعادل.',
     oi_tab_item:'خصم القطعة', oi_tab_cart:'خصم السلة', oi_tab_bogo:'عرض BOGO', oi_tab_ship:'عرض الشحن', oi_tab_tier:'شرائح الكمية',
-    oi_disc_pct_lbl:'نسبة الخصم', oi_orders_mo_lbl:'الأوردرات الحالية / شهر', oi_lift_lbl:'الزيادة المتوقعة في الأوردرات',
+    oi_disc_pct_lbl:'نسبة الخصم', oi_orders_mo_lbl:'الأوردرات الحالية / شهر', oi_lift_lbl:'الزيادة المتوقعة',
     oi_price_after_lbl:'السعر بعد الخصم', oi_profit_unit_after_lbl:'الربح / وحدة بعد الخصم', oi_profit_impact_lbl:'أثر الربح (Δ)',
-    oi_lift_needed_lbl:'الزيادة المطلوبة في الأوردرات للتعادل', oi_was_lbl:'كان',
+    oi_lift_needed_lbl:'الزيادة المطلوبة للتعادل', oi_was_lbl:'كان',
+    oi_total_profit_lbl:'إجمالي الربح بعد', oi_lift_needed_orders_lbl:'الأوردرات الموصّلة المطلوبة', oi_leads_word:'ليد',
+    oi_target_orders_lbl:'الأوردرات المستهدفة', oi_target_leads_lbl:'الليدز المطلوبة من الإعلانات',
     oi_it_v_loss:'الخصم ده بيخليك تحت التكلفة في كل وحدة — أي أوردر هيخسّرك مهما زاد العدد.',
     oi_it_v_warn:'الزيادة المتوقعة', oi_it_v_warn2:'أقل من الـ', oi_it_v_warn3:'اللازمة عشان تعوّض هامش الخصم.',
     oi_it_v_ok:'الزيادة المتوقعة في الأوردرات كافية لتعويض هامش الخصم — الخصم ده مربح.',
