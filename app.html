@@ -412,14 +412,6 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 
 /* Playlist detail view (videos inside one playlist) */
 .tut-detail-head{display:flex;align-items:center;gap:12px;margin-bottom:18px}
-.tut-pl-back-btn{
-  display:inline-flex;align-items:center;gap:6px;
-  border:1px solid var(--bdr);background:var(--surf2);color:var(--txt2);
-  border-radius:9px;padding:7px 12px;font-size:12px;font-weight:600;
-  cursor:pointer;transition:background .15s,color .15s;
-}
-.tut-pl-back-btn:hover{background:var(--surf3);color:var(--txt)}
-[dir="rtl"] .tut-pl-back-btn svg{transform:scaleX(-1)}
 .tut-detail-title{font-size:15px;font-weight:700;color:var(--txt)}
 .tut-grid{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;
@@ -4775,9 +4767,9 @@ input[type=range]::-moz-range-thumb{
 <!-- Tutorial videos page -->
 <section class="section" id="s_tut">
   <div class="section-header">
-    <button class="tut-back-btn" onclick="tutClose()">
+    <button class="tut-back-btn" id="tut_back_btn" onclick="tutBackAction()">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-      <span data-t="tut_back">Back</span>
+      <span id="tut_back_label">Back</span>
     </button>
     <div class="section-eyebrow"><span class="num">🎬</span><span data-t="tut_eye">Tutorials</span></div>
     <div class="section-title" id="tut_title_el" data-t="tut_title">Tutorial videos</div>
@@ -11154,6 +11146,7 @@ function applyLang(){
   });
   if(typeof _simUpdateUI === 'function') _simUpdateUI();
   if(typeof ffSyncHint === 'function') ffSyncHint();
+  if(typeof tutRefreshLangUI === 'function') tutRefreshLangUI();
   if(typeof renderExportPreview==='function' && document.getElementById('export_thead')?.children.length){
     renderExportPreview();
   }
@@ -11623,20 +11616,42 @@ window.addEventListener('load', ()=>{
     const title = isUnassigned ? L('tut_more_videos') : (LANG === 'ar' ? (p?.title_ar || p?.title_en) : (p?.title_en || p?.title_ar));
     return (
       '<div class="tut-detail-head">'+
-        '<button class="tut-pl-back-btn" onclick="tutShowGrid()">'+
-          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>'+
-          TUT_ESC(L('tut_all_playlists'))+
-        '</button>'+
         '<div class="tut-detail-title">'+TUT_ESC(title)+'</div>'+
       '</div>'+
       '<div class="tut-grid">'+(vids.map(tutVideoCardHtml).join('') || '')+'</div>'
     );
   }
 
+  // Top section-header back button is context-aware: it exits the Tutorials
+  // page entirely while viewing the playlist grid, but only steps back to
+  // the grid (not out to the tool) once you're inside a playlist.
+  function tutUpdateBackBtn(){
+    const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
+    const label = document.getElementById('tut_back_label');
+    if (!label) return;
+    label.textContent = TUT_ACTIVE === null ? L('tut_back') : L('tut_all_playlists');
+  }
+
+  // Re-render whatever's currently shown (grid or a playlist's videos) using
+  // the cached data so a language toggle updates titles without refetching.
+  function tutRefreshLangUI(){
+    const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
+    tutUpdateBackBtn();
+    const body = document.getElementById('tut_body');
+    if (!body || !body.children.length) return;
+    body.innerHTML = TUT_ACTIVE === null ? tutRenderGrid(L) : tutRenderDetail(TUT_ACTIVE, L);
+  }
+
+  window.tutBackAction = function(){
+    if (TUT_ACTIVE === null) tutClose();
+    else tutShowGrid();
+  };
+
   window.tutOpenPlaylist = function(id){
     TUT_ACTIVE = id;
     const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
     document.getElementById('tut_body').innerHTML = tutRenderDetail(id, L);
+    tutUpdateBackBtn();
     window.scrollTo(0, 0);
   };
 
@@ -11645,6 +11660,7 @@ window.addEventListener('load', ()=>{
     const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
     document.querySelectorAll('#tut_body .tut-player-wrap iframe').forEach(f => { f.src = ''; });
     document.getElementById('tut_body').innerHTML = tutRenderGrid(L);
+    tutUpdateBackBtn();
   };
 
   window.tutOpen = async function() {
@@ -11664,6 +11680,7 @@ window.addEventListener('load', ()=>{
     window.scrollTo(0, 0);
 
     TUT_ACTIVE = null;
+    tutUpdateBackBtn();
     const body = document.getElementById('tut_body');
     if (!window.__sb) { body.innerHTML = tutEmptyHtml(L); return; }
     try {
