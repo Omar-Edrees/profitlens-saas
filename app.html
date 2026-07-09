@@ -380,11 +380,47 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 .tut-back-btn:hover{background:var(--surf3);color:var(--txt)}
 .tut-back-btn svg{flex-shrink:0}
 [dir="rtl"] .tut-back-btn svg{transform:scaleX(-1)}
-.tut-playlist{margin-bottom:32px}
-.tut-playlist:last-child{margin-bottom:0}
-.tut-playlist-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.tut-playlist-cover{width:56px;height:40px;border-radius:8px;object-fit:cover;background:var(--surf3);flex-shrink:0}
-.tut-playlist-title{font-size:15px;font-weight:700;color:var(--txt)}
+/* Playlist card grid (YouTube-style "stacked cards" look) */
+.tut-pl-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:24px 16px;
+}
+.tut-pl-card{cursor:pointer}
+.tut-pl-cover-wrap{position:relative;width:100%;aspect-ratio:16/9;margin-bottom:10px}
+.tut-pl-stack{
+  position:absolute;left:8px;right:8px;height:100%;border-radius:12px;
+  background:var(--surf3);border:1px solid var(--bdr);
+}
+.tut-pl-stack.s2{top:-10px;left:14px;right:14px;opacity:.55}
+.tut-pl-stack.s1{top:-5px;left:8px;right:8px;opacity:.8}
+.tut-pl-cover{
+  position:relative;z-index:2;width:100%;height:100%;border-radius:12px;overflow:hidden;
+  background:var(--surf3) center/cover no-repeat;border:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--txt3);
+}
+.tut-pl-card:hover .tut-pl-cover{border-color:var(--c1)}
+.tut-pl-badge{
+  position:absolute;z-index:3;bottom:8px;left:8px;
+  display:flex;align-items:center;gap:5px;
+  background:rgba(0,0,0,.75);color:#fff;font-size:11px;font-weight:600;
+  padding:4px 8px;border-radius:6px;line-height:1;
+}
+.tut-pl-badge svg{width:12px;height:12px;flex-shrink:0}
+.tut-pl-title{font-size:14px;font-weight:700;color:var(--txt);line-height:1.35;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tut-pl-link{font-size:12px;color:var(--txt3);margin-top:3px}
+.tut-pl-card:hover .tut-pl-link{color:var(--c1)}
+
+/* Playlist detail view (videos inside one playlist) */
+.tut-detail-head{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.tut-pl-back-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  border:1px solid var(--bdr);background:var(--surf2);color:var(--txt2);
+  border-radius:9px;padding:7px 12px;font-size:12px;font-weight:600;
+  cursor:pointer;transition:background .15s,color .15s;
+}
+.tut-pl-back-btn:hover{background:var(--surf3);color:var(--txt)}
+[dir="rtl"] .tut-pl-back-btn svg{transform:scaleX(-1)}
+.tut-detail-title{font-size:15px;font-weight:700;color:var(--txt)}
 .tut-grid{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;
 }
@@ -10515,6 +10551,9 @@ const T = {
     tut_empty:'No tutorial videos yet.',
     tut_empty_sub:'We\'re working on it — check back soon.',
     tut_more_videos:'More videos',
+    tut_view_full:'View full playlist',
+    tut_all_playlists:'All playlists',
+    tut_video_word:'videos',
     mymsg_btn:'My messages', mymsg_title:'My messages',
     mymsg_empty:'You haven\'t sent any messages yet.',
     mymsg_empty_sub:'Use the buttons below to send a complaint, suggestion, or customization request.',
@@ -11058,6 +11097,9 @@ const T = {
     tut_empty:'لسه مفيش فيديوهات شرح.',
     tut_empty_sub:'بنجهزها دلوقتي — تابعنا قريب.',
     tut_more_videos:'فيديوهات تانية',
+    tut_view_full:'عرض قائمة التشغيل بالكامل',
+    tut_all_playlists:'كل القوائم',
+    tut_video_word:'فيديو',
     mymsg_btn:'رسائلي', mymsg_title:'رسائلي',
     mymsg_empty:'لم ترسل أي رسائل بعد.',
     mymsg_empty_sub:'استخدم الأزرار أدناه لإرسال شكوى أو اقتراح أو طلب كاستمايزيشن.',
@@ -11513,6 +11555,10 @@ window.addEventListener('load', ()=>{
   // window.__sb client already used for profiles/user_data/feedback).
   const TUT_ESC = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+  let TUT_PLAYLISTS = [];   // last-fetched playlists
+  let TUT_GROUPS = {};      // playlist_id (or '__none__') → videos[]
+  let TUT_ACTIVE = null;    // null = grid view, else playlist id / 'unassigned'
+
   function tutEmptyHtml(L){
     return '<div class="tut-empty">'+
         '<div class="tut-empty-icon">🎬</div>'+
@@ -11534,33 +11580,72 @@ window.addEventListener('load', ()=>{
     );
   }
 
-  function tutRenderGroups(playlists, videos, L){
-    if (!videos.length) return tutEmptyHtml(L);
-    const byPlaylist = {};
-    videos.forEach(v => { const k = v.playlist_id || '__none__'; (byPlaylist[k] = byPlaylist[k] || []).push(v); });
+  const TUT_LIST_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>';
 
-    let html = '';
-    playlists.forEach(p => {
-      const vids = byPlaylist[p.id];
-      if (!vids || !vids.length) return;
-      const title = TUT_ESC(LANG === 'ar' ? (p.title_ar || p.title_en) : (p.title_en || p.title_ar));
-      const cover = p.cover_url ? '<img class="tut-playlist-cover" src="'+TUT_ESC(p.cover_url)+'" alt="">' : '';
-      html +=
-        '<div class="tut-playlist">'+
-          '<div class="tut-playlist-head">'+cover+'<div class="tut-playlist-title">'+title+'</div></div>'+
-          '<div class="tut-grid">'+vids.map(tutVideoCardHtml).join('')+'</div>'+
-        '</div>';
-    });
-    const unassigned = byPlaylist['__none__'];
-    if (unassigned && unassigned.length) {
-      html +=
-        '<div class="tut-playlist">'+
-          '<div class="tut-playlist-head"><div class="tut-playlist-title">'+TUT_ESC(L('tut_more_videos'))+'</div></div>'+
-          '<div class="tut-grid">'+unassigned.map(tutVideoCardHtml).join('')+'</div>'+
-        '</div>';
-    }
-    return html || tutEmptyHtml(L);
+  function tutPlaylistCardHtml(id, title, coverUrl, count, L){
+    const cover = coverUrl
+      ? '<div class="tut-pl-cover" style="background-image:url(\''+TUT_ESC(coverUrl)+'\')"></div>'
+      : '<div class="tut-pl-cover">🎬</div>';
+    return (
+      '<div class="tut-pl-card" onclick="tutOpenPlaylist(\''+TUT_ESC(id)+'\')">'+
+        '<div class="tut-pl-cover-wrap">'+
+          '<div class="tut-pl-stack s2"></div>'+
+          '<div class="tut-pl-stack s1"></div>'+
+          cover+
+          '<div class="tut-pl-badge">'+TUT_LIST_ICON+'<span>'+count+' '+TUT_ESC(L('tut_video_word'))+'</span></div>'+
+        '</div>'+
+        '<div class="tut-pl-title">'+TUT_ESC(title)+'</div>'+
+        '<div class="tut-pl-link">'+TUT_ESC(L('tut_view_full'))+'</div>'+
+      '</div>'
+    );
   }
+
+  function tutRenderGrid(L){
+    const cards = [];
+    TUT_PLAYLISTS.forEach(p => {
+      const vids = TUT_GROUPS[p.id];
+      if (!vids || !vids.length) return;
+      const title = LANG === 'ar' ? (p.title_ar || p.title_en) : (p.title_en || p.title_ar);
+      cards.push(tutPlaylistCardHtml(p.id, title, p.cover_url, vids.length, L));
+    });
+    const unassigned = TUT_GROUPS['__none__'];
+    if (unassigned && unassigned.length) {
+      cards.push(tutPlaylistCardHtml('unassigned', L('tut_more_videos'), null, unassigned.length, L));
+    }
+    if (!cards.length) return tutEmptyHtml(L);
+    return '<div class="tut-pl-grid">'+cards.join('')+'</div>';
+  }
+
+  function tutRenderDetail(id, L){
+    const isUnassigned = id === 'unassigned';
+    const p = isUnassigned ? null : TUT_PLAYLISTS.find(x => x.id === id);
+    const vids = TUT_GROUPS[isUnassigned ? '__none__' : id] || [];
+    const title = isUnassigned ? L('tut_more_videos') : (LANG === 'ar' ? (p?.title_ar || p?.title_en) : (p?.title_en || p?.title_ar));
+    return (
+      '<div class="tut-detail-head">'+
+        '<button class="tut-pl-back-btn" onclick="tutShowGrid()">'+
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>'+
+          TUT_ESC(L('tut_all_playlists'))+
+        '</button>'+
+        '<div class="tut-detail-title">'+TUT_ESC(title)+'</div>'+
+      '</div>'+
+      '<div class="tut-grid">'+(vids.map(tutVideoCardHtml).join('') || '')+'</div>'
+    );
+  }
+
+  window.tutOpenPlaylist = function(id){
+    TUT_ACTIVE = id;
+    const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
+    document.getElementById('tut_body').innerHTML = tutRenderDetail(id, L);
+    window.scrollTo(0, 0);
+  };
+
+  window.tutShowGrid = function(){
+    TUT_ACTIVE = null;
+    const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
+    document.querySelectorAll('#tut_body .tut-player-wrap iframe').forEach(f => { f.src = ''; });
+    document.getElementById('tut_body').innerHTML = tutRenderGrid(L);
+  };
 
   window.tutOpen = async function() {
     document.querySelectorAll('.curr-menu').forEach(m=>m.classList.remove('show'));
@@ -11578,6 +11663,7 @@ window.addEventListener('load', ()=>{
     document.getElementById('s_tut').classList.add('active');
     window.scrollTo(0, 0);
 
+    TUT_ACTIVE = null;
     const body = document.getElementById('tut_body');
     if (!window.__sb) { body.innerHTML = tutEmptyHtml(L); return; }
     try {
@@ -11586,7 +11672,10 @@ window.addEventListener('load', ()=>{
         window.__sb.from('tutorial_videos').select('*').order('sort_order', { ascending: true })
       ]);
       if (pErr || vErr) throw (pErr || vErr);
-      body.innerHTML = tutRenderGroups(playlists || [], videos || [], L);
+      TUT_PLAYLISTS = playlists || [];
+      TUT_GROUPS = {};
+      (videos || []).forEach(v => { const k = v.playlist_id || '__none__'; (TUT_GROUPS[k] = TUT_GROUPS[k] || []).push(v); });
+      body.innerHTML = tutRenderGrid(L);
     } catch(e) {
       body.innerHTML = tutEmptyHtml(L);
     }
