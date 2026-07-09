@@ -11046,7 +11046,11 @@ function applyLang(){
   document.getElementById('lbtn').textContent = isAr?'AR':'EN';
   document.querySelectorAll('[data-t]').forEach(el=>{
     const key = el.dataset.t;
-    if(T[LANG][key] !== undefined) el.textContent = T[LANG][key];
+    if(T[LANG][key] === undefined) return;
+    // Tooltip text uses <br> for line breaks, so it needs real HTML —
+    // everything else stays textContent to avoid HTML injection.
+    if(el.classList.contains('tip-box')) el.innerHTML = T[LANG][key];
+    else el.textContent = T[LANG][key];
   });
   document.querySelectorAll('[data-t-title]').forEach(el=>{
     const key = el.dataset.tTitle;
@@ -11093,8 +11097,15 @@ function positionTooltip(icon, box){
   if(left < 8) left = 8;
   if(left + boxW > window.innerWidth - 8) left = window.innerWidth - boxW - 8;
   if(top < 8) top = iconRect.bottom + 10;
-  box.style.left = left + 'px';
-  box.style.top  = top  + 'px';
+  // `.section` has `contain: layout style paint`, which makes it the
+  // containing block for position:fixed descendants (per CSS Containment) —
+  // so the box's left/top are relative to the section, not the viewport.
+  // Convert the viewport-relative coords above into that frame, otherwise
+  // the tooltip drifts further off-screen the more the page is scrolled.
+  const anchor = icon.closest('.section') || document.body;
+  const anchorRect = anchor.getBoundingClientRect();
+  box.style.left = (left - anchorRect.left) + 'px';
+  box.style.top  = (top  - anchorRect.top)  + 'px';
 }
 
 // Desktop hover
