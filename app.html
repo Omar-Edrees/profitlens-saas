@@ -380,6 +380,11 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 .tut-back-btn:hover{background:var(--surf3);color:var(--txt)}
 .tut-back-btn svg{flex-shrink:0}
 [dir="rtl"] .tut-back-btn svg{transform:scaleX(-1)}
+.tut-playlist{margin-bottom:32px}
+.tut-playlist:last-child{margin-bottom:0}
+.tut-playlist-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.tut-playlist-cover{width:56px;height:40px;border-radius:8px;object-fit:cover;background:var(--surf3);flex-shrink:0}
+.tut-playlist-title{font-size:15px;font-weight:700;color:var(--txt)}
 .tut-grid{
   display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;
 }
@@ -4742,7 +4747,7 @@ input[type=range]::-moz-range-thumb{
     <div class="section-title" id="tut_title_el" data-t="tut_title">Tutorial videos</div>
     <div class="section-sub" data-t="tut_sub">Short videos explaining how to use the tool.</div>
   </div>
-  <div class="tut-grid" id="tut_body"></div>
+  <div id="tut_body"></div>
 </section>
 
 <script>
@@ -10509,6 +10514,7 @@ const T = {
     tut_eye:'Tutorials', tut_sub:'Short videos explaining how to use the tool.', tut_back:'Back',
     tut_empty:'No tutorial videos yet.',
     tut_empty_sub:'We\'re working on it — check back soon.',
+    tut_more_videos:'More videos',
     mymsg_btn:'My messages', mymsg_title:'My messages',
     mymsg_empty:'You haven\'t sent any messages yet.',
     mymsg_empty_sub:'Use the buttons below to send a complaint, suggestion, or customization request.',
@@ -11051,6 +11057,7 @@ const T = {
     tut_eye:'شرح', tut_sub:'فيديوهات قصيرة بتشرح إزاي تستخدم التول.', tut_back:'رجوع',
     tut_empty:'لسه مفيش فيديوهات شرح.',
     tut_empty_sub:'بنجهزها دلوقتي — تابعنا قريب.',
+    tut_more_videos:'فيديوهات تانية',
     mymsg_btn:'رسائلي', mymsg_title:'رسائلي',
     mymsg_empty:'لم ترسل أي رسائل بعد.',
     mymsg_empty_sub:'استخدم الأزرار أدناه لإرسال شكوى أو اقتراح أو طلب كاستمايزيشن.',
@@ -11501,47 +11508,67 @@ window.addEventListener('load', ()=>{
   };
 
   // ── TUTORIAL VIDEOS ──────────────────────────────────────────────────────
-  // Fill in real YouTube video IDs here (upload as Unlisted, no ads/setup cost).
-  // id: the part after "v=" in the YouTube URL. Leave the array empty to show
-  // the "coming soon" state instead of broken thumbnails.
-  const TUT_VIDEOS = [
-    { id:'ejKOGYj8_Uo', title_ar:'ProfitLens - نظرة عامة على التول', title_en:'ProfitLens - Tool Overview' },
-    { id:'9fiGm833TEU', title_ar:'ProfitLens - شرح التول (الجزء 2)', title_en:'ProfitLens - Tool Explanation (Part 2)' },
-    { id:'KLCCHDjPClY', title_ar:'ProfitLens - شرح التول (الجزء 3)', title_en:'ProfitLens - Tool Explanation (Part 3)' },
-    { id:'Gj27cuD_Pmg', title_ar:'ProfitLens - شرح التول (الجزء 4)', title_en:'ProfitLens - Tool Explanation (Part 4)' },
-  ];
+  // Videos are grouped into playlists managed by admins from /admin-tutorials
+  // (tables: tutorial_playlists, tutorial_videos — read here via the same
+  // window.__sb client already used for profiles/user_data/feedback).
   const TUT_ESC = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-  window.tutOpen = function() {
+  function tutEmptyHtml(L){
+    return '<div class="tut-empty">'+
+        '<div class="tut-empty-icon">🎬</div>'+
+        '<div class="tut-empty-title">'+TUT_ESC(L('tut_empty'))+'</div>'+
+        '<div class="tut-empty-sub">'+TUT_ESC(L('tut_empty_sub'))+'</div>'+
+      '</div>';
+  }
+
+  function tutVideoCardHtml(v){
+    const title = TUT_ESC(LANG === 'ar' ? (v.title_ar || v.title_en) : (v.title_en || v.title_ar));
+    return (
+      '<div class="tut-item">'+
+        '<div class="tut-item-title">'+title+'</div>'+
+        '<div class="tut-player-wrap" data-vid="'+TUT_ESC(v.youtube_id)+'" onclick="tutPlay(this)">'+
+          '<img src="https://i.ytimg.com/vi/'+TUT_ESC(v.youtube_id)+'/hqdefault.jpg" alt="" loading="lazy">'+
+          '<div class="tut-play-btn"><svg viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55C3.97 2.33 2.27 4.81 1.48 7.74.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="#f00"/><path d="M45 24 27 14v20" fill="#fff"/></svg></div>'+
+        '</div>'+
+      '</div>'
+    );
+  }
+
+  function tutRenderGroups(playlists, videos, L){
+    if (!videos.length) return tutEmptyHtml(L);
+    const byPlaylist = {};
+    videos.forEach(v => { const k = v.playlist_id || '__none__'; (byPlaylist[k] = byPlaylist[k] || []).push(v); });
+
+    let html = '';
+    playlists.forEach(p => {
+      const vids = byPlaylist[p.id];
+      if (!vids || !vids.length) return;
+      const title = TUT_ESC(LANG === 'ar' ? (p.title_ar || p.title_en) : (p.title_en || p.title_ar));
+      const cover = p.cover_url ? '<img class="tut-playlist-cover" src="'+TUT_ESC(p.cover_url)+'" alt="">' : '';
+      html +=
+        '<div class="tut-playlist">'+
+          '<div class="tut-playlist-head">'+cover+'<div class="tut-playlist-title">'+title+'</div></div>'+
+          '<div class="tut-grid">'+vids.map(tutVideoCardHtml).join('')+'</div>'+
+        '</div>';
+    });
+    const unassigned = byPlaylist['__none__'];
+    if (unassigned && unassigned.length) {
+      html +=
+        '<div class="tut-playlist">'+
+          '<div class="tut-playlist-head"><div class="tut-playlist-title">'+TUT_ESC(L('tut_more_videos'))+'</div></div>'+
+          '<div class="tut-grid">'+unassigned.map(tutVideoCardHtml).join('')+'</div>'+
+        '</div>';
+    }
+    return html || tutEmptyHtml(L);
+  }
+
+  window.tutOpen = async function() {
     document.querySelectorAll('.curr-menu').forEach(m=>m.classList.remove('show'));
     document.querySelectorAll('.curr-btn').forEach(b=>b.classList.remove('open'));
     const menu = document.getElementById('__pl_menu');
     if (menu) menu.classList.remove('open');
     const L = k => (T[LANG]&&T[LANG][k])||T.en[k]||k;
     document.getElementById('tut_title_el').textContent = L('tut_title');
-
-    const body = document.getElementById('tut_body');
-    if (!TUT_VIDEOS.length) {
-      body.innerHTML =
-        '<div class="tut-empty">'+
-          '<div class="tut-empty-icon">🎬</div>'+
-          '<div class="tut-empty-title">'+TUT_ESC(L('tut_empty'))+'</div>'+
-          '<div class="tut-empty-sub">'+TUT_ESC(L('tut_empty_sub'))+'</div>'+
-        '</div>';
-    } else {
-      body.innerHTML = TUT_VIDEOS.map((v, i) => {
-        const title = TUT_ESC(LANG === 'ar' ? (v.title_ar || v.title_en) : (v.title_en || v.title_ar));
-        return (
-          '<div class="tut-item">'+
-            '<div class="tut-item-title">'+title+'</div>'+
-            '<div class="tut-player-wrap" data-vid="'+TUT_ESC(v.id)+'" onclick="tutPlay(this)">'+
-              '<img src="https://i.ytimg.com/vi/'+TUT_ESC(v.id)+'/hqdefault.jpg" alt="" loading="lazy">'+
-              '<div class="tut-play-btn"><svg viewBox="0 0 68 48"><path d="M66.52 7.74c-.78-2.93-2.49-5.41-5.42-6.19C55.79.13 34 0 34 0S12.21.13 6.9 1.55C3.97 2.33 2.27 4.81 1.48 7.74.06 13.05 0 24 0 24s.06 10.95 1.48 16.26c.78 2.93 2.49 5.41 5.42 6.19C12.21 47.87 34 48 34 48s21.79-.13 27.1-1.55c2.93-.78 4.64-3.26 5.42-6.19C67.94 34.95 68 24 68 24s-.06-10.95-1.48-16.26z" fill="#f00"/><path d="M45 24 27 14v20" fill="#fff"/></svg></div>'+
-            '</div>'+
-          '</div>'
-        );
-      }).join('');
-    }
 
     // Remember which section (Inputs/Ads/Shipping/Overview) was open so tutClose() can restore it.
     const sections = document.querySelectorAll('.section');
@@ -11550,6 +11577,19 @@ window.addEventListener('load', ()=>{
     sections.forEach(s => s.classList.remove('active'));
     document.getElementById('s_tut').classList.add('active');
     window.scrollTo(0, 0);
+
+    const body = document.getElementById('tut_body');
+    if (!window.__sb) { body.innerHTML = tutEmptyHtml(L); return; }
+    try {
+      const [{ data: playlists, error: pErr }, { data: videos, error: vErr }] = await Promise.all([
+        window.__sb.from('tutorial_playlists').select('*').order('sort_order', { ascending: true }),
+        window.__sb.from('tutorial_videos').select('*').order('sort_order', { ascending: true })
+      ]);
+      if (pErr || vErr) throw (pErr || vErr);
+      body.innerHTML = tutRenderGroups(playlists || [], videos || [], L);
+    } catch(e) {
+      body.innerHTML = tutEmptyHtml(L);
+    }
   };
 
   window.tutClose = function() {

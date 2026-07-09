@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProfitLens — إدارة قوائم الشرح</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:#0d0f14; --bg2:#13161e; --bg3:#1a1e28; --bg4:#1f2435; --bg5:#252b3b;
+      --bdr:#2a2f3d; --bdr2:#3a4055;
+      --txt:#e8eaf0; --txt2:#8890a6; --txt3:#555e78;
+      --acc:#5b6af5; --acc2:#4a58e8;
+      --grn:#22c55e; --red:#ef4444; --ylw:#f59e0b; --pur:#8b5cf6;
+      --mono:'JetBrains Mono','Fira Code',monospace;
+      --body:'Inter',system-ui,sans-serif;
+    }
+
+    body { background:var(--bg); color:var(--txt); font-family:var(--body); min-height:100vh; }
+
+    nav {
+      position:sticky; top:0; z-index:100;
+      background:rgba(13,15,20,.9); backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--bdr);
+      height:54px; display:flex; align-items:center; padding:0 24px; gap:12px;
+    }
+    .nav-logo { font-weight:700; font-size:15px; }
+    .nav-logo span { color:var(--acc); }
+    .badge { font-size:10px; font-weight:600; padding:2px 8px; background:rgba(239,68,68,.15); color:var(--red); border:1px solid rgba(239,68,68,.2); border-radius:20px; letter-spacing:.05em; }
+    .nav-spacer { flex:1; }
+    .nav-back { font-size:12px; color:var(--txt2); text-decoration:none; display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:7px; transition:background .15s; }
+    .nav-back:hover { background:var(--bg3); color:var(--txt); }
+
+    main { max-width:1100px; margin:0 auto; padding:32px 24px; }
+    h1 { font-size:22px; font-weight:800; margin-bottom:6px; }
+    .subtitle { color:var(--txt2); font-size:13px; margin-bottom:24px; }
+
+    .btn {
+      padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600;
+      cursor:pointer; font-family:var(--body); border:none; transition:all .15s;
+    }
+    .btn-ghost  { background:transparent; color:var(--txt2); border:1px solid var(--bdr2); }
+    .btn-ghost:hover  { border-color:var(--acc); color:var(--txt); }
+    .btn-danger { background:rgba(239,68,68,.1); color:var(--red); border:1px solid rgba(239,68,68,.2); }
+    .btn-danger:hover { background:rgba(239,68,68,.2); }
+    .btn-primary { background:var(--acc); color:#fff; }
+    .btn-primary:hover { background:var(--acc2); }
+    .btn-sm { padding:5px 10px; font-size:11px; border-radius:6px; }
+
+    input[type=text], select {
+      background:var(--bg3); border:1px solid var(--bdr2); border-radius:8px;
+      padding:8px 12px; color:var(--txt); font-size:13px; font-family:var(--body);
+      outline:none; transition:border-color .15s; width:100%;
+    }
+    input[type=text]:focus, select:focus { border-color:var(--acc); }
+    input[type=text]::placeholder { color:var(--txt3); }
+    label { font-size:11px; color:var(--txt3); font-weight:600; display:block; margin-bottom:5px; }
+    .field { margin-bottom:12px; }
+
+    /* ── Playlist grid ── */
+    .toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+    .toolbar-title { font-size:14px; font-weight:700; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:14px; }
+    .pl-card {
+      background:var(--bg2); border:1px solid var(--bdr); border-radius:12px; overflow:hidden;
+      cursor:pointer; transition:border-color .15s;
+    }
+    .pl-card:hover { border-color:var(--acc2); }
+    .pl-cover {
+      height:110px; background:var(--bg4) center/cover no-repeat;
+      display:flex; align-items:center; justify-content:center; color:var(--txt3); font-size:28px;
+    }
+    .pl-body { padding:12px 14px; }
+    .pl-title { font-size:13px; font-weight:700; margin-bottom:2px; }
+    .pl-title-en { font-size:11px; color:var(--txt3); margin-bottom:8px; }
+    .pl-count { font-size:11px; color:var(--txt2); }
+    .pl-unassigned { border-style:dashed; }
+
+    .new-pl-card {
+      border:1px dashed var(--bdr2); border-radius:12px; min-height:190px;
+      display:flex; align-items:center; justify-content:center; flex-direction:column; gap:8px;
+      cursor:pointer; color:var(--txt3); transition:all .15s;
+    }
+    .new-pl-card:hover { border-color:var(--acc); color:var(--acc); }
+
+    /* ── Modal ── */
+    .modal-overlay {
+      display:none; position:fixed; inset:0; background:rgba(0,0,0,.6); backdrop-filter:blur(4px);
+      z-index:500; align-items:center; justify-content:center; padding:20px;
+    }
+    .modal-overlay.open { display:flex; }
+    .modal {
+      background:var(--bg2); border:1px solid var(--bdr2); border-radius:14px;
+      padding:22px; width:100%; max-width:400px; max-height:90vh; overflow-y:auto;
+    }
+    .modal-title { font-size:15px; font-weight:700; margin-bottom:16px; }
+    .cover-preview {
+      width:100%; height:110px; border-radius:8px; background:var(--bg4) center/cover no-repeat;
+      display:flex; align-items:center; justify-content:center; color:var(--txt3); font-size:24px;
+      margin-bottom:10px; border:1px solid var(--bdr2);
+    }
+    .modal-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:16px; }
+
+    /* ── Detail view ── */
+    .detail-head { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+    .detail-cover {
+      width:80px; height:56px; border-radius:8px; background:var(--bg4) center/cover no-repeat;
+      display:flex; align-items:center; justify-content:center; color:var(--txt3); font-size:20px;
+      flex-shrink:0; border:1px solid var(--bdr2);
+    }
+    .detail-titles { flex:1; }
+    .detail-title { font-size:17px; font-weight:800; }
+    .detail-title-en { font-size:12px; color:var(--txt3); }
+
+    .video-row {
+      display:flex; align-items:center; gap:12px; padding:10px 12px;
+      background:var(--bg2); border:1px solid var(--bdr); border-radius:10px; margin-bottom:8px;
+    }
+    .video-thumb { width:70px; height:40px; border-radius:6px; object-fit:cover; flex-shrink:0; background:var(--bg4); }
+    .video-titles { flex:1; min-width:0; }
+    .video-title { font-size:13px; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .video-title-en { font-size:11px; color:var(--txt3); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .video-actions { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+    .video-actions select { width:140px; font-size:11px; padding:5px 8px; }
+    .order-btn {
+      width:24px; height:24px; border-radius:5px; border:1px solid var(--bdr2); background:transparent;
+      color:var(--txt2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:11px;
+    }
+    .order-btn:hover { border-color:var(--acc); color:var(--txt); }
+    .order-btn:disabled { opacity:.3; cursor:not-allowed; }
+
+    .add-video-card {
+      background:var(--bg2); border:1px solid var(--bdr); border-radius:10px; padding:14px;
+      margin-top:14px;
+    }
+    .add-video-grid { display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:8px; align-items:end; }
+    .add-video-grid .field { margin-bottom:0; }
+
+    .empty { padding:40px; text-align:center; color:var(--txt3); font-size:13px; }
+    .spinner { width:32px; height:32px; margin:60px auto; border:3px solid var(--bdr); border-top-color:var(--acc); border-radius:50%; animation:spin .7s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    #toast {
+      position:fixed; bottom:24px; left:24px; z-index:9999;
+      background:var(--bg3); border:1px solid var(--bdr); border-radius:10px;
+      padding:12px 18px; font-size:13px; display:none; box-shadow:0 8px 32px rgba(0,0,0,.4); max-width:320px;
+    }
+    #toast.show { display:block; animation:slideIn .2s ease; }
+    #toast.success { border-color:rgba(34,197,94,.3); color:var(--grn); }
+    #toast.error   { border-color:rgba(239,68,68,.3);  color:var(--red); }
+    @keyframes slideIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Profit<span>Lens</span> Pro</div>
+  <span class="badge">ADMIN</span>
+  <div class="nav-spacer"></div>
+  <a class="nav-back" href="/admin">← لوحة الأدمن</a>
+</nav>
+
+<main id="root"><div class="spinner"></div></main>
+
+<!-- New / edit playlist modal -->
+<div class="modal-overlay" id="pl_modal_overlay" onclick="if(event.target===this)closePlModal()">
+  <div class="modal">
+    <div class="modal-title" id="pl_modal_title">قائمة تشغيل جديدة</div>
+    <div class="cover-preview" id="pl_cover_preview">🎬</div>
+    <div class="field">
+      <label>صورة الغلاف</label>
+      <input type="file" id="pl_cover_file" accept="image/*" onchange="onCoverFileChange(this)">
+    </div>
+    <div class="field">
+      <label>العنوان بالعربي</label>
+      <input type="text" id="pl_title_ar" placeholder="مثال: إعدادات الشحن">
+    </div>
+    <div class="field">
+      <label>العنوان بالإنجليزي</label>
+      <input type="text" id="pl_title_en" placeholder="e.g. Shipping Setup">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closePlModal()">إلغاء</button>
+      <button class="btn btn-primary" id="pl_modal_save_btn" onclick="savePlaylist()">حفظ</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+let __sb = null, __token = null, __uid = null;
+let __playlists = [];
+let __videos = [];
+let __activeId = null;      // null = grid view, playlist id or 'unassigned' = detail view
+let __editingPlId = null;   // set when the modal is editing an existing playlist
+let __pendingCoverUrl = null;
+
+async function init() {
+  try {
+    const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
+    if (!cfg.supabaseUrl) { showDenied(); return; }
+    __sb = supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+    const { data: { session } } = await __sb.auth.getSession();
+    if (!session) { window.location.replace('/'); return; }
+    __token = session.access_token;
+    __uid = session.user.id;
+    const { data: profile } = await __sb.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
+    if (profile?.role !== 'admin') { showDenied(); return; }
+    await loadAll();
+  } catch (e) { showDenied(); }
+}
+
+function showDenied() {
+  document.getElementById('root').innerHTML = '<div class="empty" style="padding:80px;color:var(--red)">⛔ الصفحة دي للأدمن بس.</div>';
+}
+
+async function api(path, opts) {
+  const res = await fetch(path, {
+    ...opts,
+    headers: { Authorization: 'Bearer ' + __token, 'Content-Type': 'application/json', ...(opts?.headers || {}) }
+  });
+  if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.error || res.statusText); }
+  return res.json();
+}
+
+async function loadAll() {
+  const [pl, vd] = await Promise.all([
+    api('/api/admin/tutorial-playlists'),
+    api('/api/admin/tutorial-videos')
+  ]);
+  __playlists = pl.playlists || [];
+  __videos = vd.videos || [];
+  render();
+}
+
+function render() {
+  if (__activeId === null) renderGrid();
+  else renderDetail(__activeId);
+}
+
+function esc(s) { return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function renderGrid() {
+  const unassignedCount = __videos.filter(v => !v.playlist_id).length;
+  const cards = __playlists.map(p => `
+    <div class="pl-card" onclick="openDetail('${p.id}')">
+      <div class="pl-cover" style="${p.cover_url ? `background-image:url('${esc(p.cover_url)}')` : ''}">${p.cover_url ? '' : '🎬'}</div>
+      <div class="pl-body">
+        <div class="pl-title">${esc(p.title_ar)}</div>
+        <div class="pl-title-en">${esc(p.title_en)}</div>
+        <div class="pl-count">${p.video_count} فيديو</div>
+      </div>
+    </div>
+  `).join('');
+
+  const unassignedCard = unassignedCount ? `
+    <div class="pl-card pl-unassigned" onclick="openDetail('unassigned')">
+      <div class="pl-cover">📥</div>
+      <div class="pl-body">
+        <div class="pl-title">فيديوهات غير مرتبطة</div>
+        <div class="pl-title-en">Unassigned</div>
+        <div class="pl-count">${unassignedCount} فيديو</div>
+      </div>
+    </div>` : '';
+
+  document.getElementById('root').innerHTML = `
+    <h1>قوائم تشغيل الشرح</h1>
+    <p class="subtitle">قسّم فيديوهات "شرح التول" لقوائم، وانقل الفيديوهات بينها وأنت عايز.</p>
+    <div class="grid">
+      <div class="new-pl-card" onclick="openPlModal()">
+        <div style="font-size:26px">+</div>
+        <div>قائمة تشغيل جديدة</div>
+      </div>
+      ${cards}
+      ${unassignedCard}
+    </div>
+  `;
+}
+
+function playlistName(p) { return p.title_ar + ' / ' + p.title_en; }
+
+function renderDetail(id) {
+  const isUnassigned = id === 'unassigned';
+  const pl = isUnassigned ? null : __playlists.find(p => p.id === id);
+  if (!isUnassigned && !pl) { __activeId = null; renderGrid(); return; }
+
+  const vids = __videos.filter(v => (isUnassigned ? !v.playlist_id : v.playlist_id === id))
+                        .sort((a,b) => a.sort_order - b.sort_order);
+
+  const moveOptions = (currentId) => {
+    const opts = [`<option value="" ${!currentId ? 'selected' : ''}>— بدون قائمة —</option>`];
+    __playlists.forEach(p => {
+      opts.push(`<option value="${esc(p.id)}" ${p.id === currentId ? 'selected' : ''}>${esc(p.title_ar)}</option>`);
+    });
+    return opts.join('');
+  };
+
+  const rows = vids.map((v, i) => `
+    <div class="video-row">
+      <img class="video-thumb" src="https://i.ytimg.com/vi/${esc(v.youtube_id)}/default.jpg" alt="">
+      <div class="video-titles">
+        <div class="video-title">${esc(v.title_ar)}</div>
+        <div class="video-title-en">${esc(v.title_en)}</div>
+      </div>
+      <div class="video-actions">
+        <button class="order-btn" title="لأعلى" onclick="moveVideoOrder('${v.id}', -1)" ${i===0?'disabled':''}>▲</button>
+        <button class="order-btn" title="لأسفل" onclick="moveVideoOrder('${v.id}', 1)" ${i===vids.length-1?'disabled':''}>▼</button>
+        <select onchange="moveVideoToPlaylist('${v.id}', this.value)">${moveOptions(v.playlist_id)}</select>
+        <button class="btn btn-sm btn-ghost" onclick="editVideo('${v.id}')">✎</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteVideo('${v.id}')">حذف</button>
+      </div>
+    </div>
+  `).join('') || '<div class="empty">مفيش فيديوهات هنا لسه.</div>';
+
+  const header = isUnassigned ? `
+    <div class="detail-cover">📥</div>
+    <div class="detail-titles">
+      <div class="detail-title">فيديوهات غير مرتبطة</div>
+      <div class="detail-title-en">Unassigned</div>
+    </div>` : `
+    <div class="detail-cover" style="${pl.cover_url ? `background-image:url('${esc(pl.cover_url)}')` : ''}">${pl.cover_url ? '' : '🎬'}</div>
+    <div class="detail-titles">
+      <div class="detail-title">${esc(pl.title_ar)}</div>
+      <div class="detail-title-en">${esc(pl.title_en)}</div>
+    </div>
+    <button class="btn btn-sm btn-ghost" onclick="openPlModal('${pl.id}')">✎ تعديل القائمة</button>
+    <button class="btn btn-sm btn-danger" onclick="deletePlaylist('${pl.id}')">حذف القائمة</button>`;
+
+  document.getElementById('root').innerHTML = `
+    <a class="nav-back" href="javascript:void(0)" onclick="__activeId=null;render()" style="display:inline-flex;margin-bottom:16px;padding:0">← كل القوائم</a>
+    <div class="detail-head">${header}</div>
+    <div id="video-rows">${rows}</div>
+    <div class="add-video-card">
+      <label style="margin-bottom:10px;display:block">+ إضافة فيديو ${isUnassigned ? '' : 'للقائمة دي'}</label>
+      <div class="add-video-grid">
+        <div class="field"><label>رابط يوتيوب أو الـ ID</label><input type="text" id="nv_url" placeholder="https://youtu.be/..."></div>
+        <div class="field"><label>العنوان بالعربي</label><input type="text" id="nv_title_ar" placeholder="اسم الفيديو"></div>
+        <div class="field"><label>العنوان بالإنجليزي</label><input type="text" id="nv_title_en" placeholder="Video title"></div>
+        <button class="btn btn-primary" onclick="addVideo('${isUnassigned ? '' : id}')">إضافة</button>
+      </div>
+    </div>
+  `;
+}
+
+function openDetail(id) { __activeId = id; render(); }
+
+function parseYoutubeId(input) {
+  const s = (input || '').trim();
+  if (!s) return '';
+  if (/^[a-zA-Z0-9_-]{6,20}$/.test(s) && !s.includes('.')) return s;
+  try {
+    const u = new URL(s);
+    if (u.hostname.includes('youtu.be')) return u.pathname.slice(1).split('/')[0];
+    if (u.searchParams.get('v')) return u.searchParams.get('v');
+    const m = u.pathname.match(/\/embed\/([a-zA-Z0-9_-]+)/);
+    if (m) return m[1];
+  } catch (e) {}
+  return s;
+}
+
+async function addVideo(playlistId) {
+  const youtube_id = parseYoutubeId(document.getElementById('nv_url').value);
+  const title_ar = document.getElementById('nv_title_ar').value.trim();
+  const title_en = document.getElementById('nv_title_en').value.trim();
+  if (!youtube_id || !title_ar || !title_en) { toast('اكتب الرابط والعنوانين الأول', 'error'); return; }
+  try {
+    await api('/api/admin/tutorial-videos', { method: 'POST', body: JSON.stringify({ playlist_id: playlistId || null, youtube_id, title_ar, title_en }) });
+    toast('الفيديو اتضاف', 'success');
+    await loadAll();
+  } catch (e) { toast('خطأ: ' + e.message, 'error'); }
+}
+
+async function editVideo(id) {
+  const v = __videos.find(x => x.id === id);
+  if (!v) return;
+  const title_ar = prompt('العنوان بالعربي:', v.title_ar);
+  if (title_ar === null) return;
+  const title_en = prompt('العنوان بالإنجليزي:', v.title_en);
+  if (title_en === null) return;
+  try {
+    await api('/api/admin/tutorial-videos', { method: 'PATCH', body: JSON.stringify({ id, title_ar: title_ar.trim(), title_en: title_en.trim() }) });
+    toast('اتحدّث', 'success');
+    await loadAll();
+  } catch (e) { toast('خطأ: ' + e.message, 'error'); }
+}
+
+async function deleteVideo(id) {
+  if (!confirm('تحذف الفيديو ده؟')) return;
+  try {
+    await api('/api/admin/tutorial-videos', { method: 'DELETE', body: JSON.stringify({ id }) });
+    toast('اتحذف', 'success');
+    await loadAll();
+  } catch (e) { toast('خطأ: ' + e.message, 'error'); }
+}
+
+async function moveVideoToPlaylist(id, newPlaylistId) {
+  try {
+    await api('/api/admin/tutorial-videos', { method: 'PATCH', body: JSON.stringify({ id, playlist_id: newPlaylistId || null }) });
+    toast('اتنقل', 'success');
+    await loadAll();
+  } catch (e) { toast('خطأ: ' + e.message, 'error'); }
+}
+
+async function moveVideoOrder(id, dir) {
+  const v = __videos.find(x => x.id === id);
+  if (!v) return;
+  const siblings = __videos.filter(x => x.playlist_id === v.playlist_id).sort((a,b) => a.sort_order - b.sort_order);
+  const idx = siblings.findIndex(x => x.id === id);
+  const swapWith = siblings[idx + dir];
+  if (!swapWith) return;
+  try {
+    await Promise.all([
+      api('/api/admin/tutorial-videos', { method: 'PATCH', body: JSON.stringify({ id: v.id, sort_order: swapWith.sort_order }) }),
+      api('/api/admin/tutorial-videos', { method: 'PATCH', body: JSON.stringify({ id: swapWith.id, sort_order: v.sort_order }) })
+    ]);
+    await loadAll();
+  } catch (e) { toast('خطأ: ' + e.message, 'error'); }
+}
+
+// ─── Playlist create/edit modal ───────────────────────────────
+function openPlModal(id) {
+  __editingPlId = id || null;
+  __pendingCoverUrl = null;
+  const pl = id ? __playlists.find(p => p.id === id) : null;
+  document.getElementById('pl_modal_title').textContent = id ? 'تعديل القائمة' : 'قائمة تشغيل جديدة';
+  document.getElementById('pl_title_ar').value = pl?.title_ar || '';
+  document.getElementById('pl_title_en').value = pl?.title_en || '';
+  document.getElementById('pl_cover_file').value = '';
+  const preview = document.getElementById('pl_cover_preview');
+  if (pl?.cover_url) { preview.style.backgroundImage = `url('${pl.cover_url}')`; preview.textContent = ''; __pendingCoverUrl = pl.cover_url; }
+  else { preview.style.backgroundImage = ''; preview.textContent = '🎬'; }
+  document.getElementById('pl_modal_overlay').classList.add('open');
+}
+function closePlModal() { document.getElementById('pl_modal_overlay').classList.remove('open'); }
+
+async function onCoverFileChange(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  const preview = document.getElementById('pl_cover_preview');
+  const saveBtn = document.getElementById('pl_modal_save_btn');
+  saveBtn.disabled = true; saveBtn.textContent = 'بيرفع الصورة…';
+  try {
+    const path = `${__uid}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+    const { error } = await __sb.storage.from('tutorial-covers').upload(path, file, { upsert: false });
+    if (error) throw error;
+    const { data: { publicUrl } } = __sb.storage.from('tutorial-covers').getPublicUrl(path);
+    __pendingCoverUrl = publicUrl;
+    preview.style.backgroundImage = `url('${publicUrl}')`;
+    preview.textContent = '';
+  } catch (e) { toast('فشل رفع الصورة: ' + e.message, 'error'); }
+  saveBtn.disabled = false; saveBtn.textContent = 'حفظ';
+}
+
+async function savePlaylist() {
+  const title_ar = document.getElementById('pl_title_ar').value.trim();
+  const title_en = document.getElementById('pl_title_en').value.trim();
+  if (!title_ar || !title_en) { toast('اكتب العنوانين الأول', 'error'); return; }
+  try {
+    if (__editingPlId) {
+      await api('/api/admin/tutorial-playlists', { method: 'PATCH', body: JSON.stringify({ id: __editingPlId, title_ar, title_en, cover_url: __pendingCoverUrl }) });
+    } else {
+      await api('/api/admin/tutorial-playlists', { method: 'POST', body: JSON.stringify({ title_ar, title_en, cover_url: __pendingCoverUrl }) });
+    }
+    toast('اتحفظ', 'success');
+    closePlModal();
+    await loadAll();
+  } catch (e) { toast('خطأ: ' + e.message, 'error'); }
+}
+
+async function deletePlaylist(id) {
+  const pl = __playlists.find(p => p.id === id);
+  if (!confirm(`تحذف قائمة "${pl?.title_ar}"؟ الفيديوهات جواها هتفضل موجودة تحت "غير مرتبطة".`)) return;
+  try {
+    await api('/api/admin/tutorial-playlists', { method: 'DELETE', body: JSON.stringify({ id }) });
+    toast('اتحذفت', 'success');
+    __activeId = null;
+    await loadAll();
+  } catch (e) { toast('خطأ: ' + e.message, 'error'); }
+}
+
+function toast(msg, type) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + (type || '');
+  clearTimeout(el.__t);
+  el.__t = setTimeout(() => { el.className = ''; }, 3000);
+}
+
+init();
+</script>
+</body>
+</html>
