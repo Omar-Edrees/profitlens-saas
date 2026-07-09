@@ -132,6 +132,49 @@
 
     .empty { padding: 40px; text-align: center; color: var(--txt3); font-size: 14px; }
 
+    /* ─── Mobile responsive ─── */
+    @media (max-width: 720px) {
+      nav { padding: 0 14px; gap: 8px; }
+      .nav-logo { font-size: 13px; }
+      main { padding: 20px 12px; }
+      h1 { font-size: 19px; }
+      .stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .stat { padding: 12px 14px; }
+      .stat-val { font-size: 22px; }
+
+      .table-header { flex-wrap: wrap; padding: 14px; }
+      .table-title { flex: 1 1 100%; order: -1; }
+      .search-input { flex: 1 1 auto; width: auto; min-width: 0; }
+
+      .promo-form { padding: 14px; }
+      .promo-form input { flex: 1 1 140px; width: auto; }
+      .promo-form input[type=number] { flex: 1 1 90px; }
+      .btn-create { flex: 1 1 100%; padding: 8px; }
+
+      /* Turn table rows into stacked cards */
+      table, thead, tbody, th, td, tr { display: block; width: 100%; }
+      thead { display: none; }
+      tbody tr {
+        border: 1px solid var(--bdr); border-radius: 10px;
+        margin: 10px; padding: 4px 12px; background: var(--bg3);
+      }
+      tr:hover td { background: transparent; }
+      td {
+        display: flex; justify-content: space-between; align-items: center;
+        gap: 12px; padding: 9px 0 !important; border: none !important;
+        border-bottom: 1px solid var(--bdr) !important; text-align: right;
+        font-size: 13px;
+      }
+      td:last-child { border-bottom: none !important; }
+      td::before {
+        content: attr(data-label); font-size: 10px; text-transform: uppercase;
+        letter-spacing: .04em; color: var(--txt3); font-weight: 700;
+        white-space: nowrap; flex-shrink: 0;
+      }
+      td[data-label=""]::before { content: none; }
+      .actions { flex-wrap: wrap; justify-content: flex-end; }
+    }
+
     /* ─── Promo codes ─── */
     .promo-form {
       display: flex; gap: 8px; padding: 16px 20px;
@@ -358,25 +401,25 @@ function renderTable(users) {
       : 'Never';
 
     return `<tr>
-      <td>
+      <td data-label="Email">
         <div style="font-weight:500">${esc(u.email)}${isMe ? ' <span style="font-size:10px;color:var(--txt3)">(you)</span>' : ''}</div>
         <div style="font-size:11px;color:var(--txt3);font-family:var(--mono);margin-top:2px">${u.id.slice(0,8)}…</div>
       </td>
-      <td><span class="role-badge ${u.role === 'admin' ? 'role-admin' : 'role-user'}">${u.role}</span></td>
-      <td><span class="role-badge ${u.plan === 'free' ? 'role-user' : 'role-admin'}">${esc(u.plan)}</span></td>
-      <td>
+      <td data-label="Role"><span class="role-badge ${u.role === 'admin' ? 'role-admin' : 'role-user'}">${u.role}</span></td>
+      <td data-label="Plan"><span class="role-badge ${u.plan === 'free' ? 'role-user' : 'role-admin'}">${esc(u.plan)}</span></td>
+      <td data-label="Has Data">
         <span class="data-dot" style="background:${u.has_data ? 'var(--grn)' : 'var(--txt3)'}"></span>
         ${u.has_data ? 'Yes' : 'No'}
       </td>
-      <td>
+      <td data-label="Promo">
         ${u.promo_code
           ? `<span style="font-family:var(--mono);font-size:12px;font-weight:600;color:var(--acc)">${esc(u.promo_code)}</span>`
             + (u.promo_discount == null ? '' : ` <span class="role-badge role-user" style="margin-left:4px">${esc(String(u.promo_discount))}%</span>`)
           : '<span style="color:var(--txt3)">—</span>'}
       </td>
-      <td style="color:var(--txt2);font-size:12px">${created}</td>
-      <td style="color:var(--txt2);font-size:12px">${lastSeen}</td>
-      <td>
+      <td data-label="Joined" style="color:var(--txt2);font-size:12px">${created}</td>
+      <td data-label="Last Sign In" style="color:var(--txt2);font-size:12px">${lastSeen}</td>
+      <td data-label="">
         <div class="actions">
           <button class="btn ${u.plan==='free'?'btn-create':'btn-ghost'}"
             data-action="toggle-plan" data-id="${esc(u.id)}" data-plan="${esc(u.plan)}" data-email="${esc(u.email)}">
@@ -485,17 +528,17 @@ function renderPromos(promos) {
     const created = new Date(p.created_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
     const full = p.uses_count >= p.max_uses;
     return `<tr>
-      <td><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--acc);letter-spacing:.06em">${esc(p.code)}</span></td>
-      <td><span class="badge-active" style="font-family:var(--mono)">${esc(String(p.discount_pct == null ? 100 : p.discount_pct))}%</span></td>
-      <td class="promo-used">${p.uses_count} / ${p.max_uses}</td>
-      <td>
+      <td data-label="Code"><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--acc);letter-spacing:.06em">${esc(p.code)}</span></td>
+      <td data-label="Discount"><span class="badge-active" style="font-family:var(--mono)">${esc(String(p.discount_pct == null ? 100 : p.discount_pct))}%</span></td>
+      <td data-label="Uses" class="promo-used">${p.uses_count} / ${p.max_uses}</td>
+      <td data-label="Progress">
         <div style="background:var(--bg3);border-radius:6px;overflow:hidden;height:6px;width:80px">
           <div style="background:${full?'var(--red)':'var(--grn)'};height:100%;width:${Math.min(100,Math.round(p.uses_count/p.max_uses*100))}%"></div>
         </div>
       </td>
-      <td><span class="${p.is_active && !full ? 'badge-active' : 'badge-inactive'}">${p.is_active && !full ? 'Active' : 'Exhausted'}</span></td>
-      <td style="color:var(--txt2);font-size:12px">${created}</td>
-      <td>
+      <td data-label="Status"><span class="${p.is_active && !full ? 'badge-active' : 'badge-inactive'}">${p.is_active && !full ? 'Active' : 'Exhausted'}</span></td>
+      <td data-label="Created" style="color:var(--txt2);font-size:12px">${created}</td>
+      <td data-label="">
         <button class="btn btn-danger" data-action="delete-promo" data-id="${esc(p.id)}" data-code="${esc(p.code)}">Delete</button>
       </td>
     </tr>`;
