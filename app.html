@@ -1641,13 +1641,6 @@ body[data-theme="light"] #s0 .f-row .unit{ border-inline-start-color:rgba(15,23,
 .tp-kpi-val{font-family:var(--mono);font-size:16px;font-weight:500}
 .tp-kpi-sub{font-size:10px;color:var(--txt3);margin-top:3px}
 
-/* ─── Offer Impact Simulator — read-only strip pulled from Inputs ─── */
-.oi-src-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px}
-.oi-src-chip{display:flex;align-items:center;gap:6px;background:var(--surf2);border:1px solid var(--bdr);border-radius:20px;padding:5px 12px;font-size:11px}
-.oi-src-lbl{color:var(--txt3)}
-.oi-src-val{color:var(--txt-title);font-family:var(--mono);font-weight:600}
-.oi-src-note{font-size:10px;color:var(--txt3);font-style:italic}
-
 /* ─── SCENARIO ───────────────────────── */
 .scenario-toggle{
   display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt3);cursor:pointer;
@@ -4108,14 +4101,6 @@ input[type=range]::-moz-range-thumb{
     </div>
     <div class="collapsible-body" id="oi_body">
     <div data-t="oi_sub" style="font-size:12px;color:var(--txt3);margin-bottom:14px;line-height:1.5">Model a discount or promo before you launch it — see the profit hit and the order lift you'd need to break even.</div>
-
-    <div class="oi-src-strip" id="oi_src_strip">
-      <div class="oi-src-chip"><span class="oi-src-lbl" data-t="oi_it_price_lbl">Original price</span><span class="oi-src-val" id="oi_src_price">—</span></div>
-      <div class="oi-src-chip"><span class="oi-src-lbl" data-t="lbl_prod_cost">Product cost</span><span class="oi-src-val" id="oi_src_cost">—</span></div>
-      <div class="oi-src-chip"><span class="oi-src-lbl" data-t="oi_ship_unit_lbl">Shipping / unit</span><span class="oi-src-val" id="oi_src_ship">—</span></div>
-      <div class="oi-src-chip"><span class="oi-src-lbl" data-t="oi_ad_unit_lbl">Ad cost / unit</span><span class="oi-src-val" id="oi_src_ad">—</span></div>
-      <span class="oi-src-note" data-t="oi_src_note">from your product inputs — edit them in the Inputs tab</span>
-    </div>
 
     <div class="mb-io-seg" id="oi_mode_seg" style="margin-bottom:16px;flex-wrap:wrap">
       <button type="button" class="mb-io-seg-btn active" data-mode="item" onclick="oiSetMode('item')" data-t="oi_tab_item">Item Discount</button>
@@ -7910,17 +7895,13 @@ function oiOut(id){ const el=document.getElementById(id); return el ? numClean(e
 function oiSet(id,val,color){ const el=document.getElementById(id); if(el){ el.textContent=val; if(color!==undefined) el.style.color=color; } }
 
 // Reads price/cost/shipping/ad cost straight from the Inputs tab (and the
-// computed actual CPA) instead of asking for them again — keeps the strip
-// in sync whenever Inputs change, no separate copy to maintain.
+// computed actual CPA) instead of asking for them again — no separate copy
+// to maintain, and it stays in sync whenever Inputs change.
 function oiLiveVals(){
   const price=v('i_price'), cost=v('i_cost'), ship=v('i_courier');
   const ad=oiOut('m_acpp') || v('i_avg_cpp');
   const aov=v('i_aov') || price;
   const margin=price>0 ? (price-cost)/price*100 : 0;
-  oiSet('oi_src_price', price>0?oiMoney(price):'—');
-  oiSet('oi_src_cost',  cost>0?oiMoney(cost):'—');
-  oiSet('oi_src_ship',  ship>0?oiMoney(ship):'—');
-  oiSet('oi_src_ad',    ad>0?oiMoney(ad):'—');
   return {price,cost,ship,ad,aov,margin};
 }
 
@@ -10789,29 +10770,26 @@ const T = {
     oi_title:'Offer Impact Simulator',
     oi_sub:"Model a discount or promo before you launch it — see the profit hit and the order lift you'd need to break even.",
     oi_tab_item:'Item Discount', oi_tab_cart:'Cart Discount', oi_tab_bogo:'BOGO Deal', oi_tab_ship:'Shipping Offer', oi_tab_tier:'Volume Tiers',
-    oi_it_price_lbl:'Original price', oi_ship_unit_lbl:'Shipping / unit', oi_ad_unit_lbl:'Ad cost / unit',
     oi_disc_pct_lbl:'Discount %', oi_orders_mo_lbl:'Current orders / month', oi_lift_lbl:'Expected order increase',
     oi_price_after_lbl:'Price after discount', oi_profit_unit_after_lbl:'Profit / unit after', oi_profit_impact_lbl:'Profit impact (Δ)',
     oi_lift_needed_lbl:'Order lift needed to break even', oi_was_lbl:'was',
-    oi_src_note:'from your product inputs — edit them in the Inputs tab',
     oi_it_v_loss:'This discount puts you below cost per unit — every order loses money regardless of volume.',
     oi_it_v_warn:'Expected increase', oi_it_v_warn2:'is below the', oi_it_v_warn3:'needed to offset the margin loss.',
     oi_it_v_ok:'The expected order increase covers the margin loss — this discount is profitable.',
-    oi_ct_aov_lbl:'Current AOV', oi_ct_min_lbl:'Min. spend to qualify', oi_ct_type_lbl:'Discount type',
+    oi_ct_min_lbl:'Min. spend to qualify', oi_ct_type_lbl:'Discount type',
     oi_pct_off:'% off', oi_fixed_amt:'Fixed amount', oi_fixed_amt_lbl2:'Discount amount',
-    oi_ct_margin_lbl:'Blended margin %', oi_ct_adopt_lbl:"% of customers who'll hit the threshold",
+    oi_ct_adopt_lbl:"% of customers who'll hit the threshold",
     oi_ct_aov_after_lbl:'AOV after', oi_ct_rev_lbl:'Revenue after', oi_ct_disc_cost_lbl:'Discount cost / month',
     oi_ct_v_loss:"The AOV lift isn't enough to cover the discount cost — this offer reduces profit.",
     oi_ct_v_warn:'Barely breaking even — a small drop in adoption could tip this negative.',
     oi_ct_v_ok:'The AOV lift more than covers the discount cost.',
     oi_bg_type_lbl:'Offer type', oi_bg_b1g1free:'Buy 1 Get 1 Free', oi_bg_b2g1free:'Buy 2 Get 1 Free',
     oi_bg_b1g1half:'Buy 1 Get 1 Half Off', oi_bg_b3g1free:'Buy 3 Get 1 Free',
-    oi_bg_price_lbl:'Product price', oi_bg_cost_lbl:'COGS / unit', oi_bg_ship_lbl:'Shipping / order', oi_bg_ad_lbl:'Ad cost / order',
     oi_bg_units_lbl:'Units / order', oi_bg_effdisc_lbl:'Effective discount', oi_bg_profit_order_lbl:'Profit / order',
     oi_bg_v_loss:'This deal loses money on every order — raise the price or pick a smaller offer.',
     oi_bg_v_warn:"The order increase isn't enough to offset the lower margin per order.",
     oi_bg_v_ok:'This deal is profitable at the expected order increase.',
-    oi_sh_cost_lbl:'Shipping cost', oi_sh_threshold_lbl:'Free above a minimum spend',
+    oi_sh_threshold_lbl:'Free above a minimum spend',
     oi_sh_baseline_lbl:'Baseline profit', oi_sh_net_after_lbl:'Net profit after', oi_sh_burden_lbl:'Shipping burden / month',
     oi_sh_v_loss:'Shipping cost eats the entire margin on this order — free shipping can never pay for itself here.',
     oi_sh_v_warn:'You need', oi_sh_v_warn2:'more orders, not', oi_sh_v_warn3:'to cover the shipping cost.',
@@ -11372,29 +11350,26 @@ const T = {
     oi_title:'محاكي تأثير العروض',
     oi_sub:'جرّب تأثير أي خصم أو عرض قبل ما تطلقه — شوف الأثر على الربح والزيادة المطلوبة في الأوردرات عشان تتعادل.',
     oi_tab_item:'خصم القطعة', oi_tab_cart:'خصم السلة', oi_tab_bogo:'عرض BOGO', oi_tab_ship:'عرض الشحن', oi_tab_tier:'شرائح الكمية',
-    oi_it_price_lbl:'السعر الأصلي', oi_ship_unit_lbl:'الشحن / وحدة', oi_ad_unit_lbl:'تكلفة الإعلان / وحدة',
     oi_disc_pct_lbl:'نسبة الخصم', oi_orders_mo_lbl:'الأوردرات الحالية / شهر', oi_lift_lbl:'الزيادة المتوقعة في الأوردرات',
     oi_price_after_lbl:'السعر بعد الخصم', oi_profit_unit_after_lbl:'الربح / وحدة بعد الخصم', oi_profit_impact_lbl:'أثر الربح (Δ)',
     oi_lift_needed_lbl:'الزيادة المطلوبة في الأوردرات للتعادل', oi_was_lbl:'كان',
-    oi_src_note:'من بيانات المنتج — عدّلها من تاب الإنبوتس',
     oi_it_v_loss:'الخصم ده بيخليك تحت التكلفة في كل وحدة — أي أوردر هيخسّرك مهما زاد العدد.',
     oi_it_v_warn:'الزيادة المتوقعة', oi_it_v_warn2:'أقل من الـ', oi_it_v_warn3:'اللازمة عشان تعوّض هامش الخصم.',
     oi_it_v_ok:'الزيادة المتوقعة في الأوردرات كافية لتعويض هامش الخصم — الخصم ده مربح.',
-    oi_ct_aov_lbl:'متوسط قيمة الأوردر الحالي', oi_ct_min_lbl:'الحد الأدنى للاستحقاق', oi_ct_type_lbl:'نوع الخصم',
+    oi_ct_min_lbl:'الحد الأدنى للاستحقاق', oi_ct_type_lbl:'نوع الخصم',
     oi_pct_off:'نسبة %', oi_fixed_amt:'مبلغ ثابت', oi_fixed_amt_lbl2:'قيمة الخصم',
-    oi_ct_margin_lbl:'هامش الربح العام %', oi_ct_adopt_lbl:'% العملاء اللي هيوصلوا للحد الأدنى',
+    oi_ct_adopt_lbl:'% العملاء اللي هيوصلوا للحد الأدنى',
     oi_ct_aov_after_lbl:'متوسط الأوردر بعد', oi_ct_rev_lbl:'الإيراد بعد', oi_ct_disc_cost_lbl:'تكلفة الخصم / شهر',
     oi_ct_v_loss:'زيادة متوسط الأوردر مش كفاية لتغطية تكلفة الخصم — العرض ده بيقلل الربح.',
     oi_ct_v_warn:'بالكاد بيتعادل — أي نقصان بسيط في نسبة الاستحقاق ممكن يحوّله لخسارة.',
     oi_ct_v_ok:'زيادة متوسط الأوردر بتغطي تكلفة الخصم وزيادة.',
     oi_bg_type_lbl:'نوع العرض', oi_bg_b1g1free:'اشتري 1 واحصل على 1 مجانًا', oi_bg_b2g1free:'اشتري 2 واحصل على 1 مجانًا',
     oi_bg_b1g1half:'اشتري 1 واحصل على 1 بنص السعر', oi_bg_b3g1free:'اشتري 3 واحصل على 1 مجانًا',
-    oi_bg_price_lbl:'سعر المنتج', oi_bg_cost_lbl:'تكلفة المنتج / وحدة', oi_bg_ship_lbl:'الشحن / أوردر', oi_bg_ad_lbl:'تكلفة الإعلان / أوردر',
     oi_bg_units_lbl:'الوحدات / أوردر', oi_bg_effdisc_lbl:'نسبة الخصم الفعلية', oi_bg_profit_order_lbl:'الربح / أوردر',
     oi_bg_v_loss:'العرض ده بيخسّرك في كل أوردر — ارفع السعر أو اختار عرض أصغر.',
     oi_bg_v_warn:'زيادة الأوردرات مش كفاية لتعويض انخفاض الهامش لكل أوردر.',
     oi_bg_v_ok:'العرض ده مربح عند الزيادة المتوقعة في الأوردرات.',
-    oi_sh_cost_lbl:'تكلفة الشحن', oi_sh_threshold_lbl:'مجاني فوق حد أدنى معيّن',
+    oi_sh_threshold_lbl:'مجاني فوق حد أدنى معيّن',
     oi_sh_baseline_lbl:'الربح الأساسي', oi_sh_net_after_lbl:'صافي الربح بعد', oi_sh_burden_lbl:'عبء الشحن / شهر',
     oi_sh_v_loss:'تكلفة الشحن بتاكل الهامش بالكامل — الشحن المجاني مش هيعوّض نفسه هنا خالص.',
     oi_sh_v_warn:'محتاج زيادة', oi_sh_v_warn2:'مش', oi_sh_v_warn3:'عشان تغطي تكلفة الشحن.',
