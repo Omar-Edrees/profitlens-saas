@@ -1641,6 +1641,13 @@ body[data-theme="light"] #s0 .f-row .unit{ border-inline-start-color:rgba(15,23,
 .tp-kpi-val{font-family:var(--mono);font-size:16px;font-weight:500}
 .tp-kpi-sub{font-size:10px;color:var(--txt3);margin-top:3px}
 
+/* ─── Offer Impact Simulator — read-only strip pulled from Inputs ─── */
+.oi-src-strip{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:14px}
+.oi-src-chip{display:flex;align-items:center;gap:6px;background:var(--surf2);border:1px solid var(--bdr);border-radius:20px;padding:5px 12px;font-size:11px}
+.oi-src-lbl{color:var(--txt3)}
+.oi-src-val{color:var(--txt-title);font-family:var(--mono);font-weight:600}
+.oi-src-note{font-size:10px;color:var(--txt3);font-style:italic}
+
 /* ─── SCENARIO ───────────────────────── */
 .scenario-toggle{
   display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt3);cursor:pointer;
@@ -4102,6 +4109,14 @@ input[type=range]::-moz-range-thumb{
     <div class="collapsible-body" id="oi_body">
     <div data-t="oi_sub" style="font-size:12px;color:var(--txt3);margin-bottom:14px;line-height:1.5">Model a discount or promo before you launch it — see the profit hit and the order lift you'd need to break even.</div>
 
+    <div class="oi-src-strip" id="oi_src_strip">
+      <div class="oi-src-chip"><span class="oi-src-lbl" data-t="oi_it_price_lbl">Original price</span><span class="oi-src-val" id="oi_src_price">—</span></div>
+      <div class="oi-src-chip"><span class="oi-src-lbl" data-t="lbl_prod_cost">Product cost</span><span class="oi-src-val" id="oi_src_cost">—</span></div>
+      <div class="oi-src-chip"><span class="oi-src-lbl" data-t="oi_ship_unit_lbl">Shipping / unit</span><span class="oi-src-val" id="oi_src_ship">—</span></div>
+      <div class="oi-src-chip"><span class="oi-src-lbl" data-t="oi_ad_unit_lbl">Ad cost / unit</span><span class="oi-src-val" id="oi_src_ad">—</span></div>
+      <span class="oi-src-note" data-t="oi_src_note">from your product inputs — edit them in the Inputs tab</span>
+    </div>
+
     <div class="mb-io-seg" id="oi_mode_seg" style="margin-bottom:16px;flex-wrap:wrap">
       <button type="button" class="mb-io-seg-btn active" data-mode="item" onclick="oiSetMode('item')" data-t="oi_tab_item">Item Discount</button>
       <button type="button" class="mb-io-seg-btn" data-mode="cart" onclick="oiSetMode('cart')" data-t="oi_tab_cart">Cart Discount</button>
@@ -4113,10 +4128,6 @@ input[type=range]::-moz-range-thumb{
     <!-- ── ITEM DISCOUNT ── -->
     <div id="oi_panel_item">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-        <div class="field" style="margin:0"><label data-t="oi_it_price_lbl">Original price</label><div class="f-row"><input type="number" id="oi_it_price" min="0" oninput="oiItemRecalc()"><span class="unit">EGP</span></div></div>
-        <div class="field" style="margin:0"><label data-t="lbl_prod_cost">Product cost</label><div class="f-row"><input type="number" id="oi_it_cost" min="0" oninput="oiItemRecalc()"><span class="unit">EGP</span></div></div>
-        <div class="field" style="margin:0"><label data-t="oi_ship_unit_lbl">Shipping / unit</label><div class="f-row"><input type="number" id="oi_it_ship" min="0" oninput="oiItemRecalc()"><span class="unit">EGP</span></div></div>
-        <div class="field" style="margin:0"><label data-t="oi_ad_unit_lbl">Ad cost / unit</label><div class="f-row"><input type="number" id="oi_it_ad" min="0" oninput="oiItemRecalc()"><span class="unit">EGP</span></div></div>
         <div class="field" style="margin:0"><label data-t="oi_disc_pct_lbl">Discount %</label><div class="f-row"><input type="number" id="oi_it_disc" value="20" min="0" max="95" oninput="oiItemRecalc()"><span class="unit">%</span></div></div>
         <div class="field" style="margin:0"><label data-t="oi_orders_mo_lbl">Current orders / month</label><div class="f-row"><input type="number" id="oi_it_orders" min="0" oninput="oiItemRecalc()"><span class="unit" data-t="unit_orders">orders</span></div></div>
         <div class="field" style="margin:0;grid-column:1/-1"><label data-t="oi_lift_lbl">Expected order increase</label><div class="f-row"><input type="number" id="oi_it_lift" value="20" min="0" max="500" oninput="oiItemRecalc()"><span class="unit">%</span></div></div>
@@ -4133,9 +4144,8 @@ input[type=range]::-moz-range-thumb{
     <!-- ── CART DISCOUNT ── -->
     <div id="oi_panel_cart" style="display:none">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-        <div class="field" style="margin:0"><label data-t="oi_ct_aov_lbl">Current AOV</label><div class="f-row"><input type="number" id="oi_ct_aov" min="0" oninput="oiCartRecalc()"><span class="unit">EGP</span></div></div>
         <div class="field" style="margin:0"><label data-t="oi_ct_min_lbl">Min. spend to qualify</label><div class="f-row"><input type="number" id="oi_ct_min" min="0" oninput="oiCartRecalc()"><span class="unit">EGP</span></div></div>
-        <div class="field" style="margin:0;grid-column:1/-1">
+        <div class="field" style="margin:0">
           <label data-t="oi_ct_type_lbl">Discount type</label>
           <div class="mb-io-seg" id="oi_ct_type_seg">
             <button type="button" class="mb-io-seg-btn active" data-val="pct" onclick="oiCartSetType('pct')" data-t="oi_pct_off">% off</button>
@@ -4143,9 +4153,8 @@ input[type=range]::-moz-range-thumb{
           </div>
         </div>
         <div class="field" style="margin:0"><label id="oi_ct_disc_lbl_wrap" data-t="oi_disc_pct_lbl">Discount %</label><div class="f-row"><input type="number" id="oi_ct_disc" value="10" min="0" oninput="oiCartRecalc()"><span class="unit" id="oi_ct_disc_unit">%</span></div></div>
-        <div class="field" style="margin:0"><label data-t="oi_ct_margin_lbl">Blended margin %</label><div class="f-row"><input type="number" id="oi_ct_margin" value="25" min="0" max="100" oninput="oiCartRecalc()"><span class="unit">%</span></div></div>
         <div class="field" style="margin:0"><label data-t="oi_orders_mo_lbl">Current orders / month</label><div class="f-row"><input type="number" id="oi_ct_orders" min="0" oninput="oiCartRecalc()"><span class="unit" data-t="unit_orders">orders</span></div></div>
-        <div class="field" style="margin:0"><label data-t="oi_ct_adopt_lbl">% of customers who'll hit the threshold</label><div class="f-row"><input type="number" id="oi_ct_adopt" value="35" min="0" max="100" oninput="oiCartRecalc()"><span class="unit">%</span></div></div>
+        <div class="field" style="margin:0;grid-column:1/-1"><label data-t="oi_ct_adopt_lbl">% of customers who'll hit the threshold</label><div class="f-row"><input type="number" id="oi_ct_adopt" value="35" min="0" max="100" oninput="oiCartRecalc()"><span class="unit">%</span></div></div>
       </div>
       <div class="target-profit-results">
         <div class="tp-kpi"><div class="tp-kpi-lbl" data-t="oi_ct_aov_after_lbl">AOV after</div><div class="tp-kpi-val" id="oi_ct_aov_after" style="color:var(--c4)">—</div><div class="tp-kpi-sub" id="oi_ct_aov_lift_sub"></div></div>
@@ -4168,10 +4177,6 @@ input[type=range]::-moz-range-thumb{
         </div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-        <div class="field" style="margin:0"><label data-t="oi_bg_price_lbl">Product price</label><div class="f-row"><input type="number" id="oi_bg_price" min="0" oninput="oiBogoRecalc()"><span class="unit">EGP</span></div></div>
-        <div class="field" style="margin:0"><label data-t="oi_bg_cost_lbl">COGS / unit</label><div class="f-row"><input type="number" id="oi_bg_cost" min="0" oninput="oiBogoRecalc()"><span class="unit">EGP</span></div></div>
-        <div class="field" style="margin:0"><label data-t="oi_bg_ship_lbl">Shipping / order</label><div class="f-row"><input type="number" id="oi_bg_ship" min="0" oninput="oiBogoRecalc()"><span class="unit">EGP</span></div></div>
-        <div class="field" style="margin:0"><label data-t="oi_bg_ad_lbl">Ad cost / order</label><div class="f-row"><input type="number" id="oi_bg_ad" min="0" oninput="oiBogoRecalc()"><span class="unit">EGP</span></div></div>
         <div class="field" style="margin:0"><label data-t="oi_orders_mo_lbl">Current orders / month</label><div class="f-row"><input type="number" id="oi_bg_orders" min="0" oninput="oiBogoRecalc()"><span class="unit" data-t="unit_orders">orders</span></div></div>
         <div class="field" style="margin:0"><label data-t="oi_lift_lbl">Expected order increase</label><div class="f-row"><input type="number" id="oi_bg_lift" value="20" min="0" max="500" oninput="oiBogoRecalc()"><span class="unit">%</span></div></div>
       </div>
@@ -4187,11 +4192,8 @@ input[type=range]::-moz-range-thumb{
     <!-- ── SHIPPING OFFER ── -->
     <div id="oi_panel_ship" style="display:none">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-        <div class="field" style="margin:0"><label data-t="oi_ct_aov_lbl">Current AOV</label><div class="f-row"><input type="number" id="oi_sh_aov" min="0" oninput="oiShipRecalc()"><span class="unit">EGP</span></div></div>
-        <div class="field" style="margin:0"><label data-t="oi_sh_cost_lbl">Shipping cost</label><div class="f-row"><input type="number" id="oi_sh_cost" min="0" oninput="oiShipRecalc()"><span class="unit">EGP</span></div></div>
-        <div class="field" style="margin:0"><label data-t="oi_ct_margin_lbl">Blended margin %</label><div class="f-row"><input type="number" id="oi_sh_margin" value="30" min="0" max="100" oninput="oiShipRecalc()"><span class="unit">%</span></div></div>
         <div class="field" style="margin:0"><label data-t="oi_orders_mo_lbl">Current orders / month</label><div class="f-row"><input type="number" id="oi_sh_orders" min="0" oninput="oiShipRecalc()"><span class="unit" data-t="unit_orders">orders</span></div></div>
-        <div class="field" style="margin:0;grid-column:1/-1"><label data-t="oi_lift_lbl">Expected order increase</label><div class="f-row"><input type="number" id="oi_sh_lift" value="15" min="0" max="500" oninput="oiShipRecalc()"><span class="unit">%</span></div></div>
+        <div class="field" style="margin:0"><label data-t="oi_lift_lbl">Expected order increase</label><div class="f-row"><input type="number" id="oi_sh_lift" value="15" min="0" max="500" oninput="oiShipRecalc()"><span class="unit">%</span></div></div>
         <div class="field" style="margin:0;grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px">
           <label style="margin:0" data-t="oi_sh_threshold_lbl">Free above a minimum spend</label>
           <div class="mini-toggle" id="oi_sh_threshold_toggle" onclick="this.classList.toggle('on');oiShipRecalc()"><div class="mini-thumb"></div></div>
@@ -4208,12 +4210,8 @@ input[type=range]::-moz-range-thumb{
 
     <!-- ── VOLUME TIERS ── -->
     <div id="oi_panel_tier" style="display:none">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-        <div class="field" style="margin:0"><label data-t="oi_bg_price_lbl">Product price</label><div class="f-row"><input type="number" id="oi_vt_price" min="0" oninput="oiTierRecalc()"><span class="unit">EGP</span></div></div>
-        <div class="field" style="margin:0"><label data-t="oi_bg_cost_lbl">COGS / unit</label><div class="f-row"><input type="number" id="oi_vt_cost" min="0" oninput="oiTierRecalc()"><span class="unit">EGP</span></div></div>
-        <div class="field" style="margin:0"><label data-t="oi_bg_ship_lbl">Shipping / order</label><div class="f-row"><input type="number" id="oi_vt_ship" min="0" oninput="oiTierRecalc()"><span class="unit">EGP</span></div></div>
-        <div class="field" style="margin:0"><label data-t="oi_bg_ad_lbl">Ad cost / order</label><div class="f-row"><input type="number" id="oi_vt_ad" min="0" oninput="oiTierRecalc()"><span class="unit">EGP</span></div></div>
-        <div class="field" style="margin:0;grid-column:1/-1"><label data-t="oi_orders_mo_lbl">Current orders / month</label><div class="f-row"><input type="number" id="oi_vt_orders" min="0" oninput="oiTierRecalc()"><span class="unit" data-t="unit_orders">orders</span></div></div>
+      <div style="margin-bottom:14px">
+        <div class="field" style="margin:0"><label data-t="oi_orders_mo_lbl">Current orders / month</label><div class="f-row"><input type="number" id="oi_vt_orders" min="0" oninput="oiTierRecalc()"><span class="unit" data-t="unit_orders">orders</span></div></div>
       </div>
       <div class="field" style="margin:0 0 8px"><label data-t="oi_vt_tiers_lbl">Quantity tiers</label></div>
       <div id="oi_vt_list"></div>
@@ -7016,6 +7014,8 @@ function calc(){
   simResolve();
   // update Reality Check simulator
   if(typeof rcRecalc === 'function') rcRecalc();
+  // update Offer Impact Simulator (reads price/cost/ship/ad live from Inputs)
+  if(typeof oiRecalcAll === 'function') oiRecalcAll();
 
   // auto-save to localStorage
   saveCurrentProduct();
@@ -7909,27 +7909,42 @@ function oiMoney(n){ return (n<0?'-':'') + Math.round(Math.abs(n)).toLocaleStrin
 function oiOut(id){ const el=document.getElementById(id); return el ? numClean(el.textContent) : 0; }
 function oiSet(id,val,color){ const el=document.getElementById(id); if(el){ el.textContent=val; if(color!==undefined) el.style.color=color; } }
 
+// Reads price/cost/shipping/ad cost straight from the Inputs tab (and the
+// computed actual CPA) instead of asking for them again — keeps the strip
+// in sync whenever Inputs change, no separate copy to maintain.
+function oiLiveVals(){
+  const price=v('i_price'), cost=v('i_cost'), ship=v('i_courier');
+  const ad=oiOut('m_acpp') || v('i_avg_cpp');
+  const aov=v('i_aov') || price;
+  const margin=price>0 ? (price-cost)/price*100 : 0;
+  oiSet('oi_src_price', price>0?oiMoney(price):'—');
+  oiSet('oi_src_cost',  cost>0?oiMoney(cost):'—');
+  oiSet('oi_src_ship',  ship>0?oiMoney(ship):'—');
+  oiSet('oi_src_ad',    ad>0?oiMoney(ad):'—');
+  return {price,cost,ship,ad,aov,margin};
+}
+
 let OI_INITED = false;
 function oiOnToggle(){
   const body = document.getElementById('oi_body');
   if(!body || !body.classList.contains('show') || OI_INITED) return;
   OI_INITED = true;
-  oiPrefillDefaults();
+  oiPrefillOrders();
   oiTierSeedDefaults();
-  oiItemRecalc(); oiCartRecalc(); oiBogoRecalc(); oiShipRecalc(); oiTierRecalc();
+  oiRecalcAll();
 }
 
-function oiPrefillDefaults(){
-  const price0 = v('i_price'), cost0 = v('i_cost'), ship0 = v('i_courier');
-  const adUnit0 = oiOut('m_acpp') || v('i_avg_cpp');
+function oiPrefillOrders(){
   let orders0 = oiOut('m_delivered'); if(!orders0) orders0 = v('i_stock');
-  const margin0 = price0 ? Math.round((price0-cost0)/price0*1000)/10 : 0;
   const setIf = (id,val)=>{ const el=document.getElementById(id); if(el && !el.value && val) el.value = Math.round(val*10)/10; };
-  setIf('oi_it_price',price0); setIf('oi_it_cost',cost0); setIf('oi_it_ship',ship0); setIf('oi_it_ad',adUnit0); setIf('oi_it_orders',orders0);
-  setIf('oi_ct_aov',price0); setIf('oi_ct_min', price0?Math.round(price0*1.3):0); setIf('oi_ct_orders',orders0); setIf('oi_ct_margin',margin0);
-  setIf('oi_bg_price',price0); setIf('oi_bg_cost',cost0); setIf('oi_bg_ship',ship0); setIf('oi_bg_ad',adUnit0); setIf('oi_bg_orders',orders0);
-  setIf('oi_sh_aov',price0); setIf('oi_sh_cost',ship0); setIf('oi_sh_margin',margin0); setIf('oi_sh_orders',orders0);
-  setIf('oi_vt_price',price0); setIf('oi_vt_cost',cost0); setIf('oi_vt_ship',ship0); setIf('oi_vt_ad',adUnit0); setIf('oi_vt_orders',orders0);
+  setIf('oi_it_orders',orders0); setIf('oi_ct_orders',orders0); setIf('oi_bg_orders',orders0); setIf('oi_sh_orders',orders0); setIf('oi_vt_orders',orders0);
+}
+
+// Called from the main calc() pass so the simulator stays live if the user
+// edits price/cost/shipping while the card is open.
+function oiRecalcAll(){
+  if(!document.getElementById('oi_card')) return;
+  oiItemRecalc(); oiCartRecalc(); oiBogoRecalc(); oiShipRecalc(); oiTierRecalc();
 }
 
 function oiSetMode(mode){
@@ -7942,7 +7957,8 @@ function oiSetMode(mode){
 
 // ── Item Discount ──
 function oiItemRecalc(){
-  const price=v('oi_it_price'), cost=v('oi_it_cost'), ship=v('oi_it_ship'), ad=v('oi_it_ad');
+  const L=oiLiveVals();
+  const price=L.price, cost=L.cost, ship=L.ship, ad=L.ad;
   const discPct=v('oi_it_disc'), orders=v('oi_it_orders'), liftPct=v('oi_it_lift');
   const Tn=T[LANG];
   const has = price>0 && orders>0;
@@ -7993,7 +8009,9 @@ function oiCartSetType(type){
   oiCartRecalc();
 }
 function oiCartRecalc(){
-  const aov=v('oi_ct_aov'), min=v('oi_ct_min'), discInput=v('oi_ct_disc'), marginPct=v('oi_ct_margin');
+  const L=oiLiveVals();
+  const aov=L.aov, marginPct=L.margin;
+  const min=v('oi_ct_min'), discInput=v('oi_ct_disc');
   const orders=v('oi_ct_orders'), adoptPct=v('oi_ct_adopt');
   const Tn=T[LANG];
   const has = aov>0 && orders>0;
@@ -8047,7 +8065,8 @@ function oiBogoSetType(type){
   oiBogoRecalc();
 }
 function oiBogoRecalc(){
-  const price=v('oi_bg_price'), cost=v('oi_bg_cost'), ship=v('oi_bg_ship'), ad=v('oi_bg_ad');
+  const L=oiLiveVals();
+  const price=L.price, cost=L.cost, ship=L.ship, ad=L.ad;
   const orders=v('oi_bg_orders'), liftPct=v('oi_bg_lift');
   const Tn=T[LANG];
   const cfg = OI_BOGO_TYPES[OI_BG_TYPE] || OI_BOGO_TYPES.b1g1free;
@@ -8084,7 +8103,8 @@ function oiBogoRecalc(){
 
 // ── Shipping Offer ──
 function oiShipRecalc(){
-  const aov=v('oi_sh_aov'), shipCost=v('oi_sh_cost'), marginPct=v('oi_sh_margin');
+  const L=oiLiveVals();
+  const aov=L.aov, shipCost=L.ship, marginPct=L.margin;
   const orders=v('oi_sh_orders'), liftPct=v('oi_sh_lift');
   const Tn=T[LANG];
   const has = aov>0 && orders>0;
@@ -8146,7 +8166,8 @@ function oiTierSeedDefaults(){
   oiTierAddRow(1,0,50); oiTierAddRow(2,10,30); oiTierAddRow(3,18,15); oiTierAddRow(5,25,5);
 }
 function oiTierRecalc(){
-  const price=v('oi_vt_price'), cost=v('oi_vt_cost'), ship=v('oi_vt_ship'), ad=v('oi_vt_ad'), orders=v('oi_vt_orders');
+  const L=oiLiveVals();
+  const price=L.price, cost=L.cost, ship=L.ship, ad=L.ad, orders=v('oi_vt_orders');
   const Tn=T[LANG];
   const rows=[...document.querySelectorAll('#oi_vt_list .bundle-card')];
   const has = price>0 && orders>0 && rows.length>0;
@@ -10772,6 +10793,7 @@ const T = {
     oi_disc_pct_lbl:'Discount %', oi_orders_mo_lbl:'Current orders / month', oi_lift_lbl:'Expected order increase',
     oi_price_after_lbl:'Price after discount', oi_profit_unit_after_lbl:'Profit / unit after', oi_profit_impact_lbl:'Profit impact (Δ)',
     oi_lift_needed_lbl:'Order lift needed to break even', oi_was_lbl:'was',
+    oi_src_note:'from your product inputs — edit them in the Inputs tab',
     oi_it_v_loss:'This discount puts you below cost per unit — every order loses money regardless of volume.',
     oi_it_v_warn:'Expected increase', oi_it_v_warn2:'is below the', oi_it_v_warn3:'needed to offset the margin loss.',
     oi_it_v_ok:'The expected order increase covers the margin loss — this discount is profitable.',
@@ -11354,6 +11376,7 @@ const T = {
     oi_disc_pct_lbl:'نسبة الخصم', oi_orders_mo_lbl:'الأوردرات الحالية / شهر', oi_lift_lbl:'الزيادة المتوقعة في الأوردرات',
     oi_price_after_lbl:'السعر بعد الخصم', oi_profit_unit_after_lbl:'الربح / وحدة بعد الخصم', oi_profit_impact_lbl:'أثر الربح (Δ)',
     oi_lift_needed_lbl:'الزيادة المطلوبة في الأوردرات للتعادل', oi_was_lbl:'كان',
+    oi_src_note:'من بيانات المنتج — عدّلها من تاب الإنبوتس',
     oi_it_v_loss:'الخصم ده بيخليك تحت التكلفة في كل وحدة — أي أوردر هيخسّرك مهما زاد العدد.',
     oi_it_v_warn:'الزيادة المتوقعة', oi_it_v_warn2:'أقل من الـ', oi_it_v_warn3:'اللازمة عشان تعوّض هامش الخصم.',
     oi_it_v_ok:'الزيادة المتوقعة في الأوردرات كافية لتعويض هامش الخصم — الخصم ده مربح.',
