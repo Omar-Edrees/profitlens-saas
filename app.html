@@ -5645,15 +5645,25 @@ function cfAddRow(){
   row.querySelector('input[type=text]').focus();
 }
 
-function cfGetTotalPerOrder(){
-  // Returns total extra cost per DELIVERED ORDER (converts pct and lead types using current price/leads)
-  const price = numClean(document.getElementById('i_price')?.value) || 0;
+// Clamp negatives to 0 — fee/cost/rate inputs must never subtract money from costs.
+function nn(x){ return (isFinite(x) && x > 0) ? x : 0; }
+
+function cfGetTotalPerOrder(pricePerOrder){
+  // Returns total extra cost per DELIVERED ORDER (converts pct and lead types using current price/leads).
+  // % fees apply to the ORDER value (unit price × units/order); callers with their own
+  // price basis (per-product data, bundles) pass it via pricePerOrder.
+  let base = pricePerOrder;
+  if(base === undefined){
+    const price = numClean(document.getElementById('i_price')?.value) || 0;
+    const units = Math.max(parseFloat(document.getElementById('i_units')?.value) || 1, 0.1);
+    base = price * units;
+  }
   let total = 0;
   document.querySelectorAll('.cf-custom-row').forEach(row => {
-    const amt  = parseFloat(row.querySelector('.cf-amount')?.value) || 0;
+    const amt  = nn(parseFloat(row.querySelector('.cf-amount')?.value));
     const type = row.querySelector('.cf-type')?.value || 'egp';
     if(type === 'egp')  total += amt;
-    if(type === 'pct')  total += price * amt / 100;
+    if(type === 'pct')  total += base * amt / 100;
     // 'lead' type is handled separately in platTotal — skip here
   });
   return total;
@@ -5662,7 +5672,7 @@ function cfGetTotalPerOrder(){
 function cfGetTotalPerLead(){
   let total = 0;
   document.querySelectorAll('.cf-custom-row').forEach(row => {
-    const amt  = parseFloat(row.querySelector('.cf-amount')?.value) || 0;
+    const amt  = nn(parseFloat(row.querySelector('.cf-amount')?.value));
     const type = row.querySelector('.cf-type')?.value || 'egp';
     if(type === 'lead') total += amt;
   });
@@ -5670,10 +5680,12 @@ function cfGetTotalPerLead(){
 }
 
 function cfRecalc(){
-  const price      = numClean(document.getElementById('i_price')?.value)       || 0;
-  const commPct    = parseFloat(document.getElementById('i_comm')?.value)         || 0;
-  const gatewayPct = parseFloat(document.getElementById('i_gateway_fee')?.value)  || 0;
-  const platLead   = parseFloat(document.getElementById('i_plat')?.value)         || 0;
+  const unitPrice  = numClean(document.getElementById('i_price')?.value)       || 0;
+  const units      = Math.max(parseFloat(document.getElementById('i_units')?.value) || 1, 0.1);
+  const price      = unitPrice * units;   // % fees apply to the order value
+  const commPct    = nn(parseFloat(document.getElementById('i_comm')?.value));
+  const gatewayPct = nn(parseFloat(document.getElementById('i_gateway_fee')?.value));
+  const platLead   = nn(parseFloat(document.getElementById('i_plat')?.value));
   const confR      = (parseFloat(document.getElementById('i_conf')?.value)        || 0) / 100;
   const delR       = (parseFloat(document.getElementById('i_del')?.value)         || 0) / 100;
 
@@ -5689,7 +5701,7 @@ function cfRecalc(){
   // Custom fees per order
   let customPerOrder = 0;
   document.querySelectorAll('.cf-custom-row').forEach(row => {
-    const amt  = parseFloat(row.querySelector('.cf-amount')?.value) || 0;
+    const amt  = nn(parseFloat(row.querySelector('.cf-amount')?.value));
     const type = row.querySelector('.cf-type')?.value || 'egp';
     if(type === 'egp')  customPerOrder += amt;
     if(type === 'pct')  customPerOrder += price * amt / 100;
@@ -5951,9 +5963,19 @@ function advVatRate(){
 // Read Post-Delivery Return inputs. Returns {rate, shipCost, damaged} or null when locked.
 function advPDR(){
   if(ADV_PDR_LOCKED) return null;
-  const rate    = parseFloat(document.getElementById('adv_pdr_rate').value) || 0;
-  const ship    = parseFloat(document.getElementById('adv_pdr_ship').value) || 0;
+  const rate    = Math.min(nn(parseFloat(document.getElementById('adv_pdr_rate').value)), 100);
+  const ship    = nn(parseFloat(document.getElementById('adv_pdr_ship').value));
   return { rate: rate / 100, ship };
+}
+
+// Expected PDR cost per DELIVERED unit. A post-delivery return refunds the sale:
+// the margin (priceNet − costNet) on that unit is lost, plus the return shipping,
+// plus the product cost on the damaged fraction. The margin term is floored at 0
+// so a below-cost sale can't turn returns into "profit".
+// Shared by calc(), the ROAS/Target-Profit sims, the sliders and All-Products.
+function plPdrCostPerUnit(pdr, dmgFrac, cost, priceNet, costNet){
+  if(!pdr || !(pdr.rate > 0)) return 0;
+  return pdr.rate * (pdr.ship + dmgFrac * cost + Math.max(priceNet - costNet, 0));
 }
 
 // Shared fraction (0..1) of ANY returned order that comes back damaged and
@@ -5974,8 +5996,8 @@ function advShipZones(){
   if(ADV_SHIPZONE_LOCKED) return null;
   let wsum = 0, ssum = 0;
   for(let i = 1; i <= 5; i++){
-    const cost  = parseFloat(document.getElementById('sz_cost_'  + i)?.value) || 0;
-    const share = parseFloat(document.getElementById('sz_share_' + i)?.value) || 0;
+    const cost  = nn(parseFloat(document.getElementById('sz_cost_'  + i)?.value));
+    const share = nn(parseFloat(document.getElementById('sz_share_' + i)?.value));
     if(share > 0){ wsum += cost * share; ssum += share; }
   }
   return ssum > 0 ? wsum / ssum : null;
@@ -5989,8 +6011,8 @@ function advShipCharged(){
   if(ADV_SHIPZONE_LOCKED) return null;
   let wsum = 0, ssum = 0;
   for(let i = 1; i <= 5; i++){
-    const chg   = parseFloat(document.getElementById('sz_chg_'   + i)?.value) || 0;
-    const share = parseFloat(document.getElementById('sz_share_' + i)?.value) || 0;
+    const chg   = nn(parseFloat(document.getElementById('sz_chg_'   + i)?.value));
+    const share = nn(parseFloat(document.getElementById('sz_share_' + i)?.value));
     if(share > 0){ wsum += chg * share; ssum += share; }
   }
   return ssum > 0 ? wsum / ssum : null;
@@ -6004,8 +6026,8 @@ function advShipReturn(){
   if(ADV_SHIPZONE_LOCKED) return null;
   let wsum = 0, ssum = 0;
   for(let i = 1; i <= 5; i++){
-    const ret   = parseFloat(document.getElementById('sz_ret_'   + i)?.value) || 0;
-    const share = parseFloat(document.getElementById('sz_share_' + i)?.value) || 0;
+    const ret   = nn(parseFloat(document.getElementById('sz_ret_'   + i)?.value));
+    const share = nn(parseFloat(document.getElementById('sz_share_' + i)?.value));
     if(share > 0){ wsum += ret * share; ssum += share; }
   }
   return ssum > 0 ? wsum / ssum : null;
@@ -6027,10 +6049,10 @@ function shipzoneRecalc(){
   if(ADV_SHIPZONE_LOCKED) return;
   let wsum = 0, csum = 0, rsum = 0, ssum = 0;
   for(let i = 1; i <= 5; i++){
-    const cost  = parseFloat(document.getElementById('sz_cost_'  + i)?.value) || 0;
-    const chg   = parseFloat(document.getElementById('sz_chg_'   + i)?.value) || 0;
-    const ret   = parseFloat(document.getElementById('sz_ret_'   + i)?.value) || 0;
-    const share = parseFloat(document.getElementById('sz_share_' + i)?.value) || 0;
+    const cost  = nn(parseFloat(document.getElementById('sz_cost_'  + i)?.value));
+    const chg   = nn(parseFloat(document.getElementById('sz_chg_'   + i)?.value));
+    const ret   = nn(parseFloat(document.getElementById('sz_ret_'   + i)?.value));
+    const share = nn(parseFloat(document.getElementById('sz_share_' + i)?.value));
     if(share > 0){ wsum += cost * share; csum += chg * share; rsum += ret * share; ssum += share; }
   }
   const avg    = ssum > 0 ? wsum / ssum : 0;
@@ -6235,7 +6257,7 @@ function toggleAdvLock(which){
 
 // ── BUNDLE PRICING ──────────────────────────────────────────────────────────
 let _bundleRowId = 0;
-window.BUNDLE_AVG_PRICE = 0; window.BUNDLE_AVG_SHIP = 0;
+window.BUNDLE_AVG_PRICE = 0; window.BUNDLE_AVG_SHIP = 0; window.BUNDLE_AVG_UNITS = 0;
 function bundleAddRow(){
   if(ADV_BUNDLE_LOCKED) return;
   const list = document.getElementById('adv_bundle_list'); if(!list) return;
@@ -6253,6 +6275,11 @@ function bundleDelRow(btn){ const c=btn.closest('.bundle-card'); if(c)c.remove()
 function bundleRenumber(){ document.querySelectorAll('#adv_bundle_list .bundle-card').forEach((c,i)=>{ const l=c.querySelector('.bundle-card-label'); if(l)l.textContent=T[LANG].bundle_label+' '+(i+1); }); }
 function bundleRecalc(){
   if(ADV_BUNDLE_LOCKED) return;
+  // stock = target delivered ORDERS (same meaning as everywhere else in the tool).
+  // Bundle orders come first; whatever remains of the order target ships as
+  // regular single orders (um units each at the base price). Everything is then
+  // blended PER ORDER: avg revenue/order, avg shipping-charged/order and avg
+  // units/order (so product cost scales correctly for multi-unit bundles).
   const stock=numClean(document.getElementById('i_stock')?.value)||0;
   const rows=document.querySelectorAll('#adv_bundle_list .bundle-card');
   let tU=0,tR=0,tS=0,tO=0;
@@ -6260,15 +6287,17 @@ function bundleRecalc(){
   const ss=numClean(document.getElementById('i_ship_c')?.value)||0;
   const um=Math.max(parseFloat(document.getElementById('i_units')?.value)||1,0.1);
   rows.forEach(r=>{
-    const u=parseFloat(r.querySelector('.b-units')?.value)||0;
-    const p=parseFloat(r.querySelector('.b-price')?.value)||0;
+    const u=nn(parseFloat(r.querySelector('.b-units')?.value));
+    const p=nn(parseFloat(r.querySelector('.b-price')?.value));
     const fs=r.querySelector('.mini-toggle')?.classList.contains('on');
-    const sh=fs?0:ss; const o=parseFloat(r.querySelector('.b-orders')?.value)||0;
+    const sh=fs?0:ss; const o=nn(parseFloat(r.querySelector('.b-orders')?.value));
     tU+=u*o; tR+=p*o; tS+=sh*o; tO+=o;
   });
-  const sU=Math.max(stock-tU,0);
-  tR+=sp*um*sU; tS+=ss*sU; tO+=sU; tU+=sU;
-  const ap=tU>0?tR/tU:0; const as_=tO>0?tS/tO:ss;
+  const sU=Math.max(stock-tO,0);           // remaining ORDERS sold as singles
+  tR+=sp*um*sU; tS+=ss*sU; tU+=um*sU; tO+=sU;
+  const ap=tO>0?tR/tO:0;                    // avg revenue per ORDER
+  const as_=tO>0?tS/tO:ss;                  // avg shipping charged per ORDER
+  const au=tO>0?tU/tO:um;                   // avg units per ORDER (drives product cost)
   const bl=document.getElementById('adv_bundle_blended');
   if(bl){ bl.style.display=rows.length>0?'grid':'none';
     const f=n=>(Math.round(n*10)/10).toFixed(1);
@@ -6277,12 +6306,12 @@ function bundleRecalc(){
     se('bld_avg_ship',f(as_)+' '+(window.CURRENCY||'EGP'));
     se('bld_singles',Math.round(sU)+' orders');
   }
-  window.BUNDLE_AVG_PRICE=ap; window.BUNDLE_AVG_SHIP=as_; dCalc();
+  window.BUNDLE_AVG_PRICE=ap; window.BUNDLE_AVG_SHIP=as_; window.BUNDLE_AVG_UNITS=au; dCalc();
 }
 function advBundles(){
   if(ADV_BUNDLE_LOCKED) return null;
   if(!document.querySelectorAll('#adv_bundle_list .bundle-card').length) return null;
-  return {price:window.BUNDLE_AVG_PRICE||0, ship:window.BUNDLE_AVG_SHIP||0};
+  return {price:window.BUNDLE_AVG_PRICE||0, ship:window.BUNDLE_AVG_SHIP||0, units:window.BUNDLE_AVG_UNITS||0};
 }
 
 // ── OPERATIONS & CASH FLOW — COMING SOON ────────────────────────────────────
@@ -6366,7 +6395,11 @@ function onAvgCppInput(){
 }
 
 
-function calc(){
+function calc(_beIterPass){
+  // Convergence counter for the planner's Break-even-CPA feedback loop (see end
+  // of this function). Any user-triggered pass resets it; only self-scheduled
+  // iteration passes keep counting, capped so it can never loop forever.
+  if(!_beIterPass) window.__beIter = 0;
   // ── RATE VALIDATION ──────────────────────────
   // Check confirmation and delivery rates BEFORE any calculation.
   // If either is missing or out of range (1-100), show error and abort.
@@ -6414,52 +6447,75 @@ function calc(){
   // Shipping Zones (advanced): weighted-avg shipping CHARGED to customer overrides the basic field
   const _szShipC = (typeof advShipCharged==='function') ? advShipCharged() : null;
   const price = _bndl ? _bndl.price : priceRaw * units_m;
-  const cost  = costRaw * units_m;
+  // Bundles change the units mix per order → product cost follows the blended avg units/order
+  const cost  = _bndl ? costRaw * (_bndl.units || units_m) : costRaw * units_m;
   const shipC = _bndl ? _bndl.ship  : ((_szShipC != null) ? _szShipC : shipCRaw);
   const fulfillDel=v('i_fulfill_del');
   // Shipping Zones (advanced): order-share-weighted return cost overrides the basic field
   const _szRet = (typeof advShipReturn==='function') ? advShipReturn() : null;
   const fulfillRet = (_szRet != null) ? _szRet : v('i_fulfill_ret');
-  const commPct=v('i_comm')/100, plat=v('i_plat');
+  const commPct=nn(v('i_comm'))/100, plat=nn(v('i_plat'));
   // Shipping Zones (advanced): order-share-weighted courier cost overrides the basic field
   const _szCourier = (typeof advShipZones==='function') ? advShipZones() : null;
   const courier = (_szCourier != null) ? _szCourier : v('i_courier');
-  const gatewayPct = v('i_gateway_fee')/100;
-  // Custom fees per delivered order (from cf_custom_rows)
-  const cfCustomPerOrder = cfGetTotalPerOrder();
+  const gatewayPct = nn(v('i_gateway_fee'))/100;
+  // Custom fees per delivered order (from cf_custom_rows) — % fees on the order value
+  const cfCustomPerOrder = cfGetTotalPerOrder(price);
   const salaryRaw=v('i_salary');
   const confR=rawConf/100, delR=rawDel/100;
 
   // Stock: from i_stock when basic, derived from advanced mode orders when advanced open
   const advPanelOpenEarly = document.getElementById('mb_adv_panel')?.style.display !== 'none';
   let stock = v('i_stock');
+  // ── Campaign-planner totals (advanced panel) ──────────────────────────────
+  // Computed ONCE with the same per-channel Conf%/Del% the planner cards use
+  // (mbGetRates), so the main tabs and the cards can never disagree. Drives
+  // stock, ads, blended CPA and the funnel while the panel is open.
+  let advTot = null;
   if(advPanelOpenEarly){
-    let advOrders = 0;
+    advTot = { budget:0, leads:0, conf:0, orders:0, beCpaUsed: window.LAST_BE_CPA || 0 };
     if(MB_CURRENT_MODE === 'alloc'){
       const advBudget_ = numClean(document.getElementById('mb_alloc_budget')?.value) || 0;
-      const beCpa__ = window.LAST_BE_CPA || 0;
-      const autoCpa__ = beCpa__ > 0 ? beCpa__ * mbAllocTargetFactor() : 0;
+      const autoCpa__ = advTot.beCpaUsed > 0 ? advTot.beCpaUsed * mbAllocTargetFactor() : 0;
       document.querySelectorAll('#mb_alloc_channels .mb-alloc-card').forEach(card => {
-        const pct = parseFloat(card.querySelector('.mb-alloc-pct')?.value) || 0;
+        const { confR: chC, delR: chD } = mbGetRates(card);
+        const pct = nn(parseFloat(card.querySelector('.mb-alloc-pct')?.value));
         const chBudget_ = advBudget_ * pct / 100;
         const chLeads_ = autoCpa__ > 0 && chBudget_ > 0 ? chBudget_ / autoCpa__ : 0;
-        advOrders += chLeads_ * (confR||0.001) * (delR||0.001);
+        advTot.budget += chBudget_;
+        advTot.leads  += chLeads_;
+        advTot.conf   += chLeads_ * chC;
+        advTot.orders += chLeads_ * chC * chD;
       });
     } else if(MB_CURRENT_MODE === 'pro'){
       const advBudget_ = numClean(document.getElementById('mb_pro_budget')?.value) || 0;
       document.querySelectorAll('#mb_pro_channels .mb-pro-card').forEach(card => {
-        const pct = parseFloat(card.querySelector('.mb-pro-pct')?.value) || 0;
-        const cpa_ = parseFloat(card.querySelector('.mb-pro-cpa-inp')?.value) || 0;
+        const { confR: chC, delR: chD } = mbGetRates(card);
+        const pct = nn(parseFloat(card.querySelector('.mb-pro-pct')?.value));
+        const cpa_ = nn(parseFloat(card.querySelector('.mb-pro-cpa-inp')?.value));
         const chBudget_ = advBudget_ * pct / 100;
         const chLeads_ = cpa_ > 0 && chBudget_ > 0 ? chBudget_ / cpa_ : 0;
-        advOrders += chLeads_ * (confR||0.001) * (delR||0.001);
+        advTot.budget += chBudget_;
+        advTot.leads  += chLeads_;
+        advTot.conf   += chLeads_ * chC;
+        advTot.orders += chLeads_ * chC * chD;
       });
     } else if(MB_CURRENT_MODE === 'minorders'){
       document.querySelectorAll('#mb_mo_channels .mb-mo-card').forEach(card => {
-        advOrders += parseFloat(card.querySelector('.mb-mo-orders')?.value) || 0;
+        const { confR: chC, delR: chD } = mbGetRates(card);
+        const minOrders = nn(parseFloat(card.querySelector('.mb-mo-orders')?.value));
+        const mktCpa    = nn(parseFloat(card.querySelector('.mb-mo-cpa')?.value));
+        const useCpa    = mktCpa > 0 ? mktCpa : advTot.beCpaUsed;
+        if(minOrders > 0 && chC > 0 && chD > 0){
+          const reqLeads = minOrders / (chC * chD);
+          advTot.leads  += reqLeads;
+          advTot.conf   += reqLeads * chC;
+          advTot.orders += minOrders;
+          if(useCpa > 0) advTot.budget += reqLeads * useCpa;
+        }
       });
     }
-    if(advOrders > 0) stock = advOrders;
+    if(advTot.orders > 0) stock = advTot.orders;
   }
 
   // ── ADVANCED OPTIONS ──
@@ -6476,7 +6532,9 @@ function calc(){
 
   const rawBudget   = v('i_ads');
   const rawAvgCpp   = v('i_avg_cpp');
-  const leadsNeeded = (confR > 0 && delR > 0) ? stock/delR/confR : 0;
+  // Funnel from the global rates — overridden below with the planner's own
+  // per-channel totals whenever the advanced panel drives the numbers.
+  let leadsNeeded = (confR > 0 && delR > 0) ? stock/delR/confR : 0;
 
   // If Advanced options is open → ignore i_ads & i_avg_cpp entirely
   const advPanelOpen = advPanelOpenEarly;
@@ -6487,44 +6545,10 @@ function calc(){
   const cppDisplay       = document.getElementById('cpp_derived_display');
 
   if(advPanelOpen){
-    // Advanced mode active → derive ads + actualCPP_leads from the active mode inputs
-    let advBudget = 0, advLeads = 0;
-    const _confR = confR || 0.001;
-    const _delR  = delR  || 0.001;
-
-    if(MB_CURRENT_MODE === 'alloc'){
-      advBudget = numClean(document.getElementById('mb_alloc_budget')?.value) || 0;
-      const beCpa_ = window.LAST_BE_CPA || 0;
-      const autoCpa_ = beCpa_ > 0 ? beCpa_ * mbAllocTargetFactor() : 0;
-      document.querySelectorAll('#mb_alloc_channels .mb-alloc-card').forEach(card => {
-        const pct = parseFloat(card.querySelector('.mb-alloc-pct')?.value) || 0;
-        const chBudget = advBudget * pct / 100;
-        if(autoCpa_ > 0 && chBudget > 0) advLeads += chBudget / autoCpa_;
-      });
-    } else if(MB_CURRENT_MODE === 'pro'){
-      advBudget = numClean(document.getElementById('mb_pro_budget')?.value) || 0;
-      document.querySelectorAll('#mb_pro_channels .mb-pro-card').forEach(card => {
-        const pct = parseFloat(card.querySelector('.mb-pro-pct')?.value) || 0;
-        const cpa = parseFloat(card.querySelector('.mb-pro-cpa-inp')?.value) || 0;
-        const chBudget = advBudget * pct / 100;
-        if(cpa > 0 && chBudget > 0) advLeads += chBudget / cpa;
-      });
-    } else if(MB_CURRENT_MODE === 'minorders'){
-      document.querySelectorAll('#mb_mo_channels .mb-mo-card').forEach(card => {
-        const minOrders = parseFloat(card.querySelector('.mb-mo-orders')?.value) || 0;
-        const mktCpa    = parseFloat(card.querySelector('.mb-mo-cpa')?.value)    || 0;
-        const beCpa_    = window.LAST_BE_CPA || 0;
-        const useCpa    = mktCpa > 0 ? mktCpa : beCpa_;
-        if(minOrders > 0 && useCpa > 0 && _confR > 0 && _delR > 0){
-          const reqLeads = minOrders / (_confR * _delR);
-          advLeads  += reqLeads;
-          advBudget += reqLeads * useCpa;
-        }
-      });
-    }
-
-    ads             = advBudget;
-    actualCPP_leads = advLeads > 0 ? advBudget / advLeads : 0;
+    // Advanced mode active → planner totals (advTot, computed above with
+    // per-channel rates) drive the budget and the blended CPA.
+    ads             = advTot ? advTot.budget : 0;
+    actualCPP_leads = advTot && advTot.leads > 0 ? advTot.budget / advTot.leads : 0;
     if(adsBudgetDisplay) adsBudgetDisplay.style.display='none';
     if(cppDisplay)       cppDisplay.style.display='none';
   } else if(rawAvgCpp>0 && (rawBudget===0 || isNaN(rawBudget))){
@@ -6552,8 +6576,13 @@ function calc(){
   }
 
   const commAmt     = price * (commPct + gatewayPct);   // commission + gateway on delivered orders
-  // Platform fee/lead + custom per-lead fees → converted to cost per DELIVERED ORDER
-  const leadsPerOrder  = (confR > 0 && delR > 0) ? 1 / (confR * delR) : 0;
+  // Planner active → the funnel is the planner's own totals (per-channel rates)
+  const advDriven = advPanelOpen && advTot && advTot.leads > 0 && stock > 0;
+  if(advDriven) leadsNeeded = advTot.leads;
+  // Platform fee/lead + custom per-lead fees → converted to cost per DELIVERED ORDER.
+  // With the planner active the blended leads/order ratio replaces 1/(conf×del).
+  const leadsPerOrder  = advDriven ? leadsNeeded / stock
+                       : (confR > 0 && delR > 0) ? 1 / (confR * delR) : 0;
   const platPerOrder   = (plat + cfGetTotalPerLead()) * leadsPerOrder;
   // Shipping cost per delivered order — commission is NOT a shipping cost; it is shown
   // as its own line in the P&L (moved out of the Shipping analysis tab).
@@ -6567,15 +6596,12 @@ function calc(){
   const netShip     = effShip-shipC;
 
   // ── Post-Delivery Return (PDR) ──────────────────────────────────────────
-  // pdr.rate = % of delivered orders returned AFTER the customer receives the item
-  // Cost per delivered unit = pdr.rate × (shipCost + dmgFrac × productCost)
-  // dmgFrac = shared % of returns that come back damaged/unsellable
+  // pdr.rate = % of delivered orders returned AFTER the customer receives the item.
+  // Cost per delivered unit (plPdrCostPerUnit) = rate × (return shipping +
+  // damaged-fraction product loss + the refunded margin priceNet−costNet) —
+  // a refunded sale gives the revenue back, not just the logistics cost.
   const pdr = advPDR();
-  const pdrCostPerUnit = pdr
-    ? pdr.rate * (pdr.ship + dmgFrac * cost)
-    : 0;
-  // Net delivered rate after post-delivery returns
-  const netDelR = pdr ? delR * (1 - pdr.rate) : delR;
+  const pdrCostPerUnit = plPdrCostPerUnit(pdr, dmgFrac, cost, priceNet, costNet);
 
   // Profit per unit — now accounts for PDR cost.
   // commAmt (commission + gateway) is subtracted here as its own term — it is no longer
@@ -6585,28 +6611,30 @@ function calc(){
 
   // totalFixed = truly fixed costs only (salary + ads)
   const totalFixed  = salary + ads;
-  // Break-even CPA uses netDelR so it reflects actual delivered units
-  const maxCPP      = confR*netDelR*profitPU;
   const beUnits     = profitPU>0?totalFixed/profitPU:Infinity;
 
-  const confNeeded   = leadsNeeded*confR;
-  const delivNeeded  = confNeeded*delR;
+  const confNeeded   = advDriven ? advTot.conf : leadsNeeded*confR;
+  const delivNeeded  = advDriven ? stock       : confNeeded*delR;
   // Net delivered after post-delivery returns
   const netDelivered = pdr ? delivNeeded * (1 - pdr.rate) : delivNeeded;
   const actualCPP    = actualCPP_leads;
-  const actualROAS   = actualCPP>0 ? (price+shipC)/(ads/netDelivered||1) : 0;
-  const minROAS      = maxCPP>0 ? (price+shipC)*confR*netDelR/maxCPP : 0;
+  // Guard: without spend or without delivered orders there is no meaningful ROAS
+  const actualROAS   = (actualCPP>0 && ads>0 && netDelivered>0) ? (price+shipC)/(ads/netDelivered) : 0;
 
   calcRoas();
   calcOps(stock, ads, delivNeeded, durMonths, actualCPP, confR, delR, profitPU); // coming soon — no-op
 
   // Revenue totals — use NET (what actually belongs to you after VAT)
-  // platPerOrder + pdrCostPerUnit are variable costs per delivered unit
-  const totalRev    = stock*(priceNet+shipCNet);
-  const totalVar    = stock*(costNet+effShip+platPerOrder+pdrCostPerUnit+commAmt);
-  const totalProf   = totalRev-totalVar-totalFixed;
+  // platPerOrder + pdrCostPerUnit are variable costs per delivered unit.
+  // Organic orders (advanced) earn the same unit economics minus the per-lead
+  // platform fees (they don't come from paid leads), so they join the revenue
+  // AND the variable costs — not just the profit line.
   const organicOrders = typeof advOrganicOrders === 'function' ? advOrganicOrders() : 0;
-  const totalProfFinal = totalProf + organicOrders * profitPU;
+  const econUnits   = stock + organicOrders;   // all delivered orders (paid + organic)
+  const totalRev    = econUnits*(priceNet+shipCNet);
+  const totalVar    = econUnits*(costNet+effShip+pdrCostPerUnit+commAmt) + stock*platPerOrder;
+  const totalProf   = totalRev-totalVar-totalFixed;
+  const totalProfFinal = totalProf;
   const isP         = totalProfFinal>=0;
   const pc          = isP?'var(--profit)':'var(--red)';
 
@@ -6827,9 +6855,13 @@ function calc(){
     netHint.textContent = T[LANG].js_net_on_you + fmt0(totNetOnYou) + ' ' + CURRENCY;
     netHint.style.color = totNetOnYou > 0 ? 'var(--red)' : 'var(--green)';
   }
-  const fracFulfill=(effShip>0?(fulfillDel+courier)/effShip*100:0);
-  const fracComm=(effShip>0?(commAmt+platPerOrder)/effShip*100:0);
-  const fracRet=(effShip>0?retAbsorbed/effShip*100:0);
+  // Share bars over ALL order-level costs (shipping + commission + platform),
+  // so the three segments always sum to ≤100% — commission/platform are not
+  // part of effShip, so using effShip alone as the base overshot 100%.
+  const orderCostBase=effShip+commAmt+platPerOrder;
+  const fracFulfill=(orderCostBase>0?(fulfillDel+courier)/orderCostBase*100:0);
+  const fracComm=(orderCostBase>0?(commAmt+platPerOrder+cfCustomPerOrder)/orderCostBase*100:0);
+  const fracRet=(orderCostBase>0?retAbsorbed/orderCostBase*100:0);
   set('sh_p1_lbl', pct(fracFulfill)); document.getElementById('sh_p1').style.width=Math.min(fracFulfill,100)+'%';
   set('sh_p2_lbl', pct(fracComm));   document.getElementById('sh_p2').style.width=Math.min(fracComm,100)+'%';
   set('sh_p3_lbl', pct(fracRet));    document.getElementById('sh_p3').style.width=Math.min(fracRet,100)+'%';
@@ -6863,25 +6895,27 @@ function calc(){
   })();
   set('ov_total_sub', isP?T[LANG].ov_profitable:T[LANG].ov_loss_making);
   set('ov_be', isFinite(beUnits)?Math.ceil(beUnits)+' units':'∞', 'var(--c2)');
-  set('ov_be_sub', isFinite(beUnits)&&beUnits<=stock?T[LANG].ov_covered_stock:T[LANG].ov_exceeds_stock);
+  set('ov_be_sub', isFinite(beUnits)&&beUnits<=econUnits?T[LANG].ov_covered_stock:T[LANG].ov_exceeds_stock);
   // Cache both revenue modes for the shipping toggle
-  window._lastRevInclShip = totalRev;           // stock × (priceNet + shipCNet)
-  window._lastRevExclShip = stock * priceNet;   // product only
-  window._lastDelivUnits  = stock;
+  window._lastRevInclShip = totalRev;                // (paid+organic) × (priceNet + shipCNet)
+  window._lastRevExclShip = econUnits * priceNet;    // product only
+  window._lastDelivUnits  = econUnits;
   _updateRevDisplay();
 
-  const soldUnits = delivNeeded||1;
+  // P&L totals scale over ALL delivered orders (paid + organic) so the table
+  // reconciles with the hero Net-Profit number; ads/salary stay absolute.
+  const soldUnits = econUnits||1;
   // P&L shows GROSS numbers (what the customer actually pays / what you see in invoices)
   // When VAT is unlocked, a separate row shows the VAT payable (which reduces net profit).
-  set('pl_pu_price',  '+'+eg(price));       set('pl_tot_price', '+'+eg(stock*price));
-  set('pl_pu_sc',     '+'+eg(shipC));       set('pl_tot_sc',    '+'+eg(stock*shipC));
-  set('pl_pu_cost',   '-'+eg(cost));        set('pl_tot_cost',  '-'+eg(stock*cost));
-  set('pl_pu_ship',   '-'+eg(effShip));     set('pl_tot_ship',  '-'+eg(stock*effShip));
+  set('pl_pu_price',  '+'+eg(price));       set('pl_tot_price', '+'+eg(econUnits*price));
+  set('pl_pu_sc',     '+'+eg(shipC));       set('pl_tot_sc',    '+'+eg(econUnits*shipC));
+  set('pl_pu_cost',   '-'+eg(cost));        set('pl_tot_cost',  '-'+eg(econUnits*cost));
+  set('pl_pu_ship',   '-'+eg(effShip));     set('pl_tot_ship',  '-'+eg(econUnits*effShip));
   // Commission & fees row — only show when commission/gateway is set (moved here from Shipping)
   const commRowEl = document.getElementById('pl_comm_row');
   if(commAmt > 0){
     if(commRowEl) commRowEl.style.display = '';
-    set('pl_pu_comm',   '-'+eg(commAmt));     set('pl_tot_comm',  '-'+eg(stock*commAmt));
+    set('pl_pu_comm',   '-'+eg(commAmt));     set('pl_tot_comm',  '-'+eg(econUnits*commAmt));
   } else {
     if(commRowEl) commRowEl.style.display = 'none';
   }
@@ -6897,7 +6931,7 @@ function calc(){
   const pdrRowEl = document.getElementById('pl_pdr_row');
   if(pdr && pdrCostPerUnit > 0){
     if(pdrRowEl) pdrRowEl.style.display = '';
-    set('pl_pu_pdr', '-'+eg(pdrCostPerUnit)); set('pl_tot_pdr', '-'+eg(stock*pdrCostPerUnit));
+    set('pl_pu_pdr', '-'+eg(pdrCostPerUnit)); set('pl_tot_pdr', '-'+eg(econUnits*pdrCostPerUnit));
   } else {
     if(pdrRowEl) pdrRowEl.style.display = 'none';
   }
@@ -6913,7 +6947,7 @@ function calc(){
     const vatOnRev  = (price + shipC) - (priceNet + shipCNet);
     const vatOnCost = cost - costNet;
     const netVatPU  = vatOnRev - vatOnCost;
-    set('pl_pu_vat', '-'+eg(netVatPU));  set('pl_tot_vat', '-'+eg(netVatPU*stock));
+    set('pl_pu_vat', '-'+eg(netVatPU));  set('pl_tot_vat', '-'+eg(netVatPU*econUnits));
   } else {
     vatRowEl.style.display = 'none';
   }
@@ -6926,11 +6960,11 @@ function calc(){
   // and the P&L "Where your revenue goes" bar, so the two always agree.
   // Colors follow the Overview design palette.
   const revBuckets = [
-    { label: T[LANG].lbl_prod_cost, val: stock*cost,           color:'#F87171' },
-    { label: T[LANG].pl_ship_cost,  val: stock*effShip,        color:'#FBBF24' },
-    { label: T[LANG].pl_comm,       val: stock*commAmt,        color:'#F472B6' },
-    { label: T[LANG].lbl_plat_lead, val: stock*platPerOrder,   color:'#38BDF8' },
-    { label: T[LANG].adv_pdr_lbl,   val: stock*pdrCostPerUnit, color:'#A855F7' },
+    { label: T[LANG].lbl_prod_cost, val: econUnits*cost,           color:'#F87171' },
+    { label: T[LANG].pl_ship_cost,  val: econUnits*effShip,        color:'#FBBF24' },
+    { label: T[LANG].pl_comm,       val: econUnits*commAmt,        color:'#F472B6' },
+    { label: T[LANG].lbl_plat_lead, val: stock*platPerOrder,       color:'#38BDF8' },
+    { label: T[LANG].adv_pdr_lbl,   val: econUnits*pdrCostPerUnit, color:'#A855F7' },
     { label: T[LANG].pl_ads,        val: ads,                  color:'#818CF8' },
     { label: T[LANG].pl_salary,     val: salary,               color:'#A78BFA' },
   ];
@@ -7069,6 +7103,18 @@ function calc(){
   // Guard prevents infinite recursion (the mb*Recalc functions call dCalc() → calc() otherwise).
   MB_IN_CALC = true;
   try { mbRefreshCurrentMode(); } finally { MB_IN_CALC = false; }
+
+  // ── Break-even-CPA convergence (planner feedback loop) ─────────────────────
+  // Alloc/Min-Orders modes derive stock from LAST_BE_CPA, which this pass has
+  // just updated — so the numbers used at the top of this run can be one step
+  // stale. Re-run once per change (capped at 3 passes) until the BE CPA the
+  // planner consumed matches the BE CPA this pass produced.
+  if(advPanelOpenEarly && advTot && Math.abs((window.LAST_BE_CPA||0) - advTot.beCpaUsed) > 0.5){
+    if((window.__beIter||0) < 3){
+      window.__beIter = (window.__beIter||0) + 1;
+      setTimeout(() => calc(true), 0);
+    }
+  }
 }
 
 // ── CHARTS ──────────────────────────────────
@@ -7533,6 +7579,21 @@ function resetDef(){
   localStorage.removeItem(LS_KEY);
   tpCppTouched = false;
   ffSetMode('fulfill');
+  // Advanced cards keep feeding the calc if left behind — clear them too.
+  if(!ADV_DUR_LOCKED)      toggleAdvLock('dur');
+  if(!ADV_VAT_LOCKED)      toggleAdvLock('vat');
+  if(!ADV_PDR_LOCKED)      toggleAdvLock('pdr');
+  if(!ADV_BUNDLE_LOCKED)   toggleAdvLock('bundle');
+  if(!ADV_SHIPZONE_LOCKED) toggleAdvLock('shipzone');
+  if(!ADV_ORGANIC_LOCKED)  toggleAdvLock('organic');
+  if(!ADV_LTV_LOCKED)      toggleAdvLock('ltv');
+  document.querySelectorAll('#adv_bundle_list .bundle-card').forEach(r=>r.remove());
+  window.BUNDLE_AVG_PRICE=0; window.BUNDLE_AVG_SHIP=0; window.BUNDLE_AVG_UNITS=0;
+  document.querySelectorAll('.cf-custom-row').forEach(r=>r.remove());
+  for(let i=1;i<=5;i++){['sz_cost_','sz_chg_','sz_ret_','sz_share_'].forEach(p=>{const e=document.getElementById(p+i);if(e)e.value='';});}
+  ['adv_dur','adv_vat','adv_pdr_rate','adv_pdr_ship','adv_pdr_damaged_pct','tp_target','tp_cpp','tp_stock_input','rc_leads','rc_cpa']
+    .forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  cfRecalc();
   calc();
 }
 
@@ -7637,8 +7698,6 @@ function _simLockBtn(btnId, lblId, locked, lockedColor, lockedBg, lockedText, un
     lbl.style.color = 'var(--txt3)';
     lbl.textContent = '📊 ' + unlockedText;
   }
-  // dim input when unlocked (output field)
-  const inputMap = { roas:'roas_target', rev:'roas_rev_target', cpp:'roas_cpp', stock:'roas_stock' };
 }
 
 function _simUpdateUI(){
@@ -7650,11 +7709,14 @@ function _simUpdateUI(){
 }
 
 function _roasInputs(){
-  const price      = v('i_price'), cost = v('i_cost');
+  // Same unit economics as the main calc(): order value = unit price × units/order,
+  // custom per-order fees included, PDR refund accounted via plPdrCostPerUnit.
+  const units_m    = Math.max(v('i_units') || 1, 0.1);
+  const price      = v('i_price') * units_m, cost = v('i_cost') * units_m;
   const fulfillDel = v('i_fulfill_del');
   const _szRet     = (typeof advShipReturn==='function') ? advShipReturn() : null;
   const fulfillRet = (_szRet != null) ? _szRet : v('i_fulfill_ret');
-  const commPct = v('i_comm')/100, plat = v('i_plat');
+  const commPct = nn(v('i_comm'))/100, plat = nn(v('i_plat'));
   const _szCourier = (typeof advShipZones==='function') ? advShipZones() : null;
   const courier    = (_szCourier != null) ? _szCourier : v('i_courier');
   const _szShipC   = (typeof advShipCharged==='function') ? advShipCharged() : null;
@@ -7668,11 +7730,11 @@ function _roasInputs(){
   const priceNet   = price / (1 + vatRate);
   const costNet    = cost  / (1 + vatRate);
   const shipCNet   = shipC / (1 + vatRate);
-  const gatewayPct   = v('i_gateway_fee')/100;
+  const gatewayPct   = nn(v('i_gateway_fee'))/100;
   const commAmt      = price * (commPct + gatewayPct);
   // plat is per-lead, NOT per-delivery — must NOT go into costDel
   const dmgFrac      = returnDamageFrac();
-  const costDel      = fulfillDel + courier + commAmt;
+  const costDel      = fulfillDel + courier + commAmt + cfGetTotalPerOrder(price);
   const costRet      = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0) + dmgFrac * cost;
   const effShip      = delR > 0 ? (delR*costDel + (1-delR)*costRet)/delR : costRet;
   // platPerOrder: platform fee/lead × leads per delivered order
@@ -7680,7 +7742,7 @@ function _roasInputs(){
   const platPerOrder  = (plat + cfGetTotalPerLead()) * leadsPerOrder;
   // ── PDR support — mirror main calc logic ──────────────────────────────────
   const pdr2 = (typeof advPDR === 'function') ? advPDR() : null;
-  const pdrCostPerUnit = pdr2 ? pdr2.rate * (pdr2.ship + dmgFrac * cost) : 0;
+  const pdrCostPerUnit = plPdrCostPerUnit(pdr2, dmgFrac, cost, priceNet, costNet);
   const netDelR = pdr2 ? delR * (1 - pdr2.rate) : delR;
   const profitPU     = priceNet - costNet - (effShip - shipCNet) - platPerOrder - pdrCostPerUnit;
   return {price, cost, shipC, priceNet, costNet, shipCNet, salary, confR, delR, netDelR, effShip, profitPU, platPerOrder, pdrCostPerUnit};
@@ -7691,7 +7753,7 @@ function _simRender(stock, cpp, inp){
   const d0 = n => Math.round(n).toLocaleString('en');
   const {price, cost, shipC, priceNet, costNet, shipCNet, salary, confR, delR, effShip, profitPU} = inp;
 
-  const leadsNeeded = stock > 0 ? Math.ceil(stock / delR / confR) : 0;
+  const leadsNeeded = stock > 0 ? stock / delR / confR : 0;
   const adsNeeded   = cpp > 0 ? cpp * leadsNeeded : 0;
   // Gross revenue (what the customer pays) — used for ROAS (ad platform perspective) and display
   const totalRev    = stock * (price + shipC);
@@ -7990,12 +8052,31 @@ function oiToggleView(key){
 // Reads price/cost/shipping/ad cost straight from the Inputs tab (and the
 // computed actual CPA) instead of asking for them again — no separate copy
 // to maintain, and it stays in sync whenever Inputs change.
+// ad      = CPA per LEAD (as displayed); adOrder = ad cost per DELIVERED order
+//           (CPA ÷ (conf% × del%)) — the number that belongs in per-order profit.
+// shipNet = real shipping burden per delivered order (blended fulfillment +
+//           courier + absorbed returns, minus what the customer pays) — matches
+//           the main tabs instead of the bare courier fee.
 function oiLiveVals(){
   const price=v('i_price'), cost=v('i_cost'), ship=v('i_courier');
   const ad=oiOut('m_acpp') || v('i_avg_cpp');
+  const conf=v('i_conf')/100, del=v('i_del')/100;
+  const adOrder=(conf>0 && del>0) ? ad/(conf*del) : ad;
+  const fulfillDel=v('i_fulfill_del');
+  const _szRet=(typeof advShipReturn==='function') ? advShipReturn() : null;
+  const fulfillRet=(_szRet != null) ? _szRet : v('i_fulfill_ret');
+  const _szCourier=(typeof advShipZones==='function') ? advShipZones() : null;
+  const courier=(_szCourier != null) ? _szCourier : ship;
+  const _szShipC=(typeof advShipCharged==='function') ? advShipCharged() : null;
+  const shipCharged=(_szShipC != null) ? _szShipC : v('i_ship_c');
+  const dmg=returnDamageFrac();
+  const costDel=fulfillDel+courier+cfGetTotalPerOrder();
+  const costRet=fulfillRet+(FF_MODE==='pack'?fulfillDel:0)+dmg*cost;
+  const effShip=del>0 ? (del*costDel+(1-del)*costRet)/del : costRet;
+  const shipNet=effShip-shipCharged;
   const aov=v('i_aov') || price;
   const margin=price>0 ? (price-cost)/price*100 : 0;
-  return {price,cost,ship,ad,aov,margin};
+  return {price,cost,ship,ad,adOrder,shipNet,shipCharged,aov,margin};
 }
 
 let OI_INITED = false;
@@ -8032,7 +8113,7 @@ function oiSetMode(mode){
 // ── Item Discount ──
 function oiItemRecalc(){
   const L=oiLiveVals();
-  const price=L.price, cost=L.cost, ship=L.ship, ad=L.ad;
+  const price=L.price, cost=L.cost, ship=L.shipNet, ad=L.adOrder;
   const discPct=v('oi_it_disc'), orders=v('oi_it_orders'), liftPct=v('oi_it_lift');
   const Tn=T[LANG];
   const has = price>0 && orders>0;
@@ -8128,8 +8209,10 @@ function oiCartRecalc(){
   const revenueAfter = aovAfter*orders - discountCost;
   oiSet('oi_ct_rev_after', has?oiMoney(revenueAfter):'—');
 
+  // The discount reduces profit 1:1 (costs don't shrink with the price),
+  // so it is subtracted AFTER applying the margin — not diluted by it.
   const profitBefore = revenueBefore*marginPct/100;
-  const profitAfter  = revenueAfter*marginPct/100;
+  const profitAfter  = aovAfter*orders*marginPct/100 - discountCost;
   const impact = profitAfter-profitBefore;
   oiSet('oi_ct_impact', has?((impact>=0?'+':'')+oiMoney(impact)):'—', impact>=0?'var(--profit)':'var(--red)');
   oiSet('oi_ct_disc_cost', has?oiMoney(discountCost):'—');
@@ -8165,7 +8248,7 @@ function oiBogoSetType(type){
 }
 function oiBogoRecalc(){
   const L=oiLiveVals();
-  const price=L.price, cost=L.cost, ship=L.ship, ad=L.ad;
+  const price=L.price, cost=L.cost, ship=L.shipNet, ad=L.adOrder;
   const orders=v('oi_bg_orders'), liftPct=v('oi_bg_lift');
   const Tn=T[LANG];
   const cfg = OI_BOGO_TYPES[OI_BG_TYPE] || OI_BOGO_TYPES.b1g1free;
@@ -8220,7 +8303,9 @@ function oiBogoRecalc(){
 // ── Shipping Offer ──
 function oiShipRecalc(){
   const L=oiLiveVals();
-  const aov=L.aov, shipCost=L.ship, marginPct=L.margin;
+  // Offering free shipping forfeits what the customer used to pay per order
+  // (your own courier cost is paid either way) → burden/order = shipping charged.
+  const aov=L.aov, shipCost=L.shipCharged, marginPct=L.margin;
   const orders=v('oi_sh_orders'), liftPct=v('oi_sh_lift');
   const Tn=T[LANG];
   const has = aov>0 && orders>0;
@@ -8299,7 +8384,7 @@ function oiTierSeedDefaults(){
 }
 function oiTierRecalc(){
   const L=oiLiveVals();
-  const price=L.price, cost=L.cost, ship=L.ship, ad=L.ad, orders=v('oi_vt_orders');
+  const price=L.price, cost=L.cost, ship=L.shipNet, ad=L.adOrder, orders=v('oi_vt_orders');
   const Tn=T[LANG];
   const rows=[...document.querySelectorAll('#oi_vt_list .bundle-card')];
   const has = price>0 && orders>0 && rows.length>0;
@@ -8383,7 +8468,11 @@ function _updateSliderBaseline(){
   const price = v('i_price') || 600;
   const del   = v('i_del')   || 60;
   const conf  = v('i_conf')  || 60;
-  const cpa   = v('i_avg_cpp') || (window.LAST_BE_CPA ? Math.round(window.LAST_BE_CPA * 0.7) : 50);
+  // Baseline CPA priority: typed CPA → actual CPA implied by the budget →
+  // 70% of break-even → placeholder. Starting from the implied CPA keeps the
+  // slider's "base" numbers identical to the main tabs in budget mode.
+  const cpa   = v('i_avg_cpp') || (window._lastActualCPP > 0 ? Math.round(window._lastActualCPP)
+              : window.LAST_BE_CPA ? Math.round(window.LAST_BE_CPA * 0.7) : 50);
   window._SL_BASE = { price, del, conf, cpa };
   // Recalc outputs with current slider positions (don't touch slider.value)
   updateSlider('_baseline');
@@ -8394,7 +8483,8 @@ function syncSlidersFromInputs(){
   const price = v('i_price') || 600;
   const del   = v('i_del')   || 60;
   const conf  = v('i_conf')  || 60;
-  const cpa   = v('i_avg_cpp') || (window.LAST_BE_CPA ? Math.round(window.LAST_BE_CPA * 0.7) : 50);
+  const cpa   = v('i_avg_cpp') || (window._lastActualCPP > 0 ? Math.round(window._lastActualCPP)
+              : window.LAST_BE_CPA ? Math.round(window.LAST_BE_CPA * 0.7) : 50);
 
   // Smart ranges
   const pMin   = Math.max(50, Math.round(price * 0.5 / 10) * 10);
@@ -8443,6 +8533,14 @@ function syncSliderToInputs(){
   if(cpaEl   && slCpa)   cpaEl.value   = slCpa.value;
   fmtThousands(priceEl); fmtThousands(cpaEl);
 
+  // Applying a CPA switches the tool to CPA mode — clear the budget field,
+  // otherwise calc() keeps budget mode and the synced CPA is ignored.
+  if(cpaEl && slCpa && numClean(cpaEl.value) > 0){
+    const adsEl = document.getElementById('i_ads');
+    if(adsEl) adsEl.value = '';
+    const dd = document.getElementById('ads_derived_display');
+    if(dd) dd.style.display = 'none';
+  }
   if(typeof calc === 'function') calc();
   syncSlidersFromInputs();
 }
@@ -8479,11 +8577,13 @@ function updateSlider(type){
   _sliderDelta(document.getElementById('sl_conf_delta'),  confR*100,B.conf,  false);
   _sliderDelta(document.getElementById('sl_cpa_delta'),   cpa,      B.cpa,   true);
 
-  const cost=v('i_cost');
+  const units_sl=Math.max(v('i_units') || 1, 0.1);
+  const cost=v('i_cost')*units_sl;
+  const priceOrd=price*units_sl;   // slider price is per unit → order value scales by units
   const fulfillDel=v('i_fulfill_del');
   const _szRet = (typeof advShipReturn==='function') ? advShipReturn() : null;
   const fulfillRet = (_szRet != null) ? _szRet : v('i_fulfill_ret');
-  const commPct=v('i_comm')/100, plat=v('i_plat'), salaryRaw=v('i_salary');
+  const commPct=nn(v('i_comm'))/100, plat=nn(v('i_plat')), salaryRaw=v('i_salary');
   const _szCourier = (typeof advShipZones==='function') ? advShipZones() : null;
   const courier=(_szCourier != null) ? _szCourier : v('i_courier');
   const _szShipC = (typeof advShipCharged==='function') ? advShipCharged() : null;
@@ -8493,20 +8593,20 @@ function updateSlider(type){
   const durMonths = advDurMonths();
   const vatRate   = advVatRate();
   const salary    = salaryRaw * durMonths;
-  const priceNet  = price / (1 + vatRate);
+  const priceNet  = priceOrd / (1 + vatRate);
   const costNet   = cost  / (1 + vatRate);
   const shipCNet  = shipC / (1 + vatRate);
 
-  const gatewayPct2 = v('i_gateway_fee')/100;
-  const commAmt  = price*(commPct+gatewayPct2);
+  const gatewayPct2 = nn(v('i_gateway_fee'))/100;
+  const commAmt  = priceOrd*(commPct+gatewayPct2);
   const dmgFracSl = returnDamageFrac();
-  const costDel  = fulfillDel+courier+commAmt; // plat is per-lead, not per-delivery
+  const costDel  = fulfillDel+courier+commAmt+cfGetTotalPerOrder(priceOrd); // plat is per-lead, not per-delivery
   const costRet  = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0) + dmgFracSl * cost;
   const effShip  = delR > 0 ? (delR*costDel+(1-delR)*costRet)/delR : costRet;
   const leadsPerOrder2 = (confR>0&&delR>0) ? 1/(confR*delR) : 0;
   const platPerOrder2  = (plat+cfGetTotalPerLead())*leadsPerOrder2;
   const pdrSl = (typeof advPDR==='function') ? advPDR() : null;
-  const pdrCostSl = pdrSl ? pdrSl.rate*(pdrSl.ship+dmgFracSl*cost) : 0;
+  const pdrCostSl = plPdrCostPerUnit(pdrSl, dmgFracSl, cost, priceNet, costNet);
   const profitPU  = priceNet - costNet - (effShip - shipCNet) - platPerOrder2 - pdrCostSl;
 
   // BE CPA = same formula as Ads tab: salary spread over delivered units first
@@ -8528,13 +8628,15 @@ function updateSlider(type){
   const bDelR    = (B.del  || delR*100) / 100;
   const bConfR   = (B.conf || confR*100) / 100;
   const bCpa     = B.cpa  !== undefined ? B.cpa : cpa;
-  const bPriceNet = bPrice / (1 + vatRate);
-  const bCommAmt  = bPrice * (commPct + gatewayPct2);
-  const bCostDel  = fulfillDel + courier + bCommAmt; // plat is per-lead, not per-delivery
+  const bPriceOrd = bPrice * units_sl;
+  const bPriceNet = bPriceOrd / (1 + vatRate);
+  const bCommAmt  = bPriceOrd * (commPct + gatewayPct2);
+  const bCostDel  = fulfillDel + courier + bCommAmt + cfGetTotalPerOrder(bPriceOrd); // plat is per-lead, not per-delivery
   const bEffShip  = bDelR > 0 ? (bDelR*bCostDel + (1-bDelR)*costRet) / bDelR : effShip;
   const bLeads    = (bConfR>0&&bDelR>0) ? 1/(bConfR*bDelR) : 0;
   const bPlat     = (plat+cfGetTotalPerLead()) * bLeads;
-  const bProfitPU = bPriceNet - costNet - (bEffShip - shipCNet) - bPlat;
+  const bPdrCost  = plPdrCostPerUnit(pdrSl, dmgFracSl, cost, bPriceNet, costNet);
+  const bProfitPU = bPriceNet - costNet - (bEffShip - shipCNet) - bPlat - bPdrCost;
   const bSalaryPerDelivered = stock > 0 ? salary / stock : 0;
   const bProfitAfterSalary  = bProfitPU - bSalaryPerDelivered;
   const bMaxCPP   = bProfitAfterSalary > 0 ? bConfR * bDelR * bProfitAfterSalary : 0;
@@ -8563,9 +8665,9 @@ function updateSlider(type){
     } else { leadsSub.textContent = ''; }
   }
 
-  // Row 1 — Revenue (all stock) = delivered units × (price + shipC)
-  const totalRev = stock * (price + shipC);
-  const bTotalRev = stock * (bPrice + shipC);
+  // Row 1 — Revenue (all stock) = delivered orders × (order value + shipC)
+  const totalRev = stock * (priceOrd + shipC);
+  const bTotalRev = stock * (bPriceOrd + shipC);
   const revEl = document.getElementById('si_revenue');
   if(revEl){ revEl.textContent = Math.round(totalRev).toLocaleString('en') + ' ' + CURRENCY; }
   const revSub = document.getElementById('si_revenue_sub');
@@ -8839,8 +8941,10 @@ function calcAllProducts(){
 
   // Blended CPA = total budget / total leads
   const blendedCPA   = totalLeads > 0 ? totalAds / totalLeads : 0;
-  // Blended ROAS = total gross revenue / total ads
-  const blendedROAS  = totalAds > 0 ? totalRev / totalAds : 0;
+  // Blended ROAS = total GROSS revenue / total ads — same basis as the main
+  // tab's Actual ROAS (ad-platform view), not the VAT-net revenue.
+  const totalRevGross = all.reduce((s,p)=>s+(p.calc.price+p.calc.shipC)*p.calc.stock,0);
+  const blendedROAS  = totalAds > 0 ? totalRevGross / totalAds : 0;
   // Weighted BE CPA = Σ(beCPP × ads) / Σ ads
   const weightedBECPA= totalAds > 0
     ? all.reduce((s,p)=>s + p.calc.beCPP * p.calc.ads, 0) / totalAds : 0;
@@ -9619,6 +9723,7 @@ function persistSave(){
       advVatLocked: ADV_VAT_LOCKED,
       advPdrLocked: ADV_PDR_LOCKED,
       advBundleLocked: ADV_BUNDLE_LOCKED,
+      advOrganicLocked: ADV_ORGANIC_LOCKED,
       advOpsLocked: ADV_OPS_LOCKED,
       advCashLocked: ADV_CASH_LOCKED,
       advDurVal: document.getElementById('adv_dur') ? document.getElementById('adv_dur').value : '',
@@ -9680,6 +9785,7 @@ function persistLoad(){
     window.__advVatLocked = state.advVatLocked !== undefined ? state.advVatLocked : true;
     window.__advPdrLocked    = state.advPdrLocked    !== undefined ? state.advPdrLocked    : true;
     window.__advBundleLocked = state.advBundleLocked !== undefined ? state.advBundleLocked : true;
+    window.__advOrganicLocked = state.advOrganicLocked !== undefined ? state.advOrganicLocked : true;
     window.__advOpsLocked    = state.advOpsLocked    !== undefined ? state.advOpsLocked    : true;
     window.__advCashLocked   = state.advCashLocked   !== undefined ? state.advCashLocked   : false;
     window.__advBundleRows   = state.advBundleRows || [];
@@ -9729,12 +9835,13 @@ function initProducts(){
 // - كل الباقي بيتحسب على أساسهم
 
 function _tpInputs(){
-  // جيب كل الـ inputs المطلوبة
-  const price      = v('i_price'), cost = v('i_cost');
+  // جيب كل الـ inputs المطلوبة — same unit economics as the main calc()
+  const units_m    = Math.max(v('i_units') || 1, 0.1);
+  const price      = v('i_price') * units_m, cost = v('i_cost') * units_m;
   const fulfillDel = v('i_fulfill_del');
   const _szRet     = (typeof advShipReturn==='function') ? advShipReturn() : null;
   const fulfillRet = (_szRet != null) ? _szRet : v('i_fulfill_ret');
-  const commPct = v('i_comm')/100, plat = v('i_plat');
+  const commPct = nn(v('i_comm'))/100, plat = nn(v('i_plat'));
   const _szCourier = (typeof advShipZones==='function') ? advShipZones() : null;
   const courier    = (_szCourier != null) ? _szCourier : v('i_courier');
   const _szShipC   = (typeof advShipCharged==='function') ? advShipCharged() : null;
@@ -9748,17 +9855,18 @@ function _tpInputs(){
   const priceNet   = price / (1 + vatRate);
   const costNet    = cost  / (1 + vatRate);
   const shipCNet   = shipC / (1 + vatRate);
-  const commAmt    = price * (commPct + v('i_gateway_fee')/100);
+  const commAmt    = price * (commPct + nn(v('i_gateway_fee'))/100);
   const dmgFracTp  = returnDamageFrac();
-  const costDel    = fulfillDel + courier + commAmt;
+  const costDel    = fulfillDel + courier + commAmt + cfGetTotalPerOrder(price);
   const costRet    = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0) + dmgFracTp * cost;
   const effShip    = delR > 0 ? (delR*costDel + (1-delR)*costRet)/delR : costRet;
   const leadsPerOrderTp = (confR>0&&delR>0) ? 1/(confR*delR) : 0;
   const platPerOrderTp  = (plat+cfGetTotalPerLead()) * leadsPerOrderTp;
   const pdrTp = (typeof advPDR==='function') ? advPDR() : null;
-  const pdrCostTp = pdrTp ? pdrTp.rate*(pdrTp.ship+dmgFracTp*cost) : 0;
+  const pdrCostTp = plPdrCostPerUnit(pdrTp, dmgFracTp, cost, priceNet, costNet);
   const profitPU   = priceNet - costNet - (effShip - shipCNet) - platPerOrderTp - pdrCostTp;
-  return {price,cost,shipC,priceNet,costNet,shipCNet,salary,confR,delR,effShip,profitPU};
+  return {price,cost,shipC,priceNet,costNet,shipCNet,salary,confR,delR,effShip,profitPU,
+          platPerOrder:platPerOrderTp, pdrCostPerUnit:pdrCostTp};
 }
 
 function _tpRender(stock, cpp, inp){
@@ -9766,13 +9874,12 @@ function _tpRender(stock, cpp, inp){
   const d0 = n => Math.round(n).toLocaleString('en');
   const {price, cost, shipC, priceNet, costNet, shipCNet, salary, confR, delR, effShip, profitPU} = inp;
 
-  const leadsNeeded = stock > 0 ? Math.ceil(stock / delR / confR) : 0;
+  const leadsNeeded = stock > 0 ? stock / delR / confR : 0;
   const adsNeeded   = cpp > 0 ? cpp * leadsNeeded : 0;
-  // Gross revenue (display) — Net profit uses net values
+  // Gross revenue (display) — Net profit comes straight from profitPU (which
+  // already carries platform/PDR/custom fees), matching the stock solver above.
   const totalRev    = stock * (price + shipC);
-  const totalRevNet = stock * (priceNet + shipCNet);
-  const totalCost   = stock * (costNet + effShip) + salary + adsNeeded;
-  const netProfit   = totalRevNet - totalCost;
+  const netProfit   = stock * profitPU - salary - adsNeeded;
 
   // Break-even CPP و ROAS
   const salaryPU = stock > 0 ? salary / stock : 0;
@@ -9865,12 +9972,9 @@ function calcTargetProfit(){
   const cppField = document.getElementById('tp_cpp');
   // لو المستخدم ما غيّرش الـ CPP بإيده → دايمًا نزامن مع الـ avg CPP
   if(!tpCppTouched){
-    const rawBudget = v('i_ads'), rawCpp = v('i_avg_cpp');
-    const stock     = parseFloat(document.getElementById('tp_stock_input').value) || 0;
-    const leadsEst  = stock > 0 ? stock / (inp.delR * inp.confR) : 1;
-    let actualCPP   = 0;
-    if(rawCpp > 0 && rawBudget === 0) actualCPP = rawCpp;
-    else if(rawBudget > 0 && leadsEst > 0) actualCPP = rawBudget / leadsEst;
+    // Default to the main tab's actual CPA — same number the user already sees,
+    // instead of re-deriving one from the target-profit stock (which differs).
+    const actualCPP = window._lastActualCPP || 0;
     if(actualCPP > 0) cppField.value = (Math.round(actualCPP*10)/10).toFixed(1);
     else cppField.value = '';
   }
@@ -9885,13 +9989,15 @@ function calcTargetProfitFromStock(){ onTpStock(); }
 // ── EXPORT ENGINE ───────────────────────────
 
 function calcProductData(data, salaryRawOverride){
-  const n = id => parseFloat(data[id]) || 0;
-  const price      = n('i_price'),  cost    = n('i_cost');
+  // numClean (not bare parseFloat) so imported strings like "1,000" parse fully
+  const n = id => numClean(data[id]);
+  const units_m    = Math.max(n('i_units') || 1, 0.1);
+  const price      = n('i_price') * units_m,  cost = n('i_cost') * units_m;
   const fulfillDel = n('i_fulfill_del');
   // Shipping Zones are global (like VAT/PDR) → read weighted-avg courier + charged + return from the DOM
   const _szRet     = (typeof advShipReturn==='function') ? advShipReturn() : null;
   const fulfillRet = (_szRet != null) ? _szRet : n('i_fulfill_ret');
-  const commPct = n('i_comm')/100, plat = n('i_plat');
+  const commPct = nn(n('i_comm'))/100, plat = nn(n('i_plat'));
   const _szCourier = (typeof advShipZones==='function') ? advShipZones() : null;
   const courier    = (_szCourier != null) ? _szCourier : n('i_courier');
   const _szShipC   = (typeof advShipCharged==='function') ? advShipCharged() : null;
@@ -9923,19 +10029,20 @@ function calcProductData(data, salaryRawOverride){
     actualCPP = leadsNeeded > 0 ? ads / leadsNeeded : 0;
   }
 
-  const commAmt    = price * (commPct + n('i_gateway_fee')/100); // uses saved product data, not DOM
+  const commAmt    = price * (commPct + nn(n('i_gateway_fee'))/100); // uses saved product data, not DOM
   // Damaged-return loss — lives in the PDR card (global, DOM), mirroring how PDR rate/ship are read here
   const dmgFrac3   = (typeof returnDamageFrac === 'function') ? returnDamageFrac() : 0;
-  const costDel    = fulfillDel + courier;                       // shipping only — commission is a separate P&L line (plat is per-lead, not per-delivery)
+  // Custom fees are global (DOM) like shipping zones — % fees use THIS product's order value
+  const costDel    = fulfillDel + courier + cfGetTotalPerOrder(price); // commission is a separate P&L line (plat is per-lead, not per-delivery)
   const costRet    = fulfillRet + (FF_MODE === 'pack' ? fulfillDel : 0) + dmgFrac3 * cost;
   const effShip    = delR > 0 ? (delR*costDel+(1-delR)*costRet)/delR : costRet; // guard: delR=0 safe
   const retAbs     = effShip - costDel;
   const netShip    = effShip - shipC;
   const leadsPerOrderEx = (confR>0&&delR>0) ? 1/(confR*delR) : 0;
   const platPerOrderEx  = (plat+cfGetTotalPerLead()) * leadsPerOrderEx;
-  // PDR — mirror main calc logic
+  // PDR — mirror main calc logic (incl. refunded margin)
   const pdr3 = (typeof advPDR === 'function') ? advPDR() : null;
-  const pdrCostPerUnit3 = pdr3 ? pdr3.rate * (pdr3.ship + dmgFrac3 * cost) : 0;
+  const pdrCostPerUnit3 = plPdrCostPerUnit(pdr3, dmgFrac3, cost, priceNet, costNet);
   const profitPU   = priceNet - costNet - (effShip - shipCNet) - platPerOrderEx - pdrCostPerUnit3 - commAmt;
   const marginPct  = priceNet > 0 ? (profitPU/priceNet*100) : 0;
   const confNeeded = leadsNeeded * confR;
@@ -10253,11 +10360,6 @@ function exportToExcel(){
     return XLSX.utils.aoa_to_sheet(rows);
   }
 
-  function styleHeaders(ws, headerRow){
-    // SheetJS CE doesn't support full styling, but we set col widths
-    return ws;
-  }
-
   const prodNames = prods.map(p=>p.name);
   const C = CURRENCY;
   const L = k => T[LANG][k] || T.en[k] || k;
@@ -10392,13 +10494,6 @@ function exportToExcel(){
 
   const date = new Date().toISOString().slice(0,10);
   XLSX.writeFile(wb, `ProfitLens_Report_${date}.xlsx`);
-}
-
-// Refresh export preview when switching to overview tab
-const _origGo = typeof go !== 'undefined' ? go : null;
-function goWithExport(i){
-  go(i);
-  if(i === 3) setTimeout(()=>{ renderExportPreview(); }, 50);
 }
 
 // ── LANGUAGE SYSTEM ────────────────────────
@@ -10548,6 +10643,38 @@ async function setCurrency(code, flag){
     const cfCashEl = document.getElementById('adv_cf_cash');
     if(cfCashEl && cfCashEl.value)
       cfCashEl.value = _fxConvertVal(cfCashEl.value, rate, dec);
+
+    // Convert shipping-zone monetary fields (cost / charged / return — shares are %)
+    for(let i = 1; i <= 5; i++){
+      ['sz_cost_','sz_chg_','sz_ret_'].forEach(p => {
+        const el = document.getElementById(p + i);
+        if(el && el.value) el.value = _fxConvertVal(el.value, rate, dec);
+      });
+    }
+
+    // Convert custom fee amounts (EGP/order and EGP/lead types — % rows stay)
+    document.querySelectorAll('.cf-custom-row').forEach(row => {
+      const amtEl = row.querySelector('.cf-amount');
+      const type  = row.querySelector('.cf-type')?.value || 'egp';
+      if(amtEl && amtEl.value && type !== 'pct')
+        amtEl.value = _fxConvertVal(amtEl.value, rate, dec);
+    });
+
+    // Convert fixed-cost breakdown rows (preset categories + custom rows)
+    ['ops','team','tech','mktg','fulfill','cs'].forEach(cat => {
+      document.querySelectorAll('#fc_sub_' + cat + ' input[type=number]').forEach(el => {
+        if(el.value) el.value = _fxConvertVal(el.value, rate, dec);
+      });
+    });
+    document.querySelectorAll('.fc-cval').forEach(el => {
+      if(el.value) el.value = _fxConvertVal(el.value, rate, dec);
+    });
+
+    // Convert planner budgets + target-profit / reality-check monetary fields
+    ['mb_alloc_budget','mb_pro_budget','tp_target','tp_cpp','rc_cpa'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el && el.value) el.value = _fxConvertVal(el.value, rate, dec);
+    });
 
     // Reload active product inputs from converted data
     loadProduct(ACTIVE_PROD);
@@ -12572,6 +12699,11 @@ window.addEventListener('load', ()=>{
   }
   if(window.__advShipzoneLocked===false && ADV_SHIPZONE_LOCKED===true){
     toggleAdvLock('shipzone');
+  }
+  // Restore organic-orders lock — without this, a saved organic value silently
+  // stops counting after a refresh (input restored but lock back to default).
+  if(window.__advOrganicLocked===false && ADV_ORGANIC_LOCKED===true){
+    toggleAdvLock('organic');
   }
   // Restore ops state
   const ci=document.getElementById('adv_cycle_days');if(ci&&window.__advCycleDays)ci.value=window.__advCycleDays;
