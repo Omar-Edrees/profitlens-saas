@@ -78,6 +78,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   details[open] summary .plus { transform: rotate(45deg); }
   details p { margin: 0 0 18px; font-size: 14px; line-height: 1.9; color: #9BA6B4; }
 
+  /* customization request */
+  .custom-textarea { width: 100%; min-height: 120px; padding: 14px 16px; border-radius: 13px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); font-size: 14px; line-height: 1.8; }
+  .btn-custom { color: #fff; background: linear-gradient(140deg, #C084FC, #9333EA); box-shadow: 0 0 40px -8px rgba(192,132,252,0.55), 0 14px 30px -12px rgba(147,51,234,0.65); }
+
   /* whatsapp floating */
   .wa-float { position: fixed; bottom: 22px; left: 22px; z-index: 60; display: flex; align-items: center; gap: 10px; padding: 13px 18px; border-radius: 999px; background: linear-gradient(140deg, #34D399, #10B981); color: #052E16; font-weight: 700; font-size: 14px; box-shadow: 0 12px 34px -8px rgba(16,185,129,0.7); animation: pl-float 3.5s ease-in-out infinite; opacity: 0; pointer-events: none; transform: translateY(12px); transition: opacity .35s ease, transform .35s ease; }
   .wa-float.wa-visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
@@ -95,8 +99,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .grid-3 { grid-template-columns: 1fr; }
     .grid-2 { grid-template-columns: 1fr; }
     .trustbar { grid-template-columns: repeat(2, 1fr); row-gap: 22px; }
+    .trust-scale-stop { font-size: 18px !important; }
     .hero-grid { grid-template-columns: 1fr !important; }
-    .h1 { font-size: 32px !important; }
+    .h1 { font-size: 26px !important; }
+    .hero-kicker { font-size: 19px !important; margin-bottom: 18px !important; }
     .h2 { font-size: 26px; }
     .hide-mobile { display: none !important; }
   }
@@ -143,6 +149,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- ===== HERO ===== -->
   <header class="wrap section" style="padding-top: 40px;">
+    <h2 class="hero-kicker" style="text-align:center; margin: 0 0 26px; font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -0.01em;">نظام مالي متكامل للتجارة الإلكترونية</h2>
     <div class="hero-grid" style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: center;">
 
       <!-- copy -->
@@ -151,7 +158,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#A5B4FC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.2H22l-6 4.4 2.3 7.2-6.3-4.5L5.7 20.8 8 13.6 2 9.2h7.6z"/></svg>
           مصمّمة لأصحاب المتاجر والـ E-commerce
         </span>
-        <h1 class="h1" style="margin: 0 0 20px; font-size: 44px; line-height: 1.22; font-weight: 700; color: #fff; letter-spacing: -0.015em; text-wrap: balance;">
+        <h1 class="h1" style="margin: 20px 0 20px; font-size: 34px; line-height: 1.28; font-weight: 700; color: #fff; letter-spacing: -0.015em; text-wrap: balance;">
           بتعمل مبيعات كتير بس<br>بتطلع خسران أو بمكسب قليل؟
         </h1>
         <p style="margin: 0 0 22px; font-size: 16px; line-height: 1.9; color: #9BA6B4; max-width: 540px;">
@@ -168,12 +175,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
         </div>
         <div class="cta-row" style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
-          <a href="/" class="btn btn-primary" onclick="track('cta_click','hero')">ابدأ — شوف أرقامك الفعلية</a>
+          <a href="#offer-section" class="btn btn-primary" onclick="track('cta_click','hero')">ابدأ — شوف أرقامك الفعلية</a>
         </div>
         <div style="display: flex; align-items: center; gap: 20px; margin-top: 24px; flex-wrap: wrap; font-size: 13px; color: #8B949E;">
           <span style="display:flex; align-items:center; gap:7px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> بيكشف التكاليف الخفية</span>
           <span style="display:flex; align-items:center; gap:7px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> قرار <span class="en">Scale</span> أو <span class="en">Stop</span> واضح</span>
           <span style="display:flex; align-items:center; gap:7px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> من غير خبرة محاسبية</span>
+          <a href="#customization" style="display:flex; align-items:center; gap:7px; color:#E9D5FF; font-weight:600;" onclick="track('customization_hero_link','hero')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.2H22l-6 4.4 2.3 7.2-6.3-4.5L5.7 20.8 8 13.6 2 9.2h7.6z"/></svg> تقدر تطلب تخصيص خاص بيك ←</a>
         </div>
       </div>
 
@@ -203,7 +211,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="trust-item"><div class="big num">دقيقة</div><div class="small">من الأرقام للقرار</div></div>
       <div class="trust-item"><div class="big">7 تحليلات</div><div class="small">في أداة واحدة</div></div>
       <div class="trust-item"><div class="big">ربحك الحقيقي</div><div class="small">بعد كل التكاليف الخفية</div></div>
-      <div class="trust-item"><div class="big"><span class="en">Scale</span> أو <span class="en">Stop</span></div><div class="small">قرار واضح لكل منتج</div></div>
+      <div class="trust-item"><div class="big trust-scale-stop" style="white-space:nowrap;"><span class="en">Scale</span> أو <span class="en">Stop</span></div><div class="small">قرار واضح لكل منتج</div></div>
     </div>
   </div>
 </div>
@@ -214,7 +222,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div style="text-align:center; max-width: 680px; margin: 0 auto 40px;">
       <span class="eyebrow" style="color:#FCA5A5; background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.28);">المشكلة</span>
       <h2 class="h2">المبيعات بتزيد… بس الربح مش باين فين</h2>
-      <p class="lead" style="margin: 0 auto;">أغلب أصحاب المتاجر بيحسبوا الربح بالغلط، فبيكملوا صرف على إعلانات بتاكل الهامش وهما مش حاسين.</p>
+      <p class="lead" style="margin: 0 auto;">فيه تكاليف خفية بتاكل من هامشك من غير ما تحس بيها، وانت مكمّل تصرف على الإعلانات وهي بتقلل ربحك من تحت إيدك.</p>
     </div>
     <div class="grid-3">
       <div class="card">
@@ -340,6 +348,45 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </section>
 
+<!-- ===== CUSTOMIZATION REQUEST ===== -->
+<section id="customization" class="section" style="background: linear-gradient(180deg, transparent, rgba(192,132,252,0.06), transparent);">
+  <div class="wrap">
+    <div class="grid-2" style="align-items:center; gap: 40px;">
+
+      <div>
+        <span class="eyebrow" style="color:#E9D5FF; background: rgba(192,132,252,0.12); border-color: rgba(192,132,252,0.32);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E9D5FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          ميزة مش هتلاقيها في أداة تانية
+        </span>
+        <h2 class="h2">عندك معادلة أو حسبة في دماغك؟<br>اطلبها — وإحنا ننفّذهالك</h2>
+        <p class="lead" style="margin-bottom: 22px;">مش لازم تتقيّد باللي جاهز. لو بتفكر في معادلة رياضية معيّنة، تحليل مخصوص لشغلك، أو أي تعديل في دماغك — ابعتلنا <strong style="color:#E6EDF3; font-weight:600;">طلب تخصيص (Customization)</strong> وفريقنا يظبطهولك جوه الأداة.</p>
+        <ul style="list-style:none; padding:0; margin: 0 0 10px; display:flex; flex-direction:column; gap: 12px;">
+          <li style="display:flex; gap:11px; align-items:flex-start; font-size:14.5px; color:#C9D1D9;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M20 6L9 17l-5-5"/></svg> أي معادلة رياضية أو حسبة خاصة بشغلك — بنضيفهالك</li>
+          <li style="display:flex; gap:11px; align-items:flex-start; font-size:14.5px; color:#C9D1D9;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M20 6L9 17l-5-5"/></svg> تعديلات على التحليلات الموجودة عشان تناسب طريقتك</li>
+          <li style="display:flex; gap:11px; align-items:flex-start; font-size:14.5px; color:#C9D1D9;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M20 6L9 17l-5-5"/></svg> أفكار جديدة خالص؟ اقترحها وهنبني عليها</li>
+        </ul>
+      </div>
+
+      <div class="mock">
+        <div class="mock-inner">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 14px;">
+            <span style="font-size: 13px; font-weight: 700; color:#C9D1D9;">طلب تخصيص</span>
+            <span class="en" style="font-size: 11px; color:#E9D5FF; background: rgba(192,132,252,0.12); padding: 4px 10px; border-radius: 999px; border:1px solid rgba(192,132,252,0.28);">Customization</span>
+          </div>
+          <div style="font-size: 13px; color:#9BA6B4; margin-bottom: 9px; line-height:1.7;">اكتب المعادلة أو التعديل اللي في دماغك:</div>
+          <div class="custom-textarea" style="color:#6E7681; pointer-events:none; user-select:none;">مثال: عايز معادلة تحسبلي هامش الربح بعد خصم عمولة البوابة 2.5% + مصاريف التغليف…</div>
+          <div class="btn btn-custom" style="width:100%; margin-top: 14px; pointer-events:none; user-select:none;" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            ابعت طلب التخصيص
+          </div>
+          <div style="margin-top: 12px; font-size: 12px; color:#8B949E; text-align:center; line-height:1.7;">هنرد عليك ونقولك التنفيذ هياخد قد إيه — من غير أي التزام منك.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- ===== AD ANALYSIS HIGHLIGHT (للمعلن) ===== -->
 <section class="section" style="background: linear-gradient(180deg, transparent, rgba(56,189,248,0.05), transparent);">
   <div class="wrap">
@@ -353,7 +400,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li style="display:flex; gap:11px; align-items:flex-start; font-size:14.5px; color:#C9D1D9;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6EE7B7" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M20 6L9 17l-5-5"/></svg> قارن الـ <span class="en">ROAS</span> الفعلي بنقطة التعادل فورًا</li>
           <li style="display:flex; gap:11px; align-items:flex-start; font-size:14.5px; color:#C9D1D9;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6EE7B7" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M20 6L9 17l-5-5"/></svg> قرار Scale / Stop واضح لكل منتج</li>
         </ul>
-        <a href="/" class="btn btn-primary btn-block-m" onclick="track('cta_click','ad_section')">ابدأ حلّل إعلاناتك</a>
+        <a href="#offer-section" class="btn btn-primary btn-block-m" onclick="track('cta_click','ad_section')">ابدأ حلّل إعلاناتك</a>
       </div>
 
       <div class="mock">
@@ -434,6 +481,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div style="margin-top: 18px; font-size: 13px; color:#8B949E;">عندك سؤال قبل ما تشترك؟ <a href="#" id="wa-inline" style="color:#6EE7B7; font-weight:600;">كلّمنا على واتساب</a></div>
       </div>
     </div>
+
+    <!-- guarantee card -->
+    <div style="position: relative; overflow:hidden; border-radius: 22px; padding: 1.5px; margin-top: 18px; background: linear-gradient(160deg, #34D399, #10B981 45%, rgba(16,185,129,0.25) 70%, #34D399); box-shadow: 0 30px 70px -36px rgba(16,185,129,0.55); animation: pl-glow 3.5s ease-in-out infinite;">
+      <div style="border-radius: 21px; padding: 28px 32px; background: linear-gradient(180deg, #0E1911, #0B140E); text-align:center;">
+        <div style="display:grid; place-items:center; width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 14px; background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.3);">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#6EE7B7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+        <h3 style="margin: 0 0 8px; font-size: 19px; font-weight: 700; color:#fff;">ضمان استرجاع الفلوس بالكامل</h3>
+        <p style="margin: 0 auto; font-size: 14px; line-height: 1.9; color:#A7B5AE; max-width: 480px;">معاك ضمان استرجاع الفلوس <strong style="color:#6EE7B7;">100%</strong> لمدة <strong style="color:#6EE7B7;">7 أيام</strong> كاملة من تاريخ الاشتراك. جرّب الأداة على راحتك، ولو حسيت إنها مش مناسبة ليك لأي سبب، هنرجعلك فلوسك كاملة.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -468,6 +526,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <details>
       <summary>بتشتغل على أي منتج وأي سوق وأي عملة؟ <span class="plus">+</span></summary>
       <p>أيوة. الأداة بتدعم كل العملات وكل أنواع المنتجات، فتقدر تستخدمها لأي منتج وفي أي سوق بتشتغل فيه.</p>
+    </details>
+    <details>
+      <summary>لو محتاج معادلة أو حسبة معيّنة مش موجودة في الأداة؟ <span class="plus">+</span></summary>
+      <p>دي أقوى ميزة عندنا: تقدر تبعت <strong style="color:#E6EDF3;">طلب تخصيص (Customization)</strong> بأي معادلة رياضية أو تعديل في دماغك — سواء حسبة خاصة بشغلك أو فكرة جديدة خالص — وفريقنا يضيفهالك جوه الأداة. ابعتلنا طلبك على <a href="#" id="wa-custom-faq" style="color:#E9D5FF; font-weight:600;">واتساب</a> وهنرد عليك بالتفاصيل.</p>
     </details>
     <details>
       <summary>السعر ده ثابت؟ وفيه اشتراك شهري؟ <span class="plus">+</span></summary>
@@ -529,7 +591,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   var waHref = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' +
     encodeURIComponent('مرحبا، مهتم بـ ProfitLens وعايز أعرف تفاصيل أكتر');
 
-  ['wa-inline','wa-final','wa-footer','wa-floating'].forEach(function(id){
+  ['wa-inline','wa-final','wa-footer','wa-floating','wa-custom-faq'].forEach(function(id){
     var el = document.getElementById(id);
     if (!el) return;
     el.href = waHref;
