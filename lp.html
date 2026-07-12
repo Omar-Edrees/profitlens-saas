@@ -78,6 +78,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   details[open] summary .plus { transform: rotate(45deg); }
   details p { margin: 0 0 18px; font-size: 14px; line-height: 1.9; color: #9BA6B4; }
 
+  /* customization request */
+  .custom-textarea { width: 100%; min-height: 120px; resize: vertical; padding: 14px 16px; border-radius: 13px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #E6EDF3; font-size: 14px; line-height: 1.8; font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; outline: none; transition: border-color .2s ease; }
+  .custom-textarea:focus { border-color: rgba(192,132,252,0.5); }
+  .custom-textarea::placeholder { color: #6E7681; }
+  .btn-custom { color: #fff; background: linear-gradient(140deg, #C084FC, #9333EA); box-shadow: 0 0 40px -8px rgba(192,132,252,0.55), 0 14px 30px -12px rgba(147,51,234,0.65); }
+  .btn-custom:hover { filter: brightness(1.07); transform: translateY(-1px); }
+
   /* whatsapp floating */
   .wa-float { position: fixed; bottom: 22px; left: 22px; z-index: 60; display: flex; align-items: center; gap: 10px; padding: 13px 18px; border-radius: 999px; background: linear-gradient(140deg, #34D399, #10B981); color: #052E16; font-weight: 700; font-size: 14px; box-shadow: 0 12px 34px -8px rgba(16,185,129,0.7); animation: pl-float 3.5s ease-in-out infinite; opacity: 0; pointer-events: none; transform: translateY(12px); transition: opacity .35s ease, transform .35s ease; }
   .wa-float.wa-visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
@@ -174,6 +181,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <span style="display:flex; align-items:center; gap:7px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> بيكشف التكاليف الخفية</span>
           <span style="display:flex; align-items:center; gap:7px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> قرار <span class="en">Scale</span> أو <span class="en">Stop</span> واضح</span>
           <span style="display:flex; align-items:center; gap:7px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#34D399" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg> من غير خبرة محاسبية</span>
+          <a href="#customization" style="display:flex; align-items:center; gap:7px; color:#E9D5FF; font-weight:600;" onclick="track('customization_hero_link','hero')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.2H22l-6 4.4 2.3 7.2-6.3-4.5L5.7 20.8 8 13.6 2 9.2h7.6z"/></svg> تقدر تطلب تخصيص خاص بيك ←</a>
         </div>
       </div>
 
@@ -340,6 +348,45 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </section>
 
+<!-- ===== CUSTOMIZATION REQUEST ===== -->
+<section id="customization" class="section" style="background: linear-gradient(180deg, transparent, rgba(192,132,252,0.06), transparent);">
+  <div class="wrap">
+    <div class="grid-2" style="align-items:center; gap: 40px;">
+
+      <div>
+        <span class="eyebrow" style="color:#E9D5FF; background: rgba(192,132,252,0.12); border-color: rgba(192,132,252,0.32);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E9D5FF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          ميزة مش هتلاقيها في أداة تانية
+        </span>
+        <h2 class="h2">عندك معادلة أو حسبة في دماغك؟<br>اطلبها — وإحنا ننفّذهالك</h2>
+        <p class="lead" style="margin-bottom: 22px;">مش لازم تتقيّد باللي جاهز. لو بتفكر في معادلة رياضية معيّنة، تحليل مخصوص لشغلك، أو أي تعديل في دماغك — ابعتلنا <strong style="color:#E6EDF3; font-weight:600;">طلب تخصيص (Customization)</strong> وفريقنا يظبطهولك جوه الأداة.</p>
+        <ul style="list-style:none; padding:0; margin: 0 0 10px; display:flex; flex-direction:column; gap: 12px;">
+          <li style="display:flex; gap:11px; align-items:flex-start; font-size:14.5px; color:#C9D1D9;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M20 6L9 17l-5-5"/></svg> أي معادلة رياضية أو حسبة خاصة بشغلك — بنضيفهالك</li>
+          <li style="display:flex; gap:11px; align-items:flex-start; font-size:14.5px; color:#C9D1D9;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M20 6L9 17l-5-5"/></svg> تعديلات على التحليلات الموجودة عشان تناسب طريقتك</li>
+          <li style="display:flex; gap:11px; align-items:flex-start; font-size:14.5px; color:#C9D1D9;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C084FC" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M20 6L9 17l-5-5"/></svg> أفكار جديدة خالص؟ اقترحها وهنبني عليها</li>
+        </ul>
+      </div>
+
+      <div class="mock">
+        <div class="mock-inner">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 14px;">
+            <span style="font-size: 13px; font-weight: 700; color:#C9D1D9;">طلب تخصيص</span>
+            <span class="en" style="font-size: 11px; color:#E9D5FF; background: rgba(192,132,252,0.12); padding: 4px 10px; border-radius: 999px; border:1px solid rgba(192,132,252,0.28);">Customization</span>
+          </div>
+          <label for="custom-request-input" style="display:block; font-size: 13px; color:#9BA6B4; margin-bottom: 9px; line-height:1.7;">اكتب المعادلة أو التعديل اللي في دماغك:</label>
+          <textarea id="custom-request-input" class="custom-textarea" placeholder="مثال: عايز معادلة تحسبلي هامش الربح بعد خصم عمولة البوابة 2.5% + مصاريف التغليف…"></textarea>
+          <button class="btn btn-custom" style="width:100%; margin-top: 14px;" onclick="sendCustomRequest()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            ابعت طلب التخصيص على واتساب
+          </button>
+          <div style="margin-top: 12px; font-size: 12px; color:#8B949E; text-align:center; line-height:1.7;">هنرد عليك ونقولك التنفيذ هياخد قد إيه — من غير أي التزام منك.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- ===== AD ANALYSIS HIGHLIGHT (للمعلن) ===== -->
 <section class="section" style="background: linear-gradient(180deg, transparent, rgba(56,189,248,0.05), transparent);">
   <div class="wrap">
@@ -470,6 +517,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <p>أيوة. الأداة بتدعم كل العملات وكل أنواع المنتجات، فتقدر تستخدمها لأي منتج وفي أي سوق بتشتغل فيه.</p>
     </details>
     <details>
+      <summary>لو محتاج معادلة أو حسبة معيّنة مش موجودة في الأداة؟ <span class="plus">+</span></summary>
+      <p>دي أقوى ميزة عندنا: تقدر تبعت <strong style="color:#E6EDF3;">طلب تخصيص (Customization)</strong> بأي معادلة رياضية أو تعديل في دماغك — سواء حسبة خاصة بشغلك أو فكرة جديدة خالص — وفريقنا يضيفهالك جوه الأداة. اكتب طلبك من <a href="#customization" style="color:#E9D5FF; font-weight:600;">سكشن التخصيص</a> وهنرد عليك بالتفاصيل.</p>
+    </details>
+    <details>
       <summary>السعر ده ثابت؟ وفيه اشتراك شهري؟ <span class="plus">+</span></summary>
       <p>اللي بيشترك <strong style="color:#E6EDF3;">دلوقتي</strong> بيدفع <span class="num" style="color:#fff;">500 جنيه بس — مرة واحدة ومفيش أي حاجة تانية عليه خالص</span>. ده عرض خاص بفترة النسخة التجريبية. بعد ما الفترة دي تخلص، السعر بيرجع <span class="num">1500</span> وهيتضاف اشتراك شهري رمزي للتحديثات — بس ده مش عليك انت لو اشتركت دلوقتي.</p>
     </details>
@@ -537,6 +588,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     el.rel = 'noopener';
     el.addEventListener('click', function(){ track('whatsapp_click', id); });
   });
+
+  // ===== Customization request → WhatsApp =====
+  function sendCustomRequest() {
+    var input = document.getElementById('custom-request-input');
+    var idea = (input && input.value ? input.value : '').trim();
+    var msg = idea
+      ? 'مرحبا، عايز أعمل طلب تخصيص (Customization) في ProfitLens:\n\n' + idea
+      : 'مرحبا، عايز أعمل طلب تخصيص (Customization) في ProfitLens وأضيف معادلة/تعديل خاص بيا';
+    track('customization_request', idea ? 'with_details' : 'empty');
+    window.open('https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+  }
 
   document.getElementById('year').textContent = new Date().getFullYear();
 
