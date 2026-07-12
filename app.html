@@ -9648,6 +9648,21 @@ function closeXlModal(){
   if(m) m.style.display = 'none';
 }
 
+function xlShowSuccess(n){
+  const t   = T[LANG];
+  const plu = n !== 1 ? (t.xl_ok_products||'products') : (t.xl_ok_product||'product');
+  document.getElementById('xl_success_msg').textContent =
+    `${t.xl_ok||'Imported'} ${n} ${plu} ${t.xl_ok_suf||'successfully!'}`;
+  const m = document.getElementById('xl_success_modal');
+  if(m) m.style.display = 'flex';
+}
+
+function xlSuccessClose(){
+  const m = document.getElementById('xl_success_modal');
+  if(m) m.style.display = 'none';
+  closeXlModal();
+}
+
 function downloadExcelTemplate(){
   if(!window.XLSX){ alert(T[LANG].xl_err_nolib || 'Excel library not loaded yet. Please try again.'); return; }
   const isAr   = LANG === 'ar';
@@ -9722,6 +9737,7 @@ function handleExcelUpload(input){
       const plu = n !== 1 ? (t.xl_ok_products||'products') : (t.xl_ok_product||'product');
       document.getElementById('xl_status').innerHTML =
         `<span style="color:var(--grn)">✓ ${t.xl_ok||'Imported'} ${n} ${plu} ${t.xl_ok_suf||'successfully!'}</span>`;
+      xlShowSuccess(n);
     } catch(err){
       document.getElementById('xl_status').innerHTML =
         `<span style="color:var(--red)">✗ ${err.message}</span>`;
@@ -11367,6 +11383,7 @@ const T = {
     xl_ai_title:'AI tip', xl_ai_body:'You can share the template with ChatGPT / Gemini and say: "Fill this template with my product data: [paste your data]"',
     xl_reading:'Reading file…', xl_ok:'Imported', xl_ok_products:'products', xl_ok_product:'product', xl_ok_suf:'successfully!',
     xl_err_norows:'File has no data rows.', xl_err_nodatarows:'No data found. Fill in the rows below the header.', xl_err_nolib:'Excel library not loaded yet. Please try again.',
+    xl_success_title:'Upload complete!', xl_back_to_tool:'⬅ Back to tool',
     ap_products_word:'products',
     ap_sort:'Sort', ap_hi:'High first', ap_lo:'Low first',
     ap_f_all:'All', ap_f_profit:'Profitable', ap_f_loss:'Loss', ap_f_sink:'Low coverage', ap_f_ok:'Good coverage',
@@ -11949,6 +11966,7 @@ const T = {
     xl_ai_title:'تلميح AI', xl_ai_body:'يمكنك مشاركة التمبلت مع ChatGPT أو Gemini وتقول: "امل هذا التمبلت ببيانات منتجاتي: [الصق بياناتك]"',
     xl_reading:'جاري قراءة الملف…', xl_ok:'تم استيراد', xl_ok_products:'منتجات', xl_ok_product:'منتج', xl_ok_suf:'بنجاح!',
     xl_err_norows:'الملف لا يحتوي على بيانات.', xl_err_nodatarows:'لم يُعثر على بيانات. امل الصفوف أسفل الهيدر.', xl_err_nolib:'مكتبة Excel لم تُحمَّل بعد. حاول مرة أخرى.',
+    xl_success_title:'تم الرفع بنجاح!', xl_back_to_tool:'⬅ رجوع للتول',
     ap_products_word:'منتج',
     ap_sort:'ترتيب', ap_hi:'الأعلى أولاً', ap_lo:'الأقل أولاً',
     ap_f_all:'الكل', ap_f_profit:'رابحة', ap_f_loss:'خاسرة', ap_f_sink:'تغطية منخفضة', ap_f_ok:'تغطية كافية',
@@ -13119,6 +13137,16 @@ function toggleRevShipping(){
       <div style="font-size:12px;color:var(--txt3);line-height:1.6" data-t="xl_ai_body">You can share the template with ChatGPT / Gemini and say: "Fill this template with my product data: [paste your data]"</div>
     </div>
 
+  </div>
+</div>
+
+<!-- Excel Import — success popup -->
+<div id="xl_success_modal" style="display:none;position:fixed;inset:0;z-index:9200;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);align-items:center;justify-content:center" onclick="if(event.target===this)xlSuccessClose()">
+  <div class="fb-success" style="background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;width:min(360px,92vw);box-shadow:0 20px 60px rgba(0,0,0,.5)">
+    <div class="fb-success-icon">✅</div>
+    <div class="fb-success-title" data-t="xl_success_title">Upload complete!</div>
+    <div class="fb-success-msg" id="xl_success_msg">—</div>
+    <button class="fb-btn" style="margin-top:16px" onclick="xlSuccessClose()" data-t="xl_back_to_tool">⬅ Back to tool</button>
   </div>
 </div>
 
