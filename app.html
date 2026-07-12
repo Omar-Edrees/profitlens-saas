@@ -11352,15 +11352,6 @@ const T = {
     tut_view_full:'View full playlist',
     tut_all_playlists:'All playlists',
     tut_video_word:'videos',
-    welcome_title:'Welcome to ProfitLens 👋',
-    welcome_sub:'Quick heads-up — tap your avatar (top right) anytime to find:',
-    welcome_item1_title:'Tutorial videos',
-    welcome_item1_sub:'Short videos showing you how to use every part of the tool.',
-    welcome_item2_title:'My messages',
-    welcome_item2_sub:'Track replies to any complaint, suggestion, or request you sent.',
-    welcome_item3_title:'Complaints, suggestions & customization',
-    welcome_item3_sub:'Reach us directly — we read and reply to every message.',
-    welcome_cta:'Got it, thanks!',
     mymsg_btn:'My messages', mymsg_title:'My messages',
     mymsg_empty:'You haven\'t sent any messages yet.',
     mymsg_empty_sub:'Use the buttons below to send a complaint, suggestion, or customization request.',
@@ -11943,15 +11934,6 @@ const T = {
     tut_view_full:'عرض قائمة التشغيل بالكامل',
     tut_all_playlists:'كل القوائم',
     tut_video_word:'فيديو',
-    welcome_title:'أهلاً بيك في ProfitLens 👋',
-    welcome_sub:'حاجة سريعة — دوس على الأفاتار بتاعك (فوق يمين) في أي وقت تلاقي فيه:',
-    welcome_item1_title:'شرح التول',
-    welcome_item1_sub:'فيديوهات قصيرة بتوريك إزاي تستخدم كل جزء في التول.',
-    welcome_item2_title:'رسائلي',
-    welcome_item2_sub:'تابع ردود الأدمن على أي شكوى أو اقتراح أو طلب بعتّه.',
-    welcome_item3_title:'شكاوى واقتراحات وطلبات كاستمايزيشن',
-    welcome_item3_sub:'تواصل معانا مباشرة — بنقرأ ونرد على كل رسالة.',
-    welcome_cta:'تمام، فهمت!',
     mymsg_btn:'رسائلي', mymsg_title:'رسائلي',
     mymsg_empty:'لم ترسل أي رسائل بعد.',
     mymsg_empty_sub:'استخدم الأزرار أدناه لإرسال شكوى أو اقتراح أو طلب كاستمايزيشن.',
@@ -12979,17 +12961,17 @@ function toggleRevShipping(){
 
 <!-- ── WELCOME / FEATURE-INTRO MODAL (first login only) ──── -->
 <div class="pl-welcome-overlay" id="pl_welcome_overlay" onclick="if(event.target===this)plWelcomeClose()">
-  <div class="pl-welcome-modal">
-    <div class="pl-welcome-title" data-t="welcome_title">Welcome to ProfitLens 👋</div>
-    <div class="pl-welcome-sub" data-t="welcome_sub">Quick heads-up — tap your avatar (top right) anytime to find:</div>
+  <div class="pl-welcome-modal" dir="rtl">
+    <div class="pl-welcome-title">أهلاً بيك في ProfitLens 👋</div>
+    <div class="pl-welcome-sub">حاجة سريعة — دوس على الأفاتار بتاعك (فوق يمين) في أي وقت تلاقي فيه:</div>
 
     <div class="pl-welcome-item">
       <div class="pl-welcome-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
       </div>
       <div>
-        <div class="pl-welcome-item-title" data-t="welcome_item1_title">Tutorial videos</div>
-        <div class="pl-welcome-item-sub" data-t="welcome_item1_sub">Short videos showing you how to use every part of the tool.</div>
+        <div class="pl-welcome-item-title">شرح التول</div>
+        <div class="pl-welcome-item-sub">فيديوهات قصيرة بتوريك إزاي تستخدم كل جزء في التول.</div>
       </div>
     </div>
 
@@ -12998,8 +12980,8 @@ function toggleRevShipping(){
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       </div>
       <div>
-        <div class="pl-welcome-item-title" data-t="welcome_item2_title">My messages</div>
-        <div class="pl-welcome-item-sub" data-t="welcome_item2_sub">Track replies to any complaint, suggestion, or request you sent.</div>
+        <div class="pl-welcome-item-title">رسائلي</div>
+        <div class="pl-welcome-item-sub">تابع ردود الأدمن على أي شكوى أو اقتراح أو طلب بعتّه.</div>
       </div>
     </div>
 
@@ -13008,12 +12990,12 @@ function toggleRevShipping(){
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
       </div>
       <div>
-        <div class="pl-welcome-item-title" data-t="welcome_item3_title">Complaints, suggestions & customization</div>
-        <div class="pl-welcome-item-sub" data-t="welcome_item3_sub">Reach us directly — we read and reply to every message.</div>
+        <div class="pl-welcome-item-title">شكاوى واقتراحات وطلبات كاستمايزيشن</div>
+        <div class="pl-welcome-item-sub">تواصل معانا مباشرة — بنقرأ ونرد على كل رسالة.</div>
       </div>
     </div>
 
-    <button class="pl-welcome-cta" data-t="welcome_cta" onclick="plWelcomeClose()">Got it, thanks!</button>
+    <button class="pl-welcome-cta" onclick="plWelcomeClose()">تمام، فهمت!</button>
   </div>
 </div>
 
