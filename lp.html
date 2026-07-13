@@ -477,7 +477,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         <div style="margin-top: 16px; font-size: 12.5px; line-height: 1.7; color:#FCD34D;">⏳ عرض مؤقت — اشترك دلوقتي وادفع <span class="num">500</span> بس، من غير أي اشتراك شهري عليك خالص. بعد فترة التجربة السعر بيرجع <span class="num">1500</span>.</div>
 
-        <a href="/" class="btn btn-primary" style="margin-top: 24px; padding: 17px 40px; font-size: 16px;" onclick="track('cta_click','offer')">اشترك الآن وابدأ تربح بثقة</a>
+        <a href="/?checkout=1" class="btn btn-primary" style="margin-top: 24px; padding: 17px 40px; font-size: 16px;" onclick="track('cta_click','offer'); track('begin_checkout','offer')">اشترك الآن وابدأ تربح بثقة</a>
         <div style="margin-top: 18px; font-size: 13px; color:#8B949E;">عندك سؤال قبل ما تشترك؟ <a href="#" id="wa-inline" style="color:#6EE7B7; font-weight:600;">كلّمنا على واتساب</a></div>
       </div>
     </div>
@@ -585,6 +585,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({ event: event, click_location: location || '' });
   }
+
+  // ===== Page view events =====
+  track('content_view');
+  track('landing_page_view');
+
+  // ===== Scroll depth (25/50/75/90/100%), fires once per threshold =====
+  (function(){
+    var thresholds = [25, 50, 75, 90, 100];
+    var fired = {};
+    function onScroll() {
+      var doc = document.documentElement;
+      var scrollTop = window.scrollY || doc.scrollTop;
+      var height = (doc.scrollHeight - doc.clientHeight) || 1;
+      var pct = Math.round((scrollTop / height) * 100);
+      thresholds.forEach(function(t){
+        if (pct >= t && !fired[t]) {
+          fired[t] = true;
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({ event: 'scroll_depth', scroll_percent: t });
+        }
+      });
+      if (fired[100]) window.removeEventListener('scroll', onScroll);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+  })();
 
   // ===== WhatsApp =====
   var WHATSAPP_NUMBER = '201556318082';
