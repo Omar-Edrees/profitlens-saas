@@ -297,6 +297,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     window.dataLayer.push(Object.assign({ event: event }, params || {}));
   }
   track('view_pricing');
+  track('pricing_view');
 
   document.getElementById('price-amount').textContent   = PRICE_EGP;
   document.getElementById('price-original').textContent = PRICE_ORIGINAL;
@@ -312,6 +313,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       );
   }
   document.getElementById('wa-btn').href = defaultWaHref();
+  document.getElementById('wa-btn').addEventListener('click', function () {
+    track('check_purchase');
+  });
 
   // Reset price/CTA back to the default (no coupon) state.
   function resetPriceToDefault() {
@@ -483,6 +487,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (json.activated) {
         // 100% code → free unlock, go straight to the app
         track('promo_code_success', { type: 'free_unlock' });
+        track('purchase', { coupon: code.toUpperCase(), value: 0, currency: 'EGP' });
         msg.textContent = '✓ تم التفعيل! بيتم تحويلك…';
         msg.className = 'promo-msg success';
         setTimeout(() => window.location.replace('/app'), 1200);

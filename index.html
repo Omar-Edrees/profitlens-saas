@@ -244,6 +244,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       window.dataLayer.push(Object.assign({ event: event }, params || {}));
     }
 
+    if (new URLSearchParams(window.location.search).get('checkout') === '1') {
+      track('in_checkout');
+    }
+
     let __sb = null;
 
     async function init() {
@@ -297,6 +301,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       if (error) return showMsg('si-msg', error.message, 'error');
       track('sign_in_success', { method: 'email' });
+      track('complete_checkout', { method: 'email' });
       window.location.replace('/app');
     }
 
@@ -313,11 +318,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const btn = document.getElementById('su-btn');
       btn.disabled = true; btn.textContent = 'Creating account…';
 
-      const { error } = await __sb.auth.signUp({ email, password: pass });
+      const { data, error } = await __sb.auth.signUp({ email, password: pass });
       btn.disabled = false; btn.textContent = 'Create Account';
 
       if (error) return showMsg('su-msg', error.message, 'error');
       track('sign_up_success', { method: 'email' });
+      if (data && data.session) {
+        // Email confirmation disabled → user is already logged in.
+        track('complete_checkout', { method: 'email' });
+        window.location.replace('/app');
+        return;
+      }
       showMsg('su-msg', 'Account created! Check your email to confirm, then sign in.', 'success');
     }
 
