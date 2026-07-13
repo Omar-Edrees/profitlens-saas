@@ -279,6 +279,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     async function doGoogleSignIn() {
       if (!__sb) return alert('Service unavailable — please try again later.');
       track('google_sign_in_click');
+      // Google OAuth redirects straight to /app (skipping this page's sign-in
+      // handlers), so carry the checkout flag through sessionStorage — app.html's
+      // plan gate sends free-plan users to /pricing, which consumes this flag.
+      sessionStorage.setItem('pl_pending_checkout', '1');
       const btn = document.getElementById('google-btn');
       btn.disabled = true; btn.childNodes[1].textContent = ' Redirecting…';
       await __sb.auth.signInWithOAuth({
