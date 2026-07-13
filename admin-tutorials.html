@@ -173,6 +173,7 @@
     <div class="field">
       <label>صورة الغلاف</label>
       <input type="file" id="pl_cover_file" accept="image/*" onchange="onCoverFileChange(this)">
+      <button type="button" class="btn btn-sm btn-danger" id="pl_cover_remove_btn" style="display:none;margin-top:8px" onclick="removeCoverImage()">🗑 إزالة الصورة الحالية</button>
     </div>
     <div class="field">
       <label>العنوان بالعربي</label>
@@ -433,24 +434,62 @@ function openPlModal(id) {
   const preview = document.getElementById('pl_cover_preview');
   if (pl?.cover_url) { preview.style.backgroundImage = `url('${pl.cover_url}')`; preview.textContent = ''; __pendingCoverUrl = pl.cover_url; }
   else { preview.style.backgroundImage = ''; preview.textContent = '🎬'; }
+  document.getElementById('pl_cover_remove_btn').style.display = __pendingCoverUrl ? '' : 'none';
   document.getElementById('pl_modal_overlay').classList.add('open');
 }
 function closePlModal() { document.getElementById('pl_modal_overlay').classList.remove('open'); }
+
+function removeCoverImage() {
+  __pendingCoverUrl = null;
+  document.getElementById('pl_cover_file').value = '';
+  const preview = document.getElementById('pl_cover_preview');
+  preview.style.backgroundImage = '';
+  preview.textContent = '🎬';
+  document.getElementById('pl_cover_remove_btn').style.display = 'none';
+}
+
+// Downscales + re-encodes an uploaded cover to a small JPEG so playlist cards
+// stay light — admin-uploaded (often AI-generated) images can be several MB
+// at full resolution, which is what made "شرح التول" slow to open.
+function resizeCoverImage(file, maxDim = 800, quality = 0.82) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        const scale = maxDim / Math.max(width, height);
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('تعذّر ضغط الصورة')), 'image/jpeg', quality);
+      URL.revokeObjectURL(img.src);
+    };
+    img.onerror = () => reject(new Error('تعذّر قراءة الصورة'));
+    img.src = URL.createObjectURL(file);
+  });
+}
 
 async function onCoverFileChange(input) {
   const file = input.files?.[0];
   if (!file) return;
   const preview = document.getElementById('pl_cover_preview');
   const saveBtn = document.getElementById('pl_modal_save_btn');
-  saveBtn.disabled = true; saveBtn.textContent = 'بيرفع الصورة…';
+  saveBtn.disabled = true; saveBtn.textContent = 'بيضغط الصورة…';
   try {
-    const path = `${__uid}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-    const { error } = await __sb.storage.from('tutorial-covers').upload(path, file, { upsert: false });
+    const resized = await resizeCoverImage(file);
+    saveBtn.textContent = 'بيرفع الصورة…';
+    const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9]/g, '_');
+    const path = `${__uid}/${Date.now()}-${baseName}.jpg`;
+    const { error } = await __sb.storage.from('tutorial-covers').upload(path, resized, { upsert: false, contentType: 'image/jpeg' });
     if (error) throw error;
     const { data: { publicUrl } } = __sb.storage.from('tutorial-covers').getPublicUrl(path);
     __pendingCoverUrl = publicUrl;
     preview.style.backgroundImage = `url('${publicUrl}')`;
     preview.textContent = '';
+    document.getElementById('pl_cover_remove_btn').style.display = '';
   } catch (e) { toast('فشل رفع الصورة: ' + e.message, 'error'); }
   saveBtn.disabled = false; saveBtn.textContent = 'حفظ';
 }

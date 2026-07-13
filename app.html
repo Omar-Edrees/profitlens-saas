@@ -273,6 +273,44 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 }
 .fb-btn:disabled{opacity:.5;cursor:not-allowed}
 
+/* ── Welcome / feature-intro modal (first login only) ── */
+.pl-welcome-overlay{
+  position:fixed;inset:0;z-index:9500;
+  background:rgba(0,0,0,.65);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s;
+  padding:16px;
+}
+.pl-welcome-overlay.open{opacity:1;visibility:visible}
+.pl-welcome-modal{
+  background:var(--surf);border:1px solid var(--bdr2);border-radius:18px;
+  width:100%;max-width:400px;max-height:90vh;overflow-y:auto;
+  box-shadow:0 24px 64px rgba(0,0,0,.55);
+  transform:translateY(16px);transition:transform .2s;
+  padding:22px 20px;
+}
+.pl-welcome-overlay.open .pl-welcome-modal{transform:translateY(0)}
+.pl-welcome-title{font-size:16px;font-weight:700;color:var(--txt-title);margin-bottom:6px}
+.pl-welcome-sub{font-size:12.5px;color:var(--txt2);line-height:1.5;margin-bottom:14px}
+.pl-welcome-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-top:1px solid var(--bdr)}
+.pl-welcome-item:first-of-type{border-top:none}
+.pl-welcome-icon{
+  width:32px;height:32px;border-radius:9px;background:var(--surf2);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--c1);
+}
+.pl-welcome-item-title{font-size:13px;font-weight:600;color:var(--txt)}
+.pl-welcome-item-sub{font-size:11.5px;color:var(--txt2);margin-top:2px;line-height:1.4}
+.pl-welcome-cta{
+  width:100%;margin-top:16px;padding:11px;border:none;border-radius:10px;
+  background:var(--c1);color:#0b0e14;font-family:var(--head);font-size:14px;font-weight:700;
+  cursor:pointer;
+}
+.pl-avatar.pl-pulse{animation:plAvatarPulse 1.6s ease-in-out infinite}
+@keyframes plAvatarPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.55)}
+  50%{box-shadow:0 0 0 8px rgba(52,211,153,0)}
+}
+
 /* ── My Messages chat overlay ── */
 .mymsg-overlay{
   position:fixed;inset:0;z-index:1200;
@@ -9610,6 +9648,21 @@ function closeXlModal(){
   if(m) m.style.display = 'none';
 }
 
+function xlShowSuccess(n){
+  const t   = T[LANG];
+  const plu = n !== 1 ? (t.xl_ok_products||'products') : (t.xl_ok_product||'product');
+  document.getElementById('xl_success_msg').textContent =
+    `${t.xl_ok||'Imported'} ${n} ${plu} ${t.xl_ok_suf||'successfully!'}`;
+  const m = document.getElementById('xl_success_modal');
+  if(m) m.style.display = 'flex';
+}
+
+function xlSuccessClose(){
+  const m = document.getElementById('xl_success_modal');
+  if(m) m.style.display = 'none';
+  closeXlModal();
+}
+
 function downloadExcelTemplate(){
   if(!window.XLSX){ alert(T[LANG].xl_err_nolib || 'Excel library not loaded yet. Please try again.'); return; }
   const isAr   = LANG === 'ar';
@@ -9684,6 +9737,7 @@ function handleExcelUpload(input){
       const plu = n !== 1 ? (t.xl_ok_products||'products') : (t.xl_ok_product||'product');
       document.getElementById('xl_status').innerHTML =
         `<span style="color:var(--grn)">✓ ${t.xl_ok||'Imported'} ${n} ${plu} ${t.xl_ok_suf||'successfully!'}</span>`;
+      xlShowSuccess(n);
     } catch(err){
       document.getElementById('xl_status').innerHTML =
         `<span style="color:var(--red)">✗ ${err.message}</span>`;
@@ -11329,6 +11383,7 @@ const T = {
     xl_ai_title:'AI tip', xl_ai_body:'You can share the template with ChatGPT / Gemini and say: "Fill this template with my product data: [paste your data]"',
     xl_reading:'Reading file…', xl_ok:'Imported', xl_ok_products:'products', xl_ok_product:'product', xl_ok_suf:'successfully!',
     xl_err_norows:'File has no data rows.', xl_err_nodatarows:'No data found. Fill in the rows below the header.', xl_err_nolib:'Excel library not loaded yet. Please try again.',
+    xl_success_title:'Upload complete!', xl_back_to_tool:'⬅ Back to tool',
     ap_products_word:'products',
     ap_sort:'Sort', ap_hi:'High first', ap_lo:'Low first',
     ap_f_all:'All', ap_f_profit:'Profitable', ap_f_loss:'Loss', ap_f_sink:'Low coverage', ap_f_ok:'Good coverage',
@@ -11911,6 +11966,7 @@ const T = {
     xl_ai_title:'تلميح AI', xl_ai_body:'يمكنك مشاركة التمبلت مع ChatGPT أو Gemini وتقول: "امل هذا التمبلت ببيانات منتجاتي: [الصق بياناتك]"',
     xl_reading:'جاري قراءة الملف…', xl_ok:'تم استيراد', xl_ok_products:'منتجات', xl_ok_product:'منتج', xl_ok_suf:'بنجاح!',
     xl_err_norows:'الملف لا يحتوي على بيانات.', xl_err_nodatarows:'لم يُعثر على بيانات. امل الصفوف أسفل الهيدر.', xl_err_nolib:'مكتبة Excel لم تُحمَّل بعد. حاول مرة أخرى.',
+    xl_success_title:'تم الرفع بنجاح!', xl_back_to_tool:'⬅ رجوع للتول',
     ap_products_word:'منتج',
     ap_sort:'ترتيب', ap_hi:'الأعلى أولاً', ap_lo:'الأقل أولاً',
     ap_f_all:'الكل', ap_f_profit:'رابحة', ap_f_loss:'خاسرة', ap_f_sink:'تغطية منخفضة', ap_f_ok:'تغطية كافية',
@@ -12176,6 +12232,7 @@ window.addEventListener('load', ()=>{
         const menu  = wrap.querySelector('#__pl_menu');
         avBtn.addEventListener('click', e => {
           e.stopPropagation();
+          plWelcomeClose();
           const willOpen = !menu.classList.contains('open');
           document.querySelectorAll('.curr-menu').forEach(m => m.classList.remove('show'));
           document.querySelectorAll('.curr-btn').forEach(b => b.classList.remove('open'));
@@ -12189,6 +12246,13 @@ window.addEventListener('load', ()=>{
             tutClose();
           }
         });
+
+        // First-login welcome: highlight the avatar and explain what's inside
+        // the profile menu (tutorials, my messages, feedback) — shown once.
+        if (!localStorage.getItem('pl_welcome_seen_v1')) {
+          avBtn.classList.add('pl-pulse');
+          setTimeout(() => { document.getElementById('pl_welcome_overlay')?.classList.add('open'); }, 700);
+        }
       }
 
       // Cloud sync every 3s
@@ -12230,6 +12294,13 @@ window.addEventListener('load', ()=>{
       '<button style="background:rgba(0,0,0,.2);border:none;color:#fff;cursor:pointer;padding:4px 10px;border-radius:4px;font-size:11px" onclick="this.parentElement.remove()">✕</button>';
     document.body.appendChild(banner);
   })();
+
+  // ── WELCOME / FEATURE-INTRO MODAL (first login only) ───────────────────────
+  window.plWelcomeClose = function() {
+    try { localStorage.setItem('pl_welcome_seen_v1', '1'); } catch(e) {}
+    document.getElementById('pl_welcome_overlay')?.classList.remove('open');
+    document.getElementById('__pl_av')?.classList.remove('pl-pulse');
+  };
 
   // ── FEEDBACK MODAL ──────────────────────────────────────────────────────────
   let _fbType = '';
@@ -12906,6 +12977,46 @@ function toggleRevShipping(){
 
 </script>
 
+<!-- ── WELCOME / FEATURE-INTRO MODAL (first login only) ──── -->
+<div class="pl-welcome-overlay" id="pl_welcome_overlay" onclick="if(event.target===this)plWelcomeClose()">
+  <div class="pl-welcome-modal" dir="rtl">
+    <div class="pl-welcome-title">أهلاً بيك في ProfitLens 👋</div>
+    <div class="pl-welcome-sub">حاجة سريعة — دوس على الأفاتار بتاعك (فوق يمين) في أي وقت تلاقي فيه:</div>
+
+    <div class="pl-welcome-item">
+      <div class="pl-welcome-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      </div>
+      <div>
+        <div class="pl-welcome-item-title">شرح التول</div>
+        <div class="pl-welcome-item-sub">فيديوهات قصيرة بتوريك إزاي تستخدم كل جزء في التول.</div>
+      </div>
+    </div>
+
+    <div class="pl-welcome-item">
+      <div class="pl-welcome-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div>
+        <div class="pl-welcome-item-title">رسائلي</div>
+        <div class="pl-welcome-item-sub">تابع ردود الأدمن على أي شكوى أو اقتراح أو طلب بعتّه.</div>
+      </div>
+    </div>
+
+    <div class="pl-welcome-item">
+      <div class="pl-welcome-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+      </div>
+      <div>
+        <div class="pl-welcome-item-title">شكاوى واقتراحات وطلبات كاستمايزيشن</div>
+        <div class="pl-welcome-item-sub">تواصل معانا مباشرة — بنقرأ ونرد على كل رسالة.</div>
+      </div>
+    </div>
+
+    <button class="pl-welcome-cta" onclick="plWelcomeClose()">تمام، فهمت!</button>
+  </div>
+</div>
+
 <!-- ── FEEDBACK MODAL ──────────────────────────────────── -->
 <!-- My Messages overlay -->
 <div class="mymsg-overlay" id="mymsg_overlay" onclick="if(event.target===this)myMsgClose()">
@@ -13026,6 +13137,16 @@ function toggleRevShipping(){
       <div style="font-size:12px;color:var(--txt3);line-height:1.6" data-t="xl_ai_body">You can share the template with ChatGPT / Gemini and say: "Fill this template with my product data: [paste your data]"</div>
     </div>
 
+  </div>
+</div>
+
+<!-- Excel Import — success popup -->
+<div id="xl_success_modal" style="display:none;position:fixed;inset:0;z-index:9200;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);align-items:center;justify-content:center" onclick="if(event.target===this)xlSuccessClose()">
+  <div class="fb-success" style="background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;width:min(360px,92vw);box-shadow:0 20px 60px rgba(0,0,0,.5)">
+    <div class="fb-success-icon">✅</div>
+    <div class="fb-success-title" data-t="xl_success_title">Upload complete!</div>
+    <div class="fb-success-msg" id="xl_success_msg">—</div>
+    <button class="fb-btn" style="margin-top:16px" onclick="xlSuccessClose()" data-t="xl_back_to_tool">⬅ Back to tool</button>
   </div>
 </div>
 
