@@ -314,7 +314,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
   document.getElementById('wa-btn').href = defaultWaHref();
   document.getElementById('wa-btn').addEventListener('click', function () {
-    track('check_purchase');
+    var currentValue = parseInt(document.getElementById('price-amount').textContent, 10) || 0;
+    track('check_purchase', { value: currentValue, currency: 'EGP' });
   });
 
   // Reset price/CTA back to the default (no coupon) state.
@@ -493,7 +494,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (json.activated) {
         // 100% code → free unlock, go straight to the app
         track('promo_code_success', { type: 'free_unlock' });
-        track('purchase', { coupon: code.toUpperCase(), value: 0, currency: 'EGP' });
+        track('purchase', { coupon: code.toUpperCase(), value: parseInt(PRICE_EGP, 10), currency: 'EGP' });
         msg.textContent = '✓ تم التفعيل! بيتم تحويلك…';
         msg.className = 'promo-msg success';
         setTimeout(() => window.location.replace('/app'), 1200);
