@@ -244,6 +244,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       window.dataLayer.push(Object.assign({ event: event }, params || {}));
     }
 
+    if (new URLSearchParams(window.location.search).get('checkout') === '1') {
+      track('in_checkout');
+    }
+
     let __sb = null;
 
     async function init() {
@@ -275,6 +279,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     async function doGoogleSignIn() {
       if (!__sb) return alert('Service unavailable — please try again later.');
       track('google_sign_in_click');
+      // Google OAuth redirects straight to /app (skipping this page's sign-in
+      // handlers), so carry the checkout flag through sessionStorage — app.html's
+      // plan gate sends free-plan users to /pricing, which consumes this flag.
+      sessionStorage.setItem('pl_pending_checkout', '1');
       const btn = document.getElementById('google-btn');
       btn.disabled = true; btn.childNodes[1].textContent = ' Redirecting…';
       await __sb.auth.signInWithOAuth({
@@ -297,6 +305,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       if (error) return showMsg('si-msg', error.message, 'error');
       track('sign_in_success', { method: 'email' });
+      track('complete_checkout', { method: 'email' });
       window.location.replace('/app');
     }
 
@@ -313,11 +322,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const btn = document.getElementById('su-btn');
       btn.disabled = true; btn.textContent = 'Creating account…';
 
-      const { error } = await __sb.auth.signUp({ email, password: pass });
+      const { data, error } = await __sb.auth.signUp({ email, password: pass });
       btn.disabled = false; btn.textContent = 'Create Account';
 
       if (error) return showMsg('su-msg', error.message, 'error');
       track('sign_up_success', { method: 'email' });
+      if (data && data.session) {
+        // Email confirmation disabled → user is already logged in.
+        track('complete_checkout', { method: 'email' });
+        window.location.replace('/app');
+        return;
+      }
       showMsg('su-msg', 'Account created! Check your email to confirm, then sign in.', 'success');
     }
 

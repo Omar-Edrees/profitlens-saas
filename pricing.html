@@ -297,6 +297,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     window.dataLayer.push(Object.assign({ event: event }, params || {}));
   }
   track('view_pricing');
+  track('pricing_view');
 
   document.getElementById('price-amount').textContent   = PRICE_EGP;
   document.getElementById('price-original').textContent = PRICE_ORIGINAL;
@@ -312,6 +313,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       );
   }
   document.getElementById('wa-btn').href = defaultWaHref();
+  document.getElementById('wa-btn').addEventListener('click', function () {
+    var currentValue = parseInt(document.getElementById('price-amount').textContent, 10) || 0;
+    track('check_purchase', { value: currentValue, currency: 'EGP' });
+  });
 
   // Reset price/CTA back to the default (no coupon) state.
   function resetPriceToDefault() {
@@ -433,6 +438,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           window.location.replace('/app');
           return;
         }
+        // Google sign-in skips index.html's complete_checkout hook (OAuth redirects
+        // straight to /app, which then gates free-plan users here) — consume the flag.
+        if (sessionStorage.getItem('pl_pending_checkout') === '1') {
+          sessionStorage.removeItem('pl_pending_checkout');
+          track('complete_checkout', { method: 'google' });
+        }
         document.getElementById('sign-out-btn').style.display = 'block';
         // already applied a discount code but not paid yet → show their discounted price
         if (profile?.redeemed_code && profile.redeemed_discount_pct != null && profile.redeemed_discount_pct < 100) {
@@ -483,6 +494,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (json.activated) {
         // 100% code → free unlock, go straight to the app
         track('promo_code_success', { type: 'free_unlock' });
+        track('purchase', { coupon: code.toUpperCase(), value: parseInt(PRICE_EGP, 10), currency: 'EGP' });
         msg.textContent = '✓ تم التفعيل! بيتم تحويلك…';
         msg.className = 'promo-msg success';
         setTimeout(() => window.location.replace('/app'), 1200);
