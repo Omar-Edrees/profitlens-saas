@@ -273,24 +273,28 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 }
 .fb-btn:disabled{opacity:.5;cursor:not-allowed}
 
-/* ── Welcome / feature-intro modal (first login only) ── */
-.pl-welcome-overlay{
-  position:fixed;inset:0;z-index:9500;
-  background:rgba(0,0,0,.65);backdrop-filter:blur(4px);
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s;
-  padding:16px;
+/* ── Welcome / feature-intro sticky card (first login only) ── */
+.pl-welcome-card{
+  position:fixed;z-index:9500;
+  width:290px;max-width:calc(100vw - 24px);max-height:80vh;overflow-y:auto;
+  background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;
+  box-shadow:0 20px 50px rgba(0,0,0,.5);
+  padding:20px 18px 18px;
+  opacity:0;visibility:hidden;transform:translateY(-10px);
+  transition:opacity .2s,visibility .2s,transform .2s;
 }
-.pl-welcome-overlay.open{opacity:1;visibility:visible}
-.pl-welcome-modal{
-  background:var(--surf);border:1px solid var(--bdr2);border-radius:18px;
-  width:100%;max-width:400px;max-height:90vh;overflow-y:auto;
-  box-shadow:0 24px 64px rgba(0,0,0,.55);
-  transform:translateY(16px);transition:transform .2s;
-  padding:22px 20px;
+.pl-welcome-card.open{opacity:1;visibility:visible;transform:translateY(0)}
+.pl-welcome-arrow{
+  position:absolute;top:-8px;width:16px;height:16px;
+  background:var(--surf);border-inline-start:1px solid var(--bdr2);border-top:1px solid var(--bdr2);
+  transform:rotate(45deg);
 }
-.pl-welcome-overlay.open .pl-welcome-modal{transform:translateY(0)}
-.pl-welcome-title{font-size:16px;font-weight:700;color:var(--txt-title);margin-bottom:6px}
+.pl-welcome-close{
+  position:absolute;top:10px;inset-inline-end:12px;background:none;border:none;
+  color:var(--txt2);cursor:pointer;font-size:18px;line-height:1;padding:2px;
+}
+.pl-welcome-close:hover{color:var(--txt)}
+.pl-welcome-title{font-size:16px;font-weight:700;color:var(--txt-title);margin-bottom:6px;padding-inline-end:18px}
 .pl-welcome-sub{font-size:12.5px;color:var(--txt2);line-height:1.5;margin-bottom:14px}
 .pl-welcome-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-top:1px solid var(--bdr)}
 .pl-welcome-item:first-of-type{border-top:none}
@@ -7638,7 +7642,7 @@ function resetDef(){
 // ── ROAS SIMULATOR ─────────────────────────────────────────────────────────
 // ══════════════════════════════════════════════════════
 //  ROAS TARGET SIMULATOR — 4-Scenario Lock System
-//  القاعدة: locked = أنت بتحدده | unlocked = التول يحسبه
+//  القاعدة: locked = أنت بتحدده | unlocked = الأداة تحسبه
 //
 //  Scenario A: ROAS🔒               → CPA + Stock (from Inputs)
 //  Scenario B: ROAS🔒 + Rev🔒       → CPA + Stock calculated
@@ -11527,12 +11531,12 @@ const T = {
     tip_comm:'نسبة عمولة بتتحسب على كل أوردر موصّل — مثال: عمولة شركة شحن أو منصة بيع.',
     tip_gateway:'نسبة بيأخذها بوابة الدفع على كل أوردر موصّل — مثال: Paymob, Stripe, PayTabs.',
     tip_plat:'مبلغ ثابت بيتحسب على كل ليد بييجي من الإعلانات — بغض النظر عن التأكيد أو التوصيل.<br>مثال: منصة EasyOrders بتاخد مبلغ على كل ليد وارد.',
-    tip_budget:'إجمالي ميزانية الإعلانات الشهرية على كل القنوات.<br>لو فتحت تقسيم القنوات، التول بيجمع القنوات تلقائي هنا.',
+    tip_budget:'إجمالي ميزانية الإعلانات الشهرية على كل القنوات.<br>لو فتحت تقسيم القنوات، الأداة بتجمع القنوات تلقائي هنا.',
     tip_avg_cpp:'متوسط تكلفة اكتساب الليد عبر كل القنوات مجتمعة.<br>لو فتحت تقسيم القنوات، بيتحسب تلقائي كـ متوسط موزون.<br>لو بتكتب هنا مباشرة → مستقل.',
     tip_salary:'كل التكاليف الثابتة الشهرية — رواتب، إيجار، اشتراكات، أدوات، إنتاج...<br>تكلفة على مستوى البيزنس: بتتكتب مرة واحدة وبتتقسم على كل المنتجات حسب عدد الأوردرات في صفحة الإجمالي.',
-    tip_dur:'مدة الحملة بالشهور. التول يضرب الراتب الشهري × المدة علشان يحسب التكلفة الإجمالية للراتب.<br>لو القفل مقفول → التول بيعتبر الحملة شهر واحد (السلوك الافتراضي).',
-    tip_vat:'نسبة ضريبة القيمة المضافة (14% في مصر للمسجّلين). التول بيخصم الـ VAT من الإيراد وبيضيف VAT على التكاليف (ضريبة المدخلات).<br>لو القفل مقفول → التول مش بيحسب VAT نهائياً.',
-    tip_bundle:'حط كل باندل وعدد الأوردرات. التول هيحسب متوسط السعر والشحن تلقائياً.',
+    tip_dur:'مدة الحملة بالشهور. الأداة بتضرب الراتب الشهري × المدة علشان تحسب التكلفة الإجمالية للراتب.<br>لو القفل مقفول → الأداة بتعتبر الحملة شهر واحد (السلوك الافتراضي).',
+    tip_vat:'نسبة ضريبة القيمة المضافة (14% في مصر للمسجّلين). الأداة بتخصم الـ VAT من الإيراد وبتضيف VAT على التكاليف (ضريبة المدخلات).<br>لو القفل مقفول → الأداة مش بتحسب VAT نهائياً.',
+    tip_bundle:'حط كل باندل وعدد الأوردرات. الأداة هتحسب متوسط السعر والشحن تلقائياً.',
     tip_real_ship:'التكلفة الحقيقية للشحن لكل وحدة موصّلة بعد احتساب المرتجعات.<br>= (Del% × تكلفة التوصيل + (1−Del%) × تكلفة المرتجع) ÷ Del%',
     tip_collected:'مبلغ الشحن اللي بتحصّله من العميل لكل وحدة موصّلة.',
     tip_net_ship:'صافي تكلفة الشحن اللي بتتحملها أنت بعد ما العميل دفع.<br>= الشحن الحقيقي − دفع العميل',
@@ -11943,8 +11947,8 @@ const T = {
     fb_err_msg:'الرجاء كتابة رسالتك.',
     fb_err_size:'الملف كبير جداً (الحد الأقصى 5MB).',
     fb_err_send:'فشل الإرسال. حاول مرة أخرى.',
-    tut_btn:'شرح التول', tut_title:'شرح التول',
-    tut_eye:'شرح', tut_sub:'فيديوهات قصيرة بتشرح إزاي تستخدم التول.', tut_back:'رجوع',
+    tut_btn:'شرح الأداة', tut_title:'شرح الأداة',
+    tut_eye:'شرح', tut_sub:'فيديوهات قصيرة بتشرح إزاي تستخدم الأداة.', tut_back:'رجوع',
     tut_empty:'لسه مفيش فيديوهات شرح.',
     tut_empty_sub:'بنجهزها دلوقتي — تابعنا قريب.',
     tut_more_videos:'فيديوهات تانية',
@@ -12251,7 +12255,10 @@ window.addEventListener('load', ()=>{
         // the profile menu (tutorials, my messages, feedback) — shown once.
         if (!localStorage.getItem('pl_welcome_seen_v1')) {
           avBtn.classList.add('pl-pulse');
-          setTimeout(() => { document.getElementById('pl_welcome_overlay')?.classList.add('open'); }, 700);
+          setTimeout(() => {
+            window.plWelcomePosition?.();
+            document.getElementById('pl_welcome_card')?.classList.add('open');
+          }, 700);
         }
       }
 
@@ -12295,12 +12302,40 @@ window.addEventListener('load', ()=>{
     document.body.appendChild(banner);
   })();
 
-  // ── WELCOME / FEATURE-INTRO MODAL (first login only) ───────────────────────
+  // ── WELCOME / FEATURE-INTRO STICKY CARD (first login only) ─────────────────
+  window.plWelcomePosition = function() {
+    const card  = document.getElementById('pl_welcome_card');
+    const arrow = document.getElementById('pl_welcome_arrow');
+    const av    = document.getElementById('__pl_av');
+    if (!card || !arrow || !av) return;
+    const avRect = av.getBoundingClientRect();
+    const margin = 12;
+    const cardW  = card.offsetWidth || 290;
+    const avCenterX = avRect.left + avRect.width / 2;
+    let cardLeft = avCenterX - cardW / 2;
+    cardLeft = Math.max(margin, Math.min(cardLeft, window.innerWidth - cardW - margin));
+    card.style.left = cardLeft + 'px';
+    card.style.top  = (avRect.bottom + 14) + 'px';
+    const arrowLeft = Math.max(14, Math.min(avCenterX - cardLeft - 8, cardW - 30));
+    arrow.style.left = arrowLeft + 'px';
+  };
+
   window.plWelcomeClose = function() {
     try { localStorage.setItem('pl_welcome_seen_v1', '1'); } catch(e) {}
-    document.getElementById('pl_welcome_overlay')?.classList.remove('open');
+    document.getElementById('pl_welcome_card')?.classList.remove('open');
     document.getElementById('__pl_av')?.classList.remove('pl-pulse');
   };
+
+  window.addEventListener('resize', () => {
+    if (document.getElementById('pl_welcome_card')?.classList.contains('open')) window.plWelcomePosition();
+  });
+  document.addEventListener('click', e => {
+    const card = document.getElementById('pl_welcome_card');
+    const av   = document.getElementById('__pl_av');
+    if (!card || !card.classList.contains('open')) return;
+    if (card.contains(e.target) || av?.contains(e.target)) return;
+    window.plWelcomeClose();
+  });
 
   // ── FEEDBACK MODAL ──────────────────────────────────────────────────────────
   let _fbType = '';
@@ -12977,44 +13012,44 @@ function toggleRevShipping(){
 
 </script>
 
-<!-- ── WELCOME / FEATURE-INTRO MODAL (first login only) ──── -->
-<div class="pl-welcome-overlay" id="pl_welcome_overlay" onclick="if(event.target===this)plWelcomeClose()">
-  <div class="pl-welcome-modal" dir="rtl">
-    <div class="pl-welcome-title">أهلاً بيك في ProfitLens 👋</div>
-    <div class="pl-welcome-sub">حاجة سريعة — دوس على الأفاتار بتاعك (فوق يمين) في أي وقت تلاقي فيه:</div>
+<!-- ── WELCOME / FEATURE-INTRO STICKY CARD (first login only) ──── -->
+<div class="pl-welcome-card" id="pl_welcome_card" dir="rtl">
+  <div class="pl-welcome-arrow" id="pl_welcome_arrow"></div>
+  <button class="pl-welcome-close" onclick="plWelcomeClose()" aria-label="إغلاق">✕</button>
+  <div class="pl-welcome-title">أهلاً بيك في ProfitLens 👋</div>
+  <div class="pl-welcome-sub">حاجة سريعة — دوس على الأفاتار بتاعك في أي وقت تلاقي فيه:</div>
 
-    <div class="pl-welcome-item">
-      <div class="pl-welcome-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-      </div>
-      <div>
-        <div class="pl-welcome-item-title">شرح التول</div>
-        <div class="pl-welcome-item-sub">فيديوهات قصيرة بتوريك إزاي تستخدم كل جزء في التول.</div>
-      </div>
+  <div class="pl-welcome-item">
+    <div class="pl-welcome-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
     </div>
-
-    <div class="pl-welcome-item">
-      <div class="pl-welcome-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-      </div>
-      <div>
-        <div class="pl-welcome-item-title">رسائلي</div>
-        <div class="pl-welcome-item-sub">تابع ردود الأدمن على أي شكوى أو اقتراح أو طلب بعتّه.</div>
-      </div>
+    <div>
+      <div class="pl-welcome-item-title">شرح الأداة</div>
+      <div class="pl-welcome-item-sub">فيديوهات قصيرة بتوريك إزاي تستخدم كل جزء في الأداة.</div>
     </div>
-
-    <div class="pl-welcome-item">
-      <div class="pl-welcome-icon">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
-      </div>
-      <div>
-        <div class="pl-welcome-item-title">شكاوى واقتراحات وطلبات كاستمايزيشن</div>
-        <div class="pl-welcome-item-sub">تواصل معانا مباشرة — بنقرأ ونرد على كل رسالة.</div>
-      </div>
-    </div>
-
-    <button class="pl-welcome-cta" onclick="plWelcomeClose()">تمام، فهمت!</button>
   </div>
+
+  <div class="pl-welcome-item">
+    <div class="pl-welcome-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    </div>
+    <div>
+      <div class="pl-welcome-item-title">رسائلي</div>
+      <div class="pl-welcome-item-sub">تابع ردود الأدمن على أي شكوى أو اقتراح أو طلب بعتّه.</div>
+    </div>
+  </div>
+
+  <div class="pl-welcome-item">
+    <div class="pl-welcome-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+    </div>
+    <div>
+      <div class="pl-welcome-item-title">شكاوى واقتراحات وطلبات كاستمايزيشن</div>
+      <div class="pl-welcome-item-sub">تواصل معانا مباشرة — بنقرأ ونرد على كل رسالة.</div>
+    </div>
+  </div>
+
+  <button class="pl-welcome-cta" onclick="plWelcomeClose()">تمام، فهمت!</button>
 </div>
 
 <!-- ── FEEDBACK MODAL ──────────────────────────────────── -->

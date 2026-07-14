@@ -51,6 +51,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .promo-remove:hover { color: #F87171; }
   .promo-remove:disabled { opacity: .5; cursor: not-allowed; }
 
+  /* tool overview video */
+  .pl-video-wrap { position: relative; cursor: pointer; aspect-ratio: 16/9; background: #000; overflow: hidden; }
+  .pl-video-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: .78; transition: opacity .2s ease; }
+  .pl-video-wrap:hover img { opacity: .92; }
+  .pl-video-wrap iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .pl-video-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .pl-video-play span { width: 64px; height: 64px; border-radius: 50%; background: rgba(129,140,248,0.92); display: grid; place-items: center; box-shadow: 0 10px 30px -6px rgba(99,102,241,0.75); transition: transform .2s ease; }
+  .pl-video-wrap:hover .pl-video-play span { transform: scale(1.06); }
+
   @media (max-width: 980px) {
     .pl-grid { grid-template-columns: 1fr !important; }
     .pl-h1 { font-size: 30px !important; }
@@ -108,6 +117,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </span>
           <h1 class="pl-h1" style="margin: 0 0 18px; font-size: 40px; line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; color: #fff; text-wrap: balance;">تحكم في أرباحك،<br>بأداة واحدة متكاملة.</h1>
           <p style="margin: 0; max-width: 580px; font-size: 16px; line-height: 1.85; color: #9BA6B4;">بدون تعقيد أو اشتراكات شهرية، <span style="color: #C9D1D9; font-weight: 600; font-family: 'Inter', sans-serif;">ProfitLens</span> بتوفرلك كل اللي تحتاجه عشان تحسب صافي أرباحك الحقيقية، تحلل تكاليف الشحن، وتعمل سكيل لإعلاناتك بأمان تام.</p>
+        </section>
+
+        <!-- tool overview video -->
+        <section style="position: relative; overflow: hidden; border-radius: 22px; border: 1px solid rgba(255,255,255,0.07); box-shadow: 0 30px 70px -30px rgba(0,0,0,0.7); background: #0B0E14;">
+          <div class="pl-video-wrap" data-vid="ejKOGYj8_Uo" onclick="plPlayVideo(this)">
+            <img src="https://i.ytimg.com/vi/ejKOGYj8_Uo/hqdefault.jpg" alt="نظرة عامة على الأداة" loading="lazy">
+            <div class="pl-video-play"><span><svg width="24" height="24" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></div>
+          </div>
+          <div style="padding: 16px 20px; font-size: 14px; font-weight: 700; color: #fff;">شاهد نظرة عامة على الأداة</div>
         </section>
 
         <!-- feature grid -->
@@ -298,6 +316,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   }
   track('view_pricing');
   track('pricing_view');
+
+  function plPlayVideo(wrap) {
+    const vid = wrap.getAttribute('data-vid');
+    const iframe = document.createElement('iframe');
+    iframe.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(vid) + '?autoplay=1&rel=0';
+    iframe.title = 'YouTube video player';
+    iframe.setAttribute('frameborder', '0');
+    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+    iframe.setAttribute('allowfullscreen', '');
+    wrap.innerHTML = '';
+    wrap.appendChild(iframe);
+    wrap.onclick = null;
+    track('pricing_video_play', { video_id: vid });
+  }
 
   document.getElementById('price-amount').textContent   = PRICE_EGP;
   document.getElementById('price-original').textContent = PRICE_ORIGINAL;

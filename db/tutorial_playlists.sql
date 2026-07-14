@@ -86,13 +86,13 @@ declare
 begin
   if not exists (select 1 from public.tutorial_videos) then
     insert into public.tutorial_playlists (title_ar, title_en, sort_order)
-    values ('شرح التول', 'Tool Explanation', 0)
+    values ('شرح الأداة', 'Tool Explanation', 0)
     returning id into default_playlist_id;
 
     insert into public.tutorial_videos (playlist_id, youtube_id, title_ar, title_en, sort_order) values
-      (default_playlist_id, 'ejKOGYj8_Uo', 'ProfitLens - نظرة عامة على التول',      'ProfitLens - Tool Overview',           0),
-      (default_playlist_id, '9fiGm833TEU', 'ProfitLens - شرح التول (الجزء 2)',      'ProfitLens - Tool Explanation (Part 2)', 1),
-      (default_playlist_id, 'KLCCHDjPClY', 'ProfitLens - شرح التول (الجزء 3)',      'ProfitLens - Tool Explanation (Part 3)', 2),
-      (default_playlist_id, 'Gj27cuD_Pmg', 'ProfitLens - شرح التول (الجزء 4)',      'ProfitLens - Tool Explanation (Part 4)', 3);
+      (default_playlist_id, 'ejKOGYj8_Uo', 'ProfitLens - نظرة عامة على الأداة',      'ProfitLens - Tool Overview',           0),
+      (default_playlist_id, '9fiGm833TEU', 'ProfitLens - شرح الأداة (الجزء 2)',      'ProfitLens - Tool Explanation (Part 2)', 1),
+      (default_playlist_id, 'KLCCHDjPClY', 'ProfitLens - شرح الأداة (الجزء 3)',      'ProfitLens - Tool Explanation (Part 3)', 2),
+      (default_playlist_id, 'Gj27cuD_Pmg', 'ProfitLens - شرح الأداة (الجزء 4)',      'ProfitLens - Tool Explanation (Part 4)', 3);
   end if;
 end $$;
