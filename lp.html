@@ -49,6 +49,31 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .btn-wa { color: #052E16; background: linear-gradient(140deg, #34D399, #10B981); box-shadow: 0 0 40px -6px rgba(52,211,153,0.55), 0 14px 30px -10px rgba(16,185,129,0.6); }
   .btn-wa:hover { filter: brightness(1.06); transform: translateY(-1px); }
 
+  /* mid-page CTA dividers (before / after the features section) — two distinct animation treatments */
+  .cta-divider { text-align: center; padding: 10px 0 6px; }
+  .btn-cta-shine { position: relative; overflow: hidden; isolation: isolate; }
+  .btn-cta-shine::after {
+    content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%);
+    background-size: 250% 100%; background-position: 150% 0;
+    animation: cta-shine-sweep 3.2s ease-in-out infinite;
+  }
+  @keyframes cta-shine-sweep {
+    0%, 45% { background-position: 150% 0; }
+    100% { background-position: -50% 0; }
+  }
+  .btn-cta-glowring { position: relative; z-index: 0; }
+  .btn-cta-glowring::before {
+    content: ""; position: absolute; inset: -3px; z-index: -1; border-radius: 17px;
+    background: conic-gradient(from 0deg, #818CF8, #38BDF8, #34D399, #FBBF24, #818CF8);
+    filter: blur(7px); opacity: .85;
+    animation: cta-glowring-spin 3.6s linear infinite;
+  }
+  @keyframes cta-glowring-spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-cta-shine::after, .btn-cta-glowring::before { animation: none; }
+  }
+
   /* card */
   .card { position: relative; overflow: hidden; border-radius: 18px; padding: 26px; background: linear-gradient(160deg, rgba(22,27,34,0.85), rgba(15,19,26,0.65)); border: 1px solid rgba(255,255,255,0.06); transition: border-color .2s ease, transform .2s ease; }
   .card:hover { border-color: rgba(129,140,248,0.32); transform: translateY(-2px); }
@@ -295,6 +320,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </section>
 
+<!-- ===== CTA (before features) ===== -->
+<div class="wrap cta-divider">
+  <a href="#offer-section" class="btn btn-primary btn-cta-shine" onclick="track('cta_click','before_features')">جاهز تكتشف كل ده بنفسك؟</a>
+</div>
+
 <!-- ===== FEATURES ===== -->
 <section class="section">
   <div class="wrap">
@@ -362,6 +392,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 </section>
+
+<!-- ===== CTA (after features) ===== -->
+<div class="wrap cta-divider">
+  <a href="#offer-section" class="btn btn-primary btn-cta-glowring" onclick="track('cta_click','after_features')">يلا نبدأ — جرّب كل الميزات دي دلوقتي</a>
+</div>
 
 <!-- ===== CUSTOMIZATION REQUEST ===== -->
 <section id="customization" class="section" style="background: linear-gradient(180deg, transparent, rgba(192,132,252,0.06), transparent);">
