@@ -51,21 +51,20 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   /* mid-page CTA dividers (before / after the features section) — two distinct animation treatments */
   .cta-divider { text-align: center; padding: 10px 0 6px; }
-  /* shatter / reassemble button: the surface is split into a 4x3 grid of
-     tiles, each animates out to its own offset and back, in sync, on a loop */
-  .btn-cta-shatter { position: relative; overflow: hidden; background: transparent; }
-  .btn-cta-shatter .shatter-piece {
-    position: absolute; width: 25%; height: 33.34%;
-    background-image: linear-gradient(140deg, #818CF8, #6366F1);
-    background-size: 400% 300%;
-    animation: cta-shatter 3.8s ease-in-out infinite;
-    will-change: transform;
+  .btn-cta-shine { position: relative; overflow: hidden; isolation: isolate; animation: cta-shine-bob 2.6s ease-in-out infinite; }
+  .btn-cta-shine::after {
+    content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%);
+    background-size: 250% 100%; background-position: 150% 0;
+    animation: cta-shine-sweep 3.2s ease-in-out infinite;
   }
-  .btn-cta-shatter .shatter-label { position: relative; z-index: 2; }
-  @keyframes cta-shatter {
-    0%, 12% { transform: translate(0,0) rotate(0deg); }
-    50% { transform: translate(var(--sx), var(--sy)) rotate(var(--sr)); }
-    88%, 100% { transform: translate(0,0) rotate(0deg); }
+  @keyframes cta-shine-sweep {
+    0%, 45% { background-position: 150% 0; }
+    100% { background-position: -50% 0; }
+  }
+  @keyframes cta-shine-bob {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-7px) scale(1.03); }
   }
   .btn-cta-glowring { position: relative; z-index: 0; }
   .btn-cta-glowring::before {
@@ -76,7 +75,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
   @keyframes cta-glowring-spin { to { transform: rotate(360deg); } }
   @media (prefers-reduced-motion: reduce) {
-    .btn-cta-shatter .shatter-piece, .btn-cta-glowring::before { animation: none; }
+    .btn-cta-shine, .btn-cta-shine::after, .btn-cta-glowring::before { animation: none; }
   }
 
   /* card */
@@ -327,21 +326,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- ===== CTA (before features) ===== -->
 <div class="wrap cta-divider">
-  <a href="#offer-section" class="btn btn-primary btn-cta-shatter" onclick="track('cta_click','before_features')">
-    <span class="shatter-piece" style="left:0%;   top:0%;      background-position:0% 0%;      --sx:-18px; --sy:-14px; --sr:-18deg;"></span>
-    <span class="shatter-piece" style="left:25%;  top:0%;      background-position:33.33% 0%;   --sx:-6px;  --sy:-20px; --sr:14deg;"></span>
-    <span class="shatter-piece" style="left:50%;  top:0%;      background-position:66.67% 0%;   --sx:6px;   --sy:-20px; --sr:-14deg;"></span>
-    <span class="shatter-piece" style="left:75%;  top:0%;      background-position:100% 0%;     --sx:18px;  --sy:-14px; --sr:18deg;"></span>
-    <span class="shatter-piece" style="left:0%;   top:33.34%;  background-position:0% 50%;      --sx:-22px; --sy:0px;   --sr:-10deg;"></span>
-    <span class="shatter-piece" style="left:25%;  top:33.34%;  background-position:33.33% 50%;  --sx:-8px;  --sy:6px;   --sr:12deg;"></span>
-    <span class="shatter-piece" style="left:50%;  top:33.34%;  background-position:66.67% 50%;  --sx:8px;   --sy:-6px;  --sr:-12deg;"></span>
-    <span class="shatter-piece" style="left:75%;  top:33.34%;  background-position:100% 50%;    --sx:22px;  --sy:0px;   --sr:10deg;"></span>
-    <span class="shatter-piece" style="left:0%;   top:66.68%;  background-position:0% 100%;     --sx:-18px; --sy:14px;  --sr:16deg;"></span>
-    <span class="shatter-piece" style="left:25%;  top:66.68%;  background-position:33.33% 100%; --sx:-6px;  --sy:20px;  --sr:-12deg;"></span>
-    <span class="shatter-piece" style="left:50%;  top:66.68%;  background-position:66.67% 100%; --sx:6px;   --sy:20px;  --sr:12deg;"></span>
-    <span class="shatter-piece" style="left:75%;  top:66.68%;  background-position:100% 100%;   --sx:18px;  --sy:14px;  --sr:-16deg;"></span>
-    <span class="shatter-label">جاهز تكتشف كل ده بنفسك؟</span>
-  </a>
+  <a href="#offer-section" class="btn btn-primary btn-cta-shine" onclick="track('cta_click','before_features')">جاهز تكتشف كل ده بنفسك؟</a>
 </div>
 
 <!-- ===== FEATURES ===== -->
