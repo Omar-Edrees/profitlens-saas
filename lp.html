@@ -183,7 +183,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <div style="display: flex; align-items: center; gap: 14px;">
       <a href="/" class="hide-mobile" style="font-size: 14px; font-weight: 600; color: #C9D1D9;">تسجيل الدخول</a>
-      <a href="/" class="btn btn-primary" style="padding: 11px 20px; font-size: 14px;" onclick="track('cta_click','nav')">اشترك الآن</a>
+      <a href="#offer-section" class="btn btn-primary" style="padding: 11px 20px; font-size: 14px;" onclick="track('cta_click','nav')">جرّب مجانًا الآن</a>
     </div>
   </nav>
 
@@ -215,7 +215,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
         </div>
         <div class="cta-row" style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
-          <a href="#offer-section" class="btn btn-primary" onclick="track('cta_click','hero')">جرّبها بنفسك قبل ما العرض يخلص</a>
+          <a href="#offer-section" class="btn btn-primary" onclick="track('cta_click','hero')">جرّبها مجانًا قبل ما العرض يخلص</a>
           <button type="button" class="btn btn-video" onclick="plOpenVideo()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             فيديو شرح
@@ -326,7 +326,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- ===== CTA (before features) ===== -->
 <div class="wrap cta-divider">
-  <a href="#offer-section" class="btn btn-primary btn-cta-shine" onclick="track('cta_click','before_features')">جاهز تكتشف كل ده بنفسك؟</a>
+  <a href="#offer-section" class="btn btn-primary btn-cta-shine" onclick="track('cta_click','before_features')">جاهز تجرّبها مجانًا؟</a>
 </div>
 
 <!-- ===== FEATURES ===== -->
@@ -399,7 +399,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- ===== CTA (after features) ===== -->
 <div class="wrap cta-divider">
-  <a href="#offer-section" class="btn btn-primary btn-cta-glowring" onclick="track('cta_click','after_features')">يلا نبدأ — جرّب كل الميزات دي دلوقتي</a>
+  <a href="#offer-section" class="btn btn-primary btn-cta-glowring" onclick="track('cta_click','after_features')">يلا نبدأ — جرّب كل الميزات دي مجانًا</a>
 </div>
 
 <!-- ===== CUSTOMIZATION REQUEST ===== -->
@@ -454,7 +454,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li style="display:flex; gap:11px; align-items:flex-start; font-size:14.5px; color:#C9D1D9;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6EE7B7" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M20 6L9 17l-5-5"/></svg> قارن الـ <span class="en">ROAS</span> الفعلي بنقطة التعادل فورًا</li>
           <li style="display:flex; gap:11px; align-items:flex-start; font-size:14.5px; color:#C9D1D9;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6EE7B7" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:2px;"><path d="M20 6L9 17l-5-5"/></svg> قرار Scale / Stop واضح لكل منتج</li>
         </ul>
-        <a href="#offer-section" class="btn btn-primary btn-block-m" onclick="track('cta_click','ad_section')">ابدأ حلّل إعلاناتك</a>
+        <a href="#offer-section" class="btn btn-primary btn-block-m" onclick="track('cta_click','ad_section')">جرّب تحليل إعلاناتك مجانًا</a>
       </div>
 
       <div class="mock">
@@ -531,8 +531,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         <div style="margin-top: 16px; font-size: 12.5px; line-height: 1.7; color:#FCD34D;">⏳ عرض مؤقت — اشترك دلوقتي وادفع <span class="num">500</span> بس، من غير أي اشتراك شهري عليك خالص. بعد فترة التجربة السعر بيرجع <span class="num">1500</span>.</div>
 
-        <a href="/?checkout=1" class="btn btn-primary" style="margin-top: 24px; padding: 17px 40px; font-size: 16px;" onclick="track('cta_click','offer'); track('begin_checkout','offer')">اشترك الآن وابدأ تربح بثقة</a>
-        <div style="margin-top: 18px; font-size: 13px; color:#8B949E;">عندك سؤال قبل ما تشترك؟ <a href="#" id="wa-inline" style="color:#6EE7B7; font-weight:600;">كلّمنا على واتساب</a></div>
+        <a href="#" id="wa-trial" class="btn btn-primary" style="margin-top: 24px; padding: 17px 40px; font-size: 16px;" onclick="track('cta_click','offer_trial')">اسأل عن التجربة المجانية</a>
+        <div style="margin-top: 18px; font-size: 13px; color:#8B949E;">هنرد عليك على واتساب ونتفق على تجربتك المجانية في دقايق.</div>
       </div>
     </div>
 
@@ -595,7 +595,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </details>
     <details>
       <summary>أشترك وأبدأ أستخدمها إزاي؟ <span class="plus">+</span></summary>
-      <p>اضغط على "اشترك الآن"، اختر العرض، وادفع بسهولة. وبعدها على طول بيتفعّلك الوصول الكامل للأداة. ولو عندك أي سؤال قبل أو بعد، كلّمنا على واتساب وهنمشّيك خطوة بخطوة.</p>
+      <p>اضغط على "اسأل عن التجربة المجانية"، هنرد عليك على واتساب ونفعّلّك تجربة مجانية على طول. جرّبها على راحتك، ولو حابب تكمل بعدها هنمشّيك خطوة بخطوة في الاشتراك.</p>
     </details>
   </div>
 </section>
@@ -606,7 +606,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <h2 class="h2" style="font-size: 34px;">كل يوم بدون أرقام واضحة = فلوس بتضيع</h2>
     <p class="lead" style="margin: 0 auto 28px;">ابدأ النهاردة، واعرف ربحك الحقيقي قبل ما تصرف الجنيه الجاي في إعلان.</p>
     <div class="cta-row" style="display:flex; gap: 14px; justify-content:center; flex-wrap:wrap;">
-      <a href="#offer-section" class="btn btn-primary" style="padding: 17px 38px; font-size: 16px;" onclick="track('cta_click','final')">ابدأ دلوقتي</a>
+      <a href="#offer-section" class="btn btn-primary" style="padding: 17px 38px; font-size: 16px;" onclick="track('cta_click','final')">جرّب مجانًا دلوقتي</a>
       <a href="#" id="wa-final" class="btn btn-wa" style="padding: 17px 30px;">اسأل على واتساب</a>
     </div>
   </div>
@@ -695,6 +695,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   var WHATSAPP_NUMBER = '201556318082';
   var waHref = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' +
     encodeURIComponent('مرحبا، مهتم بـ ProfitLens وعايز أعرف تفاصيل أكتر');
+  var waTrialHref = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' +
+    encodeURIComponent('مرحبا، عايز أسأل عن التجربة المجانية لـ ProfitLens');
 
   ['wa-inline','wa-final','wa-footer','wa-floating','wa-custom-faq'].forEach(function(id){
     var el = document.getElementById(id);
@@ -704,6 +706,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     el.rel = 'noopener';
     el.addEventListener('click', function(){ track('whatsapp_click', id); });
   });
+
+  (function(){
+    var el = document.getElementById('wa-trial');
+    if (!el) return;
+    el.href = waTrialHref;
+    el.target = '_blank';
+    el.rel = 'noopener';
+    el.addEventListener('click', function(){ track('whatsapp_click', 'wa-trial'); });
+  })();
 
   document.getElementById('year').textContent = new Date().getFullYear();
 
