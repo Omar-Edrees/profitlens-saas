@@ -274,6 +274,16 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
 .fb-btn:disabled{opacity:.5;cursor:not-allowed}
 
 /* ── Welcome / feature-intro sticky card (first login only) ── */
+.pl-welcome-backdrop{
+  position:fixed;inset:0;z-index:9400;pointer-events:none;
+  background:rgba(4,7,13,.62);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  opacity:0;visibility:hidden;
+  transition:opacity .25s ease,visibility .25s ease;
+  -webkit-mask-image:radial-gradient(circle at var(--pl-sx,50%) var(--pl-sy,50%),transparent var(--pl-sr,0px),#000 calc(var(--pl-sr,0px) + 42px));
+  mask-image:radial-gradient(circle at var(--pl-sx,50%) var(--pl-sy,50%),transparent var(--pl-sr,0px),#000 calc(var(--pl-sr,0px) + 42px));
+}
+.pl-welcome-backdrop.open{opacity:1;visibility:visible}
 .pl-welcome-card{
   position:fixed;z-index:9500;
   width:290px;max-width:calc(100vw - 24px);max-height:80vh;overflow-y:auto;
@@ -309,10 +319,10 @@ body[data-theme="light"]::before, body[data-theme="light"]::after{ display:none 
   background:var(--c1);color:#0b0e14;font-family:var(--head);font-size:14px;font-weight:700;
   cursor:pointer;
 }
-.pl-avatar.pl-pulse{animation:plAvatarPulse 1.6s ease-in-out infinite}
+.pl-avatar.pl-pulse{position:relative;z-index:9450;animation:plAvatarPulse 1.6s ease-in-out infinite;box-shadow:0 0 0 3px rgba(52,211,153,.9),0 0 24px 6px rgba(52,211,153,.65)}
 @keyframes plAvatarPulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,.55)}
-  50%{box-shadow:0 0 0 8px rgba(52,211,153,0)}
+  0%,100%{box-shadow:0 0 0 3px rgba(52,211,153,.9),0 0 24px 6px rgba(52,211,153,.65)}
+  50%{box-shadow:0 0 0 9px rgba(52,211,153,0),0 0 34px 12px rgba(52,211,153,.85)}
 }
 
 /* ── My Messages chat overlay ── */
@@ -12258,6 +12268,7 @@ window.addEventListener('load', ()=>{
           setTimeout(() => {
             window.plWelcomePosition?.();
             document.getElementById('pl_welcome_card')?.classList.add('open');
+            document.getElementById('pl_welcome_backdrop')?.classList.add('open');
           }, 700);
         }
       }
@@ -12304,25 +12315,33 @@ window.addEventListener('load', ()=>{
 
   // ── WELCOME / FEATURE-INTRO STICKY CARD (first login only) ─────────────────
   window.plWelcomePosition = function() {
-    const card  = document.getElementById('pl_welcome_card');
-    const arrow = document.getElementById('pl_welcome_arrow');
-    const av    = document.getElementById('__pl_av');
+    const card     = document.getElementById('pl_welcome_card');
+    const arrow    = document.getElementById('pl_welcome_arrow');
+    const backdrop = document.getElementById('pl_welcome_backdrop');
+    const av       = document.getElementById('__pl_av');
     if (!card || !arrow || !av) return;
     const avRect = av.getBoundingClientRect();
     const margin = 12;
     const cardW  = card.offsetWidth || 290;
     const avCenterX = avRect.left + avRect.width / 2;
+    const avCenterY = avRect.top + avRect.height / 2;
     let cardLeft = avCenterX - cardW / 2;
     cardLeft = Math.max(margin, Math.min(cardLeft, window.innerWidth - cardW - margin));
     card.style.left = cardLeft + 'px';
     card.style.top  = (avRect.bottom + 14) + 'px';
     const arrowLeft = Math.max(14, Math.min(avCenterX - cardLeft - 8, cardW - 30));
     arrow.style.left = arrowLeft + 'px';
+    if (backdrop) {
+      backdrop.style.setProperty('--pl-sx', avCenterX + 'px');
+      backdrop.style.setProperty('--pl-sy', avCenterY + 'px');
+      backdrop.style.setProperty('--pl-sr', (Math.max(avRect.width, avRect.height) / 2) + 'px');
+    }
   };
 
   window.plWelcomeClose = function() {
     try { localStorage.setItem('pl_welcome_seen_v1', '1'); } catch(e) {}
     document.getElementById('pl_welcome_card')?.classList.remove('open');
+    document.getElementById('pl_welcome_backdrop')?.classList.remove('open');
     document.getElementById('__pl_av')?.classList.remove('pl-pulse');
   };
 
@@ -13013,6 +13032,7 @@ function toggleRevShipping(){
 </script>
 
 <!-- ── WELCOME / FEATURE-INTRO STICKY CARD (first login only) ──── -->
+<div class="pl-welcome-backdrop" id="pl_welcome_backdrop"></div>
 <div class="pl-welcome-card" id="pl_welcome_card" dir="rtl">
   <div class="pl-welcome-arrow" id="pl_welcome_arrow"></div>
   <button class="pl-welcome-close" onclick="plWelcomeClose()" aria-label="إغلاق">✕</button>
