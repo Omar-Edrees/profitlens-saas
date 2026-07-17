@@ -8870,6 +8870,30 @@ function toggleSection(bodyId, toggleId, lblId){
 let tpCppTouched   = false;
 const PRODUCTS = [];
 let ACTIVE_PROD = 0;
+// Hard cap on the current plan. The real enforcement lives server-side
+// (a Postgres trigger on user_data — see db/product_limit.sql); this is
+// just the UX guard so users get instant feedback instead of a silent
+// cloud-sync rejection. Once multiple pricing tiers ship, this becomes
+// per-plan instead of a single flat number.
+const PRODUCT_LIMIT = 20;
+function showProdLimitToast(){
+  document.getElementById('__prod_limit_toast')?.remove();
+  const t = T[LANG] || {};
+  const banner = document.createElement('div');
+  banner.id = '__prod_limit_toast';
+  banner.setAttribute('role','alert');
+  banner.style.cssText =
+    'position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:9999;'+
+    'background:#f59e0b;color:#000;padding:10px 16px;border-radius:8px;'+
+    'font-family:var(--body,sans-serif);font-size:12px;font-weight:600;'+
+    'box-shadow:0 8px 24px rgba(0,0,0,.3);max-width:90vw;text-align:center;'+
+    'display:flex;align-items:center;gap:10px;';
+  banner.innerHTML =
+    `<span>⚠ ${escapeHtml(t.prod_limit_toast || ('Max '+PRODUCT_LIMIT+' products on your current plan.'))}</span>`+
+    `<button style="background:rgba(0,0,0,.15);border:none;color:#000;cursor:pointer;padding:4px 10px;border-radius:4px;font-size:11px" onclick="this.parentElement.remove()">✕</button>`;
+  document.body.appendChild(banner);
+  setTimeout(()=>banner.remove(), 4000);
+}
 const PROD_COLORS = ['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--red)'];
 const INPUT_IDS = ['i_price','i_cost','i_units','i_ship_c','i_fulfill_del','i_fulfill_ret',
                    'i_courier','i_comm','i_gateway_fee','i_plat','i_ads','i_avg_cpp',
@@ -8935,8 +8959,9 @@ function renderProdTabs(){
   document.removeEventListener('click', _prodDDOutside);
   document.removeEventListener('keydown', _prodDDEsc);
   const multi = PRODUCTS.length > 1;
+  const atLimit = PRODUCTS.length >= PRODUCT_LIMIT;
   const addBtns =
-    `<button class="prod-tab-add" onclick="addProduct()">${T[LANG].prod_add||'+ Add product'}</button>` +
+    `<button class="prod-tab-add" onclick="${atLimit?'showProdLimitToast()':'addProduct()'}" ${atLimit?'style="opacity:.5;cursor:not-allowed"':''} title="${atLimit?escapeHtml(T[LANG].prod_limit_toast||('Max '+PRODUCT_LIMIT+' products on your current plan.')):''}">${T[LANG].prod_add||'+ Add product'}</button>` +
     `<button class="prod-tab-add" onclick="openXlModal()" title="${T[LANG].xl_modal_title||'Import / Export Excel'}" style="margin-inline-start:4px;background:rgba(129,140,248,.12);color:var(--c1);border-color:rgba(129,140,248,.25)">📊 Excel</button>`;
 
   if(PRODUCTS.length > PROD_DD_THRESHOLD){
@@ -9720,6 +9745,7 @@ function switchProduct(idx){
 }
 
 function addProduct(){
+  if(PRODUCTS.length >= PRODUCT_LIMIT){ showProdLimitToast(); return; }
   saveCurrentProduct();
   const newProd = { name: T[LANG].product_default + ' ' + (PRODUCTS.length + 1), data: {} };
   INPUT_IDS.forEach(id => newProd.data[id] = '');
@@ -9914,8 +9940,12 @@ function handleExcelUpload(input){
         });
         return { name: prodName, data };
       });
+      // Cap bulk imports at the plan limit — same guard as addProduct(), so a
+      // spreadsheet with hundreds of rows can't blow past it in one shot.
+      const truncated = newProds.length > PRODUCT_LIMIT;
+      const importProds = truncated ? newProds.slice(0, PRODUCT_LIMIT) : newProds;
       // replace current products
-      PRODUCTS.splice(0, PRODUCTS.length, ...newProds);
+      PRODUCTS.splice(0, PRODUCTS.length, ...importProds);
       ACTIVE_PROD      = 0;
       SHOW_ALL_PRODUCTS = false;
       loadProduct(0);
@@ -9927,11 +9957,14 @@ function handleExcelUpload(input){
       renderProdTabs();
       persistSave();
       dCalc();
-      const n   = newProds.length;
+      const n   = importProds.length;
       const t   = T[LANG];
       const plu = n !== 1 ? (t.xl_ok_products||'products') : (t.xl_ok_product||'product');
+      const capNote = truncated
+        ? ` <span style="color:#f59e0b">(${t.xl_ok_capped || ('capped at '+PRODUCT_LIMIT+' — plan limit')})</span>`
+        : '';
       document.getElementById('xl_status').innerHTML =
-        `<span style="color:var(--grn)">✓ ${t.xl_ok||'Imported'} ${n} ${plu} ${t.xl_ok_suf||'successfully!'}</span>`;
+        `<span style="color:var(--grn)">✓ ${t.xl_ok||'Imported'} ${n} ${plu} ${t.xl_ok_suf||'successfully!'}</span>${capNote}`;
       xlShowSuccess(n);
     } catch(err){
       document.getElementById('xl_status').innerHTML =
@@ -11593,6 +11626,7 @@ const T = {
     ap_ds_profit:'Net Profit', ap_ds_revenue:'Revenue', ap_ds_margin:'Margin %',
     prod_add:'+ Add product', pi_switch:'switch',
     prod_search_ph:'Search by product name…', prod_none:'No products match', prod_select:'Select product',
+    prod_limit_toast:'Max 20 products on your current plan.', xl_ok_capped:'capped at 20 — plan limit',
   },
   ar: {
     nav_inputs:'المدخلات', nav_marketing:'الإعلانات', nav_shipping:'الشحن', nav_overview:'نظرة عامة',
@@ -12177,6 +12211,7 @@ const T = {
     ap_ds_profit:'صافي الربح', ap_ds_revenue:'الإيراد', ap_ds_margin:'الهامش %',
     prod_add:'+ إضافة منتج', pi_switch:'تبديل',
     prod_search_ph:'ابحث باسم المنتج…', prod_none:'لا يوجد منتج بهذا الاسم', prod_select:'اختر المنتج',
+    prod_limit_toast:'وصلت للحد الأقصى (20 منتج) لباقتك الحالية.', xl_ok_capped:'تم الاكتفاء بـ 20 — الحد الأقصى للباقة',
   }
 };
 
