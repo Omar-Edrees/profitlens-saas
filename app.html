@@ -1664,6 +1664,59 @@ body[data-theme="light"] #s0 .f-row .unit{ border-inline-start-color:rgba(15,23,
 }
 .prod-tab-add:hover{border-color:var(--c1);color:var(--c1)}
 
+/* ─── PRODUCT DROPDOWN (many products) ─── */
+.prod-dd{position:relative;flex:1 1 220px;min-width:180px;max-width:340px}
+.prod-dd-btn{
+  display:flex;align-items:center;gap:8px;width:100%;
+  padding:8px 14px;border-radius:12px;
+  border:1px solid var(--bdr2);background:var(--surf);
+  color:var(--txt);font-size:13px;font-family:var(--body);font-weight:600;
+  cursor:pointer;transition:all .18s;text-align:start;
+}
+.prod-dd-btn:hover{border-color:var(--c1)}
+.prod-dd.open .prod-dd-btn{border-color:var(--c1)}
+.prod-dd-btn .pt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.prod-dd-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prod-dd-caret{opacity:.55;font-size:11px;flex-shrink:0;transition:transform .18s}
+.prod-dd.open .prod-dd-caret{transform:rotate(180deg)}
+.prod-dd-menu{
+  position:absolute;top:calc(100% + 6px);inset-inline-start:0;z-index:120;
+  width:min(340px,86vw);background:var(--surf);
+  border:1px solid var(--bdr2);border-radius:14px;
+  box-shadow:0 12px 34px rgba(0,0,0,.34);
+  padding:10px;display:flex;flex-direction:column;gap:8px;
+}
+.prod-dd-search{
+  width:100%;height:38px;padding:0 12px;
+  background:var(--surf2);border:1px solid var(--bdr2);border-radius:9px;
+  color:var(--txt);font-family:var(--body);font-size:13px;outline:none;
+  transition:border-color .15s;
+}
+.prod-dd-search:focus{border-color:var(--c1)}
+.prod-dd-count{font-size:10px;color:var(--txt3);font-family:var(--mono);letter-spacing:.05em;padding:0 4px}
+.prod-dd-list{display:flex;flex-direction:column;gap:2px;max-height:46vh;overflow-y:auto}
+.prod-dd-item{
+  display:flex;align-items:center;gap:9px;
+  padding:9px 10px;border-radius:9px;cursor:pointer;
+  transition:background .12s;color:var(--txt2);font-size:13px;
+}
+.prod-dd-item:hover{background:var(--surf3);color:var(--txt)}
+.prod-dd-item.active{background:rgba(0,229,160,.14);color:var(--txt)}
+.prod-dd-item .pt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.prod-dd-item-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.prod-dd-item-actions{display:flex;align-items:center;gap:4px;flex-shrink:0;opacity:0;transition:opacity .12s}
+.prod-dd-item:hover .prod-dd-item-actions{opacity:1}
+.prod-dd-act{
+  width:22px;height:22px;border-radius:6px;border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;line-height:1;padding:0;background:var(--surf2);color:var(--txt2);
+  transition:background .12s,color .12s;
+}
+.prod-dd-act:hover{background:rgba(0,229,160,.2);color:var(--c1)}
+.prod-dd-act.del:hover{background:rgba(255,90,90,.2);color:#ff6b6b}
+.prod-dd-item-all{border-bottom:1px solid var(--bdr);border-radius:9px;margin-bottom:2px;padding-bottom:11px}
+.prod-dd-empty{padding:14px 8px;text-align:center;color:var(--txt3);font-size:12px}
+
 /* ─── TARGET PROFIT ──────────────────── */
 .target-profit-card{
   background:var(--surf);border:1px solid var(--bdr);border-radius:12px;
@@ -8872,9 +8925,55 @@ function updateProdIndicators(){
 
 let SHOW_ALL_PRODUCTS = false; // true when "All Products" tab is active
 
+// Above this many products the flat chip bar becomes unwieldy, so we switch
+// to a searchable dropdown selector (filter by product name).
+const PROD_DD_THRESHOLD = 8;
+
 function renderProdTabs(){
   const bar = document.getElementById('prod_tabs_bar');
+  // drop any lingering dropdown listeners before the bar is rebuilt
+  document.removeEventListener('click', _prodDDOutside);
+  document.removeEventListener('keydown', _prodDDEsc);
   const multi = PRODUCTS.length > 1;
+  const addBtns =
+    `<button class="prod-tab-add" onclick="addProduct()">${T[LANG].prod_add||'+ Add product'}</button>` +
+    `<button class="prod-tab-add" onclick="openXlModal()" title="${T[LANG].xl_modal_title||'Import / Export Excel'}" style="margin-inline-start:4px;background:rgba(129,140,248,.12);color:var(--c1);border-color:rgba(129,140,248,.25)">📊 Excel</button>`;
+
+  if(PRODUCTS.length > PROD_DD_THRESHOLD){
+    // ── Searchable dropdown mode (many products) ──
+    const active = PRODUCTS[ACTIVE_PROD];
+    const btnLabel = SHOW_ALL_PRODUCTS
+      ? `📦 ${T[LANG].ov_all_products||'All Products'}`
+      : escapeHtml(active ? active.name : (T[LANG].prod_select||'Select product'));
+    const btnDot = SHOW_ALL_PRODUCTS
+      ? ''
+      : `<span class="pt-dot" style="background:${PROD_COLORS[ACTIVE_PROD%PROD_COLORS.length]}"></span>`;
+    bar.innerHTML =
+      `<div class="prod-dd" id="prod_dd">
+        <button class="prod-dd-btn" onclick="toggleProdDD(event)">
+          ${btnDot}
+          <span class="prod-dd-label">${btnLabel}</span>
+          <span class="prod-dd-caret">▾</span>
+        </button>
+        <div class="prod-dd-menu" id="prod_dd_menu" style="display:none">
+          <input id="prod_dd_search" class="prod-dd-search" type="text"
+                 placeholder="🔍 ${escapeHtml(T[LANG].prod_search_ph||'Search by product name…')}"
+                 oninput="filterProdDD(this.value)"
+                 onclick="event.stopPropagation()">
+          <div class="prod-dd-count" id="prod_dd_count"></div>
+          <div class="prod-dd-list" id="prod_dd_list">${renderProdDDItems('')}</div>
+        </div>
+      </div>` + addBtns;
+
+    // show/hide panels + rename bindings (shared tail below)
+    const inp0 = document.getElementById('inputs_panel');
+    const ap0  = document.getElementById('all_products_panel');
+    if(inp0) inp0.style.display = SHOW_ALL_PRODUCTS ? 'none' : '';
+    if(ap0)  ap0.style.display  = SHOW_ALL_PRODUCTS ? '' : 'none';
+    updateProdIndicators();
+    return;
+  }
+
   bar.innerHTML =
     // "All Products" tab — only when 2+ products
     (multi ? `<button class="prod-tab prod-tab-all ${SHOW_ALL_PRODUCTS?'active':''}" onclick="switchToAllProducts()">
@@ -8887,8 +8986,7 @@ function renderProdTabs(){
       <span class="pt-name">${escapeHtml(p.name)}</span>
       ${PRODUCTS.length > 1 ? `<span class="pt-del" onclick="event.stopPropagation();deleteProduct(${i})">×</span>` : ''}
     </button>
-  `).join('') + `<button class="prod-tab-add" onclick="addProduct()">${T[LANG].prod_add||'+ Add product'}</button>` +
-    `<button class="prod-tab-add" onclick="openXlModal()" title="${T[LANG].xl_modal_title||'Import / Export Excel'}" style="margin-inline-start:4px;background:rgba(129,140,248,.12);color:var(--c1);border-color:rgba(129,140,248,.25)">📊 Excel</button>`;
+  `).join('') + addBtns;
 
   // show/hide panels
   const inp = document.getElementById('inputs_panel');
@@ -8917,6 +9015,89 @@ function renderProdTabs(){
     tab.addEventListener('touchend',  () => clearTimeout(_lpTimer));
     tab.addEventListener('touchmove', () => clearTimeout(_lpTimer));
   });
+}
+
+// Build the option rows for the product dropdown, optionally filtered by name.
+function renderProdDDItems(q){
+  const needle = (q||'').trim().toLowerCase();
+  const allRow = !needle
+    ? `<div class="prod-dd-item prod-dd-item-all ${SHOW_ALL_PRODUCTS?'active':''}" onclick="switchToAllProducts();closeProdDD()">
+        <span style="width:8px;text-align:center;flex-shrink:0">📦</span>
+        <span class="prod-dd-item-name">${T[LANG].ov_all_products||'All Products'}</span>
+      </div>`
+    : '';
+  const rows = PRODUCTS.map((p, i) => ({ p, i }))
+    .filter(({p}) => !needle || (p.name||'').toLowerCase().includes(needle))
+    .map(({p, i}) => `
+      <div class="prod-dd-item ${!SHOW_ALL_PRODUCTS && i===ACTIVE_PROD?'active':''}"
+           onclick="switchProduct(${i});closeProdDD()">
+        <span class="pt-dot" style="background:${PROD_COLORS[i%PROD_COLORS.length]}"></span>
+        <span class="prod-dd-item-name">${escapeHtml(p.name)}</span>
+        <span class="prod-dd-item-actions">
+          <button class="prod-dd-act" title="rename" onclick="event.stopPropagation();ddRename(${i})">✎</button>
+          <button class="prod-dd-act del" title="delete" onclick="event.stopPropagation();deleteProduct(${i})">×</button>
+        </span>
+      </div>`).join('');
+  if(!allRow && !rows) return `<div class="prod-dd-empty">${T[LANG].prod_none||'No products match'}</div>`;
+  return allRow + rows;
+}
+
+function _prodDDEl(){ return document.getElementById('prod_dd'); }
+
+function toggleProdDD(e){
+  if(e) e.stopPropagation();
+  const dd = _prodDDEl();
+  if(!dd) return;
+  if(dd.classList.contains('open')){ closeProdDD(); return; }
+  const menu = document.getElementById('prod_dd_menu');
+  dd.classList.add('open');
+  if(menu) menu.style.display = 'flex';
+  updateProdDDCount(PRODUCTS.length);
+  const search = document.getElementById('prod_dd_search');
+  if(search){ search.value=''; setTimeout(()=>search.focus(), 30); }
+  // Close on outside click / Escape
+  setTimeout(()=>{
+    document.addEventListener('click', _prodDDOutside);
+    document.addEventListener('keydown', _prodDDEsc);
+  }, 0);
+}
+
+function closeProdDD(){
+  const dd = _prodDDEl();
+  if(dd){
+    dd.classList.remove('open');
+    const menu = document.getElementById('prod_dd_menu');
+    if(menu) menu.style.display = 'none';
+  }
+  document.removeEventListener('click', _prodDDOutside);
+  document.removeEventListener('keydown', _prodDDEsc);
+}
+function _prodDDOutside(e){
+  const dd = _prodDDEl();
+  if(dd && !dd.contains(e.target)) closeProdDD();
+}
+function _prodDDEsc(e){ if(e.key==='Escape') closeProdDD(); }
+
+function filterProdDD(q){
+  const list = document.getElementById('prod_dd_list');
+  if(list) list.innerHTML = renderProdDDItems(q);
+  const needle = (q||'').trim().toLowerCase();
+  const n = needle
+    ? PRODUCTS.filter(p => (p.name||'').toLowerCase().includes(needle)).length
+    : PRODUCTS.length;
+  updateProdDDCount(n);
+}
+function updateProdDDCount(n){
+  const c = document.getElementById('prod_dd_count');
+  if(c) c.textContent = `${n} / ${PRODUCTS.length}`;
+}
+
+// Rename from within the dropdown: reuse the shared rename menu, anchored on the row.
+function ddRename(idx){
+  const rowName = document.querySelectorAll('#prod_dd_list .prod-dd-item-name');
+  // find the element for this product by matching the click target is simpler:
+  const nameEl = _prodDDEl()?.querySelector(`.prod-dd-item[onclick*="switchProduct(${idx})"] .prod-dd-item-name`);
+  showRenameMenu(null, null, nameEl || document.querySelector('.prod-dd-btn'), idx);
 }
 
 function switchToAllProducts(){
@@ -11411,6 +11592,7 @@ const T = {
     ap_ds_burden:'Net burden', ap_ds_real_ship:'Real Shipping/unit', ap_ds_collected:'Collected/unit',
     ap_ds_profit:'Net Profit', ap_ds_revenue:'Revenue', ap_ds_margin:'Margin %',
     prod_add:'+ Add product', pi_switch:'switch',
+    prod_search_ph:'Search by product name…', prod_none:'No products match', prod_select:'Select product',
   },
   ar: {
     nav_inputs:'المدخلات', nav_marketing:'الإعلانات', nav_shipping:'الشحن', nav_overview:'نظرة عامة',
@@ -11994,6 +12176,7 @@ const T = {
     ap_ds_burden:'صافي العبء', ap_ds_real_ship:'الشحن الحقيقي/وحدة', ap_ds_collected:'المحصّل/وحدة',
     ap_ds_profit:'صافي الربح', ap_ds_revenue:'الإيراد', ap_ds_margin:'الهامش %',
     prod_add:'+ إضافة منتج', pi_switch:'تبديل',
+    prod_search_ph:'ابحث باسم المنتج…', prod_none:'لا يوجد منتج بهذا الاسم', prod_select:'اختر المنتج',
   }
 };
 
