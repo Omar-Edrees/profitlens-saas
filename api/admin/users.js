@@ -31,6 +31,8 @@ export default async function handler(req, res) {
     const profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]));
     const { data: dataRows } = await sb.from('user_data').select('user_id');
     const hasDataSet = new Set((dataRows || []).map(r => r.user_id));
+    const { data: sessionRows } = await sb.rpc('admin_session_counts');
+    const deviceCountMap = Object.fromEntries((sessionRows || []).map(r => [r.user_id, r.session_count]));
     const users = authUsers.map(u => {
       const p = profileMap[u.id] || {};
       return {
@@ -39,6 +41,7 @@ export default async function handler(req, res) {
         role: p.role || 'user',
         plan: p.plan || 'free',
         has_data: hasDataSet.has(u.id),
+        device_count: deviceCountMap[u.id] || 0,
         promo_code: p.redeemed_code || null,
         promo_discount: p.redeemed_discount_pct ?? null,
         redeemed_at: p.redeemed_at || null

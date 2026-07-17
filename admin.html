@@ -411,6 +411,9 @@ function renderTable(users) {
         <span class="data-dot" style="background:${u.has_data ? 'var(--grn)' : 'var(--txt3)'}"></span>
         ${u.has_data ? 'Yes' : 'No'}
       </td>
+      <td data-label="Devices" style="color:${u.device_count > 1 ? 'var(--ylw)' : 'var(--txt2)'};font-weight:${u.device_count > 1 ? '600' : '400'}">
+        ${u.device_count}
+      </td>
       <td data-label="Promo">
         ${u.promo_code
           ? `<span style="font-family:var(--mono);font-size:12px;font-weight:600;color:var(--acc)">${esc(u.promo_code)}</span>`
@@ -441,7 +444,7 @@ function renderTable(users) {
     <table>
       <thead>
         <tr>
-          <th>Email</th><th>Role</th><th>Plan</th><th>Has Data</th><th>Promo</th>
+          <th>Email</th><th>Role</th><th>Plan</th><th>Has Data</th><th>Devices</th><th>Promo</th>
           <th>Joined</th><th>Last Sign In</th><th>Actions</th>
         </tr>
       </thead>
