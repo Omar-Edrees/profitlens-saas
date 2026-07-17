@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- ProfitLens — Redesign demo (Direction A · "Ledger"). Standalone, static data. -->
+<!-- ProfitLens — Redesign demo (Direction A · "Ledger"). Standalone, static data, all 4 tabs. -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -8,12 +8,11 @@
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Direction A fonts: Geist (UI) + Geist Mono (numbers) + IBM Plex Sans Arabic (AR) -->
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 :root{
-  --bg:#0b0d12; --bg2:#0e1017;
+  --bg:#0b0d12;
   --surf:#12151c; --surf2:#171b23; --surf3:#1c212b;
   --line:#1f232d; --line2:#2a2f3b; --row:#1b1f28;
   --fg:#eef1f6; --mut:#8a90a0; --mut2:#5f6575;
@@ -102,7 +101,7 @@ body{
   background:
     radial-gradient(120% 120% at 100% 0%,rgba(109,124,255,.22),transparent 55%),
     linear-gradient(160deg,#161a2e,#12151c);
-  border-color:#2b3050;grid-column:span 1;
+  border-color:#2b3050;
 }
 .kpi .l{font-size:.78rem;font-weight:600;color:var(--mut);display:flex;
   align-items:center;gap:6px;margin-bottom:12px}
@@ -114,18 +113,20 @@ body{
   font-weight:700;margin-top:9px;padding:3px 8px;border-radius:999px}
 .delta.up{color:var(--good);background:var(--good-soft)}
 .delta.dn{color:var(--bad);background:var(--bad-soft)}
+.delta.flat{color:var(--mut);background:var(--surf3)}
 .delta .cmp{color:var(--mut);font-weight:500}
 
 /* ---------- panels ---------- */
 .grid{display:grid;grid-template-columns:1.15fr 1.6fr;gap:14px;margin-top:14px}
 @media(max-width:900px){.grid{grid-template-columns:1fr}}
 .panel{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.panel.full{margin-top:14px}
 .panel-head{display:flex;align-items:flex-start;justify-content:space-between;
   gap:10px;margin-bottom:16px}
 .panel-head h2{margin:0;font-size:1rem;font-weight:700}
 .panel-head p{margin:3px 0 0;font-size:.78rem;color:var(--mut)}
 .chip{font-size:.7rem;font-weight:700;color:var(--good);background:var(--good-soft);
-  padding:4px 9px;border-radius:999px}
+  padding:4px 9px;border-radius:999px;white-space:nowrap}
 .chart-wrap{position:relative;height:230px}
 
 /* ---------- table ---------- */
@@ -146,19 +147,27 @@ td{padding:12px 10px}
 .pill.ok{background:var(--good-soft);color:var(--good)}
 .pill.wn{background:var(--warn-soft);color:var(--warn)}
 .pill.bd{background:var(--bad-soft);color:var(--bad)}
-.foot-note{margin-top:16px;font-size:.78rem;color:var(--mut2);text-align:center}
+
+/* ---------- inputs (form-like) ---------- */
+.field{background:var(--surf2);border:1px solid var(--line2);border-radius:8px;
+  padding:7px 10px;color:var(--fg);font-family:var(--mono);font-size:.85rem;width:100%}
+.field:focus{outline:none;border-color:var(--acc)}
+.hint-cell{font-size:.72rem;color:var(--mut2);font-family:var(--mono)}
+
+.foot-note{margin-top:22px;font-size:.78rem;color:var(--mut2);text-align:center}
 .foot-note code{font-family:var(--mono);color:var(--mut)}
+[hidden]{display:none !important}
 </style>
 </head>
 <body>
 
 <header class="topbar">
   <div class="brand"><span class="mark">P</span> ProfitLens</div>
-  <nav class="tabs">
-    <button class="tab">Inputs</button>
-    <button class="tab">Ads</button>
-    <button class="tab">Shipping</button>
-    <button class="tab on">Overview</button>
+  <nav class="tabs" id="tabs">
+    <button class="tab" data-s="inputs">Inputs</button>
+    <button class="tab" data-s="ads">Ads</button>
+    <button class="tab" data-s="shipping">Shipping</button>
+    <button class="tab on" data-s="overview">Overview</button>
   </nav>
   <span class="spacer"></span>
   <button class="btn">Export</button>
@@ -167,150 +176,294 @@ td{padding:12px 10px}
 </header>
 
 <main class="main">
-  <div class="pagehead">
-    <div>
-      <p class="eyebrow">Overview</p>
-      <h1>Complete financial picture</h1>
-      <p>All products · July 2026 · figures in EGP</p>
-    </div>
-    <div class="seg">
-      <button>7d</button><button class="on">30d</button><button>90d</button><button>YTD</button>
-    </div>
-  </div>
 
-  <section class="kpis">
-    <div class="kpi hero">
-      <div class="l"><span class="ic"></span> Net Profit</div>
-      <div class="v"><span class="cur">EGP</span> <span class="num">84,320</span></div>
-      <span class="delta up">▲ 12.4% <span class="cmp">vs last month</span></span>
-    </div>
-    <div class="kpi">
-      <div class="l">Blended ROAS</div>
-      <div class="v num">3.8×</div>
-      <span class="delta up">▲ 0.4</span>
-    </div>
-    <div class="kpi">
-      <div class="l">Blended CPA</div>
-      <div class="v"><span class="cur">EGP</span> <span class="num">96</span></div>
-      <span class="delta up">▼ EGP 8</span>
-    </div>
-    <div class="kpi">
-      <div class="l">Profit Margin</div>
-      <div class="v num">21.6%</div>
-      <span class="delta dn">▼ 1.1%</span>
-    </div>
-  </section>
-
-  <section class="kpis">
-    <div class="kpi">
-      <div class="l">Total Ad Budget</div>
-      <div class="v"><span class="cur">EGP</span> <span class="num">210,000</span></div>
-      <span class="delta up">▲ 6.0%</span>
-    </div>
-    <div class="kpi">
-      <div class="l">Weighted BE CPA</div>
-      <div class="v"><span class="cur">EGP</span> <span class="num">128</span></div>
-      <span class="delta up">▲ EGP 4</span>
-    </div>
-    <div class="kpi">
-      <div class="l">Total Delivered</div>
-      <div class="v num">1,842</div>
-      <span class="delta up">▲ 9.7%</span>
-    </div>
-    <div class="kpi">
-      <div class="l">Confirmation Rate</div>
-      <div class="v num">73.5%</div>
-      <span class="delta up">▲ 2.1%</span>
-    </div>
-  </section>
-
-  <section class="grid">
-    <div class="panel">
-      <div class="panel-head">
-        <div><h2>Net profit by month</h2><p>Last 6 months</p></div>
-        <span class="chip">+38% since Feb</span>
+  <!-- ============ INPUTS ============ -->
+  <section class="screen" data-screen="inputs" hidden>
+    <div class="pagehead">
+      <div>
+        <p class="eyebrow">Inputs</p>
+        <h1>Your product inputs</h1>
+        <p>Enter cost & pricing per product — everything else is calculated automatically</p>
       </div>
-      <div class="chart-wrap"><canvas id="profitChart"></canvas></div>
+      <button class="btn pri">+ Add product</button>
     </div>
-
     <div class="panel">
-      <div class="panel-head">
-        <div><h2>Product profitability</h2><p>Ranked by net profit · this month</p></div>
-      </div>
+      <div class="panel-head"><div><h2>Products</h2><p>4 active products</p></div></div>
       <div class="tbl-scroll">
         <table>
           <thead>
-            <tr>
-              <th>Product</th>
-              <th class="n">Revenue</th>
-              <th class="n">Ad spend</th>
-              <th class="n">COGS</th>
-              <th class="n">Net profit</th>
-              <th class="n">Margin</th>
-            </tr>
+            <tr><th>Product</th><th class="n">Selling price</th><th class="n">COGS / unit</th>
+            <th class="n">Confirmation %</th><th class="n">Delivery %</th><th class="n">Units sold</th></tr>
           </thead>
           <tbody>
             <tr>
               <td><span class="prod"><span class="thumb">🛞</span> Ab Roller Pro</span></td>
-              <td class="n num">96,400</td><td class="n num">31,200</td><td class="n num">28,900</td>
-              <td class="n num val-good">+22,300</td><td class="n"><span class="pill ok">23%</span></td>
+              <td class="n"><input class="field" value="349" style="max-width:90px"></td>
+              <td class="n"><input class="field" value="132" style="max-width:90px"></td>
+              <td class="n num">78%</td><td class="n num">82%</td><td class="n num">276</td>
             </tr>
             <tr>
               <td><span class="prod"><span class="thumb">🧍</span> Posture Corrector</span></td>
-              <td class="n num">64,800</td><td class="n num">22,400</td><td class="n num">19,100</td>
-              <td class="n num val-good">+14,600</td><td class="n"><span class="pill ok">22%</span></td>
+              <td class="n"><input class="field" value="299" style="max-width:90px"></td>
+              <td class="n"><input class="field" value="118" style="max-width:90px"></td>
+              <td class="n num">74%</td><td class="n num">79%</td><td class="n num">217</td>
             </tr>
             <tr>
               <td><span class="prod"><span class="thumb">💡</span> LED Strip 5m</span></td>
-              <td class="n num">41,200</td><td class="n num">18,900</td><td class="n num">15,600</td>
-              <td class="n num val-good">+3,100</td><td class="n"><span class="pill wn">8%</span></td>
+              <td class="n"><input class="field" value="199" style="max-width:90px"></td>
+              <td class="n"><input class="field" value="94" style="max-width:90px"></td>
+              <td class="n num">71%</td><td class="n num">76%</td><td class="n num">207</td>
             </tr>
             <tr>
               <td><span class="prod"><span class="thumb">🥤</span> Mini Blender</span></td>
-              <td class="n num">28,500</td><td class="n num">14,200</td><td class="n num">12,800</td>
-              <td class="n num val-bad">−1,400</td><td class="n"><span class="pill bd">−5%</span></td>
+              <td class="n"><input class="field" value="249" style="max-width:90px"></td>
+              <td class="n"><input class="field" value="141" style="max-width:90px"></td>
+              <td class="n num">69%</td><td class="n num">72%</td><td class="n num">114</td>
             </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="grid">
+      <div class="panel">
+        <div class="panel-head"><div><h2>Business-wide fees</h2><p>Shared across all products</p></div></div>
+        <div class="tbl-scroll"><table style="min-width:auto">
+          <tbody>
+            <tr><td>Payment gateway %</td><td class="n"><input class="field" value="2.5%" style="max-width:80px"></td></tr>
+            <tr><td>Packaging / order</td><td class="n"><input class="field" value="8" style="max-width:80px"></td></tr>
+            <tr><td>Team & tools / month</td><td class="n"><input class="field" value="14,000" style="max-width:100px"></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><h2>Quick check</h2><p>Live estimate as you type</p></div><span class="chip">looks healthy</span></div>
+        <div class="tbl-scroll"><table style="min-width:auto">
+          <tbody>
+            <tr><td>Avg gross margin / unit</td><td class="n num val-good">EGP 173</td></tr>
+            <tr><td>Break-even CPA (weighted)</td><td class="n num">EGP 128</td></tr>
+            <tr><td>Products below break-even</td><td class="n"><span class="pill wn">1</span></td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ADS ============ -->
+  <section class="screen" data-screen="ads" hidden>
+    <div class="pagehead">
+      <div>
+        <p class="eyebrow">Ads</p>
+        <h1>Ad spend &amp; CPA analysis</h1>
+        <p>Where the budget goes vs. the CPA you can afford</p>
+      </div>
+      <div class="seg"><button>7d</button><button class="on">30d</button><button>90d</button></div>
+    </div>
+    <section class="kpis">
+      <div class="kpi hero">
+        <div class="l"><span class="ic"></span> Total Ad Budget</div>
+        <div class="v"><span class="cur">EGP</span> <span class="num">210,000</span></div>
+        <span class="delta up">▲ 6.0% <span class="cmp">vs last month</span></span>
+      </div>
+      <div class="kpi"><div class="l">Blended CPA</div><div class="v"><span class="cur">EGP</span> <span class="num">96</span></div><span class="delta up">▼ EGP 8</span></div>
+      <div class="kpi"><div class="l">Blended ROAS</div><div class="v num">3.8×</div><span class="delta up">▲ 0.4</span></div>
+      <div class="kpi"><div class="l">Weighted BE CPA</div><div class="v"><span class="cur">EGP</span> <span class="num">128</span></div><span class="delta flat">headroom EGP 32</span></div>
+    </section>
+    <section class="kpis">
+      <div class="kpi"><div class="l">Total Leads</div><div class="v num">3,910</div><span class="delta up">▲ 11%</span></div>
+      <div class="kpi"><div class="l">Total Confirmed</div><div class="v num">2,874</div><span class="delta up">▲ 8%</span></div>
+      <div class="kpi"><div class="l">Total Delivered</div><div class="v num">1,842</div><span class="delta up">▲ 9.7%</span></div>
+      <div class="kpi"><div class="l">Delivery Rate</div><div class="v num">64.1%</div><span class="delta dn">▼ 0.6%</span></div>
+    </section>
+    <div class="panel full">
+      <div class="panel-head"><div><h2>Per-product ad performance</h2><p>Actual CPA vs. break-even CPA</p></div></div>
+      <div class="tbl-scroll">
+        <table>
+          <thead>
+            <tr><th>Product</th><th class="n">Budget</th><th class="n">Actual CPA</th>
+            <th class="n">BE CPA</th><th class="n">ROAS</th><th class="n">Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="prod"><span class="thumb">🛞</span> Ab Roller Pro</span></td>
+              <td class="n num">31,200</td><td class="n num">84</td><td class="n num">142</td><td class="n num">4.2×</td>
+              <td class="n"><span class="pill ok">profitable</span></td></tr>
+            <tr><td><span class="prod"><span class="thumb">🧍</span> Posture Corrector</span></td>
+              <td class="n num">22,400</td><td class="n num">92</td><td class="n num">134</td><td class="n num">3.9×</td>
+              <td class="n"><span class="pill ok">profitable</span></td></tr>
+            <tr><td><span class="prod"><span class="thumb">💡</span> LED Strip 5m</span></td>
+              <td class="n num">18,900</td><td class="n num">108</td><td class="n num">118</td><td class="n num">2.6×</td>
+              <td class="n"><span class="pill wn">tight</span></td></tr>
+            <tr><td><span class="prod"><span class="thumb">🥤</span> Mini Blender</span></td>
+              <td class="n num">14,200</td><td class="n num">137</td><td class="n num">121</td><td class="n num">1.9×</td>
+              <td class="n"><span class="pill bd">over BE</span></td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </section>
 
-  <p class="foot-note">Redesign demo · Direction A “Ledger” · static sample data · font: <code>Geist + Geist Mono</code></p>
+  <!-- ============ SHIPPING ============ -->
+  <section class="screen" data-screen="shipping" hidden>
+    <div class="pagehead">
+      <div>
+        <p class="eyebrow">Shipping</p>
+        <h1>Fulfillment cost analysis</h1>
+        <p>What you collect for shipping vs. what it actually costs</p>
+      </div>
+    </div>
+    <section class="kpis">
+      <div class="kpi hero">
+        <div class="l"><span class="ic"></span> Net Shipping Margin</div>
+        <div class="v"><span class="cur">EGP</span> <span class="num">+11,240</span></div>
+        <span class="delta up">▲ 4.3% <span class="cmp">vs last month</span></span>
+      </div>
+      <div class="kpi"><div class="l">Avg Collected / unit</div><div class="v"><span class="cur">EGP</span> <span class="num">45</span></div><span class="delta flat">flat rate</span></div>
+      <div class="kpi"><div class="l">Avg Real Cost / unit</div><div class="v"><span class="cur">EGP</span> <span class="num">39</span></div><span class="delta dn">▲ EGP 3</span></div>
+      <div class="kpi"><div class="l">Return Rate</div><div class="v num">6.8%</div><span class="delta up">▼ 0.9%</span></div>
+    </section>
+    <div class="grid">
+      <div class="panel">
+        <div class="panel-head"><div><h2>Shipping cost split</h2><p>This month</p></div></div>
+        <div class="chart-wrap"><canvas id="shipChart"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><h2>Per-product fulfillment</h2><p>Collected vs. real cost / unit</p></div></div>
+        <div class="tbl-scroll">
+          <table>
+            <thead><tr><th>Product</th><th class="n">Collected</th><th class="n">Real cost</th>
+            <th class="n">Return %</th><th class="n">Net / unit</th></tr></thead>
+            <tbody>
+              <tr><td><span class="prod"><span class="thumb">🛞</span> Ab Roller Pro</span></td>
+                <td class="n num">45</td><td class="n num">36</td><td class="n num">5.1%</td><td class="n num val-good">+9</td></tr>
+              <tr><td><span class="prod"><span class="thumb">🧍</span> Posture Corrector</span></td>
+                <td class="n num">45</td><td class="n num">38</td><td class="n num">6.4%</td><td class="n num val-good">+7</td></tr>
+              <tr><td><span class="prod"><span class="thumb">💡</span> LED Strip 5m</span></td>
+                <td class="n num">45</td><td class="n num">41</td><td class="n num">7.9%</td><td class="n num val-good">+4</td></tr>
+              <tr><td><span class="prod"><span class="thumb">🥤</span> Mini Blender</span></td>
+                <td class="n num">45</td><td class="n num">48</td><td class="n num">9.2%</td><td class="n num val-bad">−3</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OVERVIEW ============ -->
+  <section class="screen" data-screen="overview">
+    <div class="pagehead">
+      <div>
+        <p class="eyebrow">Overview</p>
+        <h1>Complete financial picture</h1>
+        <p>All products · July 2026 · figures in EGP</p>
+      </div>
+      <div class="seg">
+        <button>7d</button><button class="on">30d</button><button>90d</button><button>YTD</button>
+      </div>
+    </div>
+
+    <section class="kpis">
+      <div class="kpi hero">
+        <div class="l"><span class="ic"></span> Net Profit</div>
+        <div class="v"><span class="cur">EGP</span> <span class="num">84,320</span></div>
+        <span class="delta up">▲ 12.4% <span class="cmp">vs last month</span></span>
+      </div>
+      <div class="kpi"><div class="l">Blended ROAS</div><div class="v num">3.8×</div><span class="delta up">▲ 0.4</span></div>
+      <div class="kpi"><div class="l">Blended CPA</div><div class="v"><span class="cur">EGP</span> <span class="num">96</span></div><span class="delta up">▼ EGP 8</span></div>
+      <div class="kpi"><div class="l">Profit Margin</div><div class="v num">21.6%</div><span class="delta dn">▼ 1.1%</span></div>
+    </section>
+    <section class="kpis">
+      <div class="kpi"><div class="l">Total Ad Budget</div><div class="v"><span class="cur">EGP</span> <span class="num">210,000</span></div><span class="delta up">▲ 6.0%</span></div>
+      <div class="kpi"><div class="l">Weighted BE CPA</div><div class="v"><span class="cur">EGP</span> <span class="num">128</span></div><span class="delta up">▲ EGP 4</span></div>
+      <div class="kpi"><div class="l">Total Delivered</div><div class="v num">1,842</div><span class="delta up">▲ 9.7%</span></div>
+      <div class="kpi"><div class="l">Confirmation Rate</div><div class="v num">73.5%</div><span class="delta up">▲ 2.1%</span></div>
+    </section>
+
+    <section class="grid">
+      <div class="panel">
+        <div class="panel-head">
+          <div><h2>Net profit by month</h2><p>Last 6 months</p></div>
+          <span class="chip">+38% since Feb</span>
+        </div>
+        <div class="chart-wrap"><canvas id="profitChart"></canvas></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><h2>Product profitability</h2><p>Ranked by net profit · this month</p></div></div>
+        <div class="tbl-scroll">
+          <table>
+            <thead>
+              <tr><th>Product</th><th class="n">Revenue</th><th class="n">Ad spend</th>
+              <th class="n">COGS</th><th class="n">Net profit</th><th class="n">Margin</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><span class="prod"><span class="thumb">🛞</span> Ab Roller Pro</span></td>
+                <td class="n num">96,400</td><td class="n num">31,200</td><td class="n num">28,900</td>
+                <td class="n num val-good">+22,300</td><td class="n"><span class="pill ok">23%</span></td></tr>
+              <tr><td><span class="prod"><span class="thumb">🧍</span> Posture Corrector</span></td>
+                <td class="n num">64,800</td><td class="n num">22,400</td><td class="n num">19,100</td>
+                <td class="n num val-good">+14,600</td><td class="n"><span class="pill ok">22%</span></td></tr>
+              <tr><td><span class="prod"><span class="thumb">💡</span> LED Strip 5m</span></td>
+                <td class="n num">41,200</td><td class="n num">18,900</td><td class="n num">15,600</td>
+                <td class="n num val-good">+3,100</td><td class="n"><span class="pill wn">8%</span></td></tr>
+              <tr><td><span class="prod"><span class="thumb">🥤</span> Mini Blender</span></td>
+                <td class="n num">28,500</td><td class="n num">14,200</td><td class="n num">12,800</td>
+                <td class="n num val-bad">−1,400</td><td class="n"><span class="pill bd">−5%</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <p class="foot-note">Redesign demo · Direction A “Ledger” · static sample data · fonts: <code>Geist + Geist Mono</code></p>
 </main>
 
 <script>
-const ctx = document.getElementById('profitChart');
-const grad = ctx.getContext('2d').createLinearGradient(0,0,0,230);
-grad.addColorStop(0,'rgba(109,124,255,.45)');
-grad.addColorStop(1,'rgba(109,124,255,0)');
-new Chart(ctx,{
-  type:'line',
-  data:{
-    labels:['Feb','Mar','Apr','May','Jun','Jul'],
-    datasets:[{
-      data:[48200,58900,52400,71300,68100,84320],
-      borderColor:'#6d7cff', borderWidth:2.5,
-      backgroundColor:grad, fill:true,
-      tension:.38, pointRadius:0, pointHoverRadius:5,
-      pointHoverBackgroundColor:'#6d7cff', pointHoverBorderColor:'#fff', pointHoverBorderWidth:2,
-    }]
-  },
-  options:{
-    responsive:true, maintainAspectRatio:false,
-    plugins:{ legend:{display:false},
-      tooltip:{ backgroundColor:'#171b23', borderColor:'#2a2f3b', borderWidth:1,
-        titleColor:'#8a90a0', bodyColor:'#eef1f6', padding:10, displayColors:false,
-        callbacks:{ label:c=>'EGP '+c.parsed.y.toLocaleString() } } },
-    scales:{
-      x:{ grid:{display:false}, border:{display:false},
-          ticks:{ color:'#8a90a0', font:{family:'Geist Mono',size:11} } },
-      y:{ grid:{color:'#1f232d'}, border:{display:false},
-          ticks:{ color:'#5f6575', font:{family:'Geist Mono',size:11},
-            callback:v=>(v/1000)+'k' } }
-    }
-  }
+/* ---- tab switching ---- */
+const tabs = document.getElementById('tabs');
+const screens = document.querySelectorAll('.screen');
+let profitDrawn=false, shipDrawn=false;
+tabs.addEventListener('click', e=>{
+  const b = e.target.closest('.tab'); if(!b) return;
+  const s = b.dataset.s;
+  tabs.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t===b));
+  screens.forEach(sc=>sc.hidden = sc.dataset.screen!==s);
+  if(s==='overview') drawProfit();
+  if(s==='shipping') drawShip();
 });
+
+/* ---- charts ---- */
+const axis = (family='Geist Mono') => ({color:'#5f6575',font:{family,size:11}});
+function drawProfit(){
+  if(profitDrawn) return; profitDrawn=true;
+  const ctx=document.getElementById('profitChart');
+  const g=ctx.getContext('2d').createLinearGradient(0,0,0,230);
+  g.addColorStop(0,'rgba(109,124,255,.45)'); g.addColorStop(1,'rgba(109,124,255,0)');
+  new Chart(ctx,{type:'line',
+    data:{labels:['Feb','Mar','Apr','May','Jun','Jul'],
+      datasets:[{data:[48200,58900,52400,71300,68100,84320],borderColor:'#6d7cff',
+        borderWidth:2.5,backgroundColor:g,fill:true,tension:.38,pointRadius:0,pointHoverRadius:5,
+        pointHoverBackgroundColor:'#6d7cff',pointHoverBorderColor:'#fff',pointHoverBorderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#171b23',borderColor:'#2a2f3b',
+        borderWidth:1,titleColor:'#8a90a0',bodyColor:'#eef1f6',padding:10,displayColors:false,
+        callbacks:{label:c=>'EGP '+c.parsed.y.toLocaleString()}}},
+      scales:{x:{grid:{display:false},border:{display:false},ticks:{color:'#8a90a0',font:{family:'Geist Mono',size:11}}},
+        y:{grid:{color:'#1f232d'},border:{display:false},ticks:{...axis(),callback:v=>(v/1000)+'k'}}}}});
+}
+function drawShip(){
+  if(shipDrawn) return; shipDrawn=true;
+  const ctx=document.getElementById('shipChart');
+  new Chart(ctx,{type:'doughnut',
+    data:{labels:['Collected','Real cost','Returns loss'],
+      datasets:[{data:[82800,71760,4800],
+        backgroundColor:['#6d7cff','#31d0a5','#ff6b6b'],borderColor:'#12151c',borderWidth:3}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{legend:{position:'bottom',labels:{color:'#8a90a0',font:{family:'Geist',size:12},
+        padding:14,usePointStyle:true,pointStyle:'circle'}},
+        tooltip:{backgroundColor:'#171b23',borderColor:'#2a2f3b',borderWidth:1,
+          titleColor:'#8a90a0',bodyColor:'#eef1f6',padding:10,
+          callbacks:{label:c=>c.label+': EGP '+c.parsed.toLocaleString()}}}}});
+}
+drawProfit(); /* overview is the default screen */
 </script>
 </body>
 </html>
