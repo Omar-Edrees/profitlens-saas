@@ -102,6 +102,12 @@
     }
     .search-input:focus { border-color: var(--acc); }
     .search-input::placeholder { color: var(--txt3); }
+    .filter-select {
+      background: var(--bg3); border: 1px solid var(--bdr); border-radius: 8px;
+      padding: 7px 12px; color: var(--txt); font-size: 13px; font-family: var(--body);
+      outline: none; transition: border-color .15s; cursor: pointer;
+    }
+    .filter-select:focus { border-color: var(--acc); }
 
     table { width: 100%; border-collapse: collapse; }
     th { padding: 10px 16px; text-align: left; background: var(--bg3); color: var(--txt2); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
@@ -145,6 +151,7 @@
       .table-header { flex-wrap: wrap; padding: 14px; }
       .table-title { flex: 1 1 100%; order: -1; }
       .search-input { flex: 1 1 auto; width: auto; min-width: 0; }
+      .filter-select { flex: 1 1 auto; }
 
       .promo-form { padding: 14px; }
       .promo-form input { flex: 1 1 140px; width: auto; }
@@ -271,6 +278,12 @@
     <div class="table-header">
       <div class="table-title">Users</div>
       <input class="search-input" id="search" placeholder="Search by email…" oninput="filterUsers()">
+      <select class="filter-select" id="device-filter" onchange="filterUsers()">
+        <option value="all">All devices</option>
+        <option value="0">0 devices</option>
+        <option value="1">1 device</option>
+        <option value="2+">2+ devices</option>
+      </select>
       <button class="btn btn-ghost" style="padding:6px 14px;font-size:12px" onclick="loadUsers()">↻ Refresh</button>
     </div>
     <div id="table-wrap">
@@ -383,7 +396,11 @@ function updateStats(users) {
 
 function filterUsers() {
   const q = document.getElementById('search').value.toLowerCase().trim();
-  const filtered = q ? allUsers.filter(u => u.email.toLowerCase().includes(q)) : allUsers;
+  const deviceFilter = document.getElementById('device-filter').value;
+  let filtered = q ? allUsers.filter(u => u.email.toLowerCase().includes(q)) : allUsers;
+  if (deviceFilter === '0')      filtered = filtered.filter(u => u.device_count === 0);
+  else if (deviceFilter === '1') filtered = filtered.filter(u => u.device_count === 1);
+  else if (deviceFilter === '2+') filtered = filtered.filter(u => u.device_count >= 2);
   renderTable(filtered);
 }
 
