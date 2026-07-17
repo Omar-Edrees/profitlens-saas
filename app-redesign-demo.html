@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<!-- ProfitLens — Redesign demo (Direction A · "Ledger"). Standalone, static data. -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ProfitLens — Redesign demo (Ledger)</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Direction A fonts: Geist (UI) + Geist Mono (numbers) + IBM Plex Sans Arabic (AR) -->
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --bg:#0b0d12; --bg2:#0e1017;
+  --surf:#12151c; --surf2:#171b23; --surf3:#1c212b;
+  --line:#1f232d; --line2:#2a2f3b; --row:#1b1f28;
+  --fg:#eef1f6; --mut:#8a90a0; --mut2:#5f6575;
+  --acc:#6d7cff; --acc2:#8b7bff; --acc-soft:rgba(109,124,255,.14);
+  --good:#31d0a5; --good-soft:rgba(49,208,165,.13);
+  --bad:#ff6b6b;  --bad-soft:rgba(255,107,107,.13);
+  --warn:#f5b544; --warn-soft:rgba(245,181,68,.13);
+  --sans:'Geist','IBM Plex Sans Arabic',system-ui,sans-serif;
+  --mono:'Geist Mono',ui-monospace,monospace;
+  --r:14px; --r-sm:10px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:
+    radial-gradient(900px 500px at 85% -10%,rgba(109,124,255,.10),transparent 60%),
+    radial-gradient(700px 500px at 0% 0%,rgba(139,123,255,.06),transparent 55%),
+    var(--bg);
+  color:var(--fg); font-family:var(--sans); line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;gap:18px;
+  padding:12px 22px;background:rgba(11,13,18,.82);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1rem}
+.brand .mark{
+  width:28px;height:28px;border-radius:9px;display:grid;place-items:center;
+  font-weight:800;color:#fff;background:linear-gradient(135deg,var(--acc),var(--acc2));
+  box-shadow:0 4px 14px -4px rgba(109,124,255,.7);
+}
+.tabs{display:flex;gap:3px;margin-inline-start:14px}
+.tab{
+  font:inherit;font-size:.86rem;font-weight:600;color:var(--mut);
+  background:none;border:0;padding:8px 14px;border-radius:var(--r-sm);cursor:pointer;
+  transition:background .15s,color .15s;
+}
+.tab:hover{color:var(--fg);background:var(--surf2)}
+.tab.on{color:var(--fg);background:var(--surf2);box-shadow:inset 0 0 0 1px var(--line2)}
+.spacer{flex:1}
+.btn{
+  font:inherit;font-size:.83rem;font-weight:600;cursor:pointer;
+  padding:8px 14px;border-radius:var(--r-sm);border:1px solid var(--line2);
+  background:var(--surf2);color:var(--fg);display:inline-flex;align-items:center;gap:7px;
+  transition:border-color .15s,background .15s;
+}
+.btn:hover{border-color:var(--acc);background:var(--surf3)}
+.btn.pri{background:linear-gradient(135deg,var(--acc),var(--acc2));border-color:transparent;color:#fff}
+.btn.pri:hover{filter:brightness(1.08)}
+.avatar{
+  width:32px;height:32px;border-radius:50%;background:var(--surf3);
+  display:grid;place-items:center;font-weight:700;font-size:.78rem;color:var(--acc);
+  border:1px solid var(--line2);
+}
+
+/* ---------- layout ---------- */
+.main{max-width:1200px;margin:0 auto;padding:26px 22px 60px}
+.pagehead{display:flex;align-items:flex-end;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.eyebrow{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+  font-weight:700;color:var(--acc);margin:0 0 6px}
+.pagehead h1{margin:0;font-size:1.55rem;font-weight:800;letter-spacing:-.02em}
+.pagehead p{margin:5px 0 0;color:var(--mut);font-size:.9rem}
+.seg{display:flex;background:var(--surf);border:1px solid var(--line);border-radius:var(--r-sm);
+  padding:3px;gap:2px}
+.seg button{font:inherit;font-size:.78rem;font-weight:600;color:var(--mut);
+  background:none;border:0;padding:6px 12px;border-radius:7px;cursor:pointer}
+.seg button.on{background:var(--surf3);color:var(--fg)}
+
+/* ---------- KPI cards ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:15px}
+@media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.kpis{grid-template-columns:1fr}}
+.kpi{
+  background:var(--surf);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px 17px;position:relative;overflow:hidden;
+  transition:border-color .15s,transform .15s;
+}
+.kpi:hover{border-color:var(--line2);transform:translateY(-2px)}
+.kpi.hero{
+  background:
+    radial-gradient(120% 120% at 100% 0%,rgba(109,124,255,.22),transparent 55%),
+    linear-gradient(160deg,#161a2e,#12151c);
+  border-color:#2b3050;grid-column:span 1;
+}
+.kpi .l{font-size:.78rem;font-weight:600;color:var(--mut);display:flex;
+  align-items:center;gap:6px;margin-bottom:12px}
+.kpi .l .ic{width:7px;height:7px;border-radius:50%;background:var(--acc)}
+.kpi .v{font-size:1.6rem;font-weight:800;letter-spacing:-.02em}
+.kpi.hero .v{font-size:1.85rem}
+.kpi .cur{font-size:.9rem;color:var(--mut);font-weight:600}
+.delta{display:inline-flex;align-items:center;gap:4px;font-size:.76rem;
+  font-weight:700;margin-top:9px;padding:3px 8px;border-radius:999px}
+.delta.up{color:var(--good);background:var(--good-soft)}
+.delta.dn{color:var(--bad);background:var(--bad-soft)}
+.delta .cmp{color:var(--mut);font-weight:500}
+
+/* ---------- panels ---------- */
+.grid{display:grid;grid-template-columns:1.15fr 1.6fr;gap:14px;margin-top:14px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.panel-head{display:flex;align-items:flex-start;justify-content:space-between;
+  gap:10px;margin-bottom:16px}
+.panel-head h2{margin:0;font-size:1rem;font-weight:700}
+.panel-head p{margin:3px 0 0;font-size:.78rem;color:var(--mut)}
+.chip{font-size:.7rem;font-weight:700;color:var(--good);background:var(--good-soft);
+  padding:4px 9px;border-radius:999px}
+.chart-wrap{position:relative;height:230px}
+
+/* ---------- table ---------- */
+.tbl-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.85rem;min-width:520px}
+thead th{text-align:left;font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--mut);font-weight:700;padding:0 10px 11px}
+th.n,td.n{text-align:right}
+tbody tr{border-top:1px solid var(--row)}
+tbody tr:hover{background:var(--surf2)}
+td{padding:12px 10px}
+.prod{display:flex;align-items:center;gap:11px;font-weight:600}
+.prod .thumb{width:30px;height:30px;border-radius:8px;flex:none;
+  background:var(--surf3);display:grid;place-items:center;font-size:.9rem}
+.val-good{color:var(--good);font-weight:600}
+.val-bad{color:var(--bad);font-weight:600}
+.pill{font-size:.72rem;font-weight:700;padding:4px 9px;border-radius:999px}
+.pill.ok{background:var(--good-soft);color:var(--good)}
+.pill.wn{background:var(--warn-soft);color:var(--warn)}
+.pill.bd{background:var(--bad-soft);color:var(--bad)}
+.foot-note{margin-top:16px;font-size:.78rem;color:var(--mut2);text-align:center}
+.foot-note code{font-family:var(--mono);color:var(--mut)}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand"><span class="mark">P</span> ProfitLens</div>
+  <nav class="tabs">
+    <button class="tab">Inputs</button>
+    <button class="tab">Ads</button>
+    <button class="tab">Shipping</button>
+    <button class="tab on">Overview</button>
+  </nav>
+  <span class="spacer"></span>
+  <button class="btn">Export</button>
+  <button class="btn pri">+ New product</button>
+  <div class="avatar">OE</div>
+</header>
+
+<main class="main">
+  <div class="pagehead">
+    <div>
+      <p class="eyebrow">Overview</p>
+      <h1>Complete financial picture</h1>
+      <p>All products · July 2026 · figures in EGP</p>
+    </div>
+    <div class="seg">
+      <button>7d</button><button class="on">30d</button><button>90d</button><button>YTD</button>
+    </div>
+  </div>
+
+  <section class="kpis">
+    <div class="kpi hero">
+      <div class="l"><span class="ic"></span> Net Profit</div>
+      <div class="v"><span class="cur">EGP</span> <span class="num">84,320</span></div>
+      <span class="delta up">▲ 12.4% <span class="cmp">vs last month</span></span>
+    </div>
+    <div class="kpi">
+      <div class="l">Blended ROAS</div>
+      <div class="v num">3.8×</div>
+      <span class="delta up">▲ 0.4</span>
+    </div>
+    <div class="kpi">
+      <div class="l">Blended CPA</div>
+      <div class="v"><span class="cur">EGP</span> <span class="num">96</span></div>
+      <span class="delta up">▼ EGP 8</span>
+    </div>
+    <div class="kpi">
+      <div class="l">Profit Margin</div>
+      <div class="v num">21.6%</div>
+      <span class="delta dn">▼ 1.1%</span>
+    </div>
+  </section>
+
+  <section class="kpis">
+    <div class="kpi">
+      <div class="l">Total Ad Budget</div>
+      <div class="v"><span class="cur">EGP</span> <span class="num">210,000</span></div>
+      <span class="delta up">▲ 6.0%</span>
+    </div>
+    <div class="kpi">
+      <div class="l">Weighted BE CPA</div>
+      <div class="v"><span class="cur">EGP</span> <span class="num">128</span></div>
+      <span class="delta up">▲ EGP 4</span>
+    </div>
+    <div class="kpi">
+      <div class="l">Total Delivered</div>
+      <div class="v num">1,842</div>
+      <span class="delta up">▲ 9.7%</span>
+    </div>
+    <div class="kpi">
+      <div class="l">Confirmation Rate</div>
+      <div class="v num">73.5%</div>
+      <span class="delta up">▲ 2.1%</span>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="panel">
+      <div class="panel-head">
+        <div><h2>Net profit by month</h2><p>Last 6 months</p></div>
+        <span class="chip">+38% since Feb</span>
+      </div>
+      <div class="chart-wrap"><canvas id="profitChart"></canvas></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div><h2>Product profitability</h2><p>Ranked by net profit · this month</p></div>
+      </div>
+      <div class="tbl-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th class="n">Revenue</th>
+              <th class="n">Ad spend</th>
+              <th class="n">COGS</th>
+              <th class="n">Net profit</th>
+              <th class="n">Margin</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="prod"><span class="thumb">🛞</span> Ab Roller Pro</span></td>
+              <td class="n num">96,400</td><td class="n num">31,200</td><td class="n num">28,900</td>
+              <td class="n num val-good">+22,300</td><td class="n"><span class="pill ok">23%</span></td>
+            </tr>
+            <tr>
+              <td><span class="prod"><span class="thumb">🧍</span> Posture Corrector</span></td>
+              <td class="n num">64,800</td><td class="n num">22,400</td><td class="n num">19,100</td>
+              <td class="n num val-good">+14,600</td><td class="n"><span class="pill ok">22%</span></td>
+            </tr>
+            <tr>
+              <td><span class="prod"><span class="thumb">💡</span> LED Strip 5m</span></td>
+              <td class="n num">41,200</td><td class="n num">18,900</td><td class="n num">15,600</td>
+              <td class="n num val-good">+3,100</td><td class="n"><span class="pill wn">8%</span></td>
+            </tr>
+            <tr>
+              <td><span class="prod"><span class="thumb">🥤</span> Mini Blender</span></td>
+              <td class="n num">28,500</td><td class="n num">14,200</td><td class="n num">12,800</td>
+              <td class="n num val-bad">−1,400</td><td class="n"><span class="pill bd">−5%</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot-note">Redesign demo · Direction A “Ledger” · static sample data · font: <code>Geist + Geist Mono</code></p>
+</main>
+
+<script>
+const ctx = document.getElementById('profitChart');
+const grad = ctx.getContext('2d').createLinearGradient(0,0,0,230);
+grad.addColorStop(0,'rgba(109,124,255,.45)');
+grad.addColorStop(1,'rgba(109,124,255,0)');
+new Chart(ctx,{
+  type:'line',
+  data:{
+    labels:['Feb','Mar','Apr','May','Jun','Jul'],
+    datasets:[{
+      data:[48200,58900,52400,71300,68100,84320],
+      borderColor:'#6d7cff', borderWidth:2.5,
+      backgroundColor:grad, fill:true,
+      tension:.38, pointRadius:0, pointHoverRadius:5,
+      pointHoverBackgroundColor:'#6d7cff', pointHoverBorderColor:'#fff', pointHoverBorderWidth:2,
+    }]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:false},
+      tooltip:{ backgroundColor:'#171b23', borderColor:'#2a2f3b', borderWidth:1,
+        titleColor:'#8a90a0', bodyColor:'#eef1f6', padding:10, displayColors:false,
+        callbacks:{ label:c=>'EGP '+c.parsed.y.toLocaleString() } } },
+    scales:{
+      x:{ grid:{display:false}, border:{display:false},
+          ticks:{ color:'#8a90a0', font:{family:'Geist Mono',size:11} } },
+      y:{ grid:{color:'#1f232d'}, border:{display:false},
+          ticks:{ color:'#5f6575', font:{family:'Geist Mono',size:11},
+            callback:v=>(v/1000)+'k' } }
+    }
+  }
+});
+</script>
+</body>
+</html>
