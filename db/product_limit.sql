@@ -20,7 +20,8 @@ language sql
 immutable
 as $$
   select case coalesce(p_plan, 'free')
-    when 'enterprise' then 20
+    when 'enterprise' then 1000
+    when 'business'   then 500
     when 'pro'        then 20
     else 20
   end;

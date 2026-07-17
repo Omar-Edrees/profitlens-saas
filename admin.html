@@ -303,6 +303,11 @@
       <button type="button" class="btn btn-ghost" style="padding:7px 14px;font-size:12px" onclick="fillGeneratedCode()" title="Generate a random unused code">🎲 Generate</button>
       <input id="new-uses" type="number" placeholder="Max uses" min="1" value="1">
       <input id="new-discount" type="number" placeholder="Discount %" min="0" max="100" value="100" title="Discount percentage this code grants">
+      <select id="new-plan" class="filter-select" title="Which plan a 100% code activates">
+        <option value="pro">pro</option>
+        <option value="business">business</option>
+        <option value="enterprise">enterprise</option>
+      </select>
       <button class="btn btn-create" onclick="createPromo()">+ Create Code</button>
     </div>
     <div id="promos-wrap"><div class="spinner"></div></div>
@@ -343,10 +348,14 @@ async function init() {
     document.getElementById('table-wrap').addEventListener('click', e => {
       const btn = e.target.closest('button[data-action]');
       if (!btn) return;
-      const { action, id, role, plan, email } = btn.dataset;
+      const { action, id, role, email } = btn.dataset;
       if (action === 'toggle') toggleRole(id, role, email);
-      else if (action === 'toggle-plan') togglePlan(id, plan, email);
       else if (action === 'delete-user') deleteUser(id, email);
+    });
+    document.getElementById('table-wrap').addEventListener('change', e => {
+      const sel = e.target.closest('select[data-action="set-plan"]');
+      if (!sel) return;
+      setPlan(sel.dataset.id, sel.value, sel.dataset.email, sel.dataset.current);
     });
     document.getElementById('promos-wrap').addEventListener('click', e => {
       const btn = e.target.closest('button[data-action="delete-promo"]');
@@ -443,10 +452,11 @@ function renderTable(users) {
       <td data-label="Last Sign In" style="color:var(--txt2);font-size:12px">${lastSeen}</td>
       <td data-label="">
         <div class="actions">
-          <button class="btn ${u.plan==='free'?'btn-create':'btn-ghost'}"
-            data-action="toggle-plan" data-id="${esc(u.id)}" data-plan="${esc(u.plan)}" data-email="${esc(u.email)}">
-            ${u.plan==='free' ? 'Activate Pro' : 'Set Free'}
-          </button>
+          <select class="filter-select" style="height:32px;padding:4px 8px;font-size:12px"
+            data-action="set-plan" data-id="${esc(u.id)}" data-current="${esc(u.plan)}" data-email="${esc(u.email)}">
+            ${['free','pro','business','enterprise'].map(pl =>
+              `<option value="${pl}" ${u.plan===pl?'selected':''}>${pl}</option>`).join('')}
+          </select>
           ${!isMe ? `
             <button class="btn ${u.role==='admin'?'btn-ghost':'btn-promote'}"
               data-action="toggle" data-id="${esc(u.id)}" data-role="${esc(u.role)}" data-email="${esc(u.email)}">
@@ -486,10 +496,9 @@ async function toggleRole(userId, currentRole, email) {
   } catch(e) { toast('Error: ' + e.message, 'error'); }
 }
 
-async function togglePlan(userId, currentPlan, email) {
-  const newPlan = currentPlan === 'free' ? 'pro' : 'free';
-  const action  = newPlan === 'pro' ? 'activate Pro for' : 'downgrade to Free';
-  if (!confirm(`${newPlan === 'pro' ? 'Activate Pro for' : 'Downgrade to Free'} ${email}?`)) return;
+async function setPlan(userId, newPlan, email, currentPlan) {
+  if (newPlan === currentPlan) return;
+  if (!confirm(`Set ${email} to "${newPlan}"?`)) { loadUsers(); return; }
   try {
     const res = await fetch('/api/admin/users', {
       method: 'PATCH',
@@ -499,7 +508,7 @@ async function togglePlan(userId, currentPlan, email) {
     if (!res.ok) throw new Error(await res.text());
     toast(`Plan updated to ${newPlan}`, 'success');
     loadUsers();
-  } catch(e) { toast('Error: ' + e.message, 'error'); }
+  } catch(e) { toast('Error: ' + e.message, 'error'); loadUsers(); }
 }
 
 async function deleteUser(userId, email) {
@@ -553,6 +562,7 @@ function renderPromos(promos) {
     return `<tr>
       <td data-label="Code"><span style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--acc);letter-spacing:.06em">${esc(p.code)}</span></td>
       <td data-label="Discount"><span class="badge-active" style="font-family:var(--mono)">${esc(String(p.discount_pct == null ? 100 : p.discount_pct))}%</span></td>
+      <td data-label="Plan"><span class="role-badge role-user" style="font-family:var(--mono)">${esc(p.plan || 'pro')}</span></td>
       <td data-label="Uses" class="promo-used">${p.uses_count} / ${p.max_uses}</td>
       <td data-label="Progress">
         <div style="background:var(--bg3);border-radius:6px;overflow:hidden;height:6px;width:80px">
@@ -570,7 +580,7 @@ function renderPromos(promos) {
   document.getElementById('promos-wrap').innerHTML = `
     <table>
       <thead><tr>
-        <th>Code</th><th>Discount</th><th>Uses</th><th>Progress</th><th>Status</th><th>Created</th><th>Actions</th>
+        <th>Code</th><th>Discount</th><th>Plan</th><th>Uses</th><th>Progress</th><th>Status</th><th>Created</th><th>Actions</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>`;
@@ -599,6 +609,7 @@ async function createPromo() {
   const code = document.getElementById('new-code').value.trim();
   const maxUses = parseInt(document.getElementById('new-uses').value) || 1;
   const discount = parseInt(document.getElementById('new-discount').value);
+  const plan = document.getElementById('new-plan').value;
   if (!code) { toast('Enter a code first', 'error'); return; }
   if (!Number.isFinite(discount) || discount < 0 || discount > 100) {
     toast('Discount must be between 0 and 100', 'error'); return;
@@ -607,12 +618,13 @@ async function createPromo() {
     const res = await fetch('/api/admin/promos', {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + __token, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, max_uses: maxUses, discount_pct: discount })
+      body: JSON.stringify({ code, max_uses: maxUses, discount_pct: discount, plan })
     });
     if (!res.ok) { const j = await res.json(); throw new Error(j.error); }
     document.getElementById('new-code').value = '';
     document.getElementById('new-uses').value = '1';
     document.getElementById('new-discount').value = '100';
+    document.getElementById('new-plan').value = 'pro';
     toast('Promo code created!', 'success');
     loadPromos();
   } catch(e) { toast('Error: ' + e.message, 'error'); }

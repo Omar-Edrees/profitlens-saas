@@ -15,6 +15,12 @@ alter table public.promo_codes
   add column if not exists discount_pct integer not null default 100
     check (discount_pct between 0 and 100);
 
+-- Which plan a 100%-code activates (added when tiered pricing shipped).
+-- Codes created before this column default to 'pro' (the original behaviour).
+alter table public.promo_codes
+  add column if not exists plan text not null default 'pro'
+    check (plan in ('pro', 'business', 'enterprise'));
+
 alter table public.promo_codes enable row level security;
 -- No user-facing policies — service role only (bypasses RLS)
 -- Admins manage codes via /admin panel

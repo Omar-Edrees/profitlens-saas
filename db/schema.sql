@@ -7,7 +7,7 @@ create table if not exists public.profiles (
   id                    uuid primary key references auth.users(id) on delete cascade,
   email                 text,
   role                  text not null default 'user'  check (role in ('user', 'admin')),
-  plan                  text not null default 'free'  check (plan in ('free', 'pro', 'enterprise')),
+  plan                  text not null default 'free'  check (plan in ('free', 'pro', 'business', 'enterprise')),
   -- promo redemption tracking (written server-side by /api/redeem; shown in the admin panel)
   redeemed_code         text,
   redeemed_discount_pct integer,
