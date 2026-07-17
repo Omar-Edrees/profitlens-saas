@@ -2076,8 +2076,10 @@ input[type=range]::-moz-range-thumb{
   .export-table th{padding:6px 8px;font-size:9px}
   .export-table td{padding:5px 8px;font-size:10px}
   .export-btn{width:100%;justify-content:center;padding:13px;font-size:13px}
-  .export-prod-chips{gap:4px;margin-bottom:10px}
+  .export-prod-panel{padding:10px 12px;margin-bottom:12px}
+  .export-prod-chips{gap:4px;max-height:100px}
   .export-prod-chip{font-size:10px;padding:3px 8px}
+  .export-prod-chip .nm{max-width:130px}
 
   /* TOOLTIPS on mobile — tap to show */
   .tip-icon{width:16px;height:16px;font-size:9px}
@@ -2268,12 +2270,27 @@ input[type=range]::-moz-range-thumb{
 }
 .export-btn:hover{opacity:.88;transform:translateY(-1px)}
 .export-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
-.export-prod-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.export-prod-panel{
+  background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r2);
+  padding:12px 14px;margin-bottom:16px;
+}
+.export-prod-head{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;
+  font-size:11px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--txt3);
+}
+.export-prod-count{
+  font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0;color:var(--c1);
+  background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);
+  border-radius:20px;padding:1px 9px;min-width:24px;text-align:center;
+}
+.export-prod-chips{display:flex;gap:6px;flex-wrap:wrap;max-height:120px;overflow-y:auto;padding:1px}
 .export-prod-chip{
   padding:4px 10px;border-radius:12px;font-size:11px;
   background:var(--surf2);border:1px solid var(--bdr2);color:var(--txt2);
-  display:flex;align-items:center;gap:5px;
+  display:flex;align-items:center;gap:6px;max-width:100%;
 }
+.export-prod-chip .dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+.export-prod-chip .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:170px}
 .export-prod-chip.included{background:rgba(0,229,160,.1);border-color:rgba(0,229,160,.3);color:var(--c1)}
 
 .bundle-card{display:grid;grid-template-columns:90px 1fr 1fr 1fr auto auto;gap:8px;align-items:center;background:var(--surf);border:1px solid var(--bdr2);border-radius:var(--r);padding:10px 12px;margin-bottom:8px}
@@ -5081,7 +5098,13 @@ input[type=range]::-moz-range-thumb{
       <span data-t="export_title">Export to Excel</span>
     </div>
     <div class="export-sub" data-t="export_sub">All product analytics in one Excel sheet — Inputs, Marketing, Shipping, P&amp;L, and product comparison</div>
-    <div id="export_prod_chips" class="export-prod-chips"></div>
+    <div class="export-prod-panel">
+      <div class="export-prod-head">
+        <span data-t="export_prod_included">Products included</span>
+        <span id="export_prod_count" class="export-prod-count">0</span>
+      </div>
+      <div id="export_prod_chips" class="export-prod-chips"></div>
+    </div>
     <div class="export-preview">
       <div class="export-preview-header">
         <div class="export-tabs" id="export_tabs">
@@ -10822,8 +10845,10 @@ function renderExportPreview(){
 
 function updateProdChips(prods){
   const el = document.getElementById('export_prod_chips');
+  const cnt = document.getElementById('export_prod_count');
+  if(cnt) cnt.textContent = prods.length;
   el.innerHTML = prods.map((p,i) =>
-    `<div class="export-prod-chip included"><span style="width:7px;height:7px;border-radius:50%;background:${PROD_COLORS[i%PROD_COLORS.length]};display:inline-block"></span>${escapeHtml(p.name)}</div>`
+    `<div class="export-prod-chip included" title="${escapeHtml(p.name)}"><span class="dot" style="background:${PROD_COLORS[i%PROD_COLORS.length]}"></span><span class="nm">${escapeHtml(p.name)}</span></div>`
   ).join('');
 }
 
@@ -11563,7 +11588,7 @@ const T = {
     oi_vt_v_loss:'These tiers reduce total profit versus no discount at all.',
     oi_vt_v_ok:'These tiers add profit versus no discount — adoption mix looks healthy.',
     card_fees:'Commissions & Fees', lbl_gateway:'Payment gateway fee',
-    card_fixed:'Fixed costs', export_title:'Export to Excel',
+    card_fixed:'Fixed costs', export_title:'Export to Excel', export_prod_included:'Products included',
     kpi_confirmed:'Confirmed orders', kpi_delivered:'Delivered orders',
     hint_roas_rev:'Revenue ÷ ad spend', hint_be_full:'Full business break-even',
     hint_be_min:'Min to break even', hint_cpa_eff_s:'vs break-even limit',
@@ -12154,7 +12179,7 @@ const T = {
     oi_vt_v_loss:'الشرائح دي بتقلل الربح الكلي مقارنة بعدم وجود أي خصم.',
     oi_vt_v_ok:'الشرائح دي بتزود الربح مقارنة بعدم وجود خصم — توزيع الاستخدام كويس.',
     card_fees:'العمولات والرسوم', lbl_gateway:'رسوم بوابة الدفع',
-    card_fixed:'التكاليف الثابتة', export_title:'تصدير إلى Excel',
+    card_fixed:'التكاليف الثابتة', export_title:'تصدير إلى Excel', export_prod_included:'المنتجات المضمّنة',
     kpi_confirmed:'الأوردرات المؤكدة', kpi_delivered:'الأوردرات الموصّلة',
     hint_roas_rev:'الإيراد ÷ الإنفاق الإعلاني', hint_be_full:'نقطة تعادل البزنس الكاملة',
     hint_be_min:'الحد الأدنى للتعادل', hint_cpa_eff_s:'مقابل حد التعادل',
