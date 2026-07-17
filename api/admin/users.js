@@ -59,7 +59,7 @@ export default async function handler(req, res) {
       updates.role = role;
     }
     if (plan !== undefined) {
-      if (!['free', 'pro', 'enterprise'].includes(plan)) return res.status(400).json({ error: 'Invalid plan' });
+      if (!['free', 'pro', 'business', 'enterprise'].includes(plan)) return res.status(400).json({ error: 'Invalid plan' });
       updates.plan = plan;
     }
     if (Object.keys(updates).length === 0) return res.status(400).json({ error: 'Nothing to update' });

@@ -1717,6 +1717,51 @@ body[data-theme="light"] #s0 .f-row .unit{ border-inline-start-color:rgba(15,23,
 .prod-dd-item-all{border-bottom:1px solid var(--bdr);border-radius:9px;margin-bottom:2px;padding-bottom:11px}
 .prod-dd-empty{padding:14px 8px;text-align:center;color:var(--txt3);font-size:12px}
 
+/* ─── READ-ONLY (viewer team member) ─── */
+body.workspace-readonly .prod-tab-add,
+body.workspace-readonly .pt-del,
+body.workspace-readonly .prod-dd-item-actions,
+body.workspace-readonly .prod-dd-act,
+body.workspace-readonly .pt-rename-btn{display:none !important}
+
+/* ─── TEAM MODAL ─── */
+.team-modal-backdrop{
+  display:none;position:fixed;inset:0;z-index:10000;
+  background:rgba(0,0,0,.55);backdrop-filter:blur(3px);
+  align-items:center;justify-content:center;padding:16px;
+}
+.team-modal-backdrop.open{display:flex}
+.team-modal{
+  width:min(520px,94vw);max-height:88vh;overflow-y:auto;
+  background:var(--surf);border:1px solid var(--bdr2);border-radius:16px;
+  padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.5);
+}
+.team-modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.team-modal-title{font-size:17px;font-weight:700;color:var(--txt)}
+.team-close{background:var(--surf2);border:none;color:var(--txt2);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:14px}
+.team-close:hover{background:var(--surf3);color:var(--txt)}
+.team-modal-sub{font-size:12.5px;color:var(--txt3);margin-bottom:16px;line-height:1.6}
+.team-invite-row{display:flex;gap:8px;flex-wrap:wrap}
+.team-invite-row input{flex:1 1 180px;min-width:0;height:40px;padding:0 12px;background:var(--surf2);border:1px solid var(--bdr2);border-radius:9px;color:var(--txt);font-family:var(--body);font-size:13px;outline:none}
+.team-invite-row input:focus{border-color:var(--c1)}
+.team-invite-row select{height:40px;padding:0 10px;background:var(--surf2);border:1px solid var(--bdr2);border-radius:9px;color:var(--txt);font-family:var(--body);font-size:13px;cursor:pointer;outline:none}
+.team-invite-btn{height:40px;padding:0 18px;background:var(--c1);border:none;border-radius:9px;color:#000;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--body)}
+.team-invite-btn:hover{filter:brightness(1.06)}
+.team-count{font-size:11px;color:var(--txt3);font-family:var(--mono);letter-spacing:.05em;margin:12px 2px 4px}
+.team-msg{font-size:12.5px;min-height:16px;margin:2px;line-height:1.5}
+.team-msg.error{color:#ff6b6b}
+.team-msg.success{color:var(--c1)}
+.team-list{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.team-row{display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--surf2);border:1px solid var(--bdr);border-radius:9px}
+.team-row-email{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;color:var(--txt)}
+.team-row-role{height:32px;padding:0 8px;background:var(--surf);border:1px solid var(--bdr2);border-radius:7px;color:var(--txt);font-size:12px;cursor:pointer;outline:none}
+.team-row-role-static{font-size:12px;color:var(--txt2)}
+.team-row-del{background:var(--surf);border:1px solid var(--bdr2);color:var(--txt3);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:12px;flex-shrink:0}
+.team-row-del:hover{background:rgba(255,90,90,.15);color:#ff6b6b;border-color:rgba(255,90,90,.3)}
+.team-row-pending{opacity:.8;border-style:dashed}
+.team-pending-tag{font-size:10px;color:var(--c3);background:rgba(129,140,248,.12);padding:1px 6px;border-radius:10px;margin-inline-start:4px}
+.team-empty{padding:16px;text-align:center;color:var(--txt3);font-size:12.5px}
+
 /* ─── TARGET PROFIT ──────────────────── */
 .target-profit-card{
   background:var(--surf);border:1px solid var(--bdr);border-radius:12px;
@@ -8875,7 +8920,18 @@ let ACTIVE_PROD = 0;
 // just the UX guard so users get instant feedback instead of a silent
 // cloud-sync rejection. Once multiple pricing tiers ship, this becomes
 // per-plan instead of a single flat number.
-const PRODUCT_LIMIT = 20;
+// Set at load time from the workspace owner's plan (20/500/1000) — see the
+// auth-gate block that calls /api/team?action=me.
+let PRODUCT_LIMIT = 20;
+
+// ── Workspace / team context (set during the auth-gate on load) ──────────────
+// A team member works inside the OWNER's workspace, so data reads/writes target
+// WORKSPACE_OWNER_ID (not necessarily the logged-in user). Viewers are read-only.
+let WORKSPACE_OWNER_ID = null;   // whose user_data row this session reads/writes
+let WORKSPACE_ROLE     = 'owner';// 'owner' | 'editor' | 'viewer'
+let WORKSPACE_PLAN     = 'free'; // the workspace owner's plan
+let WORKSPACE_READONLY = false;  // true for viewers — all edits disabled
+
 function showProdLimitToast(){
   document.getElementById('__prod_limit_toast')?.remove();
   const t = T[LANG] || {};
@@ -8893,6 +8949,146 @@ function showProdLimitToast(){
     `<button style="background:rgba(0,0,0,.15);border:none;color:#000;cursor:pointer;padding:4px 10px;border-radius:4px;font-size:11px" onclick="this.parentElement.remove()">✕</button>`;
   document.body.appendChild(banner);
   setTimeout(()=>banner.remove(), 4000);
+}
+
+// Read-only lockdown for viewer team members. Disables every data input and
+// (via body.workspace-readonly CSS) hides all mutating controls. The RLS policy
+// on user_data is the real guard — this is UX so viewers aren't confused.
+function applyReadOnlyMode(){
+  document.body.classList.add('workspace-readonly');
+  document.querySelectorAll('input, textarea, select').forEach(el => { el.disabled = true; });
+  if(!document.getElementById('__ro_badge')){
+    const b = document.createElement('div');
+    b.id = '__ro_badge';
+    b.textContent = (T[LANG] && T[LANG].ro_badge) || '👁 قراءة فقط';
+    b.style.cssText =
+      'position:fixed;bottom:14px;inset-inline-start:14px;z-index:9998;'+
+      'background:rgba(129,140,248,.15);color:var(--c1);border:1px solid rgba(129,140,248,.35);'+
+      'padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;font-family:var(--body)';
+    document.body.appendChild(b);
+  }
+}
+
+// ── TEAM MANAGEMENT (owner, business/enterprise) ─────────────────────────────
+async function _teamToken(){
+  try { const { data:{ session } } = await window.__sb.auth.getSession(); return session?.access_token || null; }
+  catch(e){ return null; }
+}
+function _teamMsg(text, kind){
+  const el = document.getElementById('team_msg'); if(!el) return;
+  el.textContent = text || ''; el.className = 'team-msg' + (kind ? (' '+kind) : '');
+}
+function _teamModalEl(){
+  let m = document.getElementById('team_modal');
+  if(m) return m;
+  const t = T[LANG] || {};
+  m = document.createElement('div');
+  m.id = 'team_modal';
+  m.className = 'team-modal-backdrop';
+  m.innerHTML =
+    '<div class="team-modal">'+
+      '<div class="team-modal-head">'+
+        '<div class="team-modal-title">'+escapeHtml(t.team_title||'Team')+'</div>'+
+        '<button class="team-close" onclick="teamClose()">✕</button>'+
+      '</div>'+
+      '<div class="team-modal-sub">'+escapeHtml(t.team_sub||'Invite your team to view or edit this workspace.')+'</div>'+
+      '<div class="team-invite-row">'+
+        '<input id="team_email" type="email" placeholder="'+escapeHtml(t.team_email_ph||'member@email.com')+'" autocomplete="off" spellcheck="false">'+
+        '<select id="team_role">'+
+          '<option value="viewer">'+escapeHtml(t.team_role_viewer||'View only')+'</option>'+
+          '<option value="editor">'+escapeHtml(t.team_role_editor||'Can edit')+'</option>'+
+        '</select>'+
+        '<button class="team-invite-btn" onclick="teamInvite()">'+escapeHtml(t.team_invite||'Invite')+'</button>'+
+      '</div>'+
+      '<div class="team-count" id="team_count"></div>'+
+      '<div class="team-msg" id="team_msg"></div>'+
+      '<div class="team-list" id="team_list"></div>'+
+    '</div>';
+  m.addEventListener('click', e => { if(e.target === m) teamClose(); });
+  document.body.appendChild(m);
+  return m;
+}
+async function teamOpen(){
+  document.getElementById('__pl_menu')?.classList.remove('open');
+  _teamModalEl().classList.add('open');
+  await teamRefresh();
+}
+function teamClose(){ document.getElementById('team_modal')?.classList.remove('open'); }
+async function teamRefresh(){
+  const token = await _teamToken(); if(!token) return;
+  _teamMsg('');
+  try {
+    const r = await fetch('/api/team', { headers:{ 'Authorization':'Bearer '+token } });
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.error||'error');
+    teamRender(d);
+  } catch(e){ _teamMsg(e.message, 'error'); }
+}
+function teamRender(d){
+  const t = T[LANG] || {};
+  const cnt = document.getElementById('team_count');
+  if(cnt) cnt.textContent = (d.used||0) + ' / ' + (d.memberLimit||0) + ' ' + (t.team_members_word||'members');
+  const list = document.getElementById('team_list'); if(!list) return;
+  const roleLabel = r => r==='editor' ? (t.team_role_editor||'Can edit') : (t.team_role_viewer||'View only');
+  let html = '';
+  (d.members||[]).forEach(m => {
+    html +=
+      '<div class="team-row">'+
+        '<div class="team-row-email">'+escapeHtml(m.email||m.member_id)+'</div>'+
+        '<select class="team-row-role" onchange="teamSetRole(\''+escapeHtml(m.member_id)+'\', this.value)">'+
+          '<option value="viewer"'+(m.role==='viewer'?' selected':'')+'>'+escapeHtml(roleLabel('viewer'))+'</option>'+
+          '<option value="editor"'+(m.role==='editor'?' selected':'')+'>'+escapeHtml(roleLabel('editor'))+'</option>'+
+        '</select>'+
+        '<button class="team-row-del" title="remove" onclick="teamRemove(\''+escapeHtml(m.member_id)+'\', null)">✕</button>'+
+      '</div>';
+  });
+  (d.invites||[]).forEach(v => {
+    html +=
+      '<div class="team-row team-row-pending">'+
+        '<div class="team-row-email">'+escapeHtml(v.email)+' <span class="team-pending-tag">'+escapeHtml(t.team_pending||'pending')+'</span></div>'+
+        '<div class="team-row-role-static">'+escapeHtml(roleLabel(v.role))+'</div>'+
+        '<button class="team-row-del" title="cancel" onclick="teamRemove(null, \''+escapeHtml(v.email)+'\')">✕</button>'+
+      '</div>';
+  });
+  if(!html) html = '<div class="team-empty">'+escapeHtml(t.team_empty||'No members yet.')+'</div>';
+  list.innerHTML = html;
+}
+async function teamInvite(){
+  const t = T[LANG] || {};
+  const email = document.getElementById('team_email').value.trim();
+  const role  = document.getElementById('team_role').value;
+  if(!email){ _teamMsg(t.team_need_email||'Enter an email', 'error'); return; }
+  const token = await _teamToken(); if(!token) return;
+  try {
+    const r = await fetch('/api/team', { method:'POST',
+      headers:{ 'Authorization':'Bearer '+token, 'Content-Type':'application/json' },
+      body: JSON.stringify({ email, role }) });
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.error||'error');
+    document.getElementById('team_email').value = '';
+    _teamMsg(d.pending ? (t.team_invited||'Invitation sent') : (t.team_added||'Member added'), 'success');
+    teamRefresh();
+  } catch(e){ _teamMsg(e.message, 'error'); }
+}
+async function teamSetRole(memberId, role){
+  const token = await _teamToken(); if(!token) return;
+  try {
+    const r = await fetch('/api/team', { method:'PATCH',
+      headers:{ 'Authorization':'Bearer '+token, 'Content-Type':'application/json' },
+      body: JSON.stringify({ member_id: memberId, role }) });
+    if(!r.ok){ const d = await r.json(); throw new Error(d.error||'error'); }
+    _teamMsg((T[LANG]||{}).team_saved||'Saved', 'success');
+  } catch(e){ _teamMsg(e.message, 'error'); teamRefresh(); }
+}
+async function teamRemove(memberId, email){
+  const token = await _teamToken(); if(!token) return;
+  try {
+    const r = await fetch('/api/team', { method:'DELETE',
+      headers:{ 'Authorization':'Bearer '+token, 'Content-Type':'application/json' },
+      body: JSON.stringify(memberId ? { member_id: memberId } : { email }) });
+    if(!r.ok){ const d = await r.json(); throw new Error(d.error||'error'); }
+    teamRefresh();
+  } catch(e){ _teamMsg(e.message, 'error'); }
 }
 const PROD_COLORS = ['var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--red)'];
 const INPUT_IDS = ['i_price','i_cost','i_units','i_ship_c','i_fulfill_del','i_fulfill_ret',
@@ -9745,6 +9941,7 @@ function switchProduct(idx){
 }
 
 function addProduct(){
+  if(WORKSPACE_READONLY) return;
   if(PRODUCTS.length >= PRODUCT_LIMIT){ showProdLimitToast(); return; }
   saveCurrentProduct();
   const newProd = { name: T[LANG].product_default + ' ' + (PRODUCTS.length + 1), data: {} };
@@ -9758,6 +9955,7 @@ function addProduct(){
 }
 
 function deleteProduct(idx){
+  if(WORKSPACE_READONLY) return;
   if(PRODUCTS.length <= 1) return;
   PRODUCTS.splice(idx, 1);
   ACTIVE_PROD = Math.min(ACTIVE_PROD, PRODUCTS.length - 1);
@@ -9827,6 +10025,7 @@ function startRename(nameEl, idx){
 }
 
 function renameProduct(idx, name){
+  if(WORKSPACE_READONLY) return;
   if(PRODUCTS[idx]) PRODUCTS[idx].name = name.trim() || (T[LANG].product_default+' '+(idx+1));
   renderProdTabs();
   persistSave();
@@ -9900,6 +10099,7 @@ function downloadExcelTemplate(){
 }
 
 function handleExcelUpload(input){
+  if(WORKSPACE_READONLY) return;
   const file = input.files?.[0];
   if(!file) return;
   document.getElementById('xl_file_lbl').textContent = file.name;
@@ -11626,7 +11826,13 @@ const T = {
     ap_ds_profit:'Net Profit', ap_ds_revenue:'Revenue', ap_ds_margin:'Margin %',
     prod_add:'+ Add product', pi_switch:'switch',
     prod_search_ph:'Search by product name…', prod_none:'No products match', prod_select:'Select product',
-    prod_limit_toast:'Max 20 products on your current plan.', xl_ok_capped:'capped at 20 — plan limit',
+    prod_limit_toast:'You have reached your plan\'s product limit.', xl_ok_capped:'capped at your plan limit',
+    ro_badge:'👁 View only', team_btn:'Team',
+    team_title:'Team', team_sub:'Invite your team to view or edit this workspace.',
+    team_email_ph:'member@email.com', team_role_viewer:'View only', team_role_editor:'Can edit',
+    team_invite:'Invite', team_members_word:'members', team_pending:'pending', team_empty:'No members yet.',
+    team_need_email:'Enter an email', team_invited:'Invitation sent — they get access when they log in.',
+    team_added:'Member added', team_saved:'Saved',
   },
   ar: {
     nav_inputs:'المدخلات', nav_marketing:'الإعلانات', nav_shipping:'الشحن', nav_overview:'نظرة عامة',
@@ -12211,7 +12417,13 @@ const T = {
     ap_ds_profit:'صافي الربح', ap_ds_revenue:'الإيراد', ap_ds_margin:'الهامش %',
     prod_add:'+ إضافة منتج', pi_switch:'تبديل',
     prod_search_ph:'ابحث باسم المنتج…', prod_none:'لا يوجد منتج بهذا الاسم', prod_select:'اختر المنتج',
-    prod_limit_toast:'وصلت للحد الأقصى (20 منتج) لباقتك الحالية.', xl_ok_capped:'تم الاكتفاء بـ 20 — الحد الأقصى للباقة',
+    prod_limit_toast:'وصلت للحد الأقصى لعدد المنتجات في باقتك.', xl_ok_capped:'تم الاكتفاء بالحد الأقصى للباقة',
+    ro_badge:'👁 قراءة فقط', team_btn:'الفريق',
+    team_title:'الفريق', team_sub:'ادعُ فريقك لعرض أو تعديل بيانات هذا الحساب.',
+    team_email_ph:'الإيميل بتاع العضو', team_role_viewer:'قراءة فقط', team_role_editor:'يقدر يعدّل',
+    team_invite:'دعوة', team_members_word:'عضو', team_pending:'في الانتظار', team_empty:'لسه مفيش أعضاء.',
+    team_need_email:'اكتب الإيميل الأول', team_invited:'اتبعتت الدعوة — هيوصله الصلاحية أول ما يسجّل دخول.',
+    team_added:'اتضاف العضو', team_saved:'اتحفظ',
   }
 };
 
@@ -12344,23 +12556,47 @@ window.addEventListener('load', ()=>{
       if (!session) { window.location.replace('/'); return; }
       window.__sbUser = session.user;
 
-      // Plan gate — free users go to pricing page
       const { data: profile } = await window.__sb.from('profiles')
         .select('plan, role').eq('id', session.user.id).maybeSingle();
-      if (!profile?.plan || profile.plan === 'free') {
+
+      // Resolve the effective workspace: a team member works inside the OWNER's
+      // workspace (and accepts any pending email invite here). Non-members work
+      // in their own. This also yields the plan that drives the product limit.
+      let ws = { isMember:false, ownerId: session.user.id, role:'owner',
+                 plan: profile?.plan || 'free',
+                 productLimit: 20, memberLimit: 0 };
+      try {
+        const r = await fetch('/api/team?action=me', {
+          headers: { 'Authorization': 'Bearer ' + session.access_token }
+        });
+        if (r.ok) ws = await r.json();
+      } catch(e){}
+
+      WORKSPACE_OWNER_ID = ws.ownerId;
+      WORKSPACE_ROLE     = ws.role;
+      WORKSPACE_PLAN     = ws.plan;
+      WORKSPACE_READONLY = ws.role === 'viewer';
+      PRODUCT_LIMIT      = ws.productLimit || 20;
+
+      // Plan gate — no paid plan AND not a team member → pricing page.
+      // (admins may still open the app to inspect it)
+      if ((!ws.plan || ws.plan === 'free') && !ws.isMember && profile?.role !== 'admin') {
         window.location.replace('/pricing');
         return;
       }
 
       // Always start from cloud state — clears any leftover data from a previous
-      // user's session on the same browser before loading this user's cloud data.
+      // user's session on the same browser before loading THIS workspace's data.
       localStorage.removeItem(LS_KEY);
       const { data: row } = await window.__sb.from('user_data')
-        .select('data').eq('user_id', session.user.id).maybeSingle();
+        .select('data').eq('user_id', WORKSPACE_OWNER_ID).maybeSingle();
       if (row?.data && isValidState(row.data)) {
         localStorage.setItem(LS_KEY, JSON.stringify(row.data));
         try { initProducts(); } catch(e){}
       }
+
+      // Viewers see everything but cannot edit — lock the UI (RLS is the real guard).
+      if (WORKSPACE_READONLY) { try { applyReadOnlyMode(); } catch(e){} }
 
       window.__plLogout = async function() {
         localStorage.removeItem(LS_KEY);
@@ -12433,6 +12669,14 @@ window.addEventListener('load', ()=>{
             '<span data-t="mymsg_btn">'+( T[LANG].mymsg_btn||T.en.mymsg_btn )+'</span>'+
           '</button>';
 
+        // Team management — owners of plans that allow members (business/enterprise).
+        const teamItem = (WORKSPACE_ROLE === 'owner' && (WORKSPACE_PLAN === 'business' || WORKSPACE_PLAN === 'enterprise'))
+          ? '<button class="pl-menu-btn" onclick="teamOpen()">'+
+              '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>'+
+              '<span data-t="team_btn">'+( T[LANG].team_btn||T.en.team_btn )+'</span>'+
+            '</button>'
+          : '';
+
         const wrap = document.createElement('div');
         wrap.className = 'pl-profile';
         wrap.id = '__pl_profile';
@@ -12448,6 +12692,7 @@ window.addEventListener('load', ()=>{
             '</div>'+
             '<div class="pl-menu-div"></div>'+
             adminItem +
+            teamItem +
             tutorialItem +
             feedbackItems +
             myMsgItem +
@@ -12491,15 +12736,17 @@ window.addEventListener('load', ()=>{
         }
       }
 
-      // Cloud sync every 3s
+      // Cloud sync every 3s — writes to the workspace OWNER's row (an editor
+      // member syncs into the owner's data). Viewers never write (RLS also blocks).
       let __lastSyncedStr = localStorage.getItem(LS_KEY);
       setInterval(async ()=>{
+        if (WORKSPACE_READONLY) return;
         const cur = localStorage.getItem(LS_KEY);
         if (!cur || cur === __lastSyncedStr) return;
         __lastSyncedStr = cur;
         try {
           await window.__sb.from('user_data').upsert(
-            { user_id: session.user.id, data: JSON.parse(cur), updated_at: new Date().toISOString() },
+            { user_id: WORKSPACE_OWNER_ID, data: JSON.parse(cur), updated_at: new Date().toISOString() },
             { onConflict: 'user_id' }
           );
         } catch(e){}
