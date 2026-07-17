@@ -36,7 +36,7 @@ export default async function handler(req, res) {
 
   const { data: promo } = await admin
     .from('promo_codes')
-    .select('id, uses_count, max_uses, discount_pct')
+    .select('id, uses_count, max_uses, discount_pct, plan')
     .eq('code', code)
     .eq('is_active', true)
     .maybeSingle();
@@ -63,13 +63,15 @@ export default async function handler(req, res) {
   // the customer pays the discounted amount manually and an admin activates them.
   const discount  = promo.discount_pct;
   const activate  = discount >= 100;
+  // Which tier this code grants (defaults to 'pro' for codes created before tiers).
+  const grantPlan = ['pro', 'business', 'enterprise'].includes(promo.plan) ? promo.plan : 'pro';
 
   const updates = {
     redeemed_code: code,
     redeemed_discount_pct: discount,
     redeemed_at: new Date().toISOString(),
   };
-  if (activate) updates.plan = 'pro';
+  if (activate) updates.plan = grantPlan;
 
   const { error: updateErr } = await admin
     .from('profiles').update(updates).eq('id', user.id);

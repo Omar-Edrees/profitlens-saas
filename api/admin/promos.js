@@ -30,14 +30,15 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { code, max_uses, discount_pct } = req.body || {};
+    const { code, max_uses, discount_pct, plan } = req.body || {};
     if (!code) return res.status(400).json({ error: 'code is required' });
     const discount = Math.round(Number(discount_pct));
     if (!Number.isFinite(discount) || discount < 0 || discount > 100)
       return res.status(400).json({ error: 'discount_pct must be between 0 and 100' });
+    const grantPlan = ['pro', 'business', 'enterprise'].includes(plan) ? plan : 'pro';
     const { data, error } = await admin
       .from('promo_codes')
-      .insert({ code: code.trim().toUpperCase(), max_uses: max_uses || 1, discount_pct: discount })
+      .insert({ code: code.trim().toUpperCase(), max_uses: max_uses || 1, discount_pct: discount, plan: grantPlan })
       .select().single();
     if (error) return res.status(400).json({ error: error.message });
     return res.json({ promo: data });

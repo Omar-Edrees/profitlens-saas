@@ -64,6 +64,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .pl-grid { grid-template-columns: 1fr !important; }
     .pl-h1 { font-size: 30px !important; }
     .pl-offer { order: -1; }
+    .pl-tiers { grid-template-columns: 1fr !important; }
   }
   @media (max-width: 480px) {
     .pl-features { gap: 10px !important; }
@@ -298,6 +299,73 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
 
     </div>
+
+    <!-- ===== PRICING TIERS ===== -->
+    <section style="margin-top: 40px;">
+      <h2 style="text-align:center; font-size: 28px; font-weight: 700; color:#fff; margin: 0 0 8px;">اختار الباقة المناسبة ليك</h2>
+      <p style="text-align:center; font-size: 14px; color:#9BA6B4; margin: 0 0 28px;">كل الباقات فيها التحليلات الكاملة. الفرق في عدد المنتجات وحجم الفريق.</p>
+      <div class="pl-tiers" style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: stretch;">
+
+        <!-- Tier: أساسية -->
+        <div style="display:flex; flex-direction:column; border-radius: 20px; padding: 26px 22px; background: linear-gradient(180deg, #12161D, #0C0F15); border: 1px solid rgba(255,255,255,0.08);">
+          <div style="font-size: 16px; font-weight: 700; color:#fff; margin-bottom: 6px;">أساسية</div>
+          <div style="font-size: 12.5px; color:#8B949E; margin-bottom: 18px; line-height:1.6;">للتاجر الفردي اللي لسه بادئ.</div>
+          <div style="display:flex; align-items:baseline; gap:8px; direction:ltr; justify-content:flex-end; margin-bottom: 4px;">
+            <span class="pl-num" style="font-size: 15px; color:#6E7681; text-decoration:line-through;">1500</span>
+            <span class="pl-num" style="font-size: 40px; font-weight: 800; color:#fff; letter-spacing:-0.03em;">500</span>
+            <span style="font-size: 14px; font-weight:700; color:#A5B4FC; font-family:'Inter',sans-serif;">EGP</span>
+          </div>
+          <div style="font-size: 11px; color:#8B949E; margin-bottom: 20px;">دفعة واحدة · مدى الحياة</div>
+          <ul style="list-style:none; margin:0 0 22px; padding:0; display:flex; flex-direction:column; gap:11px; font-size:13px; color:#C9D1D9;">
+            <li>✓ لحد <span class="pl-num" style="font-weight:700;">20</span> منتج</li>
+            <li>✓ مستخدم واحد</li>
+            <li>✓ كل أدوات التحليل والتقارير</li>
+          </ul>
+          <button onclick="document.getElementById('wa-btn').scrollIntoView({behavior:'smooth'})" style="margin-top:auto; width:100%; padding:13px; border-radius:12px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.03); color:#C9D1D9; font-size:14px; font-weight:600; font-family:inherit; cursor:pointer;">اشترك</button>
+        </div>
+
+        <!-- Tier: فريق (highlighted) -->
+        <div style="position:relative; display:flex; flex-direction:column; border-radius: 20px; padding: 26px 22px; background: linear-gradient(180deg, #151A2E, #0C0F15); border: 1.5px solid rgba(129,140,248,0.55); box-shadow: 0 0 50px -12px rgba(129,140,248,0.5);">
+          <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:linear-gradient(140deg,#818CF8,#6366F1); color:#fff; font-size:11px; font-weight:700; padding:4px 12px; border-radius:999px; white-space:nowrap;">الأكثر طلبًا</span>
+          <div style="font-size: 16px; font-weight: 700; color:#fff; margin-bottom: 6px;">فريق</div>
+          <div style="font-size: 12.5px; color:#8B949E; margin-bottom: 18px; line-height:1.6;">للفرق الصغيرة اللي بتوسّع.</div>
+          <div style="display:flex; align-items:baseline; gap:8px; direction:ltr; justify-content:flex-end; margin-bottom: 4px;">
+            <span class="pl-num" style="font-size: 15px; color:#6E7681; text-decoration:line-through;">3000</span>
+            <span class="pl-num" style="font-size: 40px; font-weight: 800; color:#fff; letter-spacing:-0.03em;">1500</span>
+            <span style="font-size: 14px; font-weight:700; color:#A5B4FC; font-family:'Inter',sans-serif;">EGP</span>
+          </div>
+          <div style="font-size: 11px; color:#8B949E; margin-bottom: 20px;">دفعة واحدة · مدى الحياة</div>
+          <ul style="list-style:none; margin:0 0 22px; padding:0; display:flex; flex-direction:column; gap:11px; font-size:13px; color:#C9D1D9;">
+            <li>✓ لحد <span class="pl-num" style="font-weight:700;">500</span> منتج</li>
+            <li>✓ لحد <span class="pl-num" style="font-weight:700;">5</span> أعضاء في الفريق</li>
+            <li>✓ صلاحيات لكل عضو (تعديل / قراءة)</li>
+            <li>✓ كل أدوات التحليل والتقارير</li>
+          </ul>
+          <button onclick="document.getElementById('wa-btn').scrollIntoView({behavior:'smooth'})" style="margin-top:auto; width:100%; padding:13px; border-radius:12px; border:none; background:linear-gradient(140deg,#818CF8,#6366F1); color:#fff; font-size:14px; font-weight:700; font-family:inherit; cursor:pointer;">اشترك دلوقتي</button>
+        </div>
+
+        <!-- Tier: فريق+ -->
+        <div style="display:flex; flex-direction:column; border-radius: 20px; padding: 26px 22px; background: linear-gradient(180deg, #12161D, #0C0F15); border: 1px solid rgba(255,255,255,0.08);">
+          <div style="font-size: 16px; font-weight: 700; color:#fff; margin-bottom: 6px;">فريق+</div>
+          <div style="font-size: 12.5px; color:#8B949E; margin-bottom: 18px; line-height:1.6;">للبيزنس الكبير والفرق الأوسع.</div>
+          <div style="display:flex; align-items:baseline; gap:8px; direction:ltr; justify-content:flex-end; margin-bottom: 4px;">
+            <span class="pl-num" style="font-size: 15px; color:#6E7681; text-decoration:line-through;">4000</span>
+            <span class="pl-num" style="font-size: 40px; font-weight: 800; color:#fff; letter-spacing:-0.03em;">2000</span>
+            <span style="font-size: 14px; font-weight:700; color:#A5B4FC; font-family:'Inter',sans-serif;">EGP</span>
+          </div>
+          <div style="font-size: 11px; color:#8B949E; margin-bottom: 20px;">دفعة واحدة · مدى الحياة</div>
+          <ul style="list-style:none; margin:0 0 22px; padding:0; display:flex; flex-direction:column; gap:11px; font-size:13px; color:#C9D1D9;">
+            <li>✓ لحد <span class="pl-num" style="font-weight:700;">1000</span> منتج</li>
+            <li>✓ لحد <span class="pl-num" style="font-weight:700;">10</span> أعضاء في الفريق</li>
+            <li>✓ صلاحيات لكل عضو (تعديل / قراءة)</li>
+            <li>✓ كل أدوات التحليل والتقارير</li>
+          </ul>
+          <button onclick="document.getElementById('wa-btn').scrollIntoView({behavior:'smooth'})" style="margin-top:auto; width:100%; padding:13px; border-radius:12px; border:1px solid rgba(255,255,255,0.14); background:rgba(255,255,255,0.03); color:#C9D1D9; font-size:14px; font-weight:600; font-family:inherit; cursor:pointer;">اشترك</button>
+        </div>
+
+      </div>
+    </section>
+
   </div>
 </div>
 
