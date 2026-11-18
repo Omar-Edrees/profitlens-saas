@@ -40,6 +40,12 @@
     { "src": "/admin-tutorials",  "dest": "/admin-tutorials.html" },
     { "src": "/pricing",          "dest": "/pricing.html" },
     { "src": "/lp",               "dest": "/lp.html" },
+    { "src": "/login",            "dest": "/login.html" },
+    { "src": "/about",            "dest": "/about.html" },
+    { "src": "/contact",          "dest": "/contact.html" },
+    { "src": "/privacy",          "dest": "/privacy.html" },
+    { "src": "/terms",            "dest": "/terms.html" },
+    { "src": "/integrations/tiktok", "dest": "/integrations/tiktok.html" },
     { "src": "/",                 "dest": "/index.html" }
   ]
 }

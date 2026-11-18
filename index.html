@@ -1,10 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ProfitLens Pro — Sign In</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProfitLens — Profit analytics for e-commerce</title>
+<meta name="description" content="ProfitLens shows e-commerce stores their real profit, cost per order, ROAS and break-even ROAS for every product.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="stylesheet" href="/site.css">
+<script>
+(function () {
+  var h = location.hash || '', q = location.search || '';
+  if (/access_token=|refresh_token=|type=recovery|error_description=/.test(h) || /[?&](code|error_description)=/.test(q) || /[?&]checkout=1/.test(q)) {
+    location.replace('/login' + q + h);
+  }
+})();
+</script>
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -12,399 +22,163 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-KRX6N8ZX');</script>
 <!-- End Google Tag Manager -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:    #0d0f14;
-      --bg2:   #13161e;
-      --bg3:   #1a1e28;
-      --bdr:   #2a2f3d;
-      --bdr2:  #3a4055;
-      --txt:   #e8eaf0;
-      --txt2:  #8890a6;
-      --txt3:  #555e78;
-      --acc:   #5b6af5;
-      --acc2:  #4a58e8;
-      --grn:   #22c55e;
-      --red:   #ef4444;
-      --mono:  'JetBrains Mono', 'Fira Code', monospace;
-      --body:  'Inter', system-ui, sans-serif;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--txt);
-      font-family: var(--body);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .bg-grid {
-      position: fixed; inset: 0; z-index: 0;
-      background-image:
-        linear-gradient(rgba(91,106,245,.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(91,106,245,.03) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
-    }
-
-    .glow {
-      position: fixed; z-index: 0;
-      width: 600px; height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(91,106,245,.08) 0%, transparent 70%);
-      top: 50%; left: 50%;
-      transform: translate(-50%, -60%);
-      pointer-events: none;
-    }
-
-    .card {
-      position: relative; z-index: 1;
-      background: var(--bg2);
-      border: 1px solid var(--bdr);
-      border-radius: 16px;
-      padding: 40px;
-      width: 100%;
-      max-width: 420px;
-      box-shadow: 0 24px 80px rgba(0,0,0,.5);
-    }
-
-    .logo {
-      display: flex; align-items: center; gap: 10px;
-      margin-bottom: 28px;
-    }
-    .logo-icon {
-      width: 38px; height: 38px;
-      background: linear-gradient(135deg, var(--acc), #8b5cf6);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px;
-    }
-    .logo-text { font-size: 20px; font-weight: 700; letter-spacing: -.3px; }
-    .logo-text span { color: var(--acc); }
-
-    /* Google button */
-    .btn-google {
-      width: 100%; padding: 11px;
-      background: #fff; color: #1f2937;
-      border: 1px solid #e5e7eb; border-radius: 9px;
-      font-size: 14px; font-weight: 600;
-      cursor: pointer; font-family: var(--body);
-      transition: background .15s, box-shadow .15s;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      margin-bottom: 18px;
-    }
-    .btn-google:hover { background: #f9fafb; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
-    .btn-google:disabled { opacity: .5; cursor: not-allowed; }
-    .google-icon { width: 18px; height: 18px; flex-shrink: 0; }
-
-    .divider {
-      display: flex; align-items: center; gap: 12px;
-      margin-top: 16px; margin-bottom: 16px; color: var(--txt3); font-size: 12px;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px; background: var(--bdr);
-    }
-
-    .tabs {
-      display: flex;
-      background: var(--bg3);
-      border-radius: 10px;
-      padding: 4px;
-      margin-bottom: 20px;
-      gap: 4px;
-    }
-    .tab {
-      flex: 1; padding: 9px;
-      text-align: center; font-size: 13px; font-weight: 500;
-      border-radius: 7px; cursor: pointer;
-      border: none; background: transparent; color: var(--txt2);
-      transition: all .15s;
-    }
-    .tab.active { background: var(--bg2); color: var(--txt); box-shadow: 0 1px 4px rgba(0,0,0,.3); }
-
-    label { display: block; font-size: 12px; color: var(--txt2); margin-bottom: 6px; font-weight: 500; }
-    .field { margin-bottom: 16px; }
-
-    input[type=email], input[type=password], input[type=text] {
-      width: 100%; padding: 10px 14px;
-      background: var(--bg3); border: 1px solid var(--bdr);
-      border-radius: 9px; color: var(--txt); font-size: 14px;
-      font-family: var(--body); outline: none;
-      transition: border-color .15s;
-    }
-    input:focus { border-color: var(--acc); }
-    input::placeholder { color: var(--txt3); }
-
-    .pw-wrap { position: relative; }
-    .pw-wrap input { padding-right: 42px; }
-    .pw-toggle {
-      position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
-      background: none; border: none; padding: 7px; cursor: pointer;
-      color: var(--txt3); display: flex; align-items: center; justify-content: center;
-      border-radius: 6px;
-    }
-    .pw-toggle:hover { color: var(--txt2); }
-    .pw-icon { width: 18px; height: 18px; }
-
-    .btn {
-      width: 100%; padding: 11px;
-      background: var(--acc); color: #fff;
-      border: none; border-radius: 9px;
-      font-size: 14px; font-weight: 600;
-      cursor: pointer; font-family: var(--body);
-      transition: background .15s, opacity .15s;
-      margin-top: 4px;
-    }
-    .btn:hover { background: var(--acc2); }
-    .btn:disabled { opacity: .5; cursor: not-allowed; }
-
-    .msg {
-      margin-top: 14px; padding: 10px 14px;
-      border-radius: 8px; font-size: 13px; display: none;
-    }
-    .msg.error { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); color: #fca5a5; }
-    .msg.success { background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.3); color: #86efac; }
-    .msg.show { display: block; }
-
-    .terms {
-      margin-top: 20px; font-size: 11px; color: var(--txt3);
-      text-align: center; line-height: 1.5;
-    }
-
-    #pane-signup { display: none; }
-
-    /* whatsapp sticky button */
-    @keyframes pl-float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-    .wa-float { position: fixed; bottom: 22px; left: 22px; z-index: 60; display: flex; align-items: center; gap: 10px; padding: 13px 18px; border-radius: 999px; background: linear-gradient(140deg, #34D399, #10B981); color: #052E16; font-weight: 700; font-size: 14px; box-shadow: 0 12px 34px -8px rgba(16,185,129,0.7); animation: pl-float 3.5s ease-in-out infinite; text-decoration: none; }
-    .wa-float:hover { filter: brightness(1.05); }
-  </style>
 </head>
 <body>
 <!-- Google Tag Manager (noscript) -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRX6N8ZX"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
-  <div class="bg-grid"></div>
-  <div class="glow"></div>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/"><span class="brand-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 3 7-8"/><path d="M16 7h4v4"/></svg></span>ProfitLens</a>
+    <nav class="nav" aria-label="Main">
+      <a href="/#features">Features</a>
+      <a href="/integrations/tiktok">TikTok Ads integration</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms</a>
+      <a href="/lp" lang="ar">العربية</a>
+      <a class="btn btn-ghost btn-sm" href="/login">Sign in</a>
+    </nav>
+  </div>
+</header>
+<main>
 
-  <div class="card">
-    <div class="logo">
-      <div class="logo-icon">📊</div>
-      <div class="logo-text">Profit<span>Lens</span> Pro</div>
-    </div>
-
-    <div class="tabs">
-      <button class="tab active" id="tab-signin" onclick="switchTab('signin')">Sign In</button>
-      <button class="tab" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
-    </div>
-
-    <!-- Sign In -->
-    <div id="pane-signin">
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="si-email" placeholder="you@example.com" autocomplete="email">
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <div class="pw-wrap">
-          <input type="password" id="si-pass" placeholder="••••••••" autocomplete="current-password">
-          <button type="button" class="pw-toggle" id="si-pass-toggle" onclick="togglePassword('si-pass')" aria-label="Show password">
-            <svg class="pw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-      </div>
-      <button class="btn" id="si-btn" onclick="doSignIn()">Sign In</button>
-      <div class="msg" id="si-msg"></div>
-    </div>
-
-    <!-- Sign Up -->
-    <div id="pane-signup">
-      <div class="field">
-        <label>Email</label>
-        <input type="email" id="su-email" placeholder="you@example.com" autocomplete="email">
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <div class="pw-wrap">
-          <input type="password" id="su-pass" placeholder="Min. 8 characters" autocomplete="new-password">
-          <button type="button" class="pw-toggle" id="su-pass-toggle" onclick="togglePassword('su-pass')" aria-label="Show password">
-            <svg class="pw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-      </div>
-      <div class="field">
-        <label>Confirm Password</label>
-        <div class="pw-wrap">
-          <input type="password" id="su-pass2" placeholder="••••••••" autocomplete="new-password">
-          <button type="button" class="pw-toggle" id="su-pass2-toggle" onclick="togglePassword('su-pass2')" aria-label="Show password">
-            <svg class="pw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
-          </button>
-        </div>
-      </div>
-      <button class="btn" id="su-btn" onclick="doSignUp()">Create Account</button>
-      <div class="msg" id="su-msg"></div>
-    </div>
-
-    <div class="divider">or continue with</div>
-
-    <!-- Google Sign In -->
-    <button class="btn-google" id="google-btn" onclick="doGoogleSignIn()">
-      <svg class="google-icon" viewBox="0 0 24 24">
-        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-      </svg>
-      Continue with Google
-    </button>
-
-    <div class="terms">
-      By continuing, you agree to our Terms of Service and Privacy Policy.
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Profit analytics for e-commerce stores</span>
+    <h1>Know your real profit<br>before you spend more on ads.</h1>
+    <p class="lead">ProfitLens is a web app for online store owners, media buyers and affiliate marketers.
+      It turns your selling price, product cost, shipping, returns and ad spend into net profit, real cost per order,
+      ROAS and break-even ROAS, and gives a clear <strong>Scale</strong> or <strong>Stop</strong> decision for every product.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="/login">Create account</a>
+      <a class="btn btn-ghost" href="https://wa.me/201556318082" rel="noopener">Ask about the free trial</a>
     </div>
   </div>
+</section>
 
-  <!-- WhatsApp sticky button -->
-  <a href="#" id="wa-floating" class="wa-float">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="#052E16"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.477-.911z"/></svg>
-    محتاج مساعدة؟
-  </a>
+<section class="section" style="padding-top:24px">
+  <div class="wrap">
+    <h2>The problem</h2>
+    <p class="lead">Sales go up, but the profit is not there. Hidden costs eat the margin while the ad budget keeps growing.</p>
+    <div class="grid grid-3">
+      <div class="card"><h3>Profit by guesswork</h3><p>Price minus product cost is not profit. Shipping, returns, fees and ads all come out of the margin.</p></div>
+      <div class="card"><h3>Scaling a losing product</h3><p>An ad can look good while the product is below break-even, so every extra pound of budget loses more.</p></div>
+      <div class="card"><h3>Slow decisions</h3><p>Numbers spread over many spreadsheets delay every decision, and in advertising a delay costs money.</p></div>
+    </div>
+  </div>
+</section>
 
-  <script>
-    function track(event, params) {
-      window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push(Object.assign({ event: event }, params || {}));
-    }
+<section class="section">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <div class="grid grid-3">
+      <div class="card"><div class="step-num">1</div><h3>Add your numbers</h3><p>Selling price, product cost, shipping and ad spend. Type them in, or import ad spend and results from an ad account you connect with read-only access.</p></div>
+      <div class="card"><div class="step-num">2</div><h3>ProfitLens calculates</h3><p>Net profit, margin, real cost per order, ROAS and break-even ROAS, for each product.</p></div>
+      <div class="card"><div class="step-num">3</div><h3>Decide with numbers</h3><p>See which product to scale, which to stop, and what it takes to reach the profit you want.</p></div>
+    </div>
+  </div>
+</section>
 
-    if (new URLSearchParams(window.location.search).get('checkout') === '1') {
-      track('in_checkout');
-    }
+<section class="section" id="features">
+  <div class="wrap">
+    <h2>Features</h2>
+    <div class="grid grid-3">
+      <div class="card"><h3>Full profitability analysis</h3><p>Net profit and real margin after every hidden cost, not only price minus cost.</p></div>
+      <div class="card"><h3>Ad performance analysis</h3><p>Real cost per order, ROAS and break-even ROAS for every product.</p></div>
+      <div class="card"><h3>Scale detector</h3><p>Shows which products are ready to scale safely and which are still below break-even.</p></div>
+      <div class="card"><h3>Target profit simulator</h3><p>Pick the profit you want; ProfitLens tells you the price and ad budget needed to reach it.</p></div>
+      <div class="card"><h3>Product comparison</h3><p>Compare products side by side to see which ones really make money.</p></div>
+      <div class="card"><h3>Shipping and returns impact</h3><p>See how shipping cost and returns change the profit of each product.</p></div>
+    </div>
+  </div>
+</section>
 
-    let __sb = null;
+<section class="section" id="integrations">
+  <div class="wrap">
+    <h2>Ad platform reporting</h2>
+    <p class="lead">Advertisers can connect their own TikTok Ads account so ProfitLens reads the spend and results of their campaigns,
+      instead of typing them in. The connection is <strong>read-only</strong> and is approved by the advertiser on TikTok's own authorization page.</p>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>What ProfitLens reads</h3>
+        <ul class="check">
+          <li>Spend, impressions, clicks and conversions per day</li>
+          <li>Campaign, ad group and ad names and IDs</li>
+          <li>The landing page URL of each ad, to match it to a product</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>What ProfitLens never does</h3>
+        <ul class="check">
+          <li>Create, edit, pause or delete any campaign, ad group or ad</li>
+          <li>Access the personal data of TikTok users</li>
+          <li>Sell or share advertiser data with anyone</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:18px"><a href="/integrations/tiktok">How the TikTok Ads integration works →</a></p>
+  </div>
+</section>
 
-    async function init() {
-      try {
-        const cfg = await fetch('/api/config').then(r => r.json()).catch(() => ({}));
-        if (cfg.authDisabled) { window.location.replace('/app'); return; }
-        if (cfg.supabaseUrl && cfg.supabaseAnonKey) {
-          const { createClient } = supabase;
-          __sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
-          const { data: { session } } = await __sb.auth.getSession();
-          if (session) window.location.replace('/app');
-        }
-      } catch(e) {}
-    }
+<section class="section">
+  <div class="wrap">
+    <h2>Who it is for</h2>
+    <div class="grid grid-3">
+      <div class="card"><h3>Store owners</h3><p>See all your numbers in one place, know which product makes money, and judge your media buyer's results against clear benchmarks.</p></div>
+      <div class="card"><h3>Media buyers</h3><p>Know the real benchmark for every product and campaign, and when it is safe to scale.</p></div>
+      <div class="card"><h3>Affiliate marketers</h3><p>Test the products that will really make money and price them so you stay profitable.</p></div>
+    </div>
+  </div>
+</section>
 
-    const EYE_ICON = '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>';
-    const EYE_OFF_ICON = '<path d="M17.94 17.94A10.94 10.94 0 0112 19c-7 0-11-7-11-7a21.62 21.62 0 015.06-5.94M9.9 4.24A10.4 10.4 0 0112 4c7 0 11 7 11 7a21.6 21.6 0 01-2.16 3.19M14.12 14.12a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
+<section class="section" id="pricing">
+  <div class="wrap">
+    <h2>Pricing</h2>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>ProfitLens — lifetime access</h3>
+        <div class="price">EGP 500 <s>EGP 1,500</s></div>
+        <p>One-time payment during the launch offer. No monthly subscription.</p>
+        <ul class="check">
+          <li>All analyses and tools</li>
+          <li>Step-by-step video tutorials (beginner and advanced)</li>
+          <li>Custom formulas on request</li>
+          <li>7-day full money-back guarantee</li>
+        </ul>
+        <div class="hero-actions" style="margin-top:18px">
+          <a class="btn btn-primary" href="/login">Create account</a>
+          <a class="btn btn-ghost" href="https://wa.me/201556318082" rel="noopener">Ask about the free trial</a>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Questions</h3>
+        <p><strong style="color:#fff">Do I need accounting experience?</strong><br>No. You enter simple numbers and ProfitLens does the calculations.</p>
+        <p style="margin-top:12px"><strong style="color:#fff">Do I have to connect my store or ad account?</strong><br>No. Typing your numbers works on any platform. Connecting an ad account is optional and read-only.</p>
+        <p style="margin-top:12px"><strong style="color:#fff">Is my data private?</strong><br>Yes. Your account is protected by secure sign-in and only you can see your data. Read our <a href="/privacy">Privacy Policy</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-    function togglePassword(inputId) {
-      const input = document.getElementById(inputId);
-      const btn = document.getElementById(inputId + '-toggle');
-      const showing = input.type === 'password';
-      input.type = showing ? 'text' : 'password';
-      btn.querySelector('svg').innerHTML = showing ? EYE_OFF_ICON : EYE_ICON;
-      btn.setAttribute('aria-label', showing ? 'Hide password' : 'Show password');
-    }
-
-    function switchTab(tab) {
-      document.getElementById('pane-signin').style.display = tab === 'signin' ? 'block' : 'none';
-      document.getElementById('pane-signup').style.display = tab === 'signup' ? 'block' : 'none';
-      document.getElementById('tab-signin').classList.toggle('active', tab === 'signin');
-      document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
-    }
-
-    function showMsg(id, text, type) {
-      const el = document.getElementById(id);
-      el.textContent = text;
-      el.className = 'msg ' + type + ' show';
-    }
-
-    async function doGoogleSignIn() {
-      if (!__sb) return alert('Service unavailable — please try again later.');
-      track('google_sign_in_click');
-      // Google OAuth redirects straight to /app (skipping this page's sign-in
-      // handlers), so carry the checkout flag through sessionStorage — app.html's
-      // plan gate sends free-plan users to /pricing, which consumes this flag.
-      sessionStorage.setItem('pl_pending_checkout', '1');
-      const btn = document.getElementById('google-btn');
-      btn.disabled = true; btn.childNodes[1].textContent = ' Redirecting…';
-      await __sb.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.origin + '/app' }
-      });
-    }
-
-    async function doSignIn() {
-      if (!__sb) return showMsg('si-msg', 'Service unavailable — please try again later.', 'error');
-      const email = document.getElementById('si-email').value.trim();
-      const pass  = document.getElementById('si-pass').value;
-      if (!email || !pass) return showMsg('si-msg', 'Please fill in all fields.', 'error');
-
-      const btn = document.getElementById('si-btn');
-      btn.disabled = true; btn.textContent = 'Signing in…';
-
-      const { error } = await __sb.auth.signInWithPassword({ email, password: pass });
-      btn.disabled = false; btn.textContent = 'Sign In';
-
-      if (error) return showMsg('si-msg', error.message, 'error');
-      track('sign_in_success', { method: 'email' });
-      track('complete_checkout', { method: 'email' });
-      window.location.replace('/app');
-    }
-
-    async function doSignUp() {
-      if (!__sb) return showMsg('su-msg', 'Service unavailable — please try again later.', 'error');
-      const email = document.getElementById('su-email').value.trim();
-      const pass  = document.getElementById('su-pass').value;
-      const pass2 = document.getElementById('su-pass2').value;
-
-      if (!email || !pass || !pass2) return showMsg('su-msg', 'Please fill in all fields.', 'error');
-      if (pass.length < 8) return showMsg('su-msg', 'Password must be at least 8 characters.', 'error');
-      if (pass !== pass2) return showMsg('su-msg', 'Passwords do not match.', 'error');
-
-      const btn = document.getElementById('su-btn');
-      btn.disabled = true; btn.textContent = 'Creating account…';
-
-      const { data, error } = await __sb.auth.signUp({ email, password: pass });
-      btn.disabled = false; btn.textContent = 'Create Account';
-
-      if (error) return showMsg('su-msg', error.message, 'error');
-      track('sign_up_success', { method: 'email' });
-      if (data && data.session) {
-        // Email confirmation disabled → user is already logged in.
-        track('complete_checkout', { method: 'email' });
-        window.location.replace('/app');
-        return;
-      }
-      showMsg('su-msg', 'Account created! Check your email to confirm, then sign in.', 'success');
-    }
-
-    document.addEventListener('keydown', e => {
-      if (e.key !== 'Enter') return;
-      const active = document.getElementById('pane-signin').style.display !== 'none' ? 'signin' : 'signup';
-      if (active === 'signin') doSignIn();
-      else doSignUp();
-    });
-
-    // ===== WhatsApp =====
-    (function(){
-      var WHATSAPP_NUMBER = '201556318082';
-      var waEl = document.getElementById('wa-floating');
-      if (!waEl) return;
-      waEl.href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' +
-        encodeURIComponent('مرحبا، محتاج مساعدة في تسجيل الدخول على ProfitLens');
-      waEl.target = '_blank';
-      waEl.rel = 'noopener';
-      waEl.addEventListener('click', function(){ track('whatsapp_click', { click_location: 'wa-floating' }); });
-    })();
-
-    init();
-  </script>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div>© <span id="yr">2026</span> ProfitLens. Profit analytics for e-commerce. Egypt.<br>
+      <a href="mailto:support@profitlens.site">support@profitlens.site</a></div>
+    <nav aria-label="Footer">
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+      <a href="/integrations/tiktok">TikTok Ads integration</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="/login">Sign in</a>
+    </nav>
+  </div>
+</footer>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
 </body>
 </html>

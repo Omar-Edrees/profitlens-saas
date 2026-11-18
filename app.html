@@ -12578,7 +12578,7 @@ window.addEventListener('load', ()=>{
       const { createClient } = supabase;
       window.__sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
       const { data: { session } } = await window.__sb.auth.getSession();
-      if (!session) { window.location.replace('/'); return; }
+      if (!session) { window.location.replace('/login'); return; }
       window.__sbUser = session.user;
 
       const { data: profile } = await window.__sb.from('profiles')
@@ -12626,7 +12626,7 @@ window.addEventListener('load', ()=>{
       window.__plLogout = async function() {
         localStorage.removeItem(LS_KEY);
         try { await window.__sb.auth.signOut(); } catch(e){}
-        window.location.replace('/');
+        window.location.replace('/login');
       };
 
       // Profile menu in nav (avatar + dropdown with name / email / sign out)

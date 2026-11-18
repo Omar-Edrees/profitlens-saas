@@ -470,7 +470,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     try {
       const { data: { session } } = await __sb.auth.getSession();
-      if (!session) { window.location.replace('/'); return; }
+      if (!session) { window.location.replace('/login'); return; }
 
       const res = await fetch('/api/redeem-cancel', {
         method: 'POST',
@@ -561,7 +561,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   async function doSignOut() {
     if (__sb) { try { await __sb.auth.signOut(); } catch(e){} }
-    window.location.replace('/');
+    window.location.replace('/login');
   }
 
   async function redeemPromo() {
@@ -575,7 +575,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     track('promo_code_submit');
 
     const { data: { session } } = await __sb.auth.getSession();
-    if (!session) { window.location.replace('/'); return; }
+    if (!session) { window.location.replace('/login'); return; }
 
     btn.disabled = true; btn.textContent = '…جاري التحقق';
     try {

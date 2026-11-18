@@ -206,7 +206,7 @@ async function init() {
     if (!cfg.supabaseUrl) { showDenied(); return; }
     __sb = supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
     const { data: { session } } = await __sb.auth.getSession();
-    if (!session) { window.location.replace('/'); return; }
+    if (!session) { window.location.replace('/login'); return; }
     __token = session.access_token;
     __uid = session.user.id;
     const { data: profile } = await __sb.from('profiles').select('role').eq('id', session.user.id).maybeSingle();

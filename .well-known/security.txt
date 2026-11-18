@@ -1,0 +1,5 @@
+Contact: mailto:support@profitlens.site
+Expires: 2027-11-18T00:00:00.000Z
+Preferred-Languages: en, ar
+Canonical: https://www.profitlens.site/.well-known/security.txt
+Policy: https://www.profitlens.site/privacy
