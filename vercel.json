@@ -46,6 +46,11 @@
     { "src": "/privacy",          "dest": "/privacy.html" },
     { "src": "/terms",            "dest": "/terms.html" },
     { "src": "/integrations/tiktok", "dest": "/integrations/tiktok.html" },
+    { "src": "/ar/about",         "dest": "/ar/about.html" },
+    { "src": "/ar/contact",       "dest": "/ar/contact.html" },
+    { "src": "/ar/privacy",       "dest": "/ar/privacy.html" },
+    { "src": "/ar/terms",         "dest": "/ar/terms.html" },
+    { "src": "/ar/integrations/tiktok", "dest": "/ar/integrations/tiktok.html" },
     { "src": "/",                 "dest": "/index.html" }
   ]
 }

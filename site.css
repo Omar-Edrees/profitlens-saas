@@ -81,3 +81,12 @@ h3 { font-size: 18px; margin: 0 0 8px; color: #fff; }
   .nav { gap: 12px; }
   .site-header { position: static; }
 }
+
+/* Arabic pages (dir="rtl") */
+.ltr { direction: ltr; unicode-bidi: isolate; }
+html[dir="rtl"] body { font-family: 'IBM Plex Sans Arabic', 'Inter', system-ui, sans-serif; }
+html[dir="rtl"] h1, html[dir="rtl"] h2 { letter-spacing: 0; }
+html[dir="rtl"] .doc th, html[dir="rtl"] .doc td { text-align: right; }
+html[dir="rtl"] .doc ul { padding-left: 0; padding-right: 22px; }
+html[dir="rtl"] .check li { padding-left: 0; padding-right: 26px; }
+html[dir="rtl"] .check li::before { left: auto; right: 0; }
