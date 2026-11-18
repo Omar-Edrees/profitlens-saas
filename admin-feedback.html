@@ -389,7 +389,7 @@ async function init() {
   const cfg = await cfgRes.json();
   __sb = supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
   const { data: { session } } = await __sb.auth.getSession();
-  if (!session) { window.location.replace('/'); return; }
+  if (!session) { window.location.replace('/login'); return; }
   __token = session.access_token;
   const { data: profile } = await __sb.from('profiles').select('role').eq('id', session.user.id).maybeSingle();
   if (profile?.role !== 'admin') {

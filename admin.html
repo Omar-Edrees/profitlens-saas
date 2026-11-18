@@ -261,7 +261,7 @@
 <div id="gate" style="display:none">
   <h2>Access Denied</h2>
   <p>You need admin privileges to view this page.</p>
-  <button class="btn btn-ghost" style="padding:8px 20px;font-size:13px" onclick="window.location.replace('/')">Go to login</button>
+  <button class="btn btn-ghost" style="padding:8px 20px;font-size:13px" onclick="window.location.replace('/login')">Go to login</button>
 </div>
 
 <main id="admin-main" style="display:none">
@@ -330,7 +330,7 @@ async function init() {
     const { createClient } = supabase;
     __sb = createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
     const { data: { session } } = await __sb.auth.getSession();
-    if (!session) { window.location.replace('/'); return; }
+    if (!session) { window.location.replace('/login'); return; }
     __session = session;
     __token = session.access_token;
     document.getElementById('nav-email').textContent = session.user.email;
@@ -372,7 +372,7 @@ function showGate() { document.getElementById('gate').style.display = ''; }
 
 async function doLogout() {
   if (__sb) await __sb.auth.signOut();
-  window.location.replace('/');
+  window.location.replace('/login');
 }
 
 function toggleAdminMenu() {

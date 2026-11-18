@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TikTok Ads integration — ProfitLens</title>
+<meta name="description" content="How ProfitLens reads TikTok Ads reports with read-only access authorized by the advertiser.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate" hreflang="en" href="https://www.profitlens.site/integrations/tiktok">
+<link rel="alternate" hreflang="ar" href="https://www.profitlens.site/ar/integrations/tiktok">
+<link rel="stylesheet" href="/site.css">
+
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/"><span class="brand-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-5 4 3 7-8"/><path d="M16 7h4v4"/></svg></span>ProfitLens</a>
+    <nav class="nav" aria-label="Main">
+      <a href="/#features">Features</a>
+      <a href="/integrations/tiktok">TikTok Ads integration</a>
+      <a href="/#pricing">Pricing</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms</a>
+      <a href="/ar/integrations/tiktok" lang="ar">العربية</a>
+      <a class="btn btn-ghost btn-sm" href="/login">Sign in</a>
+    </nav>
+  </div>
+</header>
+<main>
+
+<div class="wrap narrow doc">
+  <span class="eyebrow">Integration</span>
+  <h1>TikTok Ads integration</h1>
+  <p class="lead">ProfitLens uses the TikTok API for Business (Marketing API) to read advertising reports from TikTok Ads accounts
+    whose owners authorize ProfitLens. The integration is read-only.</p>
+
+  <h2>Why we use it</h2>
+  <p>To calculate the real profit of a product, ProfitLens needs the ad spend and results for that product.
+    Instead of typing these numbers in by hand every day, an advertiser can let ProfitLens read them from TikTok Ads.
+    ProfitLens then puts the spend next to the store's orders and costs to show cost per order, ROAS and profit for each product.</p>
+
+  <h2>Data we read</h2>
+  <table>
+    <tr><th>Data</th><th>Why we need it</th></tr>
+    <tr><td>Ad account (advertiser) ID, name, currency and time zone</td><td>To show each account separately and use the right currency and dates.</td></tr>
+    <tr><td>Campaign, ad group and ad IDs and names</td><td>To group results the same way the advertiser sees them in TikTok Ads Manager.</td></tr>
+    <tr><td>Landing page URL of each ad</td><td>To match each ad to the product it promotes.</td></tr>
+    <tr><td>Daily reporting metrics: spend, impressions, clicks, conversions (such as complete payment) and conversion value</td><td>To calculate cost per order, ROAS and profit per product.</td></tr>
+  </table>
+  <p>We do not read or store any personal data of TikTok users, audiences, comments or videos.</p>
+
+  <h2>What ProfitLens never does</h2>
+  <ul>
+    <li>It never creates, edits, pauses or deletes campaigns, ad groups, ads, audiences or creatives.</li>
+    <li>It never accesses ad accounts that were not authorized by their owner.</li>
+    <li>It never sells, rents or shares TikTok data with third parties, and never uses it for advertising or profiling.</li>
+  </ul>
+
+  <h2>How an advertiser connects</h2>
+  <ul>
+    <li>The advertiser contacts us to connect their TikTok Ads account.</li>
+    <li>We send TikTok's official authorization link. The advertiser signs in on TikTok, reviews the requested read-only permissions and approves them.</li>
+    <li>TikTok returns an authorization to ProfitLens. From then on ProfitLens reads the daily reports of the approved ad accounts only.</li>
+  </ul>
+
+  <h2>Permissions requested</h2>
+  <ul>
+    <li><strong>Ad Account Management</strong>: read ad account information.</li>
+    <li><strong>Ads Management</strong>: read campaigns, ad groups and ads (no create, update or delete).</li>
+    <li><strong>Reporting</strong>: read performance reports.</li>
+  </ul>
+
+  <h2>Storage and security</h2>
+  <p>Access tokens are kept on our servers only, are never shown in the browser, and are used only to read reports for the account that granted them.
+    Reporting data is stored in the advertiser's private ProfitLens workspace, protected by sign-in, and visible only to that advertiser's team.</p>
+
+  <h2>Disconnecting and deleting data</h2>
+  <p>An advertiser can stop access at any time, either by asking us at <a href="mailto:support@profitlens.site">support@profitlens.site</a>
+    or by removing ProfitLens from the authorized apps of their TikTok For Business account.
+    When access is revoked we stop reading data immediately, delete the access token, and delete the stored TikTok reporting data within 30 days,
+    or sooner on request.</p>
+
+  <p>See also our <a href="/privacy">Privacy Policy</a> and <a href="/terms">Terms of Service</a>.</p>
+</div>
+
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <div>© <span id="yr">2026</span> ProfitLens. Profit analytics for e-commerce. Egypt.<br>
+      <a href="mailto:support@profitlens.site">support@profitlens.site</a></div>
+    <nav aria-label="Footer">
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+      <a href="/integrations/tiktok">TikTok Ads integration</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Service</a>
+      <a href="/ar/integrations/tiktok" lang="ar">العربية</a>
+      <a href="/login">Sign in</a>
+    </nav>
+  </div>
+</footer>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>
